@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "708843610331",
+    "project_id": "exerkin-958e0",
+    "storage_bucket": "exerkin-958e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708843610331:android:e09f85d0e295fc12ceacfe",
+        "android_client_info": {
+          "package_name": "com.bhumir2503.ExerKin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708843610331-7qiliqg56itfq53apdt3rm7lltsd52sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZNWerR_W6dMJLKx8OsyBGE0Q5FfB2UG8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708843610331-7qiliqg56itfq53apdt3rm7lltsd52sn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "708843610331-uku1hdg5kg9mjd8q0v3f2kl314vmjbo1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bhumir2503.ExerKin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
