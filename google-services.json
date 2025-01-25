@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "708843610331-5dgm58jlk7t8ms0ue2kuc0dt5kbj851s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bhumir2503.ExerKin",
+            "certificate_hash": "7dc2db1b283b4863937f8e17a5cb192098da9e46"
+          }
+        },
+        {
           "client_id": "708843610331-7qiliqg56itfq53apdt3rm7lltsd52sn.apps.googleusercontent.com",
           "client_type": 3
         }
