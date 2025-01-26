@@ -126,8 +126,8 @@ export default function EmailAuthButton() {
 		<Menu>
 			<MenuTrigger>
 				<View style={styles.email}>
-					<Ionicons name="mail" size={24} color="#000" />
-					<Text style={{ textAlign: "center", marginLeft: 10 }}>
+					<Ionicons name="mail" size={24} color="#fff" />
+					<Text style={{ textAlign: "center", marginLeft: 10, color: "#fff" }}>
 						Continue with Email
 					</Text>
 				</View>
@@ -156,7 +156,7 @@ export default function EmailAuthButton() {
 						<Ionicons
 							name="mail"
 							size={20}
-							color="#000"
+							color="#fff"
 						/>
 					</View>
 				</MenuOption>
@@ -173,7 +173,7 @@ export default function EmailAuthButton() {
 						<Ionicons
 							name="pencil-sharp"
 							size={20}
-							color="#000"
+							color="#fff"
 						/>
 					</View>
 				</MenuOption>
@@ -189,6 +189,7 @@ export default function EmailAuthButton() {
 					style={{
 						flexDirection: "row",
 						justifyContent: "flex-start",
+						
 					}}
 				>
 					<Text style={styles.close} onPress={() => handleClose()}>
@@ -323,12 +324,12 @@ const createStyles = () =>
 			height: 40,
 			borderRadius: 5,
 			flexDirection: "row",
-			backgroundColor: "#fff", // Adjust as needed
+			backgroundColor: "#121212", // Adjust as needed
 		},
 		menuOption: {
 			paddingHorizontal: 10,
 			fontSize: 16,
-			color: "#000", // Option text color matching theme
+			color: "#fff", // Option text color matching theme
 		},
 		close: {
 			padding: 10,
@@ -342,6 +343,7 @@ const createStyles = () =>
 			fontWeight: "bold",
 			padding: 10,
 			paddingBottom: 0,
+			color: "#fff",
 		},
 		subtext: {
 			fontSize: 14,
@@ -363,7 +365,6 @@ const createStyles = () =>
 			fontSize: 14,
 			padding: 10,
 			paddingLeft: 20,
-
 			borderRadius: 5,
 			backgroundColor: "#f0f0f0",
 		},
@@ -377,6 +378,6 @@ const createStyles = () =>
 			paddingLeft: 20,
 			borderRadius: 5,
 			backgroundColor: "#407BFF",
-			color: "#000",
+			color: "#fff",
 		},
 	});

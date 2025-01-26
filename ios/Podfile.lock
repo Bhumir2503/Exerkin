@@ -2986,6 +2986,27 @@ PODS:
     - Firebase/Firestore (= 11.7.0)
     - React-Core
     - RNFBApp
+  - RNGestureHandler (2.20.2):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNGoogleSignin (13.1.0):
     - DoubleConversion
     - glog
@@ -3093,6 +3114,7 @@ DEPENDENCIES:
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -3282,6 +3304,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/auth"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
   Yoga:
@@ -3389,6 +3413,7 @@ SPEC CHECKSUMS:
   RNFBApp: 67229e8085ab427c935defad2a6c3fc57c7f656d
   RNFBAuth: 13f641fec88aee849a628b54332425b2e36f14db
   RNFBFirestore: 2e4b7bf2824bb68bce11e1036413d4ae49c16343
+  RNGestureHandler: 598e45cedb905b157e9764acbef0b5e365693451
   RNGoogleSignin: 27c2199f487ee08cc692d8d2c035bc9c154ddc22
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: c597d2c0803c51f27569fb69f05eeb76646c0074
