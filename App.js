@@ -1,18 +1,25 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { MenuProvider } from "react-native-popup-menu";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 
 import auth from "@react-native-firebase/auth";
 
-import AppleAuthButton from "./src/components/AppleAuthButton";
-import GoogleAuthButton from "./src/components/GoogleAuthButton";
+import AppleAuthButton from "./src/components/SignInButtons/AppleAuthButton";
+import GoogleAuthButton from "./src/components/SignInButtons/GoogleAuthButton";
+import EmailAuthButton from "./src/components/SignInButtons/EmailAuthButton";
 
 export default function App() {
 	return (
-		<UserProvider>
-			<AppContent />
-		</UserProvider>
+		<SafeAreaProvider>
+			<MenuProvider>
+				<UserProvider>
+					<AppContent />
+				</UserProvider>
+			</MenuProvider>
+		</SafeAreaProvider>
 	);
 }
 
@@ -37,6 +44,7 @@ function AppContent() {
 		<View style={styles.container}>
 			<AppleAuthButton />
 			<GoogleAuthButton />
+			<EmailAuthButton />
 			<StatusBar style="auto" />
 		</View>
 	);
