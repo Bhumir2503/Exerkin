@@ -70,12 +70,13 @@ export default function AppleAuthButton() {
 
 	return (
 		<AppleButton
-			buttonStyle={AppleButton.Style.BLACK}
+			buttonStyle={AppleButton.Style.WHITE}
 			buttonType={AppleButton.Type.SIGN_IN}
 			style={{
 				width: 250,
 				height: 40,
 				margin: 10,
+				marginBottom: 20,
 			}}
 			onPress={onAppleButtonPress}
 		/>
