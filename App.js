@@ -8,18 +8,18 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 
 import Onboarding from "./src/pages/Onboarding";
+import AppNavigator from "./src/navigations/AppNavigator";
+import Home from "./src/pages/Home";
 
 export default function App() {
 	return (
 		<SafeAreaProvider>
 			<MenuProvider>
-				<NavigationContainer>
-					<GestureHandlerRootView>
-						<UserProvider>
-							<AppContent />
-						</UserProvider>
-					</GestureHandlerRootView>
-				</NavigationContainer>
+				<GestureHandlerRootView>
+					<UserProvider>
+						<AppContent />
+					</UserProvider>
+				</GestureHandlerRootView>
 			</MenuProvider>
 		</SafeAreaProvider>
 	);
@@ -33,5 +33,9 @@ function AppContent() {
 	}
 	console.log(user);
 
-	return <>{user ? <Text>Hello</Text> : <Onboarding />}</>;
+	return (
+		<NavigationContainer>
+			{user ? <Home/> : <Onboarding />}
+		</NavigationContainer>
+	);
 }
