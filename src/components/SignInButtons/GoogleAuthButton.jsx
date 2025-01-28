@@ -35,7 +35,7 @@ export default function GoogleAuthButton() {
 			);
 
 			// Sign-in the user with the credential
-			auth().signInWithCredential(googleCredential);
+			return auth().signInWithCredential(googleCredential);
 		} catch (e) {
 			console.warn(e);
 		}

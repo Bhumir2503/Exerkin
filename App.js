@@ -35,6 +35,7 @@ function AppContent() {
 
 	return (
 		<NavigationContainer>
+			<StatusBar style="light" />
 			{user ? <Home/> : <Onboarding />}
 		</NavigationContainer>
 	);

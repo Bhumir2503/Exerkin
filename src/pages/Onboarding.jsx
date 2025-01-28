@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { StyleSheet, Text, View, Dimensions, Image } from "react-native";
+import { StyleSheet, Text, View, Dimensions, Image, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import EmailAuthButton from "../components/SignInButtons/EmailAuthButton";
@@ -18,7 +18,7 @@ export default function Onboarding() {
                 style={{ width: width, height: width, marginBottom: 50 }}
             />
 			<GoogleAuthButton />
-			<AppleAuthButton />
+			{Platform.OS === "ios" && <AppleAuthButton />}
 			<Text style={styles.or}>OR</Text>
 			<EmailAuthButton />
 		</SafeAreaView>
