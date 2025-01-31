@@ -6,10 +6,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
+import { enableScreens } from "react-native-screens";
 
 import Onboarding from "./src/pages/Onboarding";
 import AppNavigator from "./src/navigations/AppNavigator";
 import Home from "./src/pages/Home";
+
+enableScreens();
 
 export default function App() {
 	return (
@@ -35,7 +38,7 @@ function AppContent() {
 	return (
 		<NavigationContainer>
 			<StatusBar style="light" />
-			{user ? <Home/> : <Onboarding />}
+			{user ? <AppNavigator/> : <Onboarding />}
 		</NavigationContainer>
 	);
 }
