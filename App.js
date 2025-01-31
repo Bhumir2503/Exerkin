@@ -31,7 +31,6 @@ function AppContent() {
 	if (init) {
 		return null;
 	}
-	console.log(user);
 
 	return (
 		<NavigationContainer>

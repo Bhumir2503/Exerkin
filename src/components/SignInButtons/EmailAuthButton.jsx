@@ -21,7 +21,6 @@ import ForgotPassword from "./ForgotPassword";
 import auth from "@react-native-firebase/auth";
 
 export default function EmailAuthButton() {
-
 	const styles = createStyles();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
@@ -127,7 +126,13 @@ export default function EmailAuthButton() {
 			<MenuTrigger>
 				<View style={styles.email}>
 					<Ionicons name="mail" size={24} color="#fff" />
-					<Text style={{ textAlign: "center", marginLeft: 10, color: "#fff" }}>
+					<Text
+						style={{
+							textAlign: "center",
+							marginLeft: 10,
+							color: "#fff",
+						}}
+					>
 						Continue with Email
 					</Text>
 				</View>
@@ -136,7 +141,7 @@ export default function EmailAuthButton() {
 			<MenuOptions
 				customStyles={{
 					optionsContainer: {
-						backgroundColor: "rgba(255, 255, 255, 0.5)",
+						backgroundColor: "rgba(255, 255, 255, 1)",
 						width: 200,
 						borderRadius: 7,
 						marginTop: 35,
@@ -153,11 +158,7 @@ export default function EmailAuthButton() {
 						}}
 					>
 						<Text style={styles.menuOption}>Log in with Email</Text>
-						<Ionicons
-							name="mail"
-							size={20}
-							color="#fff"
-						/>
+						<Ionicons name="mail" size={20} color="#000" />
 					</View>
 				</MenuOption>
 				<MenuOption onSelect={handleSignUp}>
@@ -170,11 +171,7 @@ export default function EmailAuthButton() {
 						<Text style={styles.menuOption}>
 							Sign Up with Email
 						</Text>
-						<Ionicons
-							name="pencil-sharp"
-							size={20}
-							color="#fff"
-						/>
+						<Ionicons name="pencil-sharp" size={20} color="#000" />
 					</View>
 				</MenuOption>
 			</MenuOptions>
@@ -189,7 +186,6 @@ export default function EmailAuthButton() {
 					style={{
 						flexDirection: "row",
 						justifyContent: "flex-start",
-						
 					}}
 				>
 					<Text style={styles.close} onPress={() => handleClose()}>
@@ -286,10 +282,7 @@ export default function EmailAuthButton() {
 							</Text>
 						)}
 						{submitting === true && (
-							<ActivityIndicator
-								size="small"
-								color="#000"
-							/>
+							<ActivityIndicator size="small" color="#000" />
 						)}
 					</TouchableOpacity>
 				</View>
@@ -329,7 +322,7 @@ const createStyles = () =>
 		menuOption: {
 			paddingHorizontal: 10,
 			fontSize: 16,
-			color: "#fff", // Option text color matching theme
+			color: "#000", // Option text color matching theme
 		},
 		close: {
 			padding: 10,
