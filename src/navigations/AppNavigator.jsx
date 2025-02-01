@@ -6,10 +6,12 @@ import Settings from "../pages/Settings";
 import Stats from "../pages/Stats";
 import Workout from "../pages/Workout";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
+    const { themeStyle } = useTheme();
 	return (
 		<Tab.Navigator
 			screenOptions={({ route }) => ({
@@ -34,10 +36,10 @@ export default function AppNavigator() {
 					);
 				},
 				headerShown: false,
-				tabBarActiveTintColor: "#fff",
-				tabBarInactiveTintColor: "#fff",
+				tabBarActiveTintColor: themeStyle.primary,
+				tabBarInactiveTintColor: themeStyle.textColorSecondary,
 				tabBarStyle: {
-					backgroundColor: "#000",
+					backgroundColor: themeStyle.backgroundColor,
 					borderTopWidth: 0,
 					shadowOpacity: 0,
 					elevation: 0,
