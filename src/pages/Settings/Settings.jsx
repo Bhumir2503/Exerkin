@@ -156,6 +156,7 @@ const createStyles = (themeStyle) =>
 			fontSize: 24,
 			fontWeight: "bold",
 			padding: 20,
+			paddingHorizontal: 10,
 			color: themeStyle.textColor,
 		},
 		subTitle: {
