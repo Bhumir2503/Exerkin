@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from "@react-native-firebase/auth";
 
+
 export default function Home() {
     return (
         <SafeAreaView style={styles.container}>
