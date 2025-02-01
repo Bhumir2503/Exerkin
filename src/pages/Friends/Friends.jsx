@@ -11,7 +11,6 @@ export default function Profile() {
 		<SafeAreaView style={styles.container}>
 			<View>
 				<Text style={styles.title}>Friends</Text>
-				<Text onPress={() => auth().signOut()}>Sign Out</Text>
 			</View>
 		</SafeAreaView>
 	);
