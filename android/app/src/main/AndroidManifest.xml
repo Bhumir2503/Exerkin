@@ -25,7 +25,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.bhumir2503.ExerKin"/>
-        <data android:scheme="exp+exerkin"/>
       </intent-filter>
     </activity>
   </application>

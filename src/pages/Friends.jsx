@@ -3,12 +3,11 @@ import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from "@react-native-firebase/auth";
 
-export default function Home() {
+export default function Friends() {
     return (
         <SafeAreaView style={styles.container}>
         <View>
-            <Text style={styles.title}>Home</Text>
-            <Text onPress={()=> auth().signOut()}>Sign Out</Text>
+            <Text style={styles.title}>Your Friends List</Text>
         </View>
         </SafeAreaView>
     );

@@ -1,5 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Home from "../pages/Home";
+import Profile from "../pages/Profile";	
+import Friends from "../pages/Friends";
+import Settings from "../pages/Settings";
+import Stats from "../pages/Stats";
+import Workout from "../pages/Workout";
 import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
@@ -13,13 +18,13 @@ export default function AppNavigator() {
 
 					if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
-					} else if (route.name === "Friend") {
+					} else if (route.name === "Friends") {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
 						iconName = focused ? "body" : "body-outline";
-					} else if (route.name === "Stat") {
+					} else if (route.name === "Stats") {
 						iconName = focused ? "pie-chart" : "pie-chart-outline";
-					} else if (route.name === "Setting") {
+					} else if (route.name === "Settings") {
 						iconName = focused ? "settings" : "settings-outline";
 					}
 
@@ -42,11 +47,11 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Profile" component={Home} />
-			<Tab.Screen name="Friend" component={Home} />
-			<Tab.Screen name="Workout" component={Home} />
-			<Tab.Screen name="Stat" component={Home} />
-			<Tab.Screen name="Setting" component={Home} />
+			<Tab.Screen name="Profile" component={Profile} />
+			<Tab.Screen name="Friends" component={Friends} />
+			<Tab.Screen name="Workout" component={Workout} />
+			<Tab.Screen name="Stats" component={Stats} />
+			<Tab.Screen name="Settings" component={Settings} />
 		</Tab.Navigator>
 	);
 }
