@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import EmailAuthButton from "../components/SignInButtons/EmailAuthButton";
-import GoogleAuthButton from "../components/SignInButtons/GoogleAuthButton";
-import AppleAuthButton from "../components/SignInButtons/AppleAuthButton";
+import EmailAuthButton from "../../components/SignInButtons/EmailAuthButton";
+import GoogleAuthButton from "../../components/SignInButtons/GoogleAuthButton";
+import AppleAuthButton from "../../components/SignInButtons/AppleAuthButton";
 
 export default function Onboarding() {
 	const { width, height } = Dimensions.get("window");
@@ -21,7 +21,7 @@ export default function Onboarding() {
 		<SafeAreaView style={styles.container}>
 			<Text style={styles.title}>Exerkin</Text>
 			<Image
-				source={require("../../assets/Onboarding.png")}
+				source={require("../../../assets/Onboarding.png")}
 				style={{ width: width, height: width, marginBottom: 50 }}
 			/>
 			<View style={{justifyContent: "center", alignItems: "center", position: "absolute", bottom: 25,}}>

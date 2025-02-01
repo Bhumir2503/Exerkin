@@ -2,15 +2,15 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from "@react-native-firebase/auth";
-import { useTheme } from "../contexts/ThemeContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Profile() {
 	const { themeStyle } = useTheme();
-    const styles = createStyles(themeStyle);
+	const styles = createStyles(themeStyle);
 	return (
 		<SafeAreaView style={styles.container}>
 			<View>
-				<Text style={styles.title}>Your Profile</Text>
+				<Text style={styles.title}>Friends</Text>
 				<Text onPress={() => auth().signOut()}>Sign Out</Text>
 			</View>
 		</SafeAreaView>
@@ -28,6 +28,6 @@ const createStyles = (themeStyle) =>
 		title: {
 			fontSize: 48,
 			fontWeight: "bold",
-            color: themeStyle.textColor,
+			color: themeStyle.textColor,
 		},
 	});

@@ -1,17 +1,17 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Home from "../pages/Home";
-import Profile from "../pages/Profile";	
-import Friends from "../pages/Friends";
-import Settings from "../pages/Settings";
-import Stats from "../pages/Stats";
-import Workout from "../pages/Workout";
+
+import Profile from "../pages/Profile/Profile";
+import Friends from "../pages/Friends/Friends";
+import Settings from "../pages/Settings/Settings";
+import Stats from "../pages/Stats/Stats";
+import Workout from "../pages/Workout/Workout";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
-    const { themeStyle } = useTheme();
+	const { themeStyle } = useTheme();
 	return (
 		<Tab.Navigator
 			screenOptions={({ route }) => ({

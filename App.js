@@ -9,9 +9,9 @@ import { UserProvider, useUser } from "./src/contexts/UserContext";
 import {ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
 
-import Onboarding from "./src/pages/Onboarding";
+import Onboarding from "./src/pages/Auth/Onboarding";
 import AppNavigator from "./src/navigations/AppNavigator";
-import Home from "./src/pages/Home";
+
 
 enableScreens();
 

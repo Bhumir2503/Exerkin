@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from "@react-native-firebase/auth";
-import { useTheme } from "../contexts/ThemeContext";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Profile() {
 	const { themeStyle } = useTheme();
@@ -10,7 +10,7 @@ export default function Profile() {
 	return (
 		<SafeAreaView style={styles.container}>
 			<View>
-				<Text style={styles.title}>Settings</Text>
+				<Text style={styles.title}>Stats</Text>
 				<Text onPress={() => auth().signOut()}>Sign Out</Text>
 			</View>
 		</SafeAreaView>
