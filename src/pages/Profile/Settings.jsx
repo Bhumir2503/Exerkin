@@ -5,13 +5,16 @@ import { Ionicons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
 
-export default function Profile() {
+export default function Settings({navigation}) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView>
-				<Text style={styles.title}>Settings</Text>
+				<View style={{flexDirection: "row", alignItems: "center", alignContent: "center", }}>
+					<Ionicons name="chevron-back-outline" size={24} color={themeStyle.textColor} style={{marginLeft: 10}} onPress={()=>navigation.goBack()} />
+					<Text style={styles.title}>Settings</Text>
+				</View>
 				<View style={{ marginBottom: 20 }}>
 					<Text style={styles.subTitle}>Your Account</Text>
 					<View>

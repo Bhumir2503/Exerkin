@@ -1,9 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import Profile from "../pages/Profile/Profile";
+import ProfileNavigator from "./ProfileNavigator";
 import Friends from "../pages/Friends/Friends";
-import Settings from "../pages/Settings/Settings";
-import Stats from "../pages/Stats/Stats";
+
 import Workout from "../pages/Workout/Workout";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
@@ -49,11 +48,9 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Profile" component={Profile} />
+			<Tab.Screen name="Profile" component={ProfileNavigator} />
 			<Tab.Screen name="Friends" component={Friends} />
 			<Tab.Screen name="Workout" component={Workout} />
-			<Tab.Screen name="Stats" component={Stats} />
-			<Tab.Screen name="Settings" component={Settings} />
 		</Tab.Navigator>
 	);
 }
