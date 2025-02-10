@@ -26,6 +26,10 @@ export default function Profile() {
 			<View>
 				<Text style={styles.title}>Get Ready to Workout!</Text>
 				<Button title="Start Workout" />
+				 <ExerciseSelector onSelect={setSelectedExercise} />
+           <Text style={{ marginTop: 20, fontSize: 18, color: themeStyle.textColor }}>
+                 Selected Exercise: {selectedExercise || "None"}
+           </Text>
 			</View>
 		</SafeAreaView>
 	);
