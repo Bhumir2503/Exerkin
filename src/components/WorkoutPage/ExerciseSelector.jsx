@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 /*DISCLAIMER: Unsure whether or not this component will receive or pass props, so we will need to communicate properly on what data will be passed to where */
 
@@ -14,8 +14,31 @@ const exerciseOptions = [
     { label: 'Deadlift', value: 'deadlift' },
   ];
 
-const ExerciseSelector = () => {
-    
+  /*
+  Here is an example on how to use this component. Try importing it into the Workout.jsx page and use it like this:
+  <ExerciseSelector onSelect={setSelectedExercise} />
+          <Text style={{ marginTop: 20, fontSize: 18 }}>
+                Selected Exercise: {selectedExercise || "None"}
+          </Text>
+*/
+
+const ExerciseSelector = ({ onSelect }) => {
+    return(
+      <Dropdown 
+        data={exerciseOptions} 
+        labelField="label"
+        valueField="value"
+        placeholder="Select an option"
+        search // Enables search feature (optional)
+        onChange={(item) => onSelect(item.label)}
+        style={{ 
+          borderWidth: 1, 
+          borderColor: "#ccc", 
+          padding: 10, 
+          width: 250 // ✅ Set a proper width
+        }}
+      />
+    )
 };
   
   export default ExerciseSelector;
