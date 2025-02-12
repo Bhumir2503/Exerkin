@@ -74,7 +74,7 @@ export default function Profile({ navigation }) {
 				</View>
 			</View>
 			<View>
-				<WorkoutTimer></WorkoutTimer>
+				{/*<WorkoutTimer></WorkoutTimer>*/}
 			</View>
 		</SafeAreaView>
 	);
