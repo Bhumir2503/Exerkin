@@ -48,7 +48,7 @@ const themes = {
 };
 
 export const ThemeProvider = ({ children }) => {
-	const [theme, setTheme] = useState("darkPurple");
+	const [theme, setTheme] = useState("lightPurple");
 
 	const changeTheme = (theme) => {
 		setTheme(theme);

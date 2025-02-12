@@ -51,7 +51,8 @@ export default function Profile() {
                         </View>
 
                         <View style={styles.workoutInfo}>
-                            <Text style={styles.workoutTitle}>Workout Title</Text>
+                            <TextInput keyboardType="default "placeholder="Untitled" style={styles.workoutTitle}/>
+                            {/* <Text style={styles.workoutTitle}>Workout Title</Text> */}
                             <Text style={styles.textStyle}>Time</Text>
                             <Text style={styles.textStyle}>Notes</Text>
                         </View>
@@ -68,8 +69,8 @@ export default function Profile() {
                                         values.push(
                                             <View key={i-0.1} style={styles.workoutInputForm}>
                                                 <Text key={i} style={styles.textStyle}>{item.sets[i]}</Text>
-                                                <TextInput key={i + 0.1} style={styles.workoutInputField}/>
-                                                <TextInput key={i + 0.2} style={styles.workoutInputField}/>
+                                                <TextInput key={i + 0.1} keyboardType="numeric" placeholder="lbs" style={styles.workoutInputField}/>
+                                                <TextInput key={i + 0.2} keyboardType="numeric" placeholder="reps" style={styles.workoutInputField}/>
                                             </View>
                                         )
                                     }
@@ -121,7 +122,7 @@ const createStyles = (themeStyle) =>
             color: themeStyle.textColor,
         },
         upper: { height: "5%", backgroundColor: "white", opacity: 0 },
-        lower: { flex: 1, backgroundColor: "#222222" },
+        lower: { flex: 1, backgroundColor: "#d1d1e9" },
         textStyle: {
             color: themeStyle.textColor,
         },
@@ -161,7 +162,8 @@ const createStyles = (themeStyle) =>
             borderRadius: 15,
             paddingLeft: 5,
             borderColor: "black",
-            borderWidth: 1
+            borderWidth: 1,
+            textAlign: "center",
         },
 
         exerciseItem: {
