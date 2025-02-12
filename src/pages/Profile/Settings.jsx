@@ -1,144 +1,94 @@
 import React from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import {
+	View,
+	StyleSheet,
+	Text,
+	ScrollView,
+	TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
 
-export default function Settings({navigation}) {
+export default function Settings({ navigation }) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView>
-				<View style={{flexDirection: "row", alignItems: "center", alignContent: "center", }}>
-					<Ionicons name="chevron-back-outline" size={24} color={themeStyle.textColor} style={{marginLeft: 10}} onPress={()=>navigation.goBack()} />
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						alignContent: "center",
+						marginBottom: 15,
+					}}
+				>
+					<Ionicons
+						name="chevron-back-outline"
+						size={24}
+						color={themeStyle.textColor}
+						style={{ marginLeft: 5, marginTop: 2 }}
+						onPress={() => navigation.goBack()}
+					/>
 					<Text style={styles.title}>Settings</Text>
 				</View>
 				<View style={{ marginBottom: 20 }}>
 					<Text style={styles.subTitle}>Your Account</Text>
 					<View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>Account</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>Edit Profile</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
+						<ButtonSelector
+							name="Account"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
+						<ButtonSelector
+							name="Edit Profile"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
 					</View>
 				</View>
 				<View style={{ marginBottom: 20 }}>
 					<Text style={styles.subTitle}>Preference</Text>
 					<View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>Change Theme</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>
-								Notification Settings
-							</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>
-								Privacy Settings
-							</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
+						<ButtonSelector
+							name="Edit Theme"
+							location="EditTheme"
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
+						<ButtonSelector
+							name="Notification Settings"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
+						<ButtonSelector
+							name="Privacy Settings"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
 					</View>
 				</View>
 				<View style={{ marginBottom: 20 }}>
 					<Text style={styles.subTitle}>General</Text>
 					<View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>
-								Terms of Service
-							</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
-						<View
-							style={{
-								flexDirection: "row",
-								justifyContent: "space-between",
-								alignItems: "center",
-								paddingHorizontal: 10,
-							}}
-						>
-							<Text style={styles.category}>Privacy Policy</Text>
-							<Ionicons
-								name="chevron-forward-outline"
-								size={24}
-								color="white"
-							/>
-						</View>
+						<ButtonSelector
+							name="Terms of Service"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
+						<ButtonSelector
+							name="Privacy Policy"
+							location=""
+							navigation={navigation}
+							themeStyle={themeStyle}
+						/>
 					</View>
 				</View>
 			</ScrollView>
@@ -146,6 +96,28 @@ export default function Settings({navigation}) {
 				Log Out
 			</Text>
 		</SafeAreaView>
+	);
+}
+
+function ButtonSelector({ navigation, themeStyle, name, location }) {
+	const styles = createStyles(themeStyle);
+	return (
+		<TouchableOpacity
+			onPress={() => navigation.navigate(location)}
+			style={{
+				flexDirection: "row",
+				justifyContent: "space-between",
+				alignItems: "center",
+				paddingHorizontal: 10,
+			}}
+		>
+			<Text style={styles.category}>{name}</Text>
+			<Ionicons
+				name="chevron-forward-outline"
+				size={24}
+				color={themeStyle.textColor}
+			/>
+		</TouchableOpacity>
 	);
 }
 
@@ -158,9 +130,8 @@ const createStyles = (themeStyle) =>
 		title: {
 			fontSize: 24,
 			fontWeight: "bold",
-			padding: 20,
-			paddingHorizontal: 10,
 			color: themeStyle.textColor,
+			marginLeft: 5,
 		},
 		subTitle: {
 			fontSize: 14,
