@@ -3,6 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
+import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
 
 export default function Profile() {
 	const { themeStyle } = useTheme();
@@ -11,6 +12,9 @@ export default function Profile() {
 		<SafeAreaView style={styles.container}>
 			<View>
 				<Text style={styles.title}>Your Profile</Text>
+			</View>
+			<View>
+				<WorkoutTimer></WorkoutTimer>
 			</View>
 		</SafeAreaView>
 	);
