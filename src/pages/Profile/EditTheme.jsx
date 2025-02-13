@@ -270,7 +270,7 @@ function ColorChoice({}) {
 }
 
 function ColorBox({ color, themeName }) {
-	const { changeTheme } = useTheme();
+	const { changeTheme, theme, themeStyle } = useTheme();
 	const changeColor = (themeName) => {
 		changeTheme(themeName);
 	};
@@ -284,6 +284,8 @@ function ColorBox({ color, themeName }) {
 					height: 50,
 					borderRadius: 10,
 					margin: 10,
+					borderWidth: themeName === theme ? 2 : 0,
+					borderColor: themeStyle.textColor,
 				}}
 			></View>
 		</TouchableOpacity>
