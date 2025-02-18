@@ -9,18 +9,19 @@ import { useTheme } from "../../contexts/ThemeContext";
 //an array of exercises and pass it to the dropdown menu for now.
 
 //Use the Dropdown imported above, you will need to install the package react-native-element-dropdown
+const buttonValue = "Add Exercise"
 const allExercises = [
-  { label: "Chest", value: "chest", type: "category" },
-  { label: "Dumbbell Bench Press", value: "db_bench_press", category: "chest" },
-  { label: "Barbell Bench Press", value: "bb_bench_press", category: "chest" },
+  { ph: buttonValue, label: "Chest", value: "chest", type: "category" },
+  { ph: buttonValue, label: "Dumbbell Bench Press", value: "db_bench_press", category: "chest" },
+  { ph: buttonValue, label: "Barbell Bench Press", value: "bb_bench_press", category: "chest" },
 
-  { label: "Back", value: "back", type: "category" },
-  { label: "Dumbbell Row", value: "db_row", category: "back" },
-  { label: "Barbell Deadlift", value: "bb_deadlift", category: "back" },
+  { ph: buttonValue, label: "Back", value: "back", type: "category" },
+  { ph: buttonValue, label: "Dumbbell Row", value: "db_row", category: "back" },
+  { ph: buttonValue, label: "Barbell Deadlift", value: "bb_deadlift", category: "back" },
 
-  { label: "Arms", value: "arms", type: "category" },
-  { label: "Dumbbell Curl", value: "db_curl", category: "arms" },
-  { label: "Barbell Curl", value: "bb_curl", category: "arms" },
+  { ph: buttonValue, label: "Arms", value: "arms", type: "category" },
+  { ph: buttonValue, label: "Dumbbell Curl", value: "db_curl", category: "arms" },
+  { ph: buttonValue, label: "Barbell Curl", value: "bb_curl", category: "arms" },
 ];
 
   /*
@@ -34,31 +35,46 @@ const allExercises = [
 const ExerciseSelector = ({ onSelect }) => {
   const { themeStyle } = useTheme();
   const styles = createStyles(themeStyle);
-  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [placeholderValue, setPlaceholderValue] = useState(null)
 
   return (
-    <View style={{ paddingVertical: 10 }}>
+    <View style={{ width: "100%", marginBottom: "3%" }}>
       <Dropdown
         data={allExercises}
-        labelField="label"
-        valueField="value"
-        placeholder="Select an Exercise"
-        value={selectedExercise}
+        labelField="ph"
+        valueField= "value"
+        placeholder={buttonValue}
+        placeholderStyle={{
+          textAlign: "center",
+          fontWeight: "bold",
+          fontSize: 18,
+          color: "white",
+        }}
+
+        selectedTextStyle={{
+          textAlign: "center",
+          fontWeight: "bold",
+          fontSize: 18,
+          color: "white",
+        }}
         onChange={(item) => {
-          if (!item.type) {  
-            setSelectedExercise(item.value);
             onSelect(item.label);
-          }
         }}
         style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          padding: 10,
-          backgroundColor: "#fff",  //White dropdown box
+          backgroundColor: "#195ed4",
+          width: "90%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "1%",
+          borderRadius: 5,
+          margin: "auto",
+          marginBottom: "3%",
         }}
         containerStyle={{
           backgroundColor: "#fff",  //White dropdown menu
         }}
+        
         renderItem={(item, selected) => (
           <View style={{ padding: 10, backgroundColor: "#fff" }}>  
             <Text style={{ fontWeight: item.type ? "bold" : "normal",
