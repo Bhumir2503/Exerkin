@@ -63,13 +63,13 @@ export default function Profile({ navigation }) {
 				</TouchableWithoutFeedback>
 				<View style={{ flex: 1, marginLeft: 25 }}>
 					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
-						Follower: 1000
+						Followers: 1000
 					</Text>
 					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
 						Following: 0
 					</Text>
 					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
-						Post: 50
+						Posts: 50
 					</Text>
 				</View>
 			</View>

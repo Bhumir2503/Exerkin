@@ -5,6 +5,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutButton from "../../components/WorkoutPage/WorkoutButtons";
 import WorkoutForm from "../../components/WorkoutPage/WorkoutForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
+import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
 
 export default function Profile() {
     const { themeStyle } = useTheme();
@@ -40,6 +41,11 @@ export default function Profile() {
                     {/* The title of the workout*/}
                     <View style={styles.titleStyle}>
                         <Text style={styles.workoutTitle}>Workout title</Text>
+                    </View>
+
+                    {/* Add timer component, passing modal visibility prop so timer automatically starts when modal is visible*/}
+                    <View style = {styles.timerStyle}>
+                        <WorkoutTimer visible={modalIsVisible} />
                     </View>
 
                     {/* This lets us scroll down the modal */}
@@ -97,6 +103,7 @@ const createStyles = (theme) => {
             padding: "2%",
             paddingTop: "20%"
         },
+
         scrollView: {
             width: "100%",
             alignItems: "center"
@@ -110,9 +117,17 @@ const createStyles = (theme) => {
             padding: "2%",
             backgroundColor: theme.card,
         },
+
         workoutTitle: {
             color: theme.textColor,
             fontSize: 32,
+        },
+
+        timerStyle: {
+            position: "absolute",
+            top: "1%",
+            right: 20,
+            padding: "2%",
         },
     });
 }
