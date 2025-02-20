@@ -7,6 +7,7 @@ import WorkoutForm from "../../components/WorkoutPage/WorkoutForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import { useNavigation } from "@react-navigation/native";
 import storage from "../../utils/storage";
+import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
 
 export default function Profile() {
     const { themeStyle } = useTheme();
@@ -92,7 +93,6 @@ export default function Profile() {
                     <View style={styles.titleStyle}>
                         <Text style={styles.workoutTitle}>Workout Title</Text>
                     </View>
-
                     <ScrollView contentContainerStyle={styles.scrollView} style={{ width: "100%", height: "100%" }}>
                         {selectedExercises.map((exercise, index) => (
                             <WorkoutForm 
@@ -145,6 +145,7 @@ const createStyles = (theme) => {
             padding: "2%",
             paddingTop: "20%",
         },
+
         scrollView: {
             width: "100%",
             alignItems: "center",
@@ -157,9 +158,17 @@ const createStyles = (theme) => {
             padding: "2%",
             backgroundColor: theme.card,
         },
+
         workoutTitle: {
             color: theme.textColor,
             fontSize: 32,
+        },
+
+        timerStyle: {
+            position: "absolute",
+            top: "1%",
+            right: 20,
+            padding: "2%",
         },
     });
 };

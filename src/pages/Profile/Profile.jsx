@@ -59,10 +59,17 @@ export default function Profile({ navigation }) {
 				<TouchableWithoutFeedback onPress={() => console.log("Change profile image")}>
 					<Image source={{ uri: "http://www.gravatar.com/avatar/?d=mp" }} style={styles.profileImage} />
 				</TouchableWithoutFeedback>
-				<View style={styles.profileStats}>
-					<Text style={styles.statsText}>Follower: 1000</Text>
-					<Text style={styles.statsText}>Following: 0</Text>
-					<Text style={styles.statsText}>Post: 50</Text>
+
+				<View style={{ flex: 1, marginLeft: 25 }}>
+					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
+						Followers: 1000
+					</Text>
+					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
+						Following: 0
+					</Text>
+					<Text style={{ fontSize: 18, fontWeight: "bold" }}>
+						Posts: 50
+					</Text>
 				</View>
 			</View>
 

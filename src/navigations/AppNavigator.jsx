@@ -19,7 +19,7 @@ export default function AppNavigator() {
 
 					if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
-					} else if (route.name === "Friends") {
+					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
 						iconName = focused ? "body" : "body-outline";
@@ -49,7 +49,7 @@ export default function AppNavigator() {
 			})}
 		>
 			<Tab.Screen name="Profile" component={ProfileNavigator} />
-			<Tab.Screen name="Friends" component={Friends} />
+			<Tab.Screen name="Feed" component={Friends} />
 			<Tab.Screen name="Workout" component={Workout} />
 		</Tab.Navigator>
 	);
