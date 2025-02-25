@@ -38,6 +38,12 @@
           <string>com.googleusercontent.apps.708843610331-uku1hdg5kg9mjd8q0v3f2kl314vmjbo1</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+exerkin</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
