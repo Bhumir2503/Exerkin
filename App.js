@@ -9,6 +9,7 @@ import { UserProvider, useUser } from "./src/contexts/UserContext";
 import {ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
+import { useTheme } from "./src/contexts/ThemeContext";
 
 import Onboarding from "./src/pages/Auth/Onboarding";
 import AppNavigator from "./src/navigations/AppNavigator";
@@ -49,6 +50,7 @@ export default function App() {
 
 function AppContent() {
 	const { user, init } = useUser();
+	const { theme } = useTheme();
 
 	if (init) {
 		return null;
@@ -56,7 +58,7 @@ function AppContent() {
 
 	return (
 		<NavigationContainer>
-			<StatusBar style="light" />
+			<StatusBar style={theme.includes("light") ? "dark" : "light"} />
 			{user ? <AppNavigator/> : <Onboarding />}
 		</NavigationContainer>
 	);
