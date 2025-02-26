@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Platform } from "react-native";
 
 import ProfileNavigator from "./ProfileNavigator";
 import Friends from "../pages/Friends/Friends";
@@ -42,7 +43,7 @@ export default function AppNavigator() {
 					borderTopWidth: 0,
 					shadowOpacity: 0,
 					elevation: 0,
-					height: 60, // Set height of tab bar
+					height: Platform.OS === "ios" ? 75 : 60,
 					paddingBottom: 20, // Add padding at the bottom
 					paddingTop: 5, // Add padding at the top
 				},

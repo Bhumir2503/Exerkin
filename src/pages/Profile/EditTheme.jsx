@@ -80,7 +80,7 @@ function PreviewChoice({}) {
 						fontWeight: "bold",
 					}}
 				>
-					Set
+					Sets
 				</Text>
 				<View
 					style={{
@@ -107,7 +107,7 @@ function PreviewChoice({}) {
 							fontWeight: "bold",
 						}}
 					>
-						Rep
+						Reps
 					</Text>
 				</View>
 			</View>
