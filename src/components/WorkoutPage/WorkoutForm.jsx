@@ -110,11 +110,11 @@ const WorkoutForm = ({ theme, title, updateExercise, onFinalize }) => {
 const createStyles = (theme) =>
     StyleSheet.create({
         container: {
-            backgroundColor: theme.backgroundColor,
+            backgroundColor: theme.card,
             padding: "3%",
             width: "90%",
             marginBottom: "5%",
-            borderRadius: 15,
+            borderRadius: 7,
         },
         rowInfo: {
             display: "flex",
@@ -144,7 +144,7 @@ const createStyles = (theme) =>
             backgroundColor: theme.primary,
             width: "100%",
             padding: "2%",
-            borderRadius: 15,
+            borderRadius: 5,
             marginTop: "5%",
             alignItems: "center",
         },

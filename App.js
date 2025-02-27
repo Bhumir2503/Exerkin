@@ -5,6 +5,7 @@ import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { WorkoutProvider } from "./src/contexts/WorkoutContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
@@ -37,7 +38,9 @@ export default function App() {
 				<MenuProvider>
 					<GestureHandlerRootView>
 						<UserProvider>
-							<AppContent />
+							<WorkoutProvider>
+								<AppContent />
+							</WorkoutProvider>
 						</UserProvider>
 					</GestureHandlerRootView>
 				</MenuProvider>

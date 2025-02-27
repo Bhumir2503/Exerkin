@@ -25,7 +25,7 @@ const createStyles = (theme) => {
     return StyleSheet.create({
         modal: {
             flex: 1,
-            backgroundColor: theme.card,
+            backgroundColor: theme.backgroundColor,
         },
     })
 }
