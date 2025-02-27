@@ -16,7 +16,7 @@ import WorkoutForm from "../../components/WorkoutPage/WorkoutForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import { useNavigation } from "@react-navigation/native";
 import storage from "../../utils/storage";
-import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
+import WorkoutTimer, {formatTime} from "../../components/WorkoutPage/WorkoutTimer";
 import WorkoutDashboard  from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
@@ -27,6 +27,7 @@ export default function Profile() {
 
 	const [modalIsVisible, setModalVisible] = useState(false);
 	const [selectedExercises, setSelectedExercises] = useState([]);
+	const [time, setTime] = useState(0);
 
 	const addExercise = (exercise) => {
 		if (exercise) {
@@ -80,6 +81,7 @@ export default function Profile() {
 						name: exercise.name,
 						sets: [...exercise.sets],
 					})),
+					time: formatTime(time),
 				};
 
 				workouts.push(newWorkout);
@@ -100,6 +102,10 @@ export default function Profile() {
 			<WorkoutModal visible={modalIsVisible} title="Workout">
 				<View style={styles.modalContent}>
 					<Text style={styles.workoutTitle}>Workout Title</Text>
+
+					<View style = {styles.timerStyle}>
+						<WorkoutTimer visible={modalIsVisible} time={time} setTime={setTime} />
+					</View>
 
 					<ScrollView
 						contentContainerStyle={styles.scrollView}

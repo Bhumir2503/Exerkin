@@ -84,6 +84,9 @@ export default function Profile({ navigation }) {
               <Text style={styles.exerciseCount}>
                 {item.exercises.length} exercise/s
               </Text>
+              <Text>
+                {item.time}
+              </Text>
 
               {item.exercises.map((exercise, index) => (
                 <View key={index} style={styles.exerciseContainer}>
