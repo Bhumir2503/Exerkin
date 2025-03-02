@@ -7,13 +7,6 @@ import {
 } from "@invertase/react-native-apple-authentication";
 
 export default function AppleAuthButton() {
-	const [user, setUser] = useState(null);
-	const [init, setInit] = useState(true);
-
-	useEffect(() => {
-		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-		return subscriber;
-	}, []);
 
 	useEffect(() => {
 		// onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
@@ -49,24 +42,12 @@ export default function AppleAuthButton() {
 			nonce
 		);
 
+
 		// Sign the user in with the credential
 		return auth().signInWithCredential(appleCredential);
 	}
 
-	function onAuthStateChanged(user) {
-		setUser(user);
-		if (init) {
-			setInit(false);
-		}
-	}
 
-	if (init) {
-		return null;
-	}
-
-	if (user) {
-		return <Text>Welcome {user.email}</Text>;
-	}
 
 	return (
 		<AppleButton

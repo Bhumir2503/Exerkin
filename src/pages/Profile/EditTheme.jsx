@@ -31,7 +31,7 @@ export default function EditTheme({ navigation }) {
 					name="chevron-back-outline"
 					size={25}
 					color={themeStyle.textColor}
-					style={{ marginLeft: 5, marginTop: 1 }}
+					style={{ marginLeft: 10, marginTop: 1 }}
 					onPress={() => navigation.goBack()}
 				/>
 				<Text style={styles.title}>Edit Theme</Text>
@@ -228,7 +228,7 @@ function PreviewChoice({}) {
 function ColorChoice({}) {
 	const { themeStyle } = useTheme();
 	return (
-		<View style={{ marginTop: 20, marginHorizontal: 20 }}>
+		<View style={{ marginTop: 20, marginHorizontal: 30 }}>
 			<Text
 				style={{
 					fontSize: 18,

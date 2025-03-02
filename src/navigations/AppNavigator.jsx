@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
 import ProfileNavigator from "./ProfileNavigator";
@@ -12,6 +13,15 @@ const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
 	const { themeStyle } = useTheme();
+
+	const state = useNavigationState((state) => state);
+
+	const hideTab = state?.routes?.some((route) =>
+		route?.state?.routes?.some(
+			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile"
+		)
+	);
+
 	return (
 		<Tab.Navigator
 			screenOptions={({ route }) => ({
@@ -46,6 +56,7 @@ export default function AppNavigator() {
 					height: Platform.OS === "ios" ? 75 : 60,
 					paddingBottom: 20, // Add padding at the bottom
 					paddingTop: 5, // Add padding at the top
+					display: hideTab ? "none" : "flex",
 				},
 			})}
 		>

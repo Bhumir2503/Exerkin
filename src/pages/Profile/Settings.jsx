@@ -10,9 +10,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
 
 export default function Settings({ navigation }) {
 	const { themeStyle } = useTheme();
+	const { onLogout } = useUser();
 	const styles = createStyles(themeStyle);
 	return (
 		<SafeAreaView style={styles.container}>
@@ -29,7 +31,7 @@ export default function Settings({ navigation }) {
 						name="chevron-back-outline"
 						size={24}
 						color={themeStyle.textColor}
-						style={{ marginLeft: 5, marginTop: 2 }}
+						style={{ marginLeft: 10, marginTop: 2 }}
 						onPress={() => navigation.goBack()}
 					/>
 					<Text style={styles.title}>Settings</Text>
@@ -45,7 +47,7 @@ export default function Settings({ navigation }) {
 						/>
 						<ButtonSelector
 							name="Edit Profile"
-							location=""
+							location="EditProfile"
 							navigation={navigation}
 							themeStyle={themeStyle}
 						/>
@@ -92,7 +94,7 @@ export default function Settings({ navigation }) {
 					</View>
 				</View>
 			</ScrollView>
-			<Text style={styles.logout} onPress={() => auth().signOut()}>
+			<Text style={styles.logout} onPress={onLogout}>
 				Log Out
 			</Text>
 		</SafeAreaView>
@@ -109,6 +111,7 @@ function ButtonSelector({ navigation, themeStyle, name, location }) {
 				justifyContent: "space-between",
 				alignItems: "center",
 				paddingHorizontal: 10,
+				marginLeft: 20,
 			}}
 		>
 			<Text style={styles.category}>{name}</Text>
@@ -137,7 +140,7 @@ const createStyles = (themeStyle) =>
 			fontSize: 14,
 			fontWeight: "bold",
 			marginBottom: 10,
-			marginLeft: 10,
+			marginLeft: 20,
 			color: themeStyle.textColorSecondary,
 		},
 		category: {
