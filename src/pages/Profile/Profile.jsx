@@ -120,6 +120,7 @@ export default function Profile({ navigation }) {
 				color="red"
 			/>
 
+
 			{workouts.length === 0 ? (
 				<Text style={styles.noWorkoutsText}>
 					No workouts logged yet.

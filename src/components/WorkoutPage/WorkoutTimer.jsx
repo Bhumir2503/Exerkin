@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
-/*DISCLAIMER: Unsure whether or not this component will receive or pass props, so we will need to communicate properly on what data will be passed to where */
 
 
-const WorkoutTimer = ({visible}) => {
-  const [time, setTime] = useState(0);
+export const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor( (seconds % 3600) / 60 );
+    const sec = seconds % 60;
+    let timeString = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    return timeString;
+}
+
+const WorkoutTimer = ({visible, time, setTime}) => {
+  //const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const {themeStyle} = useTheme();
   const styles = createStyles(themeStyle);
@@ -19,7 +26,7 @@ const WorkoutTimer = ({visible}) => {
       setIsRunning(false);
       setTime(0);
     }
-  },[visible] );
+  },[visible, setTime]);
 
 
   useEffect(() => {
@@ -30,15 +37,11 @@ const WorkoutTimer = ({visible}) => {
         setTime((prevSeconds) => prevSeconds+1);
       }, 1000);
     } 
+    else{
+      setTime(0);
+    }
     return () => clearInterval(intervalID);
-  }, [isRunning]);
-
-  const formatTime = (seconds) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor( (seconds % 3600) / 60 );
-    const sec = seconds % 60;
-    return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  };
+  }, [isRunning, setTime]);
 
   return (
     <View style={styles.container}>
