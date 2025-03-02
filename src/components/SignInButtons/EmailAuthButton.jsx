@@ -144,7 +144,7 @@ export default function EmailAuthButton() {
 						backgroundColor: "rgba(255, 255, 255, 1)",
 						width: 200,
 						borderRadius: 7,
-						marginTop: 35,
+						marginTop: -55,
 						marginLeft: -20,
 						opacity: 0,
 					},

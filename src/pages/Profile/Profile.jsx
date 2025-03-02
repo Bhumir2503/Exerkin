@@ -14,9 +14,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../../contexts/UserContext";
 import storage from "../../utils/storage";
 
+
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
-	const { user } = useUser();
+	const { user, username } = useUser();
 	const styles = createStyles(themeStyle);
 	const [workouts, setWorkouts] = useState([]);
 
@@ -65,7 +66,7 @@ export default function Profile({ navigation }) {
 						color: themeStyle.textColor,
 					}}
 				>
-					TestUser111
+					{username}
 				</Text>
 				<TouchableWithoutFeedback
 					onPress={() => navigation.navigate("Settings")}
