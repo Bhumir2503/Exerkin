@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WorkoutProvider } from "./src/contexts/WorkoutContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
@@ -12,8 +12,9 @@ import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
 import { useTheme } from "./src/contexts/ThemeContext";
 
-import Onboarding from "./src/pages/Auth/Onboarding";
+import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
+import SetUsername from "./src/pages/Auth/SetUsername";
 
 enableScreens();
 
@@ -36,7 +37,7 @@ export default function App() {
 		<ThemeProvider>
 			<SafeAreaProvider>
 				<MenuProvider>
-					<GestureHandlerRootView>
+					<GestureHandlerRootView style={{ flex: 1 }}>
 						<UserProvider>
 							<WorkoutProvider>
 								<AppContent />
@@ -50,7 +51,7 @@ export default function App() {
 }
 
 function AppContent() {
-	const { user, init } = useUser();
+	const { user, init, isNewUser, setupComplete } = useUser();
 	const { theme } = useTheme();
 
 	if (init) {
@@ -60,7 +61,13 @@ function AppContent() {
 	return (
 		<NavigationContainer>
 			<StatusBar style={theme.includes("light") ? "dark" : "light"} />
-			{user ? <AppNavigator /> : <Onboarding />}
+			{!user ? (
+				<AuthNavigator />
+			) : isNewUser && !setupComplete ? (
+				<SetUsername />
+			) : (
+				<AppNavigator />
+			)}
 		</NavigationContainer>
 	);
 }

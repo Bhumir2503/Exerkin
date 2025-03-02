@@ -4,15 +4,14 @@ import {
 	Text,
 	TouchableOpacity,
 	StyleSheet,
-	TextInput,
+	ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function EditTheme({ navigation }) {
-	const { themeStyle, setTheme } = useTheme();
-	const [selected, setSelected] = useState(themeStyle.name);
+	const { theme, themeStyle, changeTheme } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	return (
@@ -24,25 +23,28 @@ export default function EditTheme({ navigation }) {
 					flexDirection: "row",
 					alignItems: "center",
 					alignContent: "center",
-					marginBottom: 50,
+					marginBottom: 20,
 				}}
 			>
 				<Ionicons
 					name="chevron-back-outline"
 					size={25}
 					color={themeStyle.textColor}
-					style={{ marginLeft: 5, marginTop: 1 }}
+					style={{ marginLeft: 10, marginTop: 1 }}
 					onPress={() => navigation.goBack()}
 				/>
 				<Text style={styles.title}>Edit Theme</Text>
 			</View>
-			<PreviewChoice />
-			<ColorChoice />
+
+			<ScrollView showsVerticalScrollIndicator={false}>
+				<PreviewChoice />
+				<ColorChoice />
+			</ScrollView>
 		</SafeAreaView>
 	);
 }
 
-function PreviewChoice({}) {
+function PreviewChoice() {
 	const { themeStyle } = useTheme();
 	return (
 		<View
@@ -50,8 +52,13 @@ function PreviewChoice({}) {
 				justifyContent: "center",
 				backgroundColor: themeStyle.card,
 				borderRadius: 10,
-				marginHorizontal: 30,
-				padding: 10,
+				marginHorizontal: 20,
+				padding: 15,
+				shadowColor: "#000",
+				shadowOffset: { width: 0, height: 2 },
+				shadowOpacity: 0.1,
+				shadowRadius: 3,
+				elevation: 3,
 			}}
 		>
 			<Text
@@ -117,6 +124,7 @@ function PreviewChoice({}) {
 					flexDirection: "row",
 					justifyContent: "space-between",
 					width: "100%",
+					marginTop: 5,
 				}}
 			>
 				<Text
@@ -161,6 +169,7 @@ function PreviewChoice({}) {
 					flexDirection: "row",
 					justifyContent: "space-between",
 					width: "100%",
+					marginTop: 5,
 				}}
 			>
 				<Text
@@ -201,7 +210,7 @@ function PreviewChoice({}) {
 				</View>
 			</View>
 
-			<View style={{ marginTop: 10 }}>
+			<View style={{ marginTop: 15 }}>
 				<TouchableOpacity
 					style={{
 						backgroundColor: themeStyle.primary,
@@ -212,7 +221,7 @@ function PreviewChoice({}) {
 				>
 					<Text
 						style={{
-							color: themeStyle.textColor,
+							color: "#ffffff",
 							fontSize: 16,
 							fontWeight: "bold",
 						}}
@@ -221,73 +230,188 @@ function PreviewChoice({}) {
 					</Text>
 				</TouchableOpacity>
 			</View>
+
+			<View style={{ marginTop: 10 }}>
+				<TouchableOpacity
+					style={{
+						backgroundColor: themeStyle.accent,
+						padding: 10,
+						borderRadius: 5,
+						alignItems: "center",
+					}}
+				>
+					<Text
+						style={{
+							color: "#ffffff",
+							fontSize: 16,
+							fontWeight: "bold",
+						}}
+					>
+						Complete Exercise
+					</Text>
+				</TouchableOpacity>
+			</View>
 		</View>
 	);
 }
 
-function ColorChoice({}) {
-	const { themeStyle } = useTheme();
+function ColorChoice() {
+	const { theme, themeStyle, changeTheme } = useTheme();
+
 	return (
-		<View style={{ marginTop: 20, marginHorizontal: 20 }}>
+		<View style={{ marginTop: 25, marginHorizontal: 20 }}>
 			<Text
 				style={{
 					fontSize: 18,
 					fontWeight: "bold",
 					color: themeStyle.textColor,
+					marginBottom: 5,
 				}}
 			>
-				Light Mode
+				Dark Themes
 			</Text>
 			<View
 				style={{
 					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
 				}}
 			>
-				<ColorBox color="#6246ea" themeName="lightPurple" />
-				<ColorBox color="#ffd803" themeName="lightYellow" />
-				<ColorBox color="#f582ae" themeName="lightBrown" />
+				<ColorBox
+					color="#7f2af0"
+					themeName="midnightPurple"
+					label="Midnight Purple"
+				/>
+				<ColorBox
+					color="#c17c41"
+					themeName="moodyEspresso"
+					label="Moody Espresso"
+				/>
+				<ColorBox
+					color="#ff8906"
+					themeName="sunsetBlaze"
+					label="Sunset Blaze"
+				/>
 			</View>
+			<View
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
+				}}
+			>
+				<ColorBox
+					color="#3e92cc"
+					themeName="oceanDepth"
+					label="Ocean Depth"
+				/>
+				<ColorBox
+					color="#4d9078"
+					themeName="forestNight"
+					label="Forest Night"
+				/>
+				<ColorBox
+					color="#d100d1"
+					themeName="cyberMagenta"
+					label="Cyber Magenta"
+				/>
+			</View>
+
 			<Text
 				style={{
 					fontSize: 18,
 					fontWeight: "bold",
 					color: themeStyle.textColor,
+					marginTop: 15,
+					marginBottom: 5,
 				}}
 			>
-				Dark Mode
+				Light Themes
 			</Text>
 			<View
 				style={{
 					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
 				}}
 			>
-				<ColorBox color="#7f2af0" themeName="darkPurple" />
-				<ColorBox color="#ff8906" themeName="darkYellow" />
-				<ColorBox color="#ffc0ad" themeName="darkBrown" />
+				<ColorBox
+					color="#6246ea"
+					themeName="lavenderMist"
+					label="Lavender Mist"
+				/>
+				<ColorBox
+					color="#f582ae"
+					themeName="peachCream"
+					label="Peach Cream"
+				/>
+				<ColorBox
+					color="#ffc107"
+					themeName="sunnyDaisy"
+					label="Sunny Daisy"
+				/>
+			</View>
+			<View
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
+					marginBottom: 30,
+				}}
+			>
+				<ColorBox
+					color="#3da9fc"
+					themeName="skyBlossom"
+					label="Sky Blossom"
+				/>
+				<ColorBox
+					color="#00bd8e"
+					themeName="mintFresh"
+					label="Mint Fresh"
+				/>
+				<ColorBox
+					color="#d85893"
+					themeName="rosePetal"
+					label="Rose Petal"
+				/>
 			</View>
 		</View>
 	);
 }
 
-function ColorBox({ color, themeName }) {
+function ColorBox({ color, themeName, label }) {
 	const { changeTheme, theme, themeStyle } = useTheme();
-	const changeColor = (themeName) => {
-		changeTheme(themeName);
-	};
 
 	return (
-		<TouchableOpacity onPress={() => changeColor(themeName)}>
+		<TouchableOpacity
+			onPress={() => changeTheme(themeName)}
+			style={{
+				width: "30%",
+				marginHorizontal: "1.5%",
+				marginBottom: 15,
+				alignItems: "center",
+			}}
+		>
 			<View
 				style={{
 					backgroundColor: color,
-					width: 75,
+					width: "100%",
 					height: 50,
-					borderRadius: 10,
-					margin: 10,
-					borderWidth: themeName === theme ? 2 : 0,
+					borderRadius: 8,
+					borderWidth: themeName === theme ? 3 : 0,
 					borderColor: themeStyle.textColor,
 				}}
 			></View>
+			<Text
+				style={{
+					color: themeStyle.textColorSecondary,
+					fontSize: 12,
+					marginTop: 4,
+					textAlign: "center",
+				}}
+			>
+				{label}
+			</Text>
 		</TouchableOpacity>
 	);
 }
@@ -298,6 +422,13 @@ const createStyles = (themeStyle) =>
 			fontSize: 20,
 			color: themeStyle.textColor,
 			fontWeight: "bold",
-			marginLeft: 5,
+			marginLeft: 10,
+		},
+		sectionTitle: {
+			fontSize: 18,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+			marginTop: 10,
+			marginBottom: 5,
 		},
 	});

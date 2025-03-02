@@ -4,6 +4,7 @@ import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Profile/Settings";
 import Stats from "../pages/Profile/Stats";
 import EditTheme from "../pages/Profile/EditTheme";
+import EditProfile from "../pages/Profile/EditProfile";
 
 const Stack = createStackNavigator();
 export default function ProfileNavigator() {
@@ -24,6 +25,7 @@ export default function ProfileNavigator() {
 			<Stack.Screen name="Settings" component={Settings} />
 			<Stack.Screen name="Stats" component={Stats} />
 			<Stack.Screen name="EditTheme" component={EditTheme} />
+			<Stack.Screen name="EditProfile" component={EditProfile} />
 		</Stack.Navigator>
 	);
 }

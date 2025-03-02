@@ -1,5 +1,4 @@
 import React from "react";
-import { useState } from "react";
 import {
 	StyleSheet,
 	Text,
@@ -24,13 +23,13 @@ export default function Onboarding() {
 				source={require("../../../assets/Onboarding.png")}
 				style={{ width: width, height: width, marginBottom: 50 }}
 			/>
-			<View style={{justifyContent: "center", alignItems: "center", position: "absolute", bottom: 25,}}>
+			<View style={styles.authContainer}>
 				<GoogleAuthButton />
 				{Platform.OS === "ios" && <AppleAuthButton />}
 				<Text style={styles.or}>OR</Text>
 				<EmailAuthButton />
 				<Text style={styles.subText}>
-					By continuing you agree to Chrono's{" "}
+					By continuing you agree to Exerkin's{" "}
 					<Text
 						style={{ textDecorationLine: "underline" }}
 						onPress={() => console.log("Terms of Service")}
@@ -64,12 +63,19 @@ const styles = StyleSheet.create({
 		marginBottom: 20,
 		color: "#407BFF",
 	},
+	authContainer: {
+		justifyContent: "center",
+		alignItems: "center",
+		position: "absolute",
+		bottom: 25,
+		width: "100%",
+	},
 	or: {
 		fontWeight: "bold",
 		color: "#FFFFFF",
 		marginBottom: 5,
 	},
-subText: {
+	subText: {
 		color: "#FFFFFF",
 		textAlign: "center",
 		marginTop: 10,
