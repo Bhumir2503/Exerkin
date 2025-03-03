@@ -6,8 +6,10 @@ import {
 	GoogleSignin,
 	GoogleSigninButton,
 } from "@react-native-google-signin/google-signin";
+import { useUser } from "../../contexts/UserContext";
 
 export default function GoogleAuthButton() {
+	const { setIsNewUser } = useUser();
 	const [loading, setLoading] = useState(false);
 
 	GoogleSignin.configure({
@@ -48,26 +50,7 @@ export default function GoogleAuthButton() {
 			);
 
 			// Check if this is a new user
-			const isNewUser = userCredential.additionalUserInfo?.isNewUser;
-
-			if (isNewUser) {
-				// For new users, we'll let the SetUsername component handle user creation
-				// The UserContext will detect they're new and route accordingly
-				console.log("New user created with Google Auth");
-			} else {
-				// For existing users, check if they have a document in Firestore
-				const userDoc = await firestore()
-					.collection("users")
-					.doc(userCredential.user.uid)
-					.get();
-
-				// If they don't have a document, they still need to set up their profile
-				if (!userDoc.exists) {
-					console.log(
-						"Existing user missing profile data - will prompt for username"
-					);
-				}
-			}
+			setIsNewUser(userCredential.additionalUserInfo?.isNewUser);
 
 			return userCredential;
 		} catch (e) {
