@@ -1,8 +1,8 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getUser, setUser, updateUser, removeUser } from "../cache/userCache";
+import { getUserCache,  updateUserCache, removeUserCache } from "../cache/userCache";
+import { checkUserSetup } from "../utils/UserFirestoreService";
 
 const UserContext = createContext();
 
@@ -17,59 +17,56 @@ export const UserProvider = ({ children }) => {
 	// Check if the user has completed setup
 	useEffect(() => {
 		const checkSetupStatus = async () => {
-			if (user) {
-				try {
-					// First check if we have the username in cache
-					const cachedUser = await getUser();
-					if (cachedUser && cachedUser.username) {
-						setUsername(cachedUser.username);
-						setBio(cachedUser.bio || "");
+			// statement is placeholder for network
+			if (true) {
+				if (isNewUser) {
+					// go to set username page
+					// setup firebase docs
+				} else {
+					// check if user has completed setup
+					console.log("Checking user setup status...");
+					const [setupComplete, userData] = await checkUserSetup(
+						user
+					);
+					console.log(userData);
+					if (setupComplete) {
+						setUsername(userData.username);
+						setBio(userData.bio);
+						
+						// Update local cache
+						updateUserCache({
+							username: userData.username,
+							bio: userData.bio || "",
+							height: userData.height || "",
+							weight: userData.weight || "",
+							age: userData.age || "",
+							createdAt: userData.createdAt,
+							updatedAt: userData.updatedAt,
+							followers: userData.followers,
+							following: userData.following,
+							postCount: userData.postCount,
+						});
+						
 						setSetupComplete(true);
-						return;
-					}
+						console.log("User setup is complete!");
 
-					// If we get here, we need to check Firestore or set up a new profile
-					// Default to considering this a new user that needs setup
-					// This avoids permission errors before rules are properly set
-					setIsNewUser(true);
-					setSetupComplete(false);
-
-					// Try to check Firestore, but handle permission errors gracefully
-					try {
-						const userDoc = await firestore()
-							.collection("users")
-							.doc(user.uid)
-							.get();
-
-						if (userDoc.exists) {
-							const userData = userDoc.data();
-							setUsername(userData.username || "");
-							setBio(userData.bio || "");
-
-							// Update cache with Firestore data
-							updateUser({
-								username: userData.username,
-								bio: userData.bio || "",
-								height: userData.height || "",
-								weight: userData.weight || "",
-								age: userData.age || "",
-							});
-
-							setSetupComplete(true);
-							setIsNewUser(false);
+					} else {
+						// Error occurred in fetching user data so check cache before proceeding as new user
+						if(userData === "error") {
+							//check cache
+							const cachedUser = await getUserCache();
+							if (cachedUser) {
+								setUsername(cachedUser.username);
+								setBio(cachedUser.bio);
+								setSetupComplete(true);
+							}
+							return;
 						}
-					} catch (firestoreError) {
-						console.log(
-							"Firestore check failed, proceeding with new user setup:",
-							firestoreError.message
-						);
-						// Keep the isNewUser as true and setupComplete as false
+
+						// go to set username page
+						// setup firebase docs
+						setIsNewUser(true);
 					}
-				} catch (error) {
-					console.error("Error checking user setup:", error);
-					// Default to requiring setup if there's any error
-					setIsNewUser(true);
-					setSetupComplete(false);
 				}
 			}
 		};
@@ -79,12 +76,16 @@ export const UserProvider = ({ children }) => {
 		}
 	}, [user, init]);
 
+	// Listen for auth state changes
 	useEffect(() => {
 		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 		return subscriber;
 	}, []);
 
-	function onAuthStateChanged(authUser) {
+	// Handle auth state changes
+	// This function will be called when the user signs in or out
+	// It will also be called when the app starts and the auth state is loaded
+	async function onAuthStateChanged(authUser) {
 		setUser(authUser);
 
 		// Reset states when user signs out
@@ -93,6 +94,7 @@ export const UserProvider = ({ children }) => {
 			setBio("");
 			setIsNewUser(false);
 			setSetupComplete(false);
+			await removeUserCache();
 		}
 
 		if (init) {
@@ -100,26 +102,20 @@ export const UserProvider = ({ children }) => {
 		}
 	}
 
- async function onLogout() {
+	// Handle user sign out
+	async function onLogout() {
 		try {
 			await auth().signOut();
 			console.log("User signed out!");
-
-			// Optional: Clear user data from local storage
-			await removeUser();
-
-			// Reset local state
-			setUser(null);
-			setUsername("");
-			setBio("");
-			setIsNewUser(false);
-			setSetupComplete(false);
-			setInit(true);
 		} catch (error) {
+			//try again
+
 			console.error("Error signing out:", error);
 		}
- }
+	}
 
+	// Handle user setup completion
+	// This function will be called when the user completes their profile setup (setUserName.jsx)
 	function onSetupComplete() {
 		setSetupComplete(true);
 		setIsNewUser(false);
@@ -136,6 +132,7 @@ export const UserProvider = ({ children }) => {
 				bio,
 				setBio,
 				onLogout,
+				setIsNewUser,
 				isNewUser,
 				setupComplete,
 				onSetupComplete,
