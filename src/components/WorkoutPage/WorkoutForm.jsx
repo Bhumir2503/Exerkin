@@ -88,14 +88,14 @@ const WorkoutForm = ({ theme, title, updateExercise, onFinalize }) => {
                         value={weight}
                         onChangeText={updateWeight}
                         style={styles.inputField}
-                        placeholder="Weight"
+                        maxLength={3}
                     />
                     <TextInput
                         keyboardType="numeric"
                         value={reps}
                         onChangeText={updateRep}
                         style={styles.inputField}
-                        placeholder="Reps"
+                        maxLength={2}
                     />
                 </View>
             </View>
