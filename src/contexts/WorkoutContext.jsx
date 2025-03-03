@@ -5,6 +5,8 @@ import storage from "../utils/storage";
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
+	const [workouts, setWorkouts] = useState([]);
+
 
 
 
@@ -12,7 +14,8 @@ export const WorkoutProvider = ({ children }) => {
 	return (
 		<WorkoutContext.Provider
 			value={{
-
+				workouts,
+				setWorkouts,
 			}}
 		>
 			{children}
