@@ -21,6 +21,10 @@ export default function SetUsername() {
 		onSetupComplete,
 	} = useUser();
 	const [username, setUsername] = useState("");
+	const [bio, setBio] = useState("");
+	const [height, setHeight] = useState("");
+	const [weight, setWeight] = useState("");
+	const [age, setAge] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
@@ -29,6 +33,12 @@ export default function SetUsername() {
 			setError("Username cannot be empty");
 			return;
 		}
+
+		if(username.length < 3) {
+			setError("Username must be at least 3 characters");
+			return;
+		}
+
 
 		setLoading(true);
 		setError("");
@@ -60,10 +70,10 @@ export default function SetUsername() {
 						uid: user.uid,
 						createdAt: firestore.FieldValue.serverTimestamp(),
 						updatedAt: firestore.FieldValue.serverTimestamp(),
-						bio: "",
-						height: "",
-						weight: "",
-						age: "",
+						bio: bio || "",
+						height: height || "",
+						weight: weight || "",
+						age: age || "",
 						followers: 0,
 						following: 0,
 						postCount: 0,
@@ -110,7 +120,7 @@ export default function SetUsername() {
 				<Text style={styles.subtitle}>Pick a username</Text>
 
 				<View style={styles.inputContainer}>
-					<Text style={styles.label}>Username</Text>
+					<Text style={styles.label}>Username (Required)</Text>
 					<TextInput
 						style={styles.input}
 						placeholder="Enter your username"
@@ -118,11 +128,129 @@ export default function SetUsername() {
 						onChangeText={setUsername}
 						autoCapitalize="none"
 						autoCorrect={false}
-						autoFocus
+						maxLength={20}
 					/>
 					{error ? (
 						<Text style={styles.errorText}>{error}</Text>
 					) : null}
+				</View>
+				<View style={styles.inputContainer}>
+					<Text style={styles.label}>Bio</Text>
+					<TextInput
+						style={styles.input}
+						placeholder="Biography"
+						value={bio}
+						onChangeText={setBio}
+						autoCapitalize="none"
+						multiline
+						maxLength={512}
+					/>
+				</View>
+
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-around",
+						marginBottom: 20,
+					}}
+				>
+					<View style={{ ...styles.inputContainer, width: "30%" }}>
+						<Text style={styles.label}>Weight</Text>
+						<View
+							style={{
+								flexDirection: "row",
+								backgroundColor: "#f0f0f0",
+								borderRadius: 5,
+								alignItems: "center",
+							}}
+						>
+							<TextInput
+								style={styles.input}
+								placeholder="Weight"
+								value={weight}
+								onChangeText={setWeight}
+								autoCapitalize="none"
+								maxLength={3}
+								inputMode="numeric"
+							/>
+							<Text
+								style={{
+									textAlign: "right",
+									color: "gray",
+									fontSize: 16,
+									flex: 1,
+									paddingRight: 15,
+								}}
+							>
+								lbs
+							</Text>
+						</View>
+					</View>
+					<View style={{ ...styles.inputContainer, width: "30%" }}>
+						<Text style={styles.label}>Height</Text>
+						<View
+							style={{
+								flexDirection: "row",
+	
+								backgroundColor: "#f0f0f0",
+								borderRadius: 5,
+								alignItems: "center",
+							}}
+						>
+							<TextInput
+								style={styles.input}
+								placeholder="Height"
+								value={height}
+								onChangeText={setHeight}
+								autoCapitalize="none"
+								maxLength={2}
+								inputMode="numeric"
+							/>
+							<Text
+								style={{
+									textAlign: "right",
+									color: "gray",
+									fontSize: 16,
+									flex: 1,
+									paddingRight: 15,
+								}}
+							>
+								in.
+							</Text>
+						</View>
+					</View>
+					<View style={{ ...styles.inputContainer, width: "30%" }}>
+						<Text style={styles.label}>Age</Text>
+						<View
+							style={{
+								flexDirection: "row",
+								backgroundColor: "#f0f0f0",
+								borderRadius: 5,
+								alignItems: "center",
+							}}
+						>
+							<TextInput
+								style={styles.input}
+								placeholder="Age"
+								value={age}
+								onChangeText={setAge}
+								autoCapitalize="none"
+								maxLength={2}
+								inputMode="numeric"
+							/>
+							<Text
+								style={{
+									textAlign: "right",
+									color: "gray",
+									fontSize: 16,
+									flex: 1,
+									paddingRight: 15,
+								}}
+							>
+								yrs
+							</Text>
+						</View>
+					</View>
 				</View>
 
 				<TouchableOpacity
@@ -166,7 +294,7 @@ const styles = StyleSheet.create({
 	},
 	inputContainer: {
 		width: "100%",
-		marginBottom: 30,
+		marginBottom: 10,
 	},
 	label: {
 		color: "#FFFFFF",
