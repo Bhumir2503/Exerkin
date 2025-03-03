@@ -18,6 +18,8 @@ import SetUsername from "./src/pages/Auth/SetUsername";
 
 enableScreens();
 
+globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
+
 export default function App() {
 	if (Platform.OS === "android") {
 		NavigationBar.setVisibilityAsync("hidden");

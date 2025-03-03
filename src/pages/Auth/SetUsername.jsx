@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 import firestore from "@react-native-firebase/firestore";
-import { updateUsername } from "../../cache/userCache";
+import { updateUsernameCache } from "../../cache/userCache";
 
 export default function SetUsername() {
 	const {
@@ -59,10 +59,14 @@ export default function SetUsername() {
 						email: user.email || "",
 						uid: user.uid,
 						createdAt: firestore.FieldValue.serverTimestamp(),
+						updatedAt: firestore.FieldValue.serverTimestamp(),
 						bio: "",
 						height: "",
 						weight: "",
 						age: "",
+						followers: 0,
+						following: 0,
+						postCount: 0,
 					});
 
 				// Try to reserve the username
@@ -81,7 +85,7 @@ export default function SetUsername() {
 			}
 
 			// Always update the local cache, even if Firestore operations fail
-			await updateUsername(username);
+			await updateUsernameCache(username);
 
 			// Update the context
 			setContextUsername(username);
