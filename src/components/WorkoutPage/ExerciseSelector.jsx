@@ -34,13 +34,26 @@ const ExerciseSelector = ({}) => {
 	// State for filtered exercises
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 
-	// Filter exercises based on search and category
+	// Get array of already added exercise IDs
+	const getAddedExerciseIds = () => {
+		return activeExercise.map((ex) => ex.id);
+	};
+
+	// Filter exercises based on search, category, and already added exercises
 	useEffect(() => {
 		let result = exercises;
+		const addedExerciseIds = getAddedExerciseIds();
+
+		// Remove already added exercises from the list
+		result = result.filter(
+			(exercise) => !addedExerciseIds.includes(exercise.id)
+		);
 
 		// Apply category filter
 		if (selectedCategory) {
-			result = getExercisesByCategory(selectedCategory);
+			result = getExercisesByCategory(selectedCategory).filter(
+				(exercise) => !addedExerciseIds.includes(exercise.id)
+			);
 		}
 
 		// Apply search filter
@@ -57,7 +70,7 @@ const ExerciseSelector = ({}) => {
 		}
 
 		setFilteredExercises(result);
-	}, [searchQuery, selectedCategory]);
+	}, [searchQuery, selectedCategory, activeExercise]);
 
 	// Close modal and reset state
 	const closeModal = () => {
@@ -74,19 +87,19 @@ const ExerciseSelector = ({}) => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
-      const exercise = {
-        id: selectedExercise.id,
-        name: selectedExercise.name,
-        sets: [{reps: null, weight: null}],
-        rest: null,
-        notes: "",
-        order: activeExercise.length + 1,
-        completed: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        exercise: selectedExercise,
-      }
-      addExerciseToActiveWorkout(exercise);
+			const exercise = {
+				id: selectedExercise.id,
+				name: selectedExercise.name,
+				sets: [{ reps: null, weight: null }],
+				rest: null,
+				notes: "",
+				order: activeExercise.length + 1,
+				completed: false,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
+				exercise: selectedExercise,
+			};
+			addExerciseToActiveWorkout(exercise);
 
 			closeModal();
 		}
@@ -174,7 +187,9 @@ const ExerciseSelector = ({}) => {
 							<TextInput
 								style={styles.searchInput}
 								placeholder="Search exercises..."
-								placeholderTextColor={themeStyle.textColorSecondary}
+								placeholderTextColor={
+									themeStyle.textColorSecondary
+								}
 								value={searchQuery}
 								onChangeText={setSearchQuery}
 							/>
@@ -196,7 +211,7 @@ const ExerciseSelector = ({}) => {
 
 						{/* Exercise list */}
 						<FlatList
-              				showsVerticalScrollIndicator={false}
+							showsVerticalScrollIndicator={false}
 							data={filteredExercises}
 							keyExtractor={(item) => item.id}
 							style={styles.exerciseList}
@@ -429,7 +444,7 @@ const createStyles = (themeStyle) =>
 		// Category filters
 		categoryContainer: {
 			marginBottom: 12,
-      flexGrow: 0,
+			flexGrow: 0,
 		},
 		categoryContentContainer: {
 			paddingHorizontal: 4,
@@ -451,7 +466,7 @@ const createStyles = (themeStyle) =>
 
 		// Exercise list
 		exerciseList: {
-      flex: 1,
+			flex: 1,
 		},
 		exerciseItem: {
 			backgroundColor: themeStyle.card,
