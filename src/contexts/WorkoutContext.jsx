@@ -1,7 +1,12 @@
 // contexts/WorkoutContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
+import {
+	addWorkoutToHistoryCache,
+	getWorkoutHistoryCache,
+	resetWorkoutHistoryCache,
+} from "../cache/workoutHistoryCache";
 import uuid from "react-native-uuid";
-
+import firestore from "@react-native-firebase/firestore";
 
 const WorkoutContext = createContext();
 
@@ -32,42 +37,62 @@ export const WorkoutProvider = ({ children }) => {
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 
+	// retrieve workout history from cache
+	useEffect(() => {
+		const getWorkoutHistory = async () => {
+			console.log("Getting workout history");
+			const history = await getWorkoutHistoryCache();
+			if(history.length === 0) {
+				console.log("No workout history found");
+				return;
+			}else {
+				console.log("Workout history found");
+				setWorkoutHistory(history.workout);
+			}
+		};
+
+		getWorkoutHistory();
+	}, []);
+
 	const newWorkoutStarted = () => {
 		setActiveExercise([]);
 		setActiveId(uuid.v4());
-	}
+	};
 
 	const workoutCompleted = (name) => {
-		setWorkoutHistory((prevWorkouts) => [
-			...prevWorkouts,
-			{
-				name: name,
-				id: activeId,
-				exercises: activeExercise,
-				completedAt: new Date().toISOString(),
-			},
-		]);
+		const workout = {
+			name: name,
+			id: activeId,
+			exercises: activeExercise,
+			completedAt: firestore.Timestamp.now(),
+		};
+
+		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
+
+		//cache the workout
+		addWorkoutToHistoryCache(workout);
+
 		setActiveExercise([]);
 		setActiveId(null);
 		console.log(workoutHistory);
-	}
+	};
 
 	const workoutCancelled = () => {
 		setActiveExercise([]);
 		setActiveId(null);
 		console.log(workoutHistory);
-	}
+	};
 
 	const addExerciseToActiveWorkout = async (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
-		// TODO: add to cache and firebase 
-	}
+		// TODO: add to cache and firebase
+	};
 
 	const removeExerciseFromActiveWorkout = (exerciseId) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.filter((exercise) => exercise.id !== exerciseId)
 		);
-	}
+	};
 
 	const addSetToExercise = (exerciseId, set) => {
 		setActiveExercise((prevExercises) =>
@@ -92,7 +117,7 @@ export const WorkoutProvider = ({ children }) => {
 					: exercise
 			)
 		);
-	}
+	};
 
 	const removeSetFromExercise = (exerciseId, setIndex) => {
 		setActiveExercise((prevExercises) =>
@@ -100,22 +125,19 @@ export const WorkoutProvider = ({ children }) => {
 				exercise.id === exerciseId
 					? {
 							...exercise,
-							sets: exercise.sets.filter((_, index) => index !== setIndex),
+							sets: exercise.sets.filter(
+								(_, index) => index !== setIndex
+							),
 					  }
 					: exercise
 			)
 		);
-	}
+	};
 
 	const clearWorkoutHistory = () => {
 		setWorkoutHistory([]);
-	}
-
-
-
-
-
-
+		resetWorkoutHistoryCache();
+	};
 
 	return (
 		<WorkoutContext.Provider
