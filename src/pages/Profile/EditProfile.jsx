@@ -23,7 +23,7 @@ export default function EditProfile({navigation}) {
 					style={{ marginLeft: 10, marginTop: 1 }}
 					onPress={() => navigation.goBack()}
 				/>
-				<Text style={styles.title}>Edit Theme</Text>
+				<Text style={styles.title}>Edit Profile</Text>
 			</View>
             <View>
                 {inputText({header: "Username", placeholder: "Enter your username", maxLength: 20, inputType: "text"})}
