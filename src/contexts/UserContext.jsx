@@ -13,6 +13,7 @@ export const UserProvider = ({ children }) => {
 	const [bio, setBio] = useState("");
 	const [isNewUser, setIsNewUser] = useState(false);
 	const [setupComplete, setSetupComplete] = useState(false);
+	const [oneTry, setOneTry] = useState(true);
 
 	// Check if the user has completed setup
 	useEffect(() => {
@@ -70,9 +71,9 @@ export const UserProvider = ({ children }) => {
 				}
 			}
 		};
-
-		if (user && !init) {
+		if (user && !init && oneTry) {
 			checkSetupStatus();
+			setOneTry(false);
 		}
 	}, [user, init]);
 

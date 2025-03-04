@@ -6,7 +6,6 @@ import {
 	Text,
 	Modal,
 	TouchableOpacity,
-	TouchableWithoutFeedback,
 	ScrollView,
 	FlatList,
 } from "react-native";
@@ -17,7 +16,6 @@ import {
 	exercises,
 	exerciseCategories,
 	getExercisesByCategory,
-	getExercisesByEquipment,
 } from "../../utils/ExerciseData";
 
 const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
@@ -25,10 +23,15 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 	const { addExerciseToWorkout } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+	// Choose Modal Popup
 	const [modalVisible, setModalVisible] = useState(false);
+	// State for selected exercise
 	const [selectedExercise, setSelectedExercise] = useState(null);
+	// State for search query
 	const [searchQuery, setSearchQuery] = useState("");
+	// State for selected category
 	const [selectedCategory, setSelectedCategory] = useState(null);
+	// State for filtered exercises
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 
 	// Filter exercises based on search and category
@@ -56,6 +59,7 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 		setFilteredExercises(result);
 	}, [searchQuery, selectedCategory]);
 
+	// Close modal and reset state
 	const closeModal = () => {
 		setSelectedExercise(null);
 		setSearchQuery("");
@@ -63,6 +67,7 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 		setModalVisible(false);
 	};
 
+	// Handle exercise selection AKA marks the exercise as selected
 	const handleSelectExercise = (exercise) => {
 		setSelectedExercise(exercise);
 	};
@@ -129,7 +134,7 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 			</TouchableOpacity>
 
 			<Modal
-				animationType="slide"
+				animationType="none"
 				transparent={true}
 				visible={modalVisible}
 				onRequestClose={closeModal}
@@ -183,7 +188,7 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 
 						{/* Exercise list */}
 						<FlatList
-              showsVerticalScrollIndicator={false}
+              				showsVerticalScrollIndicator={false}
 							data={filteredExercises}
 							keyExtractor={(item) => item.id}
 							style={styles.exerciseList}
