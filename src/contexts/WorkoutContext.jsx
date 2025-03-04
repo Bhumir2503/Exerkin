@@ -35,6 +35,15 @@ export const WorkoutProvider = ({ children }) => {
 		setActiveId(new Date().getTime());
 	}
 
+	const workoutCompleted = () => {
+
+	}
+
+	const workoutCancelled = () => {
+		setActiveExercise([]);
+		setActiveId(null);
+	}
+
 	const addExerciseToActiveWorkout = (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
 	}
