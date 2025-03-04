@@ -120,20 +120,34 @@ const ExerciseSelector = ({}) => {
 					]}
 					onPress={() => setSelectedCategory(null)}
 				>
-					<Text style={styles.categoryText}>All</Text>
+					<Text 
+						style={[
+							styles.categoryText, 
+							!selectedCategory && styles.selectedCategoryText
+						]}>
+						All
+					</Text>
 				</TouchableOpacity>
 
 				{exerciseCategories.map((category) => (
 					<TouchableOpacity
 						key={category.id}
 						style={[
-							styles.categoryChip,
-							selectedCategory === category.id &&
-								styles.selectedCategoryChip,
+							styles.categoryChip, 
+							selectedCategory === category.id 
+							&& styles.selectedCategoryChip,
 						]}
 						onPress={() => setSelectedCategory(category.id)}
 					>
-						<Text style={styles.categoryText}>{category.name}</Text>
+						<Text 
+							key={category.id}
+							style={[
+								selectedCategory === category.id ?
+								styles.selectedCategoryText :
+								styles.categoryText
+							]}>
+							{category.name}
+						</Text>
 					</TouchableOpacity>
 				))}
 			</ScrollView>
@@ -149,7 +163,7 @@ const ExerciseSelector = ({}) => {
 				<Ionicons
 					name="add-circle-outline"
 					size={24}
-					color={themeStyle.textColor}
+					color={"white"}
 				/>
 				<Text style={styles.buttonText}>Add Exercise</Text>
 			</TouchableOpacity>
@@ -392,7 +406,7 @@ const createStyles = (themeStyle) =>
 			width: "90%",
 		},
 		buttonText: {
-			color: themeStyle.textColor,
+			color: "white",
 			fontSize: 16,
 			fontWeight: "600",
 			marginLeft: 8,
@@ -462,6 +476,9 @@ const createStyles = (themeStyle) =>
 		categoryText: {
 			color: themeStyle.textColor,
 			fontWeight: "500",
+		},
+		selectedCategoryText: {
+			color: "white",
 		},
 
 		// Exercise list
