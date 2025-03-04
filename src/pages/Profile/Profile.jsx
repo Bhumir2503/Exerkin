@@ -93,6 +93,8 @@ export default function Profile({ navigation }) {
 
 			{workoutHistory.length > 0 ? (
 				<FlatList
+					bounces={false}
+					showsVerticalScrollIndicator={false}
 					style={{ width: "100%", padding: 20 }}
 					data={workoutHistory}
 					renderItem={({ item }) => (
