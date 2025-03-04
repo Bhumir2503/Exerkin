@@ -18,9 +18,9 @@ import {
 	getExercisesByCategory,
 } from "../../utils/ExerciseData";
 
-const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
+const ExerciseSelector = ({}) => {
 	const { themeStyle } = useTheme();
-	const { addExerciseToWorkout } = useWorkout();
+	const { addExerciseToActiveWorkout, activeExercise } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	// Choose Modal Popup
@@ -73,12 +73,20 @@ const ExerciseSelector = ({ workoutId, onSelectComplete }) => {
 	};
 
 	const handleAddExercise = () => {
-		if (selectedExercise && workoutId) {
-			addExerciseToWorkout(workoutId, selectedExercise.id);
-
-			if (onSelectComplete) {
-				onSelectComplete(selectedExercise);
-			}
+		if (selectedExercise) {
+      const exercise = {
+        id: selectedExercise.id,
+        name: selectedExercise.name,
+        sets: [{reps: null, weight: null}],
+        rest: null,
+        notes: "",
+        order: activeExercise.length + 1,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        exercise: selectedExercise,
+      }
+      addExerciseToActiveWorkout(exercise);
 
 			closeModal();
 		}

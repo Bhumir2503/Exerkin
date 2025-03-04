@@ -6,46 +6,20 @@ import {
 	TouchableWithoutFeedback,
 	FlatList,
 	Button,
+	Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../../contexts/UserContext";
-import storage from "../../utils/storage";
-
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
-	const { user, username } = useUser();
+	const { username } = useUser();
+	const { workoutHistory, clearWorkoutHistory } = useWorkout();
 	const styles = createStyles(themeStyle);
-	const [workouts, setWorkouts] = useState([]);
-
-	// Fetch workouts from storage when the screen is focused
-	useFocusEffect(
-		useCallback(() => {
-			const fetchWorkouts = () => {
-				try {
-					const storedWorkouts = storage.getString("workouts");
-					const parsedWorkouts = storedWorkouts
-						? JSON.parse(storedWorkouts)
-						: [];
-					setWorkouts(parsedWorkouts);
-				} catch (error) {
-					console.error("Error fetching workouts:", error);
-				}
-			};
-			fetchWorkouts();
-		}, [])
-	);
-
-	// Clear workout history
-	const clearWorkoutHistory = () => {
-		try {
-			storage.delete("workouts");
-			setWorkouts([]);
-		} catch (error) {}
-	};
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -81,9 +55,6 @@ export default function Profile({ navigation }) {
 
 			<View style={styles.profileSection}>
 				<View style={{ flex: 1, marginLeft: 25 }}>
-					{/* <TouchableWithoutFeedback onPress={() => console.log("Change profile image")}>
-					<Image source={{ uri: "http://www.gravatar.com/avatar/?d=mp" }} />
-		</TouchableWithoutFeedback> */}
 					<Text
 						style={{
 							fontSize: 18,
@@ -120,58 +91,44 @@ export default function Profile({ navigation }) {
 				color="red"
 			/>
 
-
-			{workouts.length === 0 ? (
-				<Text style={styles.noWorkoutsText}>
-					No workouts logged yet.
-				</Text>
-			) : (
+			{workoutHistory.length > 0 ? (
 				<FlatList
-					data={workouts}
-					keyExtractor={(item, index) => index.toString()} // Use index as key if no unique ID
+					style={{ width: "100%", padding: 20 }}
+					data={workoutHistory}
 					renderItem={({ item }) => (
-						<View style={styles.workoutCard}>
-							<Text style={styles.workoutTitle}>
-								Workout on{" "}
-								{new Date(item.timestamp).toLocaleDateString()}
-							</Text>
-							<Text style={styles.exerciseCount}>
-								{item.exercises.length} exercise/s
-							</Text>
-							<Text style={styles.exerciseCount}>
-								{item.time}  
-							</Text>
-
-							{item.exercises.map((exercise, index) => (
-								<View
-									key={index}
-									style={styles.exerciseContainer}
-								>
-									<Text style={styles.exerciseText}>
-										{exercise.name}
-									</Text>
-
-									{Array.isArray(exercise.sets) &&
-									exercise.sets.length > 0 ? (
-										exercise.sets.map((set, setIndex) => (
-											<Text
-												key={setIndex}
-												style={styles.setText}
-											>
-												Set {setIndex + 1}: {set.weight}{" "}
-												lbs x {set.reps}
-											</Text>
-										))
-									) : (
-										<Text style={styles.noSetText}>
-											No set data available
+						<TouchableWithoutFeedback>
+							<View style={styles.workoutCard}>
+								<Text style={styles.workoutTitle}>
+									{item.name ? item.name : "Workout"}
+								</Text>
+								<Text style={styles.exerciseCount}>
+									{item.exercises.length} {item.exercises.length > 1 ? "Exercises" : "Exercise"}
+								</Text>
+								<View style={styles.exerciseContainer}>
+									{item.exercises.map((exercise, index) => (
+										<Text key={index} style={styles.exerciseText}>
+											{exercise.name} -{" "} 
+											{exercise.sets.length > 0 ? (
+												<Text style={styles.setText}>
+													{exercise.sets.length} Sets
+												</Text>
+											) : (
+												<Text style={styles.noSetText}>
+													No Sets
+												</Text>
+											)}
 										</Text>
-									)}
+									))}
 								</View>
-							))}
-						</View>
+							</View>
+						</TouchableWithoutFeedback>
 					)}
+					keyExtractor={(item) => item.id}
 				/>
+			) : (
+				<Text style={styles.noWorkoutsText}>
+					No workouts to display
+				</Text>
 			)}
 		</SafeAreaView>
 	);
@@ -211,11 +168,8 @@ const createStyles = (themeStyle) =>
 		workoutCard: {
 			backgroundColor: themeStyle.card,
 			padding: 20,
-			borderRadius: 20,
-			marginBottom: 15,
-			width: "90%",
-			shadowOpacity: 0.1,
-			elevation: 3,
+			borderRadius: 10,
+			marginBottom: 20,
 		},
 		workoutTitle: {
 			fontSize: 18,
@@ -229,7 +183,6 @@ const createStyles = (themeStyle) =>
 		},
 		exerciseContainer: {
 			marginTop: 10,
-			paddingLeft: 10,
 		},
 		exerciseText: {
 			fontSize: 16,

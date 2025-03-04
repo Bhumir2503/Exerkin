@@ -21,6 +21,14 @@ export const equipmentTypes = [
 	{ id: "Other", name: "Other" },
 ];
 
+export const workoutTypes = [
+    { id: "cardio", name: "Cardio" },
+    { id: "bodyweight", name: "Bodyweight" },
+    { id: "weightlifting", name: "Weightlifting" },
+    { id: "assisted", name: "Assisted" },
+    { id: "other", name: "Other" },
+];
+
 // Exercises with more detailed information
 export const exercises = [
 	// Cardio exercises

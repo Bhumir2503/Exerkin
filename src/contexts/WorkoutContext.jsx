@@ -1,5 +1,6 @@
 // contexts/WorkoutContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
+import uuid from "react-native-uuid";
 
 
 const WorkoutContext = createContext();
@@ -26,26 +27,40 @@ export const WorkoutProvider = ({ children }) => {
 	// 	completed: false,
 	// 	createdAt: "2023-10-01T12:00:00Z",
 	// 	updatedAt: "2023-10-01T12:00:00Z",
+	//  exercise: excercise object
 	// }
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 
 	const newWorkoutStarted = () => {
 		setActiveExercise([]);
-		setActiveId(new Date().getTime());
+		setActiveId(uuid.v4());
 	}
 
-	const workoutCompleted = () => {
-
+	const workoutCompleted = (name) => {
+		setWorkoutHistory((prevWorkouts) => [
+			...prevWorkouts,
+			{
+				name: name,
+				id: activeId,
+				exercises: activeExercise,
+				completedAt: new Date().toISOString(),
+			},
+		]);
+		setActiveExercise([]);
+		setActiveId(null);
+		console.log(workoutHistory);
 	}
 
 	const workoutCancelled = () => {
 		setActiveExercise([]);
 		setActiveId(null);
+		console.log(workoutHistory);
 	}
 
-	const addExerciseToActiveWorkout = (exercise) => {
+	const addExerciseToActiveWorkout = async (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
+		// TODO: add to cache and firebase 
 	}
 
 	const removeExerciseFromActiveWorkout = (exerciseId) => {
@@ -64,6 +79,21 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
+	const updateSetInExercise = (exerciseId, setIndex, set) => {
+		setActiveExercise((prevExercises) =>
+			prevExercises.map((exercise) =>
+				exercise.id === exerciseId
+					? {
+							...exercise,
+							sets: exercise.sets.map((prevSet, index) =>
+								index === setIndex ? set : prevSet
+							),
+					  }
+					: exercise
+			)
+		);
+	}
+
 	const removeSetFromExercise = (exerciseId, setIndex) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.map((exercise) =>
@@ -75,6 +105,10 @@ export const WorkoutProvider = ({ children }) => {
 					: exercise
 			)
 		);
+	}
+
+	const clearWorkoutHistory = () => {
+		setWorkoutHistory([]);
 	}
 
 
@@ -91,11 +125,16 @@ export const WorkoutProvider = ({ children }) => {
 				activeExercise,
 				setActiveExercise,
 				activeId,
+				newWorkoutStarted,
+				workoutCompleted,
+				workoutCancelled,
 				setActiveId,
 				addExerciseToActiveWorkout,
 				removeExerciseFromActiveWorkout,
 				addSetToExercise,
+				updateSetInExercise,
 				removeSetFromExercise,
+				clearWorkoutHistory,
 			}}
 		>
 			{children}

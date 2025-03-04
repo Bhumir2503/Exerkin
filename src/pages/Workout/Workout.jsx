@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import {
 	View,
-	Button,
 	StyleSheet,
 	Text,
-	Modal,
 	ScrollView,
-	TouchableOpacity,
-    StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import WorkoutButton from "../../components/WorkoutPage/WorkoutButtons";
-import WorkoutForm from "../../components/WorkoutPage/WorkoutForm";
+import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import { useNavigation } from "@react-navigation/native";
 import storage from "../../utils/storage";
@@ -22,79 +19,23 @@ import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
 export default function Profile() {
 	const { themeStyle } = useTheme();
+	const { activeExercise, workoutCompleted, workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
-	const navigation = useNavigation();
 
 	const [modalIsVisible, setModalVisible] = useState(false);
-	const [selectedExercises, setSelectedExercises] = useState([]);
 	const [time, setTime] = useState(0);
 
-	const addExercise = (exercise) => {
-		if (exercise) {
-			setSelectedExercises((prevExercises) => [
-				...prevExercises,
-				{ name: exercise, sets: [] },
-			]);
-		}
-	};
-
-	const updateExercise = (exerciseName, newSets) => {
-		setSelectedExercises((prevExercises) => {
-			const updatedExercises = prevExercises.map((exercise) => {
-				if (exercise.name === exerciseName) {
-					return { ...exercise, sets: newSets };
-				}
-				return exercise;
-			});
-			return updatedExercises;
-		});
-	};
-
 	const saveWorkout = async () => {
-		// Wait for all exercises to finalize their last sets
-		const updatedExercises = await Promise.all(
-			selectedExercises.map(async (exercise) => {
-				if (exercise.finalizeLastSet) {
-					const lastSet = await exercise.finalizeLastSet(); // Wait for the last set
-					if (lastSet) {
-						return {
-							...exercise,
-							sets: [...exercise.sets, lastSet], // Add the last set
-						};
-					}
-				}
-				return exercise;
-			})
-		);
+		workoutCompleted();
+		setModalVisible(false);
+	}
 
-		setTimeout(() => {
-			try {
-				const storedWorkouts = storage.getString("workouts");
-				const workouts = storedWorkouts
-					? JSON.parse(storedWorkouts)
-					: [];
+	const cancelWorkout = () => {
+		workoutCancelled();
+		setModalVisible(false);
+	}
 
-				const newWorkout = {
-					id: Date.now(),
-					timestamp: new Date().toISOString(),
-					exercises: updatedExercises.map((exercise) => ({
-						name: exercise.name,
-						sets: [...exercise.sets],
-					})),
-					time: formatTime(time),
-				};
-
-				workouts.push(newWorkout);
-				storage.set("workouts", JSON.stringify(workouts));
-
-				setModalVisible(false);
-				setSelectedExercises([]);
-				navigation.navigate("Profile");
-			} catch (error) {
-				console.error("Error saving workout:", error);
-			}
-		}, 100);
-	};
+	
 
 	return (
 		<SafeAreaView style={styles.primaryContent}>
@@ -111,19 +52,14 @@ export default function Profile() {
 						contentContainerStyle={styles.scrollView}
 						style={{ width: "100%", height: "100%" }}
 					>
-						{selectedExercises.map((exercise, index) => (
-							<WorkoutForm
+						{activeExercise.map((exercise, index) => (
+							<ExerciseForm
 								key={index}
-								theme={themeStyle}
-								title={exercise.name}
-								updateExercise={updateExercise}
-								onFinalize={(finalizeLastSet) => {
-									exercise.finalizeLastSet = finalizeLastSet;
-								}}
+								exercise={exercise}
 							/>
 						))}
 
-						<ExerciseSelector onSelect={addExercise} />
+						<ExerciseSelector />
 						<WorkoutButton
 							type="saveWorkout"
 							title="Save Workout"
@@ -132,10 +68,7 @@ export default function Profile() {
 						<WorkoutButton
 							type="cancelWorkout"
 							title="Cancel Workout"
-							onPress={() => {
-								setModalVisible(false);
-								setSelectedExercises([]);
-							}}
+							onPress={cancelWorkout}
 						/>
                         
 
