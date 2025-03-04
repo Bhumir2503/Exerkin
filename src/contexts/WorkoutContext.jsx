@@ -7,6 +7,9 @@ import {
 } from "../cache/workoutHistoryCache";
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
+import { getWorkoutsFromFirestore, addWorkoutToFirestore, batchDeleteWorkoutFromFirestore } from "../utils/WorkoutFirestoreServices";
+import {useUser} from "./UserContext";
+
 
 const WorkoutContext = createContext();
 
@@ -37,6 +40,8 @@ export const WorkoutProvider = ({ children }) => {
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 
+	const {user} = useUser();
+
 	// retrieve workout history from cache
 	useEffect(() => {
 		const getWorkoutHistory = async () => {
@@ -61,6 +66,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutCompleted = (name) => {
 		const workout = {
+			userId: user.uid,
 			name: name,
 			id: activeId,
 			exercises: activeExercise,
@@ -69,7 +75,11 @@ export const WorkoutProvider = ({ children }) => {
 
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
-		//cache the workout
+		console.log(workout)
+
+		// Add workout to firestore
+		addWorkoutToFirestore(workout);
+		// Cache the workout
 		addWorkoutToHistoryCache(workout);
 
 		setActiveExercise([]);
@@ -135,7 +145,9 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	const clearWorkoutHistory = () => {
+		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
 		setWorkoutHistory([]);
+		batchDeleteWorkoutFromFirestore(deleteWorkoutId);
 		resetWorkoutHistoryCache();
 	};
 

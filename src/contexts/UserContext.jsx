@@ -36,6 +36,7 @@ export const UserProvider = ({ children }) => {
 						
 						// Update local cache
 						updateUserCache({
+							uid: userData.uid,
 							username: userData.username,
 							bio: userData.bio || "",
 							height: userData.height || "",

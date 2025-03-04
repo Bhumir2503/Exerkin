@@ -11,13 +11,11 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import WorkoutButton from "../../components/WorkoutPage/WorkoutButtons";
 import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
-import { useNavigation } from "@react-navigation/native";
-import storage from "../../utils/storage";
 import WorkoutTimer, {formatTime} from "../../components/WorkoutPage/WorkoutTimer";
 import WorkoutDashboard  from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
-export default function Profile() {
+export default function Workout() {
 	const { themeStyle } = useTheme();
 	const { activeExercise, workoutCompleted, workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
@@ -26,7 +24,7 @@ export default function Profile() {
 	const [time, setTime] = useState(0);
 
 	const saveWorkout = async () => {
-		workoutCompleted();
+		workoutCompleted("Workout Title");
 		setModalVisible(false);
 	}
 
