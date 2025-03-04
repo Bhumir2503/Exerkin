@@ -21,8 +21,5 @@ export const checkUserSetup = async (user) => {
     }
 }
 
-export const checkUsernameAvailability = async (username) => {
-
-}
 
 

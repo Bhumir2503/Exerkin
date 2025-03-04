@@ -1,108 +1,593 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
-import { Dropdown } from 'react-native-element-dropdown';
+import React, { useState, useEffect } from "react";
+import {
+	View,
+	TextInput,
+	StyleSheet,
+	Text,
+	Modal,
+	TouchableOpacity,
+	ScrollView,
+	FlatList,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
-/*DISCLAIMER: Unsure whether or not this component will receive or pass props, so we will need to communicate properly on what data will be passed to where */
+import { useWorkout } from "../../contexts/WorkoutContext";
+import {
+	exercises,
+	exerciseCategories,
+	getExercisesByCategory,
+} from "../../utils/ExerciseData";
 
-//this component should be used to develop a dropdown menu for selecting exercises,
-//it should be able to take in a list of exercises and display them in a dropdown menu. Or you can create 
-//an array of exercises and pass it to the dropdown menu for now.
+const ExerciseSelector = ({}) => {
+	const { themeStyle } = useTheme();
+	const { addExerciseToActiveWorkout, activeExercise } = useWorkout();
+	const styles = createStyles(themeStyle);
 
-//Use the Dropdown imported above, you will need to install the package react-native-element-dropdown
-const buttonValue = "Add Exercise"
-const allExercises = [
-  { ph: buttonValue, label: "Chest", value: "chest", type: "category" },
-  { ph: buttonValue, label: "Dumbbell Bench Press", value: "db_bench_press", category: "chest" },
-  { ph: buttonValue, label: "Barbell Bench Press", value: "bb_bench_press", category: "chest" },
+	// Choose Modal Popup
+	const [modalVisible, setModalVisible] = useState(false);
+	// State for selected exercise
+	const [selectedExercise, setSelectedExercise] = useState(null);
+	// State for search query
+	const [searchQuery, setSearchQuery] = useState("");
+	// State for selected category
+	const [selectedCategory, setSelectedCategory] = useState(null);
+	// State for filtered exercises
+	const [filteredExercises, setFilteredExercises] = useState(exercises);
 
-  { ph: buttonValue, label: "Back", value: "back", type: "category" },
-  { ph: buttonValue, label: "Dumbbell Row", value: "db_row", category: "back" },
-  { ph: buttonValue, label: "Barbell Deadlift", value: "bb_deadlift", category: "back" },
+	// Filter exercises based on search and category
+	useEffect(() => {
+		let result = exercises;
 
-  { ph: buttonValue, label: "Arms", value: "arms", type: "category" },
-  { ph: buttonValue, label: "Dumbbell Curl", value: "db_curl", category: "arms" },
-  { ph: buttonValue, label: "Barbell Curl", value: "bb_curl", category: "arms" },
-];
+		// Apply category filter
+		if (selectedCategory) {
+			result = getExercisesByCategory(selectedCategory);
+		}
 
-  /*
-  Here is an example on how to use this component. Try importing it into the Workout.jsx page and use it like this:
-  <ExerciseSelector onSelect={setSelectedExercise} />
-          <Text style={{ marginTop: 20, fontSize: 18 }}>
-                Selected Exercise: {selectedExercise || "None"}
-          </Text>
-*/
+		// Apply search filter
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase();
+			result = result.filter(
+				(exercise) =>
+					exercise.name.toLowerCase().includes(query) ||
+					exercise.categoryId.toLowerCase().includes(query) ||
+					exercise.equipment.some((eq) =>
+						eq.toLowerCase().includes(query)
+					)
+			);
+		}
 
-const ExerciseSelector = ({ onSelect }) => {
-  const { themeStyle } = useTheme();
-  const styles = createStyles(themeStyle);
-  const [placeholderValue, setPlaceholderValue] = useState(null)
+		setFilteredExercises(result);
+	}, [searchQuery, selectedCategory]);
 
-  return (
-    <View style={{ width: "100%", marginBottom: "3%" }}>
-      <Dropdown
-        data={allExercises}
-        labelField="ph"
-        valueField= "value"
-        placeholder={buttonValue}
-        placeholderStyle={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: 18,
-          color: "white",
-        }}
+	// Close modal and reset state
+	const closeModal = () => {
+		setSelectedExercise(null);
+		setSearchQuery("");
+		setSelectedCategory(null);
+		setModalVisible(false);
+	};
 
-        selectedTextStyle={{
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: 18,
-          color: "white",
-        }}
-        onChange={(item) => {
-            onSelect(item.label);
-        }}
-        style={{
-          backgroundColor: "#195ed4",
-          width: "90%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "1%",
-          borderRadius: 5,
-          margin: "auto",
-          marginBottom: "3%",
-        }}
-        containerStyle={{
-          backgroundColor: "#fff",  //White dropdown menu
-        }}
-        
-        renderItem={(item, selected) => (
-          <View style={{ padding: 10, backgroundColor: "#fff" }}>  
-            <Text style={{ fontWeight: item.type ? "bold" : "normal",
-              fontSize: item.type ? 17 : 15,
-              paddingLeft: item.type ? 0 : 20,
-             }}>
-                {item.label}
-            </Text>
-          </View>
-        )}
-      />
-    </View>
-  );
-}
+	// Handle exercise selection AKA marks the exercise as selected
+	const handleSelectExercise = (exercise) => {
+		setSelectedExercise(exercise);
+	};
+
+	const handleAddExercise = () => {
+		if (selectedExercise) {
+      const exercise = {
+        id: selectedExercise.id,
+        name: selectedExercise.name,
+        sets: [{reps: null, weight: null}],
+        rest: null,
+        notes: "",
+        order: activeExercise.length + 1,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        exercise: selectedExercise,
+      }
+      addExerciseToActiveWorkout(exercise);
+
+			closeModal();
+		}
+	};
+
+	const renderCategoryChips = () => {
+		return (
+			<ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				style={styles.categoryContainer}
+				contentContainerStyle={styles.categoryContentContainer}
+			>
+				<TouchableOpacity
+					style={[
+						styles.categoryChip,
+						!selectedCategory && styles.selectedCategoryChip,
+					]}
+					onPress={() => setSelectedCategory(null)}
+				>
+					<Text style={styles.categoryText}>All</Text>
+				</TouchableOpacity>
+
+				{exerciseCategories.map((category) => (
+					<TouchableOpacity
+						key={category.id}
+						style={[
+							styles.categoryChip,
+							selectedCategory === category.id &&
+								styles.selectedCategoryChip,
+						]}
+						onPress={() => setSelectedCategory(category.id)}
+					>
+						<Text style={styles.categoryText}>{category.name}</Text>
+					</TouchableOpacity>
+				))}
+			</ScrollView>
+		);
+	};
+
+	return (
+		<>
+			<TouchableOpacity
+				onPress={() => setModalVisible(true)}
+				style={styles.button}
+			>
+				<Ionicons
+					name="add-circle-outline"
+					size={24}
+					color={themeStyle.textColor}
+				/>
+				<Text style={styles.buttonText}>Add Exercise</Text>
+			</TouchableOpacity>
+
+			<Modal
+				animationType="none"
+				transparent={true}
+				visible={modalVisible}
+				onRequestClose={closeModal}
+				statusBarTranslucent={true}
+			>
+				<View style={styles.modalContainer}>
+					<View style={styles.modalContent}>
+						{/* Header */}
+						<View style={styles.modalHeader}>
+							<Text style={styles.modalTitle}>
+								Select Exercise
+							</Text>
+							<TouchableOpacity onPress={closeModal}>
+								<Ionicons
+									name="close"
+									size={24}
+									color={themeStyle.textColor}
+								/>
+							</TouchableOpacity>
+						</View>
+
+						{/* Search bar */}
+						<View style={styles.searchContainer}>
+							<Ionicons
+								name="search"
+								size={20}
+								color={themeStyle.textColor}
+							/>
+							<TextInput
+								style={styles.searchInput}
+								placeholder="Search exercises..."
+								placeholderTextColor={themeStyle.textColorSecondary}
+								value={searchQuery}
+								onChangeText={setSearchQuery}
+							/>
+							{searchQuery.length > 0 && (
+								<TouchableOpacity
+									onPress={() => setSearchQuery("")}
+								>
+									<Ionicons
+										name="close-circle"
+										size={20}
+										color={themeStyle.textColor}
+									/>
+								</TouchableOpacity>
+							)}
+						</View>
+
+						{/* Category filters */}
+						{renderCategoryChips()}
+
+						{/* Exercise list */}
+						<FlatList
+              				showsVerticalScrollIndicator={false}
+							data={filteredExercises}
+							keyExtractor={(item) => item.id}
+							style={styles.exerciseList}
+							renderItem={({ item }) => (
+								<TouchableOpacity
+									style={[
+										styles.exerciseItem,
+										selectedExercise?.id === item.id &&
+											styles.selectedExerciseItem,
+									]}
+									onPress={() => handleSelectExercise(item)}
+								>
+									<View style={styles.exerciseItemMain}>
+										<View style={styles.exerciseCheck}>
+											{selectedExercise?.id ===
+											item.id ? (
+												<Ionicons
+													name="checkmark-circle"
+													size={24}
+													color={themeStyle.primary}
+												/>
+											) : (
+												<Ionicons
+													name="ellipse-outline"
+													size={24}
+													color={
+														themeStyle.textColorSecondary
+													}
+												/>
+											)}
+										</View>
+
+										<View style={styles.exerciseInfo}>
+											<Text style={styles.exerciseName}>
+												{item.name}
+											</Text>
+
+											<View
+												style={styles.exerciseDetails}
+											>
+												<View
+													style={
+														styles.exerciseCategory
+													}
+												>
+													<Text
+														style={
+															styles.categoryLabel
+														}
+													>
+														{item.categoryId}
+													</Text>
+												</View>
+
+												<View
+													style={
+														styles.equipmentContainer
+													}
+												>
+													{item.equipment.map(
+														(eq, index) => (
+															<Text
+																key={index}
+																style={
+																	styles.equipmentLabel
+																}
+															>
+																{eq}
+																{index <
+																item.equipment
+																	.length -
+																	1
+																	? ", "
+																	: ""}
+															</Text>
+														)
+													)}
+												</View>
+											</View>
+
+											<View
+												style={styles.musclesContainer}
+											>
+												<Text
+													style={styles.muscleLabel}
+												>
+													Primary:{" "}
+													{item.primaryMuscles.join(
+														", "
+													)}
+												</Text>
+											</View>
+										</View>
+									</View>
+
+									<View style={styles.difficultyContainer}>
+										<Text
+											style={[
+												styles.difficultyLabel,
+												item.difficulty ===
+													"beginner" &&
+													styles.beginnerLabel,
+												item.difficulty ===
+													"intermediate" &&
+													styles.intermediateLabel,
+												item.difficulty ===
+													"advanced" &&
+													styles.advancedLabel,
+												item.difficulty ===
+													"scalable" &&
+													styles.scalableLabel,
+											]}
+										>
+											{item.difficulty}
+										</Text>
+									</View>
+								</TouchableOpacity>
+							)}
+							ListEmptyComponent={
+								<View style={styles.emptyContainer}>
+									<Ionicons
+										name="fitness-outline"
+										size={48}
+										color={themeStyle.textColorSecondary}
+									/>
+									<Text style={styles.emptyText}>
+										No exercises found
+									</Text>
+								</View>
+							}
+						/>
+
+						{/* Action buttons */}
+						<View style={styles.actionContainer}>
+							<TouchableOpacity
+								style={[
+									styles.actionButton,
+									styles.cancelButton,
+								]}
+								onPress={closeModal}
+							>
+								<Text style={styles.cancelButtonText}>
+									Cancel
+								</Text>
+							</TouchableOpacity>
+
+							<TouchableOpacity
+								style={[
+									styles.actionButton,
+									styles.addButton,
+									!selectedExercise && styles.disabledButton,
+								]}
+								onPress={handleAddExercise}
+								disabled={!selectedExercise}
+							>
+								<Text style={styles.addButtonText}>
+									Add to Workout
+								</Text>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</View>
+			</Modal>
+		</>
+	);
+};
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
-		container: {
+		button: {
+			backgroundColor: themeStyle.primary,
+			padding: 12,
+			borderRadius: 8,
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "center",
+			marginVertical: 10,
+			width: "90%",
+		},
+		buttonText: {
+			color: themeStyle.textColor,
+			fontSize: 16,
+			fontWeight: "600",
+			marginLeft: 8,
+		},
+
+		// Modal container
+		modalContainer: {
 			flex: 1,
+			backgroundColor: "rgba(0, 0, 0, 0.5)",
 			justifyContent: "center",
 			alignItems: "center",
-			backgroundColor: themeStyle.backgroundColor,
 		},
-		title: {
-			fontSize: 48,
+		modalContent: {
+			width: "95%",
+			height: "85%",
+			backgroundColor: themeStyle.backgroundColor,
+			borderRadius: 12,
+			padding: 16,
+			paddingBottom: 8,
+		},
+		modalHeader: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginBottom: 16,
+		},
+		modalTitle: {
+			fontSize: 20,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
 		},
+
+		// Search
+		searchContainer: {
+			flexDirection: "row",
+			alignItems: "center",
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			paddingHorizontal: 12,
+			marginBottom: 12,
+		},
+		searchInput: {
+			flex: 1,
+			height: 40,
+			color: themeStyle.textColor,
+			marginLeft: 8,
+		},
+
+		// Category filters
+		categoryContainer: {
+			marginBottom: 12,
+      flexGrow: 0,
+		},
+		categoryContentContainer: {
+			paddingHorizontal: 4,
+		},
+		categoryChip: {
+			backgroundColor: themeStyle.card,
+			paddingHorizontal: 12,
+			paddingVertical: 6,
+			borderRadius: 16,
+			marginRight: 8,
+		},
+		selectedCategoryChip: {
+			backgroundColor: themeStyle.primary,
+		},
+		categoryText: {
+			color: themeStyle.textColor,
+			fontWeight: "500",
+		},
+
+		// Exercise list
+		exerciseList: {
+      flex: 1,
+		},
+		exerciseItem: {
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 12,
+			marginBottom: 8,
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+		},
+		selectedExerciseItem: {
+			borderColor: themeStyle.primary,
+			borderWidth: 2,
+		},
+		exerciseItemMain: {
+			flex: 1,
+			flexDirection: "row",
+		},
+		exerciseCheck: {
+			marginRight: 8,
+			justifyContent: "center",
+		},
+		exerciseInfo: {
+			flex: 1,
+		},
+		exerciseName: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: themeStyle.textColor,
+			marginBottom: 4,
+		},
+		exerciseDetails: {
+			flexDirection: "row",
+			marginBottom: 4,
+		},
+		exerciseCategory: {
+			backgroundColor: themeStyle.accent,
+			paddingHorizontal: 6,
+			paddingVertical: 2,
+			borderRadius: 4,
+			marginRight: 8,
+		},
+		categoryLabel: {
+			color: themeStyle.textColor,
+			fontSize: 12,
+			fontWeight: "500",
+		},
+		equipmentContainer: {
+			flexDirection: "row",
+			flexWrap: "wrap",
+			flex: 1,
+		},
+		equipmentLabel: {
+			color: themeStyle.textColorSecondary,
+			fontSize: 12,
+		},
+		musclesContainer: {
+			flexDirection: "row",
+		},
+		muscleLabel: {
+			color: themeStyle.textColorSecondary,
+			fontSize: 12,
+		},
+		difficultyContainer: {
+			marginLeft: 8,
+		},
+		difficultyLabel: {
+			fontSize: 12,
+			fontWeight: "500",
+			paddingHorizontal: 6,
+			paddingVertical: 2,
+			borderRadius: 4,
+			overflow: "hidden",
+			textAlign: "center",
+		},
+		beginnerLabel: {
+			backgroundColor: "#4CAF50",
+			color: "white",
+		},
+		intermediateLabel: {
+			backgroundColor: "#FFC107",
+			color: "black",
+		},
+		advancedLabel: {
+			backgroundColor: "#F44336",
+			color: "white",
+		},
+		scalableLabel: {
+			backgroundColor: "#2196F3",
+			color: "white",
+		},
+
+		// Empty state
+		emptyContainer: {
+			alignItems: "center",
+			justifyContent: "center",
+			padding: 32,
+		},
+		emptyText: {
+			color: themeStyle.textColorSecondary,
+			marginTop: 8,
+			fontSize: 16,
+		},
+
+		// Action buttons
+		actionContainer: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			marginTop: 12,
+			paddingVertical: 8,
+		},
+		actionButton: {
+			flex: 1,
+			padding: 12,
+			borderRadius: 8,
+			alignItems: "center",
+			justifyContent: "center",
+		},
+		cancelButton: {
+			marginRight: 8,
+			backgroundColor: themeStyle.card,
+		},
+		addButton: {
+			backgroundColor: themeStyle.primary,
+		},
+		disabledButton: {
+			opacity: 0.5,
+		},
+		cancelButtonText: {
+			color: themeStyle.textColor,
+			fontWeight: "600",
+		},
+		addButtonText: {
+			color: "white",
+			fontWeight: "600",
+		},
 	});
-  
-  export default ExerciseSelector;
+
+export default ExerciseSelector;

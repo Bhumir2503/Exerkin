@@ -1,17 +1,25 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const WorkoutDashboard = ({ onStartWorkout }) => {
 	const { themeStyle } = useTheme();
+	const { newWorkoutStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
+
+	const buttonPress = () => {
+		newWorkoutStarted();
+		onStartWorkout();
+	}
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Get Started</Text>
 			<Text style={styles.description}>Ready to start your workout?</Text>
 			<StartWorkoutButton
 				title="Start Workout"
-				onPress={onStartWorkout}
+				onPress={buttonPress}
 			/>
 		</View>
 	);
