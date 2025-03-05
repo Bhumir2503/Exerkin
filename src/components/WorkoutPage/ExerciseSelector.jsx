@@ -33,7 +33,6 @@ const ExerciseSelector = ({}) => {
 	const [selectedCategory, setSelectedCategory] = useState(null);
 	// State for filtered exercises
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
-
 	// Get array of already added exercise IDs
 	const getAddedExerciseIds = () => {
 		return activeExercise.map((ex) => ex.id);
