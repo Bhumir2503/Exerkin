@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
 	View,
 	StyleSheet,
@@ -19,13 +19,12 @@ export default function Workout() {
 	const { themeStyle } = useTheme();
 	const { activeExercise, workoutCompleted, workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
-
 	const [modalIsVisible, setModalVisible] = useState(false);
-	const [time, setTime] = useState(0);
+	const timeRef = useRef(0);
 	
 
 	const saveWorkout = async () => {
-		workoutCompleted("Workout Title", time);
+		workoutCompleted("Workout Title", timeRef.current);
 		setModalVisible(false);
 	}
 
@@ -35,7 +34,6 @@ export default function Workout() {
 	}
 
 	
-
 	return (
 		<SafeAreaView style={styles.primaryContent}>
             <WorkoutDashboard onStartWorkout={()=>setModalVisible(true)}/>
@@ -45,7 +43,7 @@ export default function Workout() {
 					<Text style={styles.workoutTitle}>Workout Title</Text>
 
 					<View style = {styles.timerStyle}>
-						<WorkoutTimer visible={modalIsVisible} time={time} setTime={setTime} />
+						<WorkoutTimer visible={modalIsVisible} timeRef={timeRef}/>
 					</View>
 
 					<ScrollView
