@@ -79,9 +79,6 @@ export const WorkoutProvider = ({ children }) => {
 		};
 
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
-
-		console.log(workout)
-
 		// Add workout to firestore
 		addWorkoutToFirestore(workout);
 		// Cache the workout
@@ -89,18 +86,16 @@ export const WorkoutProvider = ({ children }) => {
 
 		setActiveExercise([]);
 		setActiveId(null);
-		console.log(workoutHistory);
 	};
 
 	const workoutCancelled = () => {
 		setActiveExercise([]);
 		setActiveId(null);
-		console.log(workoutHistory);
 	};
 
 	const addExerciseToActiveWorkout = async (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
-		// TODO: add to cache and firebase
+		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
 
 	const removeExerciseFromActiveWorkout = (exerciseId) => {

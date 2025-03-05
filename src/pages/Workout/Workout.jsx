@@ -8,10 +8,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import WorkoutButton from "../../components/WorkoutPage/WorkoutButtons";
 import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import WorkoutTimer, {formatTime} from "../../components/WorkoutPage/WorkoutTimer";
+import WorkoutHeaderButtons from "../../components/WorkoutPage/WorkoutHeaderButtons";
 import WorkoutDashboard  from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
@@ -22,6 +22,7 @@ export default function Workout() {
 
 	const [modalIsVisible, setModalVisible] = useState(false);
 	const [time, setTime] = useState(0);
+	
 
 	const saveWorkout = async () => {
 		workoutCompleted("Workout Title", time);
@@ -39,6 +40,7 @@ export default function Workout() {
 		<SafeAreaView style={styles.primaryContent}>
             <WorkoutDashboard onStartWorkout={()=>setModalVisible(true)}/>
 			<WorkoutModal visible={modalIsVisible} title="Workout">
+				<WorkoutHeaderButtons onClosePressed={cancelWorkout} onFinishedPressed={saveWorkout} />
 				<View style={styles.modalContent}>
 					<Text style={styles.workoutTitle}>Workout Title</Text>
 
@@ -58,19 +60,6 @@ export default function Workout() {
 						))}
 
 						<ExerciseSelector />
-						<WorkoutButton
-							type="saveWorkout"
-							title="Save Workout"
-							onPress={saveWorkout}
-						/>
-						<WorkoutButton
-							type="cancelWorkout"
-							title="Cancel Workout"
-							onPress={cancelWorkout}
-						/>
-                        
-
-						<View style={{ width: "100%", height: 50 }}></View>
 					</ScrollView>
 				</View>
 			</WorkoutModal>

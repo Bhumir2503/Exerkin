@@ -21,6 +21,7 @@ export default function Profile({ navigation }) {
 	const { workoutHistory, clearWorkoutHistory } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.topBar}>
