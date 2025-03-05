@@ -128,9 +128,9 @@ export default function Profile({ navigation }) {
 											{Array.isArray(exercise.sets) && exercise.sets.length > 0 ? (
 												exercise.sets.map((set, setIndex) => {
 													if(set.weight == null){
-														return <Text style={styles.setText}>No set data available</Text>
+														return <Text key = {setIndex} style={styles.setText}>No set data available</Text>
 													}
-													return <Text style={styles.setText}>Set {setIndex+1}: {set.weight}lbs x {set.reps}</Text>
+													return <Text key = {setIndex} style={styles.setText}>Set {setIndex+1}: {set.weight}lbs x {set.reps}</Text>
 												})
 											) : (
 												<Text style={styles.setText}>No set data available</Text>
