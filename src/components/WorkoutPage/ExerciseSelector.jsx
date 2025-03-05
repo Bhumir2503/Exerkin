@@ -80,7 +80,7 @@ const ExerciseSelector = ({}) => {
 		setModalVisible(false);
 	};
 
-	// Handle exercise selection AKA marks the exercise as selecte
+	// Handle exercise selection AKA marks the exercise as select
 	const handleSelectExercise = (exercise) => {
 		setSelectedExercise(exercise);
 	};
