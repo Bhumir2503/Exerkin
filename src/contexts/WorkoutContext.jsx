@@ -37,6 +37,8 @@ export const WorkoutProvider = ({ children }) => {
 	// 	createdAt: "2023-10-01T12:00:00Z",
 	// 	updatedAt: "2023-10-01T12:00:00Z",
 	//  exercise: excercise object
+	//  date: "2023-10-01T12:00:00Z",
+	//  time: "00:00:00",
 	// }
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
@@ -73,6 +75,7 @@ export const WorkoutProvider = ({ children }) => {
 			exercises: activeExercise,
 			completedAt: firestore.Timestamp.now(),
 			time: formatTime(time),
+			date: firestore.Timestamp.now(), // TODO: change to start time
 		};
 
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);

@@ -321,7 +321,7 @@ const ExerciseSelector = ({}) => {
 										</View>
 									</View>
 
-									<View style={styles.difficultyContainer}>
+									{/* <View style={styles.difficultyContainer}>
 										<Text
 											style={[
 												styles.difficultyLabel,
@@ -341,7 +341,7 @@ const ExerciseSelector = ({}) => {
 										>
 											{item.difficulty}
 										</Text>
-									</View>
+									</View> */}
 								</TouchableOpacity>
 							)}
 							ListEmptyComponent={
