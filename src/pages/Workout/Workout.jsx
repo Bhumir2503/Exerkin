@@ -24,7 +24,7 @@ export default function Workout() {
 	const [time, setTime] = useState(0);
 
 	const saveWorkout = async () => {
-		workoutCompleted("Workout Title");
+		workoutCompleted("Workout Title", time);
 		setModalVisible(false);
 	}
 
