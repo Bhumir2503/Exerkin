@@ -9,6 +9,7 @@ import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 import { getWorkoutsFromFirestore, addWorkoutToFirestore, batchDeleteWorkoutFromFirestore } from "../utils/WorkoutFirestoreServices";
 import {useUser} from "./UserContext";
+import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
 
 
 const WorkoutContext = createContext();
@@ -64,13 +65,14 @@ export const WorkoutProvider = ({ children }) => {
 		setActiveId(uuid.v4());
 	};
 
-	const workoutCompleted = (name) => {
+	const workoutCompleted = (name, time) => {
 		const workout = {
 			userId: user.uid,
 			name: name,
 			id: activeId,
 			exercises: activeExercise,
 			completedAt: firestore.Timestamp.now(),
+			time: formatTime(time),
 		};
 
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);

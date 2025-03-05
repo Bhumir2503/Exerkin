@@ -36,7 +36,7 @@ export default function Stats({navigation}) {
 	const getBestLift = (filteredWorkoutHistory, toggle) => {
 		
 		// If no sessions have been logged for the target exercise, no data available will be displayed
-		if(filteredWorkoutHistory.length < 1){ return { text: `No data available`, isEstimated: false } }
+		if(filteredWorkoutHistory.length < 1){ return { text: `No data available`, isEstimated: true } }
 
 		let bestOneRepMaxWeight = 0;
 		let bestOneRepMaxReps = 0;
@@ -69,6 +69,9 @@ export default function Stats({navigation}) {
 			}
 			else {console.log("no set data available")}
 		})
+		if((bestOneRepMaxReps == 0 || bestOneRepMaxWeight == 0) && bestVolume == 0){
+			return{text: `No data available`, isEstimated: true}
+		}
 		if(toggle){
 			if(bestOneRepMaxReps == 1){
 				console.log(`Best 1RM Weight: ${bestOneRepMaxWeight} Best 1RM Reps: ${bestOneRepMaxReps}`)

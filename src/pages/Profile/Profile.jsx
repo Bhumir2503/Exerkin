@@ -106,20 +106,35 @@ export default function Profile({ navigation }) {
 								<Text style={styles.exerciseCount}>
 									{item.exercises.length} {item.exercises.length > 1 ? "Exercises" : "Exercise"}
 								</Text>
+								<Text style = {styles.exerciseCount}>
+									{item.time}
+								</Text>
 								<View style={styles.exerciseContainer}>
 									{item.exercises.map((exercise, index) => (
-										<Text key={index} style={styles.exerciseText}>
-											{exercise.name} -{" "} 
-											{exercise.sets.length > 0 ? (
-												<Text style={styles.setText}>
-													{exercise.sets.length} Sets
-												</Text>
+										<View key = {index}>
+											<Text style={styles.exerciseText}>
+												{exercise.name} -{" "} 
+												{exercise.sets.length > 0 ? (
+													<Text style={styles.setText}>
+														{exercise.sets.length} Sets
+													</Text>
+												) : (
+													<Text style={styles.noSetText}>
+														No Sets
+													</Text>
+												)}
+											</Text>
+											{Array.isArray(exercise.sets) && exercise.sets.length > 0 ? (
+												exercise.sets.map((set, setIndex) => {
+													if(set.weight == null){
+														return <Text style={styles.setText}>No set data available</Text>
+													}
+													return <Text style={styles.setText}>Set {setIndex+1}: {set.weight}lbs x {set.reps}</Text>
+												})
 											) : (
-												<Text style={styles.noSetText}>
-													No Sets
-												</Text>
+												<Text style={styles.setText}>No set data available</Text>
 											)}
-										</Text>
+										</View>
 									))}
 								</View>
 							</View>
