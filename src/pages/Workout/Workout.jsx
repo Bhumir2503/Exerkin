@@ -31,6 +31,7 @@ export default function Workout() {
 	const cancelWorkout = () => {
 		workoutCancelled();
 		setModalVisible(false);
+		
 	}
 
 	
