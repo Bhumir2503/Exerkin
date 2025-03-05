@@ -14,4 +14,5 @@ git commands
 2. git checkout -b branchname
 3. git add .
 4. git commit -m "tmp"
-5. git push --set-upstream origin tmp
+5. git push --set-upstream origin branchname
+6. go to github to merge
