@@ -407,7 +407,7 @@ const createStyles = (themeStyle) =>
 		buttonText: {
 			color: "white",
 			fontSize: 16,
-			fontWeight: "600",
+			fontWeight: "bold",
 			marginLeft: 8,
 		},
 

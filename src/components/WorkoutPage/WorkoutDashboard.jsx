@@ -30,7 +30,7 @@ const StartWorkoutButton = ({ title, onPress }) => {
 	const styles = createStyles(themeStyle);
 	return (
 		<TouchableOpacity style={styles.button} onPress={onPress}>
-            <Ionicons name="fitness-sharp" size={24} color={themeStyle.textColor} />
+            <Ionicons name="fitness-sharp" size={24} color={"#fff"} />
 			<Text style={styles.buttonText}>{title}</Text>
 		</TouchableOpacity>
 	);
@@ -63,7 +63,7 @@ const createStyles = (theme) => {
             alignItems: "center",
 		},
 		buttonText: {
-			color: theme.textColor,
+			color: "#fff",
             fontSize: 18,
             fontWeight: "bold",
 			textAlign: "center",
