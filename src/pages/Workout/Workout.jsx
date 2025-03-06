@@ -24,9 +24,16 @@ import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
-	const { activeExercise, workoutCompleted, workoutCancelled, workoutHistory } = useWorkout();
+	const {
+		activeExercise,
+		workoutCompleted,
+		workoutCancelled,
+		workoutHistory,
+	} = useWorkout();
 	const [modalIsVisible, setModalVisible] = useState(false);
-	const [workoutTitle, setWorkoutTitle] = useState("Workout #" + (workoutHistory.length + 1));
+	const [workoutTitle, setWorkoutTitle] = useState(
+		"Workout #" + (workoutHistory.length + 1)
+	);
 	const [titleError, setTitleError] = useState(false);
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
@@ -34,9 +41,8 @@ export default function Workout() {
 
 	// Add keyboard listeners when component mounts
 
-
 	const saveWorkout = async () => {
-		if(workoutTitle === "") {
+		if (workoutTitle === "") {
 			setTitleError(true);
 			return;
 		}
@@ -53,7 +59,6 @@ export default function Workout() {
 		setModalVisible(false);
 	};
 
-
 	// Function to handle input focus - scrolls to center the focused element
 	const handleInputFocus = (event, index) => {
 		// Get dimensions of the scroll view container and the input element
@@ -64,10 +69,7 @@ export default function Workout() {
 		event.target.measure((fx, fy, width, height, px, py) => {
 			// Calculate position to center the input in the visible area
 			// Subtract half the scroll view height to position input in the middle
-			const scrollToY = Math.max(
-				0,
-				py - 600
-			);
+			const scrollToY = Math.max(0, py - 600);
 
 			scrollViewRef.current?.scrollTo({
 				y: scrollToY,
