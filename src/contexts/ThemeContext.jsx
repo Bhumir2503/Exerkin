@@ -126,7 +126,7 @@ const themes = {
 };
 
 export const ThemeProvider = ({ children }) => {
-	const [theme, setTheme] = useState("oceanDepth"); // Default theme
+	const [theme, setTheme] = useState("lavenderMist"); // Default theme
 
 	const changeTheme = (theme) => {
 		setTheme(theme);

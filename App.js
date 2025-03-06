@@ -21,6 +21,8 @@ enableScreens();
 globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 
 export default function App() {
+
+	
 	if (Platform.OS === "android") {
 		NavigationBar.setVisibilityAsync("hidden");
 	}
@@ -55,6 +57,8 @@ export default function App() {
 function AppContent() {
 	const { user, init, isNewUser, setupComplete } = useUser();
 	const { theme } = useTheme();
+	const lightTheme = ["sunnyDaisy", "mintFresh", "rosePetal", "lavenderMist", "peachCream", "skyBlossom"];
+
 
 	if (init) {
 		return null;
@@ -62,7 +66,7 @@ function AppContent() {
 
 	return (
 		<NavigationContainer>
-			<StatusBar style={theme.includes("light") ? "dark" : "light"} />
+			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"} />
 			{!user ? (
 				<AuthNavigator />
 			) : isNewUser && !setupComplete ? (
