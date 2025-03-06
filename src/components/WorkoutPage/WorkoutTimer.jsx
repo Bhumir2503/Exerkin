@@ -47,16 +47,15 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 	}, [isRunning]);
 
 	return (
-		<View style={styles.container}>
+
 			<Text style={styles.timeText}>{displayTime}</Text>
-		</View>
+
 	);
 };
 
 const createStyles = (theme) => {
 	return StyleSheet.create({
-		container: { alignItems: "center", marginVertical: 10 },
-		timeText: { fontSize: 18, fontWeight: "bold", color: theme.textColor },
+		timeText: { fontSize: 18, fontWeight: "bold", color: theme.textColorSecondary },
 	});
 };
 

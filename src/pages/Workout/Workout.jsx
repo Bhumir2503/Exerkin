@@ -78,10 +78,10 @@ export default function Workout() {
 					style={styles.modalContent}
 					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 				>
-					<View style={styles.innerContainer}>
-						<Text style={styles.workoutTitle}>Workout Title</Text>
-
+					<View >
 						<View style={styles.timerStyle}>
+							<Text style={styles.workoutTitle}>Workout Title</Text>
+
 							<WorkoutTimer
 								visible={modalIsVisible}
 								timeRef={timeRef}
@@ -122,14 +122,7 @@ const createStyles = (theme) => {
 			flex: 1,
 			width: "100%",
 		},
-		innerContainer: {
-			flex: 1,
-			alignItems: "center",
-			width: "100%",
-		},
 		workoutTitle: {
-			padding: 15,
-			paddingHorizontal: 20,
 			color: theme.textColor,
 			fontSize: 32,
 		},
@@ -138,10 +131,11 @@ const createStyles = (theme) => {
 			alignItems: "center",
 		},
 		timerStyle: {
-			position: "absolute",
-			top: "1%",
-			right: 20,
-			padding: "2%",
+			paddingVertical: 15,
+			paddingHorizontal: 20,	
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "space-between",
 		},
 	});
 };
