@@ -492,10 +492,12 @@ const createStyles = (themeStyle) =>
 			flexDirection: "row",
 			justifyContent: "space-between",
 			alignItems: "center",
+			borderWidth: 2,
+			borderColor: themeStyle.card,
 		},
 		selectedExerciseItem: {
 			borderColor: themeStyle.primary,
-			borderWidth: 2,
+
 		},
 		exerciseItemMain: {
 			flex: 1,
