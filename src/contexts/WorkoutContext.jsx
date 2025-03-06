@@ -68,11 +68,33 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	const workoutCompleted = (name, time) => {
+
+		// loop through activeExercise to check for empty sets and remove them
+		const activeExerciseFiltered = activeExercise.map((exercise) => {
+			const sets = exercise.sets.filter((set) => set.weight !== null);
+			return { ...exercise, sets };
+		});
+
+		// loops through activeExercise to check for empty exercises and remove them
+		const activeExerciseChecked = activeExerciseFiltered.filter(
+			(exercise) => exercise.sets.length > 0
+		);
+
+		// if no exercises are added, return
+		if (activeExerciseChecked.length === 0) {
+			console.log("No exercises added");
+			setActiveExercise([]);
+			setActiveId(null);
+			return;
+		}
+
+
+
 		const workout = {
 			userId: user.uid,
 			name: name,
 			id: activeId,
-			exercises: activeExercise,
+			exercises: activeExerciseChecked,
 			completedAt: firestore.Timestamp.now(),
 			time: formatTime(time),
 			date: firestore.Timestamp.now(), // TODO: change to start time
