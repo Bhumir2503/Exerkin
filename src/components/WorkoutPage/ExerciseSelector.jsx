@@ -396,6 +396,7 @@ const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		button: {
 			backgroundColor: themeStyle.primary,
+
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",

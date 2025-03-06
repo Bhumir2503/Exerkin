@@ -71,7 +71,7 @@ export const WorkoutProvider = ({ children }) => {
 
 		// loop through activeExercise to check for empty sets and remove them
 		const activeExerciseFiltered = activeExercise.map((exercise) => {
-			const sets = exercise.sets.filter((set) => set.weight !== null);
+			const sets = exercise.sets.filter((set) => set.weight !== null && set.weight !== "");
 			return { ...exercise, sets };
 		});
 
