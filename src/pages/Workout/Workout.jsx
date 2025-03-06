@@ -8,6 +8,7 @@ import {
 	Platform,
 	Keyboard,
 	TouchableWithoutFeedback,
+	TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -23,9 +24,11 @@ import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
-	const { activeExercise, workoutCompleted, workoutCancelled } = useWorkout();
-	const styles = createStyles(themeStyle);
+	const { activeExercise, workoutCompleted, workoutCancelled, workoutHistory } = useWorkout();
 	const [modalIsVisible, setModalVisible] = useState(false);
+	const [workoutTitle, setWorkoutTitle] = useState("Workout #" + (workoutHistory.length + 1));
+	const [titleError, setTitleError] = useState(false);
+	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
 	const scrollViewRef = useRef(null);
 
@@ -33,12 +36,20 @@ export default function Workout() {
 
 
 	const saveWorkout = async () => {
-		workoutCompleted("Workout Title", timeRef.current);
+		if(workoutTitle === "") {
+			setTitleError(true);
+			return;
+		}
+		workoutCompleted(workoutTitle, timeRef.current);
+		setTitleError(false);
+		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 		setModalVisible(false);
 	};
 
 	const cancelWorkout = () => {
 		workoutCancelled();
+		setTitleError(false);
+		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 		setModalVisible(false);
 	};
 
@@ -78,9 +89,22 @@ export default function Workout() {
 					style={styles.modalContent}
 					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 				>
-					<View >
+					<View>
 						<View style={styles.timerStyle}>
-							<Text style={styles.workoutTitle}>Workout Title</Text>
+							<TextInput
+								style={{
+									...styles.titleInput,
+									borderColor: titleError
+										? "red"
+										: themeStyle.textColor,
+									borderBottomWidth: titleError ? 2 : 0,
+								}}
+								value={workoutTitle}
+								placeholder="Add Title..."
+								onChangeText={(text) => setWorkoutTitle(text)}
+								onFocus={() => setTitleError(false)}
+								maxLength={32}
+							/>
 
 							<WorkoutTimer
 								visible={modalIsVisible}
@@ -91,8 +115,7 @@ export default function Workout() {
 						<ScrollView
 							ref={scrollViewRef}
 							contentContainerStyle={styles.scrollView}
-							style={[
-								{ width: "100%" },							]}
+							style={[{ width: "100%" }]}
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
@@ -126,13 +149,21 @@ const createStyles = (theme) => {
 			color: theme.textColor,
 			fontSize: 32,
 		},
+		titleInput: {
+			color: theme.textColor,
+			fontSize: 24,
+			width: 150, // Start with width of 100
+			marginRight: 10,
+			textAlign: "center",
+			fontWeight: "bold",
+		},
 		scrollView: {
 			width: "100%",
 			alignItems: "center",
 		},
 		timerStyle: {
 			paddingVertical: 15,
-			paddingHorizontal: 20,	
+			paddingHorizontal: 20,
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "space-between",
