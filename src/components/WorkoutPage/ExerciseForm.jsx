@@ -6,25 +6,32 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 } from "react-native";
+import uuid from "react-native-uuid";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
 	const { themeStyle } = useTheme();
-    const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
 	const styles = createStyles(themeStyle);
 
-    const addSet = () => {
-        addSetToExercise(exercise.id, { weight: "", reps : "" });
-    }
+	const addSet = () => {
+		addSetToExercise(exercise.id, { weight: null, reps: null });
+	};
 
-    const handleWeightChange = (text, setIndex) => {
-        updateSetInExercise(exercise.id, setIndex, { ...exercise.sets[setIndex], weight: text });
-    }
+	const handleWeightChange = (text, setIndex) => {
+		updateSetInExercise(exercise.id, setIndex, {
+			...exercise.sets[setIndex],
+			weight: text,
+		});
+	};
 
-    const handleRepsChange = (text, setIndex) => {
-        updateSetInExercise(exercise.id, setIndex, { ...exercise.sets[setIndex], reps: text });
-    }
+	const handleRepsChange = (text, setIndex) => {
+		updateSetInExercise(exercise.id, setIndex, {
+			...exercise.sets[setIndex],
+			reps: text,
+		});
+	};
 
 	return (
 		<View style={styles.container}>
@@ -70,7 +77,7 @@ const ExerciseForm = ({ exercise }) => {
 							width: 75,
 							textAlign: "center",
 							fontWeight: "bold",
-                            marginLeft: 5,
+							marginLeft: 5,
 						}}
 					>
 						Reps
@@ -122,7 +129,7 @@ const ExerciseForm = ({ exercise }) => {
 								padding: 5,
 								paddingHorizontal: 10,
 								borderRadius: 5,
-                                marginLeft: 5,
+								marginLeft: 5,
 							}}
 							placeholder="8"
 							value={set.reps}
@@ -161,6 +168,7 @@ const createStyles = (theme) =>
 		setRows: {
 			flexDirection: "row",
 			justifyContent: "space-between",
+			alignItems: "center",
 			width: "100%",
 			marginTop: 10,
 		},
