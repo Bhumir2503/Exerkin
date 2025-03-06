@@ -110,6 +110,7 @@ const ExerciseForm = ({ exercise }) => {
 								paddingHorizontal: 10,
 								borderRadius: 5,
 							}}
+							inputMode="numeric"
 							placeholder="100"
 							value={set.weight}
 							onChangeText={(text) =>
@@ -131,6 +132,7 @@ const ExerciseForm = ({ exercise }) => {
 								borderRadius: 5,
 								marginLeft: 5,
 							}}
+							inputMode="numeric"
 							placeholder="8"
 							value={set.reps}
 							onChangeText={(text) =>

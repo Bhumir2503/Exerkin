@@ -55,7 +55,7 @@ export default function Profile({ navigation }) {
 			</View>
 
 			<View style={styles.profileSection}>
-				<View style={{ flex: 1, marginLeft: 25 }}>
+				{/* <View style={{ flex: 1, marginLeft: 25 }}>
 					<Text
 						style={{
 							fontSize: 18,
@@ -83,7 +83,7 @@ export default function Profile({ navigation }) {
 					>
 						Posts: 50
 					</Text>
-				</View>
+				</View> */}
 			</View>
 
 			<Button
