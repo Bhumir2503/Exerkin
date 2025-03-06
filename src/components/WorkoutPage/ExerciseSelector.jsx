@@ -96,7 +96,6 @@ const ExerciseSelector = ({}) => {
 				completed: false,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
-				exercise: selectedExercise,
 			};
 			addExerciseToActiveWorkout(exercise);
 
@@ -396,7 +395,7 @@ const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		button: {
 			backgroundColor: themeStyle.primary,
-
+			marginBottom: 64,
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",

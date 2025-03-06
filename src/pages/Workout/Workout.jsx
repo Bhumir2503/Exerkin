@@ -66,7 +66,7 @@ export default function Workout() {
 			// Subtract half the scroll view height to position input in the middle
 			const scrollToY = Math.max(
 				0,
-				py - scrollViewHeight / 2 + height / 2
+				py - 600
 			);
 
 			scrollViewRef.current?.scrollTo({
