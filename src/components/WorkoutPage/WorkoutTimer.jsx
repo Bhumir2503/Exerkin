@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, AppState } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
 export const formatTime = (seconds) => {
@@ -13,8 +13,13 @@ export const formatTime = (seconds) => {
 };
 
 const WorkoutTimer = ({ visible, timeRef }) => {
-	const [displayTime, setDisplayTime] = useState("00:00:00"); // Only for display purposes
+	const [displayTime, setDisplayTime] = useState("00:00:00");
 	const [isRunning, setIsRunning] = useState(false);
+
+	// Track timestamp for background calculation
+	const lastTickRef = useRef(Date.now());
+	const appStateRef = useRef(AppState.currentState);
+	const intervalRef = useRef(null);
 
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -30,32 +35,80 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 		}
 	}, [visible]);
 
+	// Handle app state changes
 	useEffect(() => {
-		let intervalID;
+		const subscription = AppState.addEventListener(
+			"change",
+			(nextAppState) => {
+				const now = Date.now();
 
-		if (isRunning) {
-			intervalID = setInterval(() => {
-				timeRef.current += 1;
-				setDisplayTime(formatTime(timeRef.current));
-			}, 1000);
-		} else {
-			timeRef.current = 0;
-			setDisplayTime(formatTime(0));
-		}
+				// App is coming to foreground
+				if (
+					appStateRef.current.match(/inactive|background/) &&
+					nextAppState === "active"
+				) {
+					if (isRunning) {
+						// Calculate elapsed time while in background
+						const elapsedSeconds = Math.floor(
+							(now - lastTickRef.current) / 1000
+						);
+						timeRef.current += elapsedSeconds;
+						setDisplayTime(formatTime(timeRef.current));
+					}
+				}
 
-		return () => clearInterval(intervalID);
+				lastTickRef.current = now;
+				appStateRef.current = nextAppState;
+			}
+		);
+
+		return () => {
+			subscription.remove();
+		};
 	}, [isRunning]);
 
-	return (
+	// Handle timer logic
+	useEffect(() => {
+		if (isRunning) {
+			// Store current timestamp when starting
+			lastTickRef.current = Date.now();
 
-			<Text style={styles.timeText}>{displayTime}</Text>
+			// Set up interval that updates every second
+			intervalRef.current = setInterval(() => {
+				const now = Date.now();
+				const elapsed = Math.floor((now - lastTickRef.current) / 1000);
 
-	);
+				if (elapsed >= 1) {
+					timeRef.current += elapsed;
+					setDisplayTime(formatTime(timeRef.current));
+					lastTickRef.current = now;
+				}
+			}, 1000);
+		} else {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
+		}
+
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
+		};
+	}, [isRunning]);
+
+	return <Text style={styles.timeText}>{displayTime}</Text>;
 };
 
 const createStyles = (theme) => {
 	return StyleSheet.create({
-		timeText: { fontSize: 18, fontWeight: "bold", color: theme.textColorSecondary },
+		timeText: {
+			fontSize: 18,
+			fontWeight: "bold",
+			color: theme.textColorSecondary,
+		},
 	});
 };
 
