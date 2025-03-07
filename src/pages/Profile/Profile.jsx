@@ -98,12 +98,14 @@ export default function Profile({ navigation }) {
 					renderItem={({ item }) => (
 						<TouchableWithoutFeedback onPress={() => setSelectedWorkout(item)}>
 							<View style={styles.workoutCard}>
-								<Text style={styles.workoutTitle}>
-									{item.name ? item.name : "Workout"}
-								</Text>
-								<Text style={styles.workoutTime}>{item.time}</Text>
-								<Text style={styles.workoutNote}>{item.note || "No notes"}</Text>
+								<View style={styles.workoutHeader}>
+									<Text style={styles.workoutTitle}>
+										{item.name ? item.name : "Workout"}
+									</Text>
+									<Text style={styles.workoutTime}>{item.time}</Text>
+								</View>
 								<Text style={styles.workoutTime}>{item.exercises.length} workouts</Text>
+								<Text style={styles.workoutNote}>{item.note || "No notes"}</Text>
 							</View>
 						</TouchableWithoutFeedback>
 					)}
@@ -286,4 +288,10 @@ const createStyles = (themeStyle) =>
 			fontSize: 18,
 			fontWeight: "bold",
 		},
+		workoutHeader: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			width: "100%",
+		}
 	});
