@@ -103,6 +103,7 @@ export default function Profile({ navigation }) {
 								</Text>
 								<Text style={styles.workoutTime}>{item.time}</Text>
 								<Text style={styles.workoutNote}>{item.note || "No notes"}</Text>
+								<Text style={styles.workoutTime}>{item.exercises.length} workouts</Text>
 							</View>
 						</TouchableWithoutFeedback>
 					)}
