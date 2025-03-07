@@ -84,6 +84,10 @@ export default function Workout() {
 				<WorkoutHeaderButtons
 					onClosePressed={cancelWorkout}
 					onFinishedPressed={saveWorkout}
+					setWorkoutTitle={setWorkoutTitle}
+					workoutTitle={workoutTitle}
+					titleError={titleError}
+					setTitleError={setTitleError}
 				/>
 
 				<KeyboardAvoidingView
@@ -93,21 +97,6 @@ export default function Workout() {
 				>
 					<View>
 						<View style={styles.timerStyle}>
-							<TextInput
-								style={{
-									...styles.titleInput,
-									borderColor: titleError
-										? "red"
-										: themeStyle.textColor,
-									borderBottomWidth: titleError ? 2 : 0,
-								}}
-								value={workoutTitle}
-								placeholder="Add Title..."
-								onChangeText={(text) => setWorkoutTitle(text)}
-								onFocus={() => setTitleError(false)}
-								maxLength={32}
-							/>
-
 							<WorkoutTimer
 								visible={modalIsVisible}
 								timeRef={timeRef}
@@ -150,14 +139,6 @@ const createStyles = (theme) => {
 		workoutTitle: {
 			color: theme.textColor,
 			fontSize: 32,
-		},
-		titleInput: {
-			color: theme.textColor,
-			fontSize: 24,
-			width: 150, // Start with width of 100
-			marginRight: 10,
-			textAlign: "center",
-			fontWeight: "bold",
 		},
 		scrollView: {
 			width: "100%",
