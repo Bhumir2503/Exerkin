@@ -17,6 +17,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../../contexts/UserContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
+const formatDate = (timestamp) => {
+	if (!timestamp) return "No date";
+	if (timestamp.seconds) {
+	  return new Date(timestamp.seconds * 1000).toLocaleDateString();
+	}
+	return new Date(timestamp).toLocaleDateString();
+  };
+
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { username } = useUser();
@@ -94,13 +102,15 @@ export default function Profile({ navigation }) {
 					bounces={false}
 					showsVerticalScrollIndicator={false}
 					style={{ width: "100%", padding: 20 }}
-					data={workoutHistory}
+					data={[...workoutHistory].sort((a,b) =>
+						b.date.seconds - a.date.seconds
+					)}
 					renderItem={({ item }) => (
 						<TouchableWithoutFeedback onPress={() => setSelectedWorkout(item)}>
 							<View style={styles.workoutCard}>
 								<View style={styles.workoutHeader}>
 									<Text style={styles.workoutTitle}>
-										{item.name ? item.name : "Workout"}
+										{item.name ? item.name : "Workout"} - {formatDate(item.date)}
 									</Text>
 									<Text style={styles.workoutTime}>{item.time}</Text>
 								</View>
@@ -234,7 +244,7 @@ const createStyles = (themeStyle) =>
 		},
 		modalContainer: {
 			width: "80%",
-			height: "70%",
+			height: "75%",
 			backgroundColor: "white",
 			borderRadius: 10,
 			padding: 20,
