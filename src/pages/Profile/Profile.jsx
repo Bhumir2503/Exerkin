@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
 	View,
 	StyleSheet,
@@ -6,7 +6,9 @@ import {
 	TouchableWithoutFeedback,
 	FlatList,
 	Button,
-	Image,
+	Modal,
+	Pressable,
+	ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,8 +21,8 @@ export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { username } = useUser();
 	const { workoutHistory, clearWorkoutHistory } = useWorkout();
+	const [selectedWorkout, setSelectedWorkout] = useState(null);
 	const styles = createStyles(themeStyle);
-
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -34,15 +36,7 @@ export default function Profile({ navigation }) {
 						color={themeStyle.textColor}
 					/>
 				</TouchableWithoutFeedback>
-				<Text
-					style={{
-						fontSize: 24,
-						fontWeight: "bold",
-						color: themeStyle.textColor,
-					}}
-				>
-					{username}
-				</Text>
+				<Text style={styles.username}>{username}</Text>
 				<TouchableWithoutFeedback
 					onPress={() => navigation.navigate("Settings")}
 				>
@@ -86,11 +80,14 @@ export default function Profile({ navigation }) {
 				</View> */}
 			</View>
 
-			<Button
-				title="Clear Workout History"
-				onPress={clearWorkoutHistory}
-				color="red"
-			/>
+
+			<View style={styles.clearButtonContainer}>
+				<Button
+					title="Clear Workout History"
+					onPress={clearWorkoutHistory}
+					color="red"
+				/>
+			</View>
 
 			{workoutHistory.length > 0 ? (
 				<FlatList
@@ -99,60 +96,79 @@ export default function Profile({ navigation }) {
 					style={{ width: "100%", padding: 20 }}
 					data={workoutHistory}
 					renderItem={({ item }) => (
-						<TouchableWithoutFeedback>
+						<TouchableWithoutFeedback onPress={() => setSelectedWorkout(item)}>
 							<View style={styles.workoutCard}>
 								<Text style={styles.workoutTitle}>
 									{item.name ? item.name : "Workout"}
 								</Text>
-								<Text style={styles.exerciseCount}>
-									{item.exercises.length} {item.exercises.length > 1 ? "Exercises" : "Exercise"}
-								</Text>
-								<Text style = {styles.exerciseCount}>
-									{item.time}
-								</Text>
-								<View style={styles.exerciseContainer}>
-									{item.exercises.map((exercise, index) => (
-										<View key = {index}>
-											<Text style={styles.exerciseText}>
-												{exercise.name} -{" "} 
-												{exercise.sets.length > 0 ? (
-													<Text style={styles.setText}>
-														{exercise.sets.length} Sets
-													</Text>
-												) : (
-													<Text style={styles.noSetText}>
-														No Sets
-													</Text>
-												)}
-											</Text>
-											{Array.isArray(exercise.sets) && exercise.sets.length > 0 ? (
-												exercise.sets.map((set, setIndex) => {
-													if(set.weight == null){
-														return <Text key = {setIndex} style={styles.setText}>No set data available</Text>
-													}
-													return <Text key = {setIndex} style={styles.setText}>Set {setIndex+1}: {set.weight}lbs x {set.reps}</Text>
-												})
-											) : (
-												<Text style={styles.setText}>No set data available</Text>
-											)}
-										</View>
-									))}
-								</View>
+								<Text style={styles.workoutTime}>{item.time}</Text>
+								<Text style={styles.workoutNote}>{item.note || "No notes"}</Text>
 							</View>
 						</TouchableWithoutFeedback>
 					)}
 					keyExtractor={(item) => item.id}
 				/>
 			) : (
-				<Text style={styles.noWorkoutsText}>
-					No workouts to display
-				</Text>
+				<Text style={styles.noWorkoutsText}>No workouts to display</Text>
 			)}
+
+			<Modal
+				visible={!!selectedWorkout}
+				animationType="fade"
+				transparent={true}
+			>
+				<TouchableWithoutFeedback onPress={() => setSelectedWorkout(null)}>
+				<View style={styles.modalOverlay}>
+					<TouchableWithoutFeedback>
+					<View style={styles.modalContainer}>
+						<ScrollView style={styles.modalScrollView}>
+							{selectedWorkout && (
+								<View>
+									<Text style={styles.workoutTitle}>{selectedWorkout.name}</Text>
+									<Text>Time: {selectedWorkout.time}</Text>
+									<Text>Note: {selectedWorkout.note || "No notes"}</Text>
+
+									{/* Display exercises */}
+									{selectedWorkout.exercises && selectedWorkout.exercises.length > 0 ? (
+										<View>
+											<Text style={styles.sectionTitle}>Exercises:</Text>
+											{selectedWorkout.exercises.map((exercise, index) => (
+												<View key={index} style={styles.exerciseItem}>
+													<Text style={styles.exerciseName}>{exercise.name}</Text>
+													
+													{exercise.sets.map((set, setIndex) => (
+														<View key={setIndex} style={styles.setItem}>
+															<Text>Set {setIndex + 1}:</Text>
+															<Text>{set.weight} lbs</Text>
+															
+															<Text><Text style={{fontStyle:'italic'}}>reps:</Text> {set.reps}</Text>
+														</View>
+													))}
+												</View>
+											))}
+										</View>
+									) : (
+										<Text style={styles.noWorkoutsText}>No exercises recorded</Text>
+									)}
+								</View>
+							)}
+							{/* <Button title="Close" onPress={() => setSelectedWorkout(null)} /> */}
+						</ScrollView>
+						<View style={styles.closeButtonContainer}>
+						<Pressable onPress={() => setSelectedWorkout(null)} style={styles.closeButton}>
+							<Text style={styles.closeButtonText}>Close</Text>
+						</Pressable>
+						</View>
+					</View>
+					
+					</TouchableWithoutFeedback>
+				</View>
+				</TouchableWithoutFeedback>
+			</Modal>
 		</SafeAreaView>
 	);
 }
 
-// Styles
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
@@ -177,10 +193,12 @@ const createStyles = (themeStyle) =>
 			paddingHorizontal: 25,
 			width: "100%",
 		},
-		noWorkoutsText: {
-			fontSize: 16,
-			color: themeStyle.textColorSecondary,
-			textAlign: "center",
+		username: {
+			fontSize: 24,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+		},
+		clearButtonContainer: {
 			marginTop: 20,
 		},
 		workoutCard: {
@@ -188,33 +206,83 @@ const createStyles = (themeStyle) =>
 			padding: 20,
 			borderRadius: 10,
 			marginBottom: 20,
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 2 },
+			shadowOpacity: 0.25,
+			shadowRadius: 3.84,
+			elevation: 5,
 		},
-		workoutTitle: {
-			fontSize: 18,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-		},
-		exerciseCount: {
+		workoutTime: {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,
 			marginTop: 5,
 		},
-		exerciseContainer: {
-			marginTop: 10,
+		workoutNote: {
+			fontSize: 14,
+			fontStyle: "italic",
+			color: themeStyle.textColorSecondary,
+			marginTop: 5,
 		},
-		exerciseText: {
+		modalOverlay: {
+			flex: 1,
+			justifyContent: "center",
+			alignItems: "center",
+			backgroundColor: "rgba(0, 0, 0, 0.5)",
+		},
+		modalContainer: {
+			width: "80%",
+			height: "70%",
+			backgroundColor: "white",
+			borderRadius: 10,
+			padding: 20,
+
+			justifyContent: "space-between"
+		},
+		modalScrollView: {
+			flex: 1,
+		},
+		sectionTitle: {
+			fontSize: 18,
+			fontWeight: "bold",
+			marginTop: 15,
+			color: themeStyle.textColor,
+		},
+		exerciseItem: {
+			backgroundColor: themeStyle.card,
+			padding: 10,
+			marginVertical: 5,
+			borderRadius: 8,
+		},
+		exerciseName: {
 			fontSize: 16,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
+			marginBottom: 5,
 		},
-		setText: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginLeft: 15,
+		setItem: {
+			backgroundColor: themeStyle.cardSecondary,
+			padding: 8,
+			marginVertical: 4,
+			borderRadius: 6,
+			flexDirection: "row",
+			justifyContent: "space-evenly",
 		},
-		noSetText: {
-			fontSize: 14,
-			color: "#999",
-			marginLeft: 15,
+		closeButtonContainer: {
+			alignItems: "center",
+			justifyContent: "center",
+			paddingVertical: 15,
+			borderTopWidth: 1,
+			borderColor: "#ccc",
+		},
+		closeButton: {
+			backgroundColor: "#B22222",
+			paddingVertical: 12,
+			paddingHorizontal: 40,
+			borderRadius: 8,
+		},
+		closeButtonText: {
+			color: "white",
+			fontSize: 18,
+			fontWeight: "bold",
 		},
 	});
