@@ -15,21 +15,43 @@ const ExerciseForm = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+	const [showInvalidInput, updateShowInvalidInput] = useState(false);
+
 	const addSet = () => {
-		addSetToExercise(exercise.id, { weight: null, reps: null });
+
+		// make sure the last set has values before creating another set
+		if (exercise.sets[exercise.sets.length - 1].weight !== ""
+				&& exercise.sets[exercise.sets.length - 1].reps !== ""
+				&& exercise.sets[exercise.sets.length - 1].weight !== null
+				&& exercise.sets[exercise.sets.length - 1].reps !== null) {
+
+			addSetToExercise(exercise.id, { weight: null, reps: null });
+			updateShowInvalidInput(false);
+		}
+		else {
+			updateShowInvalidInput(true);
+		}
 	};
 
 	const handleWeightChange = (text, setIndex) => {
+
+		// filter out non-number values
+		const numericValue = text.replace(/[^0-9]/g, "");
+
 		updateSetInExercise(exercise.id, setIndex, {
 			...exercise.sets[setIndex],
-			weight: text,
+			weight: numericValue,
 		});
 	};
 
 	const handleRepsChange = (text, setIndex) => {
+
+		// filter out non-number values
+		const numericValue = text.replace(/[^0-9]/g, "");
+
 		updateSetInExercise(exercise.id, setIndex, {
 			...exercise.sets[setIndex],
-			reps: text,
+			reps: numericValue,
 		});
 	};
 
@@ -99,18 +121,14 @@ const ExerciseForm = ({ exercise }) => {
 					</Text>
 					<View style={{ flexDirection: "row" }}>
 						<TextInput
-							style={{
-								fontSize: 16,
-								color: themeStyle.textColor,
-								width: 75,
-								textAlign: "center",
-								fontWeight: "bold",
-								backgroundColor: themeStyle.backgroundColor,
-								padding: 5,
-								paddingHorizontal: 10,
-								borderRadius: 5,
-							}}
+							style={[
+								styles.inputStyle, 
+								(index === exercise.sets.length - 1 
+									&& showInvalidInput) 
+								&& styles.invalidInputStyle
+							]}
 							inputMode="numeric"
+							keyboardType="numeric"
 							placeholder="100"
 							value={set.weight}
 							onChangeText={(text) =>
@@ -120,18 +138,13 @@ const ExerciseForm = ({ exercise }) => {
 							maxLength={3}
 						/>
 						<TextInput
-							style={{
-								fontSize: 16,
-								color: themeStyle.textColor,
-								width: 75,
-								textAlign: "center",
-								fontWeight: "bold",
-								backgroundColor: themeStyle.backgroundColor,
-								padding: 5,
-								paddingHorizontal: 10,
-								borderRadius: 5,
-								marginLeft: 5,
-							}}
+							style={[
+								styles.inputStyle, 
+								(index === exercise.sets.length - 1 
+									&& showInvalidInput) 
+									&& styles.invalidInputStyle,
+								{marginLeft: 5}
+							]}
 							inputMode="numeric"
 							placeholder="8"
 							value={set.reps}
@@ -160,6 +173,12 @@ const createStyles = (theme) =>
 			width: "90%",
 			marginBottom: "5%",
 			borderRadius: 7,
+
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 2 },
+			shadowOpacity: 0.25,
+			shadowRadius: 3.84,
+			elevation: 5,
 		},
 		workoutName: {
 			color: theme.primary,
@@ -187,6 +206,21 @@ const createStyles = (theme) =>
 			fontWeight: "700",
 			fontSize: 16,
 		},
+		inputStyle: {
+			fontSize: 16,
+			color: theme.textColor,
+			width: 75,
+			textAlign: "center",
+			fontWeight: "bold",
+			backgroundColor: theme.backgroundColor,
+			padding: 5,
+			paddingHorizontal: 10,
+			borderRadius: 5,
+		},
+		invalidInputStyle: {
+			borderColor: "red",
+			borderWidth: 2,
+		}
 	});
 
 export default ExerciseForm;
