@@ -7,10 +7,13 @@ import {
 } from "../cache/workoutHistoryCache";
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
-import { getWorkoutsFromFirestore, addWorkoutToFirestore, batchDeleteWorkoutFromFirestore } from "../utils/WorkoutFirestoreServices";
-import {useUser} from "./UserContext";
+import {
+	getWorkoutsFromFirestore,
+	addWorkoutToFirestore,
+	batchDeleteWorkoutFromFirestore,
+} from "../utils/WorkoutFirestoreServices";
+import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
-
 
 const WorkoutContext = createContext();
 
@@ -43,17 +46,17 @@ export const WorkoutProvider = ({ children }) => {
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 
-	const {user} = useUser();
+	const { user } = useUser();
 
 	// retrieve workout history from cache
 	useEffect(() => {
 		const getWorkoutHistory = async () => {
 			console.log("Getting workout history");
 			const history = await getWorkoutHistoryCache();
-			if(history.length === 0) {
+			if (history.length === 0) {
 				console.log("No workout history found");
 				return;
-			}else {
+			} else {
 				console.log("Workout history found");
 				setWorkoutHistory(history.workout);
 			}
@@ -68,10 +71,20 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	const workoutCompleted = (name, time) => {
-
 		// loop through activeExercise to check for empty sets and remove them
 		const activeExerciseFiltered = activeExercise.map((exercise) => {
-			const sets = exercise.sets.filter((set) => set.weight !== null && set.weight !== "");
+			const sets = exercise.sets.filter(
+				(set) =>
+					set.weight !== null &&
+					set.weight !== "" &&
+					set.weight !== 0 &&
+					set.time !== null &&
+					set.time !== "" &&
+					set.time !== 0 &&
+					set.distance !== null &&
+					set.distance !== "" &&
+					set.distance !== 0
+			);
 			return { ...exercise, sets };
 		});
 
@@ -87,8 +100,6 @@ export const WorkoutProvider = ({ children }) => {
 			setActiveId(null);
 			return;
 		}
-
-
 
 		const workout = {
 			userId: user.uid,

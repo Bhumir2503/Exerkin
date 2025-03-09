@@ -5,16 +5,12 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	Platform,
 } from "react-native";
-import uuid from "react-native-uuid";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
-	const { themeStyle } = useTheme();
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const styles = createStyles(themeStyle);
 
 	const addSet = () => {
 		addSetToExercise(exercise.id, { weight: null, reps: null });
