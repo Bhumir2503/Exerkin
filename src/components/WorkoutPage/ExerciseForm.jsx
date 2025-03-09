@@ -97,9 +97,9 @@ const UserInputSection = ({
 				{index + 1}
 			</Text>
 			<View style={{ flexDirection: "row" }}>
-				{inputTypes.map((inputType, index) => (
+				{inputTypes.map((inputType, inputIndex) => (
 					<TextInput
-						key={index}
+						key={inputIndex}
 						style={{
 							fontSize: 16,
 							color: themeStyle.textColor,
@@ -113,10 +113,10 @@ const UserInputSection = ({
 							marginLeft: 7,
 						}}
 						inputMode={inputType}
-						placeholder={placeholders[index]}
+						placeholder={placeholders[inputIndex]}
 						placeholderTextColor={"gray"}
-						maxLength={lengths[index]}
-						onChangeText={(text) => functions[index](text, index)}
+						maxLength={lengths[inputIndex]}
+						onChangeText={(text) => functions[inputIndex](text, index)}
 					/>
 				))}
 			</View>
@@ -168,6 +168,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 
 	const addSet = () => {
 		addSetToExercise(exercise.id, { weight: null, reps: null });
+		console.log(exercise.sets);
 	};
 
 	const handleWeightChange = (text, index) => {
