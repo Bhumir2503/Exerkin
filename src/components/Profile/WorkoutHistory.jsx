@@ -10,12 +10,16 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutHistoryModal from "./WorkoutHistoryModal";
 
+
+// Workout History Component
+// Displays a list of past workouts with details such as date, time, and notes.
 const WorkoutHistory = () => {
 	const { workoutHistory } = useWorkout();
 	const { themeStyle } = useTheme();
 	const [selectedWorkout, setSelectedWorkout] = useState(null);
 	const styles = createStyles(themeStyle);
 
+	// Function to format the date from a timestamp
 	const formatDate = (timestamp) => {
 		if (!timestamp) return "No date";
 		if (timestamp.seconds) {
@@ -24,6 +28,8 @@ const WorkoutHistory = () => {
 		return new Date(timestamp).toLocaleDateString();
 	};
 
+	// if the workout history is empty, display a message
+	// otherwise, display the workout history
 	return workoutHistory.length > 0 ? (
 		<>
 			<FlatList

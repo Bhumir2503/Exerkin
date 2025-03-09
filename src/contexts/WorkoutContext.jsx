@@ -117,26 +117,32 @@ export const WorkoutProvider = ({ children }) => {
 		// Cache the workout
 		addWorkoutToHistoryCache(workout);
 
+		// Reset useStates
 		setActiveExercise([]);
 		setActiveId(null);
 	};
 
 	const workoutCancelled = () => {
+		// Reset useStates
 		setActiveExercise([]);
 		setActiveId(null);
 	};
 
+
+	// Add excercise to active workout
 	const addExerciseToActiveWorkout = async (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
 
+	// Remove exercise from active workout
 	const removeExerciseFromActiveWorkout = (exerciseId) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.filter((exercise) => exercise.id !== exerciseId)
 		);
 	};
 
+	// Add set to exercise in active workout
 	const addSetToExercise = (exerciseId, set) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.map((exercise) =>
@@ -147,6 +153,8 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
+	// Update set in exercise in active workout
+	// setIndex is the index of the set in the exercise.sets array
 	const updateSetInExercise = (exerciseId, setIndex, set) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.map((exercise) =>
@@ -162,6 +170,8 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
+	// Remove set from exercise in active workout
+	// setIndex is the index of the set in the exercise.sets array
 	const removeSetFromExercise = (exerciseId, setIndex) => {
 		setActiveExercise((prevExercises) =>
 			prevExercises.map((exercise) =>
@@ -177,6 +187,7 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
+	// Clear workout history
 	const clearWorkoutHistory = () => {
 		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
 		setWorkoutHistory([]);
