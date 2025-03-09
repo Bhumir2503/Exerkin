@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
+// Workout History Modal Component
+// Displays detailed information about a selected workout, including exercises and sets.
 const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);

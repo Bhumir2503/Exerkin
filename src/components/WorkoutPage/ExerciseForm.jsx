@@ -10,26 +10,8 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
-	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
-	const addSet = () => {
-		addSetToExercise(exercise.id, { weight: null, reps: null });
-	};
-
-	const handleWeightChange = (text, setIndex) => {
-		updateSetInExercise(exercise.id, setIndex, {
-			...exercise.sets[setIndex],
-			weight: text,
-		});
-	};
-
-	const handleRepsChange = (text, setIndex) => {
-		updateSetInExercise(exercise.id, setIndex, {
-			...exercise.sets[setIndex],
-			reps: text,
-		});
-	};
-
+	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
 			return <BodyWeightExercises exercise={exercise} />;
@@ -130,10 +112,12 @@ const BodyWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
+		// Add a new set with null values for reps
 		addSetToExercise(exercise.id, { reps: null });
 	};
 
 	const handleRepsChange = (text, index) => {
+		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: text,
@@ -167,11 +151,12 @@ const WeightLiftingExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
+		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
-		console.log(exercise.sets);
 	};
 
 	const handleWeightChange = (text, index) => {
+		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			weight: text,
@@ -179,6 +164,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 	};
 
 	const handleRepsChange = (text, index) => {
+		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: text,
@@ -212,10 +198,12 @@ const AssistedWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
+		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
+		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			weight: text,
@@ -223,6 +211,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 	};
 
 	const handleRepsChange = (text, index) => {
+		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: text,
@@ -256,10 +245,12 @@ const CardioDistanceExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
+		// Add a new set with null values for time and distance
 		addSetToExercise(exercise.id, { time: null, miles: null });
 	};
 
 	const handleTimeChange = (text, index) => {
+		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			time: text,
@@ -267,6 +258,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 	};
 
 	const handleDistanceChange = (text, index) => {
+		// Update the distance for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			distance: text,
@@ -300,10 +292,12 @@ const CardioTimeExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
+		// Add a new set with null values for time
 		addSetToExercise(exercise.id, { time: null });
 	};
 
 	const handleTimeChange = (text, index) => {
+		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			time: text,
