@@ -86,11 +86,24 @@ const ExerciseSelector = ({}) => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
+			let setType = null;
+			if (selectedExercise.type === "weightlifting") {
+				setType = [{reps: null, weight: null}];
+			} else if (selectedExercise.type === "bodyweight") {
+				setType = [{reps: null}];
+			} else if (selectedExercise.type === "assisted-weight") {
+				setType = [{reps: null, weight: null}];
+			} else if (selectedExercise.type === "cardio-distance") {
+				setType = [{time: null, distance: null}];
+			} else if (selectedExercise.type === "cardio-time") {
+				setType = [{time: null}];
+			}
+
 			const exercise = {
 				id: selectedExercise.id,
 				name: selectedExercise.name,
-				sets: [{ reps: null, weight: null }],
-				rest: null,
+				type: selectedExercise.type,
+				sets: setType,
 				notes: "",
 				order: activeExercise.length + 1,
 				completed: false,

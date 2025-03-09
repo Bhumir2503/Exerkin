@@ -21,12 +21,13 @@ export const equipmentTypes = [
 	{ id: "Other", name: "Other" },
 ];
 
-export const workoutTypes = [
-    { id: "cardio", name: "Cardio" },
-    { id: "bodyweight", name: "Bodyweight" },
-    { id: "weightlifting", name: "Weightlifting" },
-    { id: "assisted", name: "Assisted" },
-    { id: "other", name: "Other" },
+// Exercise types that determine form layouts
+export const exerciseTypes = [
+	{ id: "bodyweight", name: "Bodyweight" },
+	{ id: "weightlifting", name: "Weightlifting" },
+	{ id: "assisted", name: "Assisted" },
+	{ id: "cardio-distance", name: "Cardio (Distance)" },
+	{ id: "cardio-time", name: "Cardio (Time)" },
 ];
 
 // Exercises with more detailed information
@@ -40,12 +41,11 @@ export const exercises = [
 		primaryMuscles: ["Quadriceps", "Hamstrings", "Calves"],
 		secondaryMuscles: ["Core", "Glutes"],
 		difficulty: "scalable",
-		type: "cardio",
+		type: "cardio-distance",
 		instructions:
 			"Start with a warm-up walk, then increase speed to a comfortable running pace. Maintain upright posture with natural arm swing.",
 		videoUrl: "/videos/treadmill_run.mp4",
 		imageUrl: "/images/treadmill_run.jpg",
-		metrics: ["distance", "time", "calories", "heart_rate"],
 	},
 	{
 		id: "stationary_bike",
@@ -55,18 +55,11 @@ export const exercises = [
 		primaryMuscles: ["Quadriceps", "Hamstrings", "Calves"],
 		secondaryMuscles: ["Glutes"],
 		difficulty: "scalable",
-		type: "cardio",
+		type: "cardio-distance",
 		instructions:
 			"Adjust the seat height so your knee is slightly bent at the bottom of the pedal stroke. Maintain a steady rhythm at your target resistance level.",
 		videoUrl: "/videos/stationary_bike.mp4",
 		imageUrl: "/images/stationary_bike.jpg",
-		metrics: [
-			"distance",
-			"time",
-			"calories",
-			"heart_rate",
-			"resistance_level",
-		],
 	},
 	{
 		id: "elliptical",
@@ -76,18 +69,11 @@ export const exercises = [
 		primaryMuscles: ["Quadriceps", "Hamstrings", "Glutes"],
 		secondaryMuscles: ["Core", "Arms", "Shoulders"],
 		difficulty: "scalable",
-		type: "cardio",
+		type: "cardio-distance",
 		instructions:
 			"Stand upright with good posture on the machine, engage core muscles, and use both the leg and arm components for a full-body workout.",
 		videoUrl: "/videos/elliptical.mp4",
 		imageUrl: "/images/elliptical.jpg",
-		metrics: [
-			"distance",
-			"time",
-			"calories",
-			"heart_rate",
-			"resistance_level",
-		],
 	},
 
 	// Assisted exercises
@@ -99,12 +85,11 @@ export const exercises = [
 		primaryMuscles: ["Back", "Lats"],
 		secondaryMuscles: ["Biceps", "Shoulders"],
 		difficulty: "beginner",
-		type: "strength",
+		type: "assisted-weight",
 		instructions:
 			"Adjust the assistance weight to your needs. Grip the bar with hands wider than shoulder-width, then pull yourself up until your chin is over the bar. Lower back down with control.",
 		videoUrl: "/videos/assisted_pull_up.mp4",
 		imageUrl: "/images/assisted_pull_up.jpg",
-		assistanceType: "machine counterweight",
 	},
 	{
 		id: "assisted_dip",
@@ -114,12 +99,11 @@ export const exercises = [
 		primaryMuscles: ["Chest", "Triceps"],
 		secondaryMuscles: ["Shoulders"],
 		difficulty: "beginner",
-		type: "strength",
+		type: "assisted-weight",
 		instructions:
 			"Set the assistance weight. Grip the parallel bars, lower your body by bending your elbows until your upper arms are parallel to the ground, then push back up.",
 		videoUrl: "/videos/assisted_dip.mp4",
 		imageUrl: "/images/assisted_dip.jpg",
-		assistanceType: "machine counterweight",
 	},
 	{
 		id: "smith_machine_squat",
@@ -129,12 +113,11 @@ export const exercises = [
 		primaryMuscles: ["Quadriceps", "Glutes"],
 		secondaryMuscles: ["hamstrings", "calves", "core"],
 		difficulty: "beginner",
-		type: "strength",
+		type: "weightlifting",
 		instructions:
 			"Position yourself under the bar with feet shoulder-width apart. Unrack the bar, lower into a squat position until thighs are parallel to the ground, then push back up.",
 		videoUrl: "/videos/smith_machine_squat.mp4",
 		imageUrl: "/images/smith_machine_squat.jpg",
-		assistanceType: "guided barbell path",
 	},
 
 	// Original strength exercises
@@ -146,6 +129,7 @@ export const exercises = [
 		primaryMuscles: ["Chest"],
 		secondaryMuscles: ["triceps", "shoulders"],
 		difficulty: "intermediate",
+		type: "weightlifting",
 		instructions:
 			"Lie on a bench with a dumbbell in each hand. Push the dumbbells up until your arms are fully extended, then lower them back to chest level.",
 		videoUrl: "/videos/db_bench_press.mp4",
@@ -159,6 +143,7 @@ export const exercises = [
 		primaryMuscles: ["Chest"],
 		secondaryMuscles: ["triceps", "shoulders"],
 		difficulty: "intermediate",
+		type: "weightlifting",
 		instructions:
 			"Lie on a bench with a barbell gripped slightly wider than shoulder width. Lower the bar to your chest, then push it back up to full arm extension.",
 		videoUrl: "/videos/bb_bench_press.mp4",
@@ -172,6 +157,7 @@ export const exercises = [
 		primaryMuscles: ["Back"],
 		secondaryMuscles: ["biceps", "shoulders"],
 		difficulty: "beginner",
+		type: "weightlifting",
 		instructions:
 			"Place one knee and hand on a bench, with the other foot on the floor. Hold a dumbbell in your free hand, pull it up to your hip, then lower it back down with control.",
 		videoUrl: "/videos/db_row.mp4",
@@ -185,6 +171,7 @@ export const exercises = [
 		primaryMuscles: ["Back", "Hamstrings"],
 		secondaryMuscles: ["glutes", "forearms", "core"],
 		difficulty: "advanced",
+		type: "weightlifting",
 		instructions:
 			"Stand with feet hip-width apart, bend at the hips and knees to grip the barbell. Keeping your back straight, stand up while holding the barbell, then lower it back to the ground with control.",
 		videoUrl: "/videos/bb_deadlift.mp4",
@@ -198,6 +185,7 @@ export const exercises = [
 		primaryMuscles: ["Biceps"],
 		secondaryMuscles: ["forearms"],
 		difficulty: "beginner",
+		type: "weightlifting",
 		instructions:
 			"Stand holding dumbbells at your sides with palms facing forward. Curl the weights up toward your shoulders, then lower them back down with control.",
 		videoUrl: "/videos/db_curl.mp4",
@@ -211,6 +199,7 @@ export const exercises = [
 		primaryMuscles: ["Biceps"],
 		secondaryMuscles: ["forearms"],
 		difficulty: "beginner",
+		type: "weightlifting",
 		instructions:
 			"Stand holding a barbell at your thighs with palms facing forward. Curl the barbell up toward your shoulders, then lower it back down with control.",
 		videoUrl: "/videos/bb_curl.mp4",

@@ -1,68 +1,72 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-	View,
-	StyleSheet,
 	Text,
+	View,
+	FlatList,
+	StyleSheet,
 	TouchableWithoutFeedback,
-	Button,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useTheme } from "../../contexts/ThemeContext";
-import { Ionicons } from "@expo/vector-icons";
-import { useUser } from "../../contexts/UserContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import WorkoutHistory from "../../components/Profile/WorkoutHistory";
+import { useTheme } from "../../contexts/ThemeContext";
+import WorkoutHistoryModal from "./WorkoutHistoryModal";
 
-const formatDate = (timestamp) => {
-	if (!timestamp) return "No date";
-	if (timestamp.seconds) {
-		return new Date(timestamp.seconds * 1000).toLocaleDateString();
-	}
-	return new Date(timestamp).toLocaleDateString();
-};
-
-export default function Profile({ navigation }) {
+const WorkoutHistory = () => {
+	const { workoutHistory } = useWorkout();
 	const { themeStyle } = useTheme();
-	const { username } = useUser();
-	const { workoutHistory, clearWorkoutHistory } = useWorkout();
 	const [selectedWorkout, setSelectedWorkout] = useState(null);
 	const styles = createStyles(themeStyle);
 
-	return (
-		<SafeAreaView style={styles.container}>
-			<View style={styles.topBar}>
-				<TouchableWithoutFeedback
-					onPress={() => navigation.navigate("Stats")}
-				>
-					<Ionicons
-						name="stats-chart"
-						size={24}
-						color={themeStyle.textColor}
-					/>
-				</TouchableWithoutFeedback>
-				<Text style={styles.username}>{username}</Text>
-				<TouchableWithoutFeedback
-					onPress={() => navigation.navigate("Settings")}
-				>
-					<Ionicons
-						name="settings"
-						size={24}
-						color={themeStyle.textColor}
-					/>
-				</TouchableWithoutFeedback>
-			</View>
+	const formatDate = (timestamp) => {
+		if (!timestamp) return "No date";
+		if (timestamp.seconds) {
+			return new Date(timestamp.seconds * 1000).toLocaleDateString();
+		}
+		return new Date(timestamp).toLocaleDateString();
+	};
 
-			<Button
-				title="Clear Workout History"
-				onPress={clearWorkoutHistory}
-				color="red"
+	return workoutHistory.length > 0 ? (
+		<>
+			<FlatList
+				bounces={false}
+				showsVerticalScrollIndicator={false}
+				style={{ width: "100%", padding: 20 }}
+				data={[...workoutHistory].sort(
+					(a, b) => b.date.seconds - a.date.seconds
+				)}
+				renderItem={({ item }) => (
+					<TouchableWithoutFeedback
+						onPress={() => setSelectedWorkout(item)}
+					>
+						<View style={styles.workoutCard}>
+							<View style={styles.workoutHeader}>
+								<Text style={styles.workoutTitle}>
+									{item.name ? item.name : "Workout"} -{" "}
+									{formatDate(item.date)}
+								</Text>
+								<Text style={styles.workoutTime}>
+									{item.time}
+								</Text>
+							</View>
+							<Text style={styles.workoutTime}>
+								{item.exercises.length} workouts
+							</Text>
+							<Text style={styles.workoutNote}>
+								{item.note || "No notes"}
+							</Text>
+						</View>
+					</TouchableWithoutFeedback>
+				)}
+				keyExtractor={(item) => item.id}
 			/>
-
-			<WorkoutHistory />
-		</SafeAreaView>
+			<WorkoutHistoryModal
+				selectedWorkout={selectedWorkout}
+				setSelectedWorkout={setSelectedWorkout}
+			/>
+		</>
+	) : (
+		<Text style={styles.noWorkoutsText}>No workouts to display</Text>
 	);
-}
+};
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
@@ -187,3 +191,5 @@ const createStyles = (themeStyle) =>
 			width: "100%",
 		},
 	});
+
+export default WorkoutHistory;
