@@ -11,6 +11,13 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
 
+	const [inputAlert, setInputAlert] = useState(false);
+
+	// bool that if true highlights the last input to notify
+	// user that the field is blank
+	exercise.inputAlert = inputAlert;
+	exercise.setInputAlert = setInputAlert;
+	
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
@@ -62,6 +69,7 @@ const UserInputSection = ({
 	placeholders,
 	functions,
 	lengths,
+	inputAlert,
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -82,19 +90,9 @@ const UserInputSection = ({
 				{inputTypes.map((inputType, inputIndex) => (
 					<TextInput
 						key={inputIndex}
-						style={{
-							fontSize: 16,
-							color: themeStyle.textColor,
-							width: 85,
-							textAlign: "center",
-							fontWeight: "bold",
-							backgroundColor: themeStyle.backgroundColor,
-							padding: 5,
-							paddingHorizontal: 10,
-							borderRadius: 5,
-							marginLeft: 7,
-						}}
+						style={[styles.inputField, inputAlert && styles.inputFieldAlert]}
 						inputMode={inputType}
+						keyboardType="number-pad"
 						placeholder={placeholders[inputIndex]}
 						placeholderTextColor={"gray"}
 						maxLength={lengths[inputIndex]}
@@ -112,15 +110,29 @@ const BodyWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		// Add a new set with null values for reps
-		addSetToExercise(exercise.id, { reps: null });
+		const lastIndex = exercise.sets.length - 1;
+
+		// verify that the values have been entered
+		if (exercise.sets[lastIndex].reps != null
+			&& exercise.sets[lastIndex].reps != "") {
+		
+			// Add a new set with null values for reps
+			addSetToExercise(exercise.id, { reps: null });
+			exercise.setInputAlert(false);
+		}
+		else {
+			exercise.setInputAlert(true);
+		}
 	};
 
 	const handleRepsChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: text,
+			reps: number,
 		});
 	};
 
@@ -136,6 +148,7 @@ const BodyWeightExercises = ({ exercise }) => {
 					placeholders={["12"]}
 					functions={[handleRepsChange]}
 					lengths={[2]}
+					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -151,23 +164,43 @@ const WeightLiftingExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null });
+		const lastIndex = exercise.sets.length - 1;
+
+		// verify that the values have been entered
+		if (exercise.sets[lastIndex].weight !== null
+			&& exercise.sets[lastIndex].weight !== ""
+			&& exercise.sets[lastIndex].reps !== null
+			&& exercise.sets[lastIndex].reps !== "") {
+
+			// Add a new set with null values for weight and reps
+			addSetToExercise(exercise.id, { weight: null, reps: null });
+			exercise.setInputAlert(false);
+		}
+		else {
+			exercise.setInputAlert(true);
+		}
 	};
 
 	const handleWeightChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			weight: text,
+			weight: number,
 		});
 	};
 
 	const handleRepsChange = (text, index) => {
+
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: text,
+			reps: number,
 		});
 	};
 
@@ -183,6 +216,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 					placeholders={["135", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[3, 2]}
+					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -198,23 +232,42 @@ const AssistedWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null });
+		const lastIndex = exercise.sets.length - 1;
+
+		// verify that the values have been entered
+		if (exercise.sets[lastIndex].weight !== null
+			&& exercise.sets[lastIndex].weight !== ""
+			&& exercise.sets[lastIndex].reps !== null
+			&& exercise.sets[lastIndex].reps !== "") {
+
+			// Add a new set with null values for weight and reps
+			addSetToExercise(exercise.id, { weight: null, reps: null });
+			exercise.setInputAlert(false);
+		}
+		else {
+			exercise.setInputAlert(true);
+		}
 	};
 
 	const handleWeightChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			weight: text,
+			weight: number,
 		});
 	};
 
 	const handleRepsChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: text,
+			reps: number,
 		});
 	};
 
@@ -230,6 +283,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 					placeholders={["50", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[3, 2]}
+					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -245,23 +299,43 @@ const CardioDistanceExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		// Add a new set with null values for time and distance
-		addSetToExercise(exercise.id, { time: null, miles: null });
+		const lastIndex = exercise.sets.length - 1;
+
+		// verify that the values have been entered
+		if (exercise.sets[lastIndex].time !== null
+			&& exercise.sets[lastIndex].time !== ""
+			&& exercise.sets[lastIndex].miles !== null
+			&& exercise.sets[lastIndex].miles !== "") {
+			
+			console.log("hi")
+			// Add a new set with null values for time and distance
+			addSetToExercise(exercise.id, { time: null, miles: null });
+			exercise.setInputAlert(false);
+		}
+		else {
+			exercise.setInputAlert(true);
+		}
 	};
 
 	const handleTimeChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			time: text,
+			time: number,
 		});
 	};
 
 	const handleDistanceChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the distance for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			distance: text,
+			distance: number,
 		});
 	};
 
@@ -277,6 +351,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 					placeholders={["1:00:00", "1.5"]}
 					functions={[handleTimeChange, handleDistanceChange]}
 					lengths={[3, 5]}
+					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -292,11 +367,27 @@ const CardioTimeExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		// Add a new set with null values for time
-		addSetToExercise(exercise.id, { time: null });
+		const lastIndex = exercise.sets.length - 1;
+
+		// verify that the values have been entered
+		if (exercise.sets[lastIndex].weight !== null
+			&& exercise.sets[lastIndex].weight !== ""
+			&& exercise.sets[lastIndex].reps !== null
+			&& exercise.sets[lastIndex].reps !== "") {
+
+			// Add a new set with null values for time
+			addSetToExercise(exercise.id, { time: null });
+			exercise.setInputAlert(false);
+		}
+		else {
+			exercise.setInputAlert(true);
+		}
 	};
 
 	const handleTimeChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, '');
+
 		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
@@ -316,6 +407,7 @@ const CardioTimeExercises = ({ exercise }) => {
 					placeholders={["00:00"]}
 					functions={[handleTimeChange]}
 					lengths={[3, 2]}
+					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -333,6 +425,11 @@ const createStyles = (themeStyle) =>
 			width: "90%",
 			marginBottom: "5%",
 			borderRadius: 7,
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 2 },
+			shadowOpacity: 0.25,
+			shadowRadius: 3.84,
+			elevation: 5,
 		},
 		workoutName: {
 			color: themeStyle.primary,
@@ -372,6 +469,22 @@ const createStyles = (themeStyle) =>
 			color: "white",
 			fontWeight: "700",
 			fontSize: 16,
+		},
+		inputField: {
+			fontSize: 16,
+			color: themeStyle.textColor,
+			width: 85,
+			textAlign: "center",
+			fontWeight: "bold",
+			backgroundColor: themeStyle.backgroundColor,
+			padding: 5,
+			paddingHorizontal: 10,
+			borderRadius: 5,
+			marginLeft: 7,
+		},
+		inputFieldAlert: {
+			borderColor: "red",
+			borderWidth: 2,
 		},
 	});
 
