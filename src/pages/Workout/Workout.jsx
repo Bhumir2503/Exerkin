@@ -47,6 +47,7 @@ export default function Workout() {
 			return;
 		}
 		workoutCompleted(workoutTitle, timeRef.current);
+		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 		setModalVisible(false);
@@ -54,6 +55,7 @@ export default function Workout() {
 
 	const cancelWorkout = () => {
 		workoutCancelled();
+		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 		setModalVisible(false);
