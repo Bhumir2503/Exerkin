@@ -45,6 +45,7 @@ export const WorkoutProvider = ({ children }) => {
 	// }
 	const [activeExercise, setActiveExercise] = useState([]);
 	const [activeId, setActiveId] = useState(null);
+	const [startTime, setStartTime] = useState(null);
 
 	const { user } = useUser();
 
@@ -66,6 +67,7 @@ export const WorkoutProvider = ({ children }) => {
 	}, []);
 
 	const newWorkoutStarted = () => {
+		setStartTime(firestore.Timestamp.now());
 		setActiveExercise([]);
 		setActiveId(uuid.v4());
 	};
@@ -106,8 +108,9 @@ export const WorkoutProvider = ({ children }) => {
 			name: name,
 			id: activeId,
 			exercises: activeExerciseChecked,
+			startedAt: startTime,
 			completedAt: firestore.Timestamp.now(),
-			time: formatTime(time),
+			duration: formatTime(time),
 			date: firestore.Timestamp.now(), // TODO: change to start time
 		};
 

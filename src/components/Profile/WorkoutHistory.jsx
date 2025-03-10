@@ -9,7 +9,7 @@ import {
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutHistoryModal from "./WorkoutHistoryModal";
-
+import { formatTimeStamptoDateString } from "../../utils/TimeFormat";
 
 // Workout History Component
 // Displays a list of past workouts with details such as date, time, and notes.
@@ -19,19 +19,14 @@ const WorkoutHistory = () => {
 	const [selectedWorkout, setSelectedWorkout] = useState(null);
 	const styles = createStyles(themeStyle);
 
-	// Function to format the date from a timestamp
-	const formatDate = (timestamp) => {
-		if (!timestamp) return "No date";
-		if (timestamp.seconds) {
-			return new Date(timestamp.seconds * 1000).toLocaleDateString();
-		}
-		return new Date(timestamp).toLocaleDateString();
+	const handlePressOnWorkout = (workout) => {
+		setSelectedWorkout(workout);
 	};
 
 	// if the workout history is empty, display a message
 	// otherwise, display the workout history
 	return workoutHistory.length > 0 ? (
-		<>
+		<View>
 			<FlatList
 				bounces={false}
 				showsVerticalScrollIndicator={false}
@@ -41,13 +36,13 @@ const WorkoutHistory = () => {
 				)}
 				renderItem={({ item }) => (
 					<TouchableWithoutFeedback
-						onPress={() => setSelectedWorkout(item)}
+						onPress={() => handlePressOnWorkout(item)}
 					>
 						<View style={styles.workoutCard}>
 							<View style={styles.workoutHeader}>
 								<Text style={styles.workoutTitle}>
 									{item.name ? item.name : "Workout"} -{" "}
-									{formatDate(item.date)}
+									{formatTimeStamptoDateString(item.date)}
 								</Text>
 								<Text style={styles.workoutTime}>
 									{item.time}
@@ -64,11 +59,12 @@ const WorkoutHistory = () => {
 				)}
 				keyExtractor={(item) => item.id}
 			/>
+
 			<WorkoutHistoryModal
 				selectedWorkout={selectedWorkout}
 				setSelectedWorkout={setSelectedWorkout}
 			/>
-		</>
+		</View>
 	) : (
 		<Text style={styles.noWorkoutsText}>No workouts to display</Text>
 	);
