@@ -157,7 +157,7 @@ const createStyles = (themeStyle) =>
 			paddingVertical: 10,
 		},
 		scrollViewContent: {
-			paddingBottom: 20,
+			paddingBottom: 0,
 		},
 		title: {
 			fontSize: 18,
