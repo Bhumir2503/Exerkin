@@ -36,50 +36,50 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 
 				{selectedWorkout && (
 					<View style={styles.modalContainer}>
+						<View style={{paddingHorizontal: 20, paddingTop: 20}}>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+								}}
+							>
+								<Text style={styles.title}>
+									{selectedWorkout.name}
+								</Text>
+								<Text style={styles.text}>
+									<Text style={styles.bold}></Text>{" "}
+									{formatTimeStamptoDateString(
+										selectedWorkout.date
+									)}
+								</Text>
+							</View>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+								}}
+							>
+								<Text style={styles.text}>
+									{formatTimeToText(selectedWorkout.duration)}
+								</Text>
+								<Text style={styles.text}>
+									{formatTimeStamptoTimeString(
+										selectedWorkout.startedAt
+									)}{" "}
+									-{" "}
+									{formatTimeStamptoTimeString(
+										selectedWorkout.completedAt
+									)}
+								</Text>
+							</View>
+						</View>
 						<ScrollView
 							style={styles.scrollView}
 							contentContainerStyle={styles.scrollViewContent}
 						>
 							<View>
-								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										justifyContent: "space-between",
-									}}
-								>
-									<Text style={styles.title}>
-										{selectedWorkout.name}
-									</Text>
-									<Text style={styles.text}>
-										<Text style={styles.bold}></Text>{" "}
-										{formatTimeStamptoDateString(
-											selectedWorkout.date
-										)}
-									</Text>
-								</View>
-								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										justifyContent: "space-between",
-									}}
-								>
-									<Text style={styles.text}>
-										{formatTimeToText(
-											selectedWorkout.duration
-										)}
-									</Text>
-									<Text style={styles.text}>
-										{formatTimeStamptoTimeString(
-											selectedWorkout.startedAt
-										)}{" "}
-										-{" "}
-										{formatTimeStamptoTimeString(
-											selectedWorkout.completedAt
-										)}
-									</Text>
-								</View>
 								{selectedWorkout.exercises.map(
 									(exercise, index) => (
 										<ExerciseCard
@@ -148,6 +148,7 @@ const createStyles = (themeStyle) =>
 		scrollView: {
 			width: "100%",
 			padding: 20,
+			paddingTop: 10,
 		},
 		scrollViewContent: {
 			paddingBottom: 20,
