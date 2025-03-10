@@ -1,4 +1,5 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+import { getThemeCache } from "../cache/themeCache";
 const ThemeContext = createContext();
 
 const themes = {
@@ -127,6 +128,18 @@ const themes = {
 
 export const ThemeProvider = ({ children }) => {
 	const [theme, setTheme] = useState("lavenderMist"); // Default theme
+
+	useEffect(() => {
+		const getTheme = async () => {
+			const theme = await getThemeCache();
+			console.log("Theme: ", theme);
+			if (theme) {
+				setTheme(theme);
+			}
+		};
+
+		getTheme();
+	}, []);
 
 	const changeTheme = (theme) => {
 		setTheme(theme);
