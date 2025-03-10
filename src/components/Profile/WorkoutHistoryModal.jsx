@@ -36,7 +36,13 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 
 				{selectedWorkout && (
 					<View style={styles.modalContainer}>
-						<View style={{paddingHorizontal: 20, paddingTop: 20}}>
+						<View
+							style={{
+								paddingHorizontal: 20,
+								paddingTop: 20,
+								boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+							}}
+						>
 							<View
 								style={{
 									flexDirection: "row",
@@ -137,7 +143,7 @@ const createStyles = (themeStyle) =>
 			backgroundColor: "rgba(0, 0, 0, 0.5)",
 		},
 		modalContainer: {
-			backgroundColor: themeStyle.card,
+			backgroundColor: themeStyle.backgroundColor,
 			width: "90%",
 			maxHeight: "80%",
 			borderRadius: 10,
@@ -148,7 +154,7 @@ const createStyles = (themeStyle) =>
 		scrollView: {
 			width: "100%",
 			padding: 20,
-			paddingTop: 10,
+			paddingVertical: 10,
 		},
 		scrollViewContent: {
 			paddingBottom: 20,
@@ -168,7 +174,7 @@ const createStyles = (themeStyle) =>
 			fontWeight: "bold",
 		},
 		exerciseCard: {
-			backgroundColor: themeStyle.secondary,
+			backgroundColor: themeStyle.card,
 			padding: 15,
 			borderRadius: 10,
 			marginBottom: 15,
