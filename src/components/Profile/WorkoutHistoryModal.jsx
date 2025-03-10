@@ -7,256 +7,190 @@ import {
 	Text,
 	Pressable,
 } from "react-native";
+import { useState } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
+import {
+	formatTimeStamptoDateString,
+	formatTimeStamptoTimeString,
+	formatTimeToText,
+} from "../../utils/TimeFormat";
 
-// Workout History Modal Component
-// Displays detailed information about a selected workout, including exercises and sets.
 const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+
+	const closeModal = () => {
+		setSelectedWorkout(null);
+	};
+
 	return (
 		<Modal
 			visible={!!selectedWorkout}
 			animationType="fade"
 			transparent={true}
 		>
-			<TouchableWithoutFeedback onPress={() => setSelectedWorkout(null)}>
-				<View style={styles.modalOverlay}>
-					<TouchableWithoutFeedback>
-						<View style={styles.modalContainer}>
-							<ScrollView style={styles.modalScrollView}>
-								{selectedWorkout && (
-									<View>
-										<Text style={styles.workoutTitle}>
-											{selectedWorkout.name}
-										</Text>
-										<Text>
-											Time: {selectedWorkout.time}
-										</Text>
-										<Text>
-											Note:{" "}
-											{selectedWorkout.note || "No notes"}
-										</Text>
+			<View style={styles.modalOverlay}>
+				<TouchableWithoutFeedback onPress={closeModal}>
+					<View style={styles.backgroundOverlay} />
+				</TouchableWithoutFeedback>
 
-										{/* Display exercises */}
-										{selectedWorkout.exercises &&
-										selectedWorkout.exercises.length > 0 ? (
-											<View>
-												<Text
-													style={styles.sectionTitle}
-												>
-													Exercises:
-												</Text>
-												{selectedWorkout.exercises.map(
-													(exercise, index) => (
-														<View
-															key={index}
-															style={
-																styles.exerciseItem
-															}
-														>
-															<Text
-																style={
-																	styles.exerciseName
-																}
-															>
-																{exercise.name}
-															</Text>
-
-															{exercise.sets.map(
-																(
-																	set,
-																	setIndex
-																) => (
-																	<View
-																		key={
-																			setIndex
-																		}
-																		style={
-																			styles.setItem
-																		}
-																	>
-																		<Text>
-																			Set{" "}
-																			{setIndex +
-																				1}
-																			:
-																		</Text>
-																		<Text>
-																			{
-																				set.weight
-																			}{" "}
-																			lbs
-																		</Text>
-
-																		<Text>
-																			<Text
-																				style={{
-																					fontStyle:
-																						"italic",
-																				}}
-																			>
-																				reps:
-																			</Text>{" "}
-																			{
-																				set.reps
-																			}
-																		</Text>
-																	</View>
-																)
-															)}
-														</View>
-													)
-												)}
-											</View>
-										) : (
-											<Text style={styles.noWorkoutsText}>
-												No exercises recorded
-											</Text>
-										)}
-									</View>
-								)}
-								{/* <Button title="Close" onPress={() => setSelectedWorkout(null)} /> */}
-							</ScrollView>
-							<View style={styles.closeButtonContainer}>
-								<Pressable
-									onPress={() => setSelectedWorkout(null)}
-									style={styles.closeButton}
+				{selectedWorkout && (
+					<View style={styles.modalContainer}>
+						<ScrollView
+							style={styles.scrollView}
+							contentContainerStyle={styles.scrollViewContent}
+						>
+							<View>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										justifyContent: "space-between",
+									}}
 								>
-									<Text style={styles.closeButtonText}>
-										Close
+									<Text style={styles.title}>
+										{selectedWorkout.name}
 									</Text>
-								</Pressable>
+									<Text style={styles.text}>
+										<Text style={styles.bold}></Text>{" "}
+										{formatTimeStamptoDateString(
+											selectedWorkout.date
+										)}
+									</Text>
+								</View>
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										justifyContent: "space-between",
+									}}
+								>
+									<Text style={styles.text}>
+										{formatTimeToText(
+											selectedWorkout.duration
+										)}
+									</Text>
+									<Text style={styles.text}>
+										{formatTimeStamptoTimeString(
+											selectedWorkout.startedAt
+										)}{" "}
+										-{" "}
+										{formatTimeStamptoTimeString(
+											selectedWorkout.completedAt
+										)}
+									</Text>
+								</View>
+								{selectedWorkout.exercises.map(
+									(exercise, index) => (
+										<ExerciseCard
+											key={index}
+											exercise={exercise}
+										/>
+									)
+								)}
 							</View>
-						</View>
-					</TouchableWithoutFeedback>
-				</View>
-			</TouchableWithoutFeedback>
+						</ScrollView>
+						<Pressable
+							style={styles.closeButton}
+							onPress={closeModal}
+						>
+							<Text style={styles.closeButtonText}>Close</Text>
+						</Pressable>
+					</View>
+				)}
+			</View>
 		</Modal>
+	);
+};
+
+const ExerciseCard = ({ exercise }) => {
+	const { themeStyle } = useTheme();
+	const styles = createStyles(themeStyle);
+
+	return (
+		<View style={styles.exerciseCard}>
+			<Text style={styles.exerciseTitle}>{exercise.name}</Text>
+			{exercise.sets.map((set, index) => (
+				<View key={index}>
+					<Text style={styles.exerciseText}>
+						{set.weight} lbs x {set.reps} reps
+					</Text>
+				</View>
+			))}
+		</View>
 	);
 };
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
-		container: {
-			flex: 1,
-			alignItems: "center",
-			backgroundColor: themeStyle.backgroundColor,
-		},
-		topBar: {
-			marginTop: 20,
-			paddingHorizontal: 25,
-			width: "100%",
-			flexDirection: "row",
-			justifyContent: "space-between",
-			alignItems: "center",
-		},
-		profileSection: {
-			padding: 20,
-			paddingBottom: 20,
-			flexDirection: "row",
-			alignItems: "center",
-			marginTop: 20,
-			paddingHorizontal: 25,
-			width: "100%",
-		},
-		username: {
-			fontSize: 24,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-		},
-		clearButtonContainer: {
-			marginTop: 20,
-		},
-		workoutCard: {
-			backgroundColor: themeStyle.card,
-			padding: 20,
-			borderRadius: 10,
-			marginBottom: 20,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.25,
-			shadowRadius: 3.84,
-			elevation: 5,
-		},
-		workoutTime: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginTop: 5,
-		},
-		workoutNote: {
-			fontSize: 14,
-			fontStyle: "italic",
-			color: themeStyle.textColorSecondary,
-			marginTop: 5,
-		},
 		modalOverlay: {
 			flex: 1,
 			justifyContent: "center",
 			alignItems: "center",
+		},
+		backgroundOverlay: {
+			position: "absolute",
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0,
 			backgroundColor: "rgba(0, 0, 0, 0.5)",
 		},
 		modalContainer: {
-			width: "80%",
-			height: "75%",
-			backgroundColor: "white",
+			backgroundColor: themeStyle.card,
+			width: "90%",
+			maxHeight: "80%",
 			borderRadius: 10,
+			padding: 0,
+			overflow: "hidden",
+			zIndex: 1,
+		},
+		scrollView: {
+			width: "100%",
 			padding: 20,
-
-			justifyContent: "space-between",
 		},
-		modalScrollView: {
-			flex: 1,
+		scrollViewContent: {
+			paddingBottom: 20,
 		},
-		sectionTitle: {
+		title: {
 			fontSize: 18,
 			fontWeight: "bold",
-			marginTop: 15,
-			color: themeStyle.textColor,
+			marginBottom: 15,
+			color: themeStyle.primary || "#000",
 		},
-		exerciseItem: {
-			backgroundColor: themeStyle.card,
-			padding: 10,
-			marginVertical: 5,
-			borderRadius: 8,
-		},
-		exerciseName: {
+		text: {
 			fontSize: 16,
+			marginBottom: 15,
+			color: themeStyle.textColor || "#000",
+		},
+		bold: {
 			fontWeight: "bold",
-			color: themeStyle.textColor,
+		},
+		exerciseCard: {
+			backgroundColor: themeStyle.secondary,
+			padding: 15,
+			borderRadius: 10,
+			marginBottom: 15,
+		},
+		exerciseTitle: {
+			fontSize: 16,
 			marginBottom: 5,
+			fontWeight: "bold",
+			color: themeStyle.textColor || "#000",
 		},
-		setItem: {
-			backgroundColor: themeStyle.cardSecondary,
-			padding: 8,
-			marginVertical: 4,
-			borderRadius: 6,
-			flexDirection: "row",
-			justifyContent: "space-evenly",
-		},
-		closeButtonContainer: {
-			alignItems: "center",
-			justifyContent: "center",
-			paddingVertical: 15,
-			borderTopWidth: 1,
-			borderColor: "#ccc",
+		exerciseText: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary || "#000",
+			marginBottom: 2,
 		},
 		closeButton: {
-			backgroundColor: "#B22222",
-			paddingVertical: 12,
-			paddingHorizontal: 40,
-			borderRadius: 8,
+			backgroundColor: themeStyle.primary || "#3498db",
+			padding: 15,
+			alignItems: "center",
 		},
 		closeButtonText: {
-			color: "white",
-			fontSize: 18,
+			color: "#fff",
 			fontWeight: "bold",
-		},
-		workoutHeader: {
-			flexDirection: "row",
-			justifyContent: "space-between",
-			alignItems: "center",
-			width: "100%",
 		},
 	});
 

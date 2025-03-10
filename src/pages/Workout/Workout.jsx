@@ -46,10 +46,11 @@ export default function Workout() {
 			setTitleError(true);
 			return;
 		}
+		const workoutLength = workoutHistory.length;
 		workoutCompleted(workoutTitle, timeRef.current);
 		timeRef.current = 0;
 		setTitleError(false);
-		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+		setWorkoutTitle("Workout #" + (workoutLength + 2));
 		setModalVisible(false);
 	};
 
