@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { setThemeCache } from "../../cache/themeCache";
 
 export default function EditTheme({ navigation }) {
 	const { theme, themeStyle, changeTheme } = useTheme();
@@ -382,9 +383,15 @@ function ColorChoice() {
 function ColorBox({ color, themeName, label }) {
 	const { changeTheme, theme, themeStyle } = useTheme();
 
+
+	const onPressButton = () => {
+		changeTheme(themeName);
+		setThemeCache(themeName);
+	}
+
 	return (
 		<TouchableOpacity
-			onPress={() => changeTheme(themeName)}
+			onPress={() => onPressButton(themeName)}
 			style={{
 				width: "30%",
 				marginHorizontal: "1.5%",
