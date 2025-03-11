@@ -40,7 +40,6 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 							style={{
 								paddingHorizontal: 20,
 								paddingTop: 20,
-								boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
 							}}
 						>
 							<View
@@ -84,6 +83,8 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 						<ScrollView
 							style={styles.scrollView}
 							contentContainerStyle={styles.scrollViewContent}
+							bounces={false}
+							showsVerticalScrollIndicator={false}
 						>
 							<View>
 								{selectedWorkout.exercises.map(
