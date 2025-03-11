@@ -532,6 +532,7 @@ const createStyles = (themeStyle) =>
 		exerciseDetails: {
 			flexDirection: "row",
 			marginBottom: 4,
+			alignItems: "center",
 		},
 		exerciseCategory: {
 			backgroundColor: themeStyle.accent,

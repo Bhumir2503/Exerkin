@@ -113,6 +113,11 @@ const createStyles = (themeStyle) =>
 			shadowRadius: 3.84,
 			elevation: 5,
 		},
+		workoutTitle:{
+			fontSize: 18,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+		},
 		workoutTime: {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,

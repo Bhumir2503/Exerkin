@@ -476,14 +476,14 @@ const createStyles = (themeStyle) =>
 			width: 85,
 			textAlign: "center",
 			fontWeight: "bold",
-			backgroundColor: themeStyle.backgroundColor,
+			backgroundColor: themeStyle.inputBackground,
 			padding: 5,
 			paddingHorizontal: 10,
 			borderRadius: 5,
 			marginLeft: 7,
 		},
 		inputFieldAlert: {
-			borderColor: "red",
+			borderColor: themeStyle.error,
 			borderWidth: 2,
 		},
 	});
