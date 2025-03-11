@@ -197,6 +197,7 @@ const createStyles = (themeStyle) =>
 			alignItems: "center",
 		},
 		closeButtonText: {
+			fontSize: 16,
 			color: "#fff",
 			fontWeight: "bold",
 		},
