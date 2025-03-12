@@ -10,13 +10,6 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
-
-	const [inputAlert, setInputAlert] = useState(false);
-
-	// bool that if true highlights the last input to notify
-	// user that the field is blank
-	exercise.inputAlert = inputAlert;
-	exercise.setInputAlert = setInputAlert;
 	
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
@@ -69,7 +62,6 @@ const UserInputSection = ({
 	placeholders,
 	functions,
 	lengths,
-	inputAlert,
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -90,7 +82,7 @@ const UserInputSection = ({
 				{inputTypes.map((inputType, inputIndex) => (
 					<TextInput
 						key={inputIndex}
-						style={[styles.inputField, inputAlert && styles.inputFieldAlert]}
+						style={[styles.inputField]}
 						inputMode={inputType}
 						keyboardType="number-pad"
 						placeholder={placeholders[inputIndex]}
@@ -110,19 +102,8 @@ const BodyWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		const lastIndex = exercise.sets.length - 1;
-
-		// verify that the values have been entered
-		if (exercise.sets[lastIndex].reps != null
-			&& exercise.sets[lastIndex].reps != "") {
-		
-			// Add a new set with null values for reps
-			addSetToExercise(exercise.id, { reps: null });
-			exercise.setInputAlert(false);
-		}
-		else {
-			exercise.setInputAlert(true);
-		}
+		// Add a new set with null values for reps
+		addSetToExercise(exercise.id, { reps: null });
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -164,21 +145,9 @@ const WeightLiftingExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		const lastIndex = exercise.sets.length - 1;
-
-		// verify that the values have been entered
-		if (exercise.sets[lastIndex].weight !== null
-			&& exercise.sets[lastIndex].weight !== ""
-			&& exercise.sets[lastIndex].reps !== null
-			&& exercise.sets[lastIndex].reps !== "") {
-
-			// Add a new set with null values for weight and reps
-			addSetToExercise(exercise.id, { weight: null, reps: null });
-			exercise.setInputAlert(false);
-		}
-		else {
-			exercise.setInputAlert(true);
-		}
+		// Add a new set with null values for weight and reps
+		addSetToExercise(exercise.id, { weight: null, reps: null });
+		exercise.setInputAlert(true);
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -232,21 +201,8 @@ const AssistedWeightExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		const lastIndex = exercise.sets.length - 1;
-
-		// verify that the values have been entered
-		if (exercise.sets[lastIndex].weight !== null
-			&& exercise.sets[lastIndex].weight !== ""
-			&& exercise.sets[lastIndex].reps !== null
-			&& exercise.sets[lastIndex].reps !== "") {
-
-			// Add a new set with null values for weight and reps
-			addSetToExercise(exercise.id, { weight: null, reps: null });
-			exercise.setInputAlert(false);
-		}
-		else {
-			exercise.setInputAlert(true);
-		}
+		// Add a new set with null values for weight and reps
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -299,22 +255,8 @@ const CardioDistanceExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		const lastIndex = exercise.sets.length - 1;
-
-		// verify that the values have been entered
-		if (exercise.sets[lastIndex].time !== null
-			&& exercise.sets[lastIndex].time !== ""
-			&& exercise.sets[lastIndex].miles !== null
-			&& exercise.sets[lastIndex].miles !== "") {
-			
-			console.log("hi")
-			// Add a new set with null values for time and distance
-			addSetToExercise(exercise.id, { time: null, miles: null });
-			exercise.setInputAlert(false);
-		}
-		else {
-			exercise.setInputAlert(true);
-		}
+		// Add a new set with null values for time and distance
+		addSetToExercise(exercise.id, { time: null, miles: null });
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -367,21 +309,8 @@ const CardioTimeExercises = ({ exercise }) => {
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
-		const lastIndex = exercise.sets.length - 1;
-
-		// verify that the values have been entered
-		if (exercise.sets[lastIndex].weight !== null
-			&& exercise.sets[lastIndex].weight !== ""
-			&& exercise.sets[lastIndex].reps !== null
-			&& exercise.sets[lastIndex].reps !== "") {
-
-			// Add a new set with null values for time
-			addSetToExercise(exercise.id, { time: null });
-			exercise.setInputAlert(false);
-		}
-		else {
-			exercise.setInputAlert(true);
-		}
+		// Add a new set with null values for time
+		addSetToExercise(exercise.id, { time: null });
 	};
 
 	const handleTimeChange = (text, index) => {
