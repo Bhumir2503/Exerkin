@@ -56,10 +56,10 @@ export default function Workout() {
 
 	const cancelWorkout = () => {
 		setModalVisible(false);
-		workoutCancelled();
 		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+		workoutCancelled();
 	};
 
 	// Function to handle input focus - scrolls to center the focused element

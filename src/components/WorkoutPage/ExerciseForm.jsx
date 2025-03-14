@@ -10,7 +10,6 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const ExerciseForm = ({ exercise }) => {
-	
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
@@ -88,7 +87,9 @@ const UserInputSection = ({
 						placeholder={placeholders[inputIndex]}
 						placeholderTextColor={"gray"}
 						maxLength={lengths[inputIndex]}
-						onChangeText={(text) => functions[inputIndex](text, index)}
+						onChangeText={(text) =>
+							functions[inputIndex](text, index)
+						}
 					/>
 				))}
 			</View>
@@ -108,7 +109,7 @@ const BodyWeightExercises = ({ exercise }) => {
 
 	const handleRepsChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -129,7 +130,10 @@ const BodyWeightExercises = ({ exercise }) => {
 					placeholders={["12"]}
 					functions={[handleRepsChange]}
 					lengths={[2]}
-					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
+					inputAlert={
+						exercise.inputAlert &&
+						index === exercise.sets.length - 1
+					}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -151,7 +155,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 
 	const handleWeightChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -161,9 +165,8 @@ const WeightLiftingExercises = ({ exercise }) => {
 	};
 
 	const handleRepsChange = (text, index) => {
-
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -184,7 +187,10 @@ const WeightLiftingExercises = ({ exercise }) => {
 					placeholders={["135", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[3, 2]}
-					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
+					inputAlert={
+						exercise.inputAlert &&
+						index === exercise.sets.length - 1
+					}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -206,7 +212,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 
 	const handleWeightChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -217,7 +223,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 
 	const handleRepsChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -238,7 +244,10 @@ const AssistedWeightExercises = ({ exercise }) => {
 					placeholders={["50", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[3, 2]}
-					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
+					inputAlert={
+						exercise.inputAlert &&
+						index === exercise.sets.length - 1
+					}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -260,7 +269,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 
 	const handleTimeChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -271,7 +280,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 
 	const handleDistanceChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the distance for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -292,7 +301,10 @@ const CardioDistanceExercises = ({ exercise }) => {
 					placeholders={["1:00:00", "1.5"]}
 					functions={[handleTimeChange, handleDistanceChange]}
 					lengths={[3, 5]}
-					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
+					inputAlert={
+						exercise.inputAlert &&
+						index === exercise.sets.length - 1
+					}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -314,7 +326,7 @@ const CardioTimeExercises = ({ exercise }) => {
 
 	const handleTimeChange = (text, index) => {
 		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, '');
+		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the time for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
@@ -335,7 +347,10 @@ const CardioTimeExercises = ({ exercise }) => {
 					placeholders={["00:00"]}
 					functions={[handleTimeChange]}
 					lengths={[3, 2]}
-					inputAlert={exercise.inputAlert && index === exercise.sets.length - 1}
+					inputAlert={
+						exercise.inputAlert &&
+						index === exercise.sets.length - 1
+					}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -386,7 +401,7 @@ const createStyles = (themeStyle) =>
 			marginTop: 10,
 		},
 		setButton: {
-			backgroundColor: themeStyle.primary,
+			backgroundColor: themeStyle.inputBackground,
 			width: "100%",
 			padding: "2%",
 			borderRadius: 5,
@@ -394,7 +409,7 @@ const createStyles = (themeStyle) =>
 			alignItems: "center",
 		},
 		setButtonText: {
-			color: "white",
+			color: themeStyle.textColor,
 			fontWeight: "700",
 			fontSize: 16,
 		},

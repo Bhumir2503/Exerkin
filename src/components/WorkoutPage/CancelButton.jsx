@@ -58,7 +58,7 @@ const CancelButton = ({ onPress }) => {
 								style={styles.closeButton}
 								onPress={closeModal}
 							>
-								<Text style={styles.closeText}>Close</Text>
+								<Text style={styles.closeText}>Nah</Text>
 							</Pressable>
 							<Pressable
 								style={styles.cancelButton}
@@ -79,17 +79,16 @@ const CancelButton = ({ onPress }) => {
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		button: {
-			backgroundColor: themeStyle.accent,
+			marginVertical: 10,
+            marginBottom: 50,
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
-			marginVertical: 10,
-			width: "90%",
 		},
 		buttonText: {
-			color: "white",
+			color: themeStyle.error,
 			fontSize: 16,
 			fontWeight: "bold",
 			marginLeft: 8,

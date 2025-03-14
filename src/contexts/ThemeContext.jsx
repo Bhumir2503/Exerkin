@@ -113,10 +113,10 @@ const themes = {
 		secondary: "#d1d1e9",
 		textColor: "#2b2c34",
 		textColorSecondary: "#47484e",
-		card: "#f3f3ff", // Light lavender card (not white)
-		cardAlt: "#f3f3ff", // Alternate card color
-		inputBackground: "#ebebff", // Text input field background
-		inputBorder: "#d1d1e9", // Text input border
+		card: "#f3f3ff",
+		cardAlt: "#f3f3ff",
+		inputBackground: "#d0d0f3", // Darker lavender input background
+		inputBorder: "#b8b8e6", // Darker border
 		accent: "#e45858",
 		success: "#4BB543",
 		error: "#FF3B30",
@@ -130,10 +130,10 @@ const themes = {
 		secondary: "#8bd3dd",
 		textColor: "#001858",
 		textColorSecondary: "#172c66",
-		card: "#feeadc", // Peachy card (not white)
-		cardAlt: "#feeadc", // Alternate card color
-		inputBackground: "#fef0e4", // Text input field background
-		inputBorder: "#f3d2c1", // Text input border
+		card: "#feeadc",
+		cardAlt: "#feeadc",
+		inputBackground: "#f5d6bc", // Darker peachy input background
+		inputBorder: "#edbea2", // Darker border
 		accent: "#e78a61",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -147,10 +147,10 @@ const themes = {
 		secondary: "#e5f4e3",
 		textColor: "#272343",
 		textColorSecondary: "#2d334a",
-		card: "#f0f0f0", // Very light gray card (not white)
-		cardAlt: "#f0f0f0", // Alternate card color
-		inputBackground: "#f5f5f5", // Text input field background
-		inputBorder: "#e0e0e0", // Text input border
+		card: "#f0f0f0",
+		cardAlt: "#f0f0f0",
+		inputBackground: "#e0e0e0", // Darker gray input background
+		inputBorder: "#c8c8c8", // Darker border
 		accent: "#ff6b6b",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -164,10 +164,10 @@ const themes = {
 		secondary: "#c4e0ff",
 		textColor: "#1e293b",
 		textColorSecondary: "#475569",
-		card: "#e6f0ff", // White card (consider making it #f0f5ff for non-white)
-		cardAlt: "#e6f0ff", // A more noticeable blue tint
-		inputBackground: "#ecf4ff", // Text input field background
-		inputBorder: "#c4e0ff", // Text input border
+		card: "#e6f0ff",
+		cardAlt: "#e6f0ff",
+		inputBackground: "#c4deff", // Darker blue input background
+		inputBorder: "#a0c8ff", // Darker border
 		accent: "#ef4565",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -181,10 +181,10 @@ const themes = {
 		secondary: "#c3f0e4",
 		textColor: "#194350",
 		textColorSecondary: "#2d5f5d",
-		card: "#e3faef", // Light mint card (not white)
-		cardAlt: "#e3faef", // Alternate card color
-		inputBackground: "#e8fff1", // Text input field background
-		inputBorder: "#c3f0e4", // Text input border
+		card: "#e3faef",
+		cardAlt: "#e3faef",
+		inputBackground: "#b5e8d4", // Darker mint input background
+		inputBorder: "#91d6bc", // Darker border
 		accent: "#ff8552",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -198,10 +198,10 @@ const themes = {
 		secondary: "#f8d1e0",
 		textColor: "#33272a",
 		textColorSecondary: "#594a4e",
-		card: "#ffe4eb", // Light pink card (not white)
-		cardAlt: "#ffe4eb", // Alternate card color
-		inputBackground: "#ffecf0", // Text input field background
-		inputBorder: "#f8d1e0", // Text input border
+		card: "#ffe4eb",
+		cardAlt: "#ffe4eb",
+		inputBackground: "#ffc3d6", // Darker pink input background
+		inputBorder: "#ffaac4", // Darker border
 		accent: "#ff8e3c",
 		success: "#4CAF50",
 		error: "#F44336",
