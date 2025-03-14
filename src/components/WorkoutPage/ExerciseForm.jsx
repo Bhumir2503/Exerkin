@@ -147,7 +147,6 @@ const WeightLiftingExercises = ({ exercise }) => {
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
-		exercise.setInputAlert(true);
 	};
 
 	const handleWeightChange = (text, index) => {

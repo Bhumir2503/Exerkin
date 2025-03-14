@@ -15,12 +15,12 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
-import WorkoutTimer, {
-	formatTime,
-} from "../../components/WorkoutPage/WorkoutTimer";
+import CancelButton from "../../components/WorkoutPage/CancelButton";
+import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
 import WorkoutHeaderButtons from "../../components/WorkoutPage/WorkoutHeaderButtons";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
@@ -47,19 +47,19 @@ export default function Workout() {
 			return;
 		}
 		const workoutLength = workoutHistory.length;
+		setModalVisible(false);
 		workoutCompleted(workoutTitle, timeRef.current);
 		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutLength + 2));
-		setModalVisible(false);
 	};
 
 	const cancelWorkout = () => {
+		setModalVisible(false);
 		workoutCancelled();
 		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
-		setModalVisible(false);
 	};
 
 	// Function to handle input focus - scrolls to center the focused element
@@ -85,7 +85,6 @@ export default function Workout() {
 			<WorkoutDashboard onStartWorkout={() => setModalVisible(true)} />
 			<WorkoutModal visible={modalIsVisible} title="Workout">
 				<WorkoutHeaderButtons
-					onClosePressed={cancelWorkout}
 					onFinishedPressed={saveWorkout}
 					setWorkoutTitle={setWorkoutTitle}
 					workoutTitle={workoutTitle}
@@ -121,6 +120,7 @@ export default function Workout() {
 								/>
 							))}
 							<ExerciseSelector />
+							<CancelButton onPress={cancelWorkout} />
 						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>
@@ -152,7 +152,6 @@ const createStyles = (theme) => {
 			paddingHorizontal: 20,
 			flexDirection: "row",
 			alignItems: "center",
-			justifyContent: "space-between",
 		},
 	});
 };
