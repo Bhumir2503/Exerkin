@@ -343,7 +343,7 @@ const CardioTimeExercises = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					index={index}
-					inputTypes={["decimal", "decimal"]}
+					inputTypes={["decimal"]}
 					placeholders={["00:00"]}
 					functions={[handleTimeChange]}
 					lengths={[3, 2]}

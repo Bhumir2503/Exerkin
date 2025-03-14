@@ -12,6 +12,7 @@ import FinishModal from "./FinishModal";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 const WorkoutHeaderButtons = ({
 	onFinishedPressed,
@@ -21,6 +22,7 @@ const WorkoutHeaderButtons = ({
 	setWorkoutTitle,
 }) => {
 	const { themeStyle } = useTheme();
+	const { activeExercise } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const [modalVisible, setModalVisible] = useState(false);
@@ -55,14 +57,20 @@ const WorkoutHeaderButtons = ({
 					onFocus={() => setTitleError(false)}
 					maxLength={32}
 				/>
-				<TouchableOpacity onPress={() => setModalVisible(true)}>
-					<Ionicons
-						name="checkmark-sharp"
-						size={32}
-						color={themeStyle.primary}
-					/>
-				</TouchableOpacity>
-				<FinishModal visible={modalVisible} setVisible={setModalVisible} setFinished={setFinished} />
+				{activeExercise.length > 0 && (
+					<TouchableOpacity onPress={() => setModalVisible(true)}>
+						<Ionicons
+							name="checkmark-sharp"
+							size={32}
+							color={themeStyle.primary}
+						/>
+					</TouchableOpacity>
+				)}
+				<FinishModal
+					visible={modalVisible}
+					setVisible={setModalVisible}
+					setFinished={setFinished}
+				/>
 			</View>
 		</>
 	);
