@@ -14,7 +14,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 
 const WorkoutHeaderButtons = ({
-	onClosePressed,
 	onFinishedPressed,
 	setTitleError,
 	titleError,
@@ -37,9 +36,9 @@ const WorkoutHeaderButtons = ({
 	return (
 		<>
 			<View style={styles.container}>
-				<TouchableOpacity onPress={onClosePressed}>
+				<TouchableOpacity onPress={() => console.log("Timer")}>
 					<Ionicons
-						name="return-up-back"
+						name="stopwatch-outline"
 						size={32}
 						color={themeStyle.textColor}
 					/>
