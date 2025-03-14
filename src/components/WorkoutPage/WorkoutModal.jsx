@@ -4,7 +4,7 @@ import {
 	Platform,
 	StyleSheet,
 	StatusBar,
-    SafeAreaView,
+	SafeAreaView,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 // import {
@@ -21,7 +21,7 @@ const WorkoutModal = ({ visible, title, children }) => {
 			presentationStyle="fullScreen"
 			animationType="slide"
 			visible={visible}
-            statusBarTranslucent={true}
+			statusBarTranslucent={true}
 		>
 			<SafeAreaView
 				style={styles.modal}
@@ -38,7 +38,8 @@ const createStyles = (theme) => {
 		modal: {
 			flex: 1,
 			backgroundColor: theme.backgroundColor,
-            paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
+			paddingTop:
+				Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
 		},
 		contentContainer: {
 			flex: 1,
