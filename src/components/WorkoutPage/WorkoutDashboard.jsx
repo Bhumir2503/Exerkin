@@ -60,7 +60,7 @@ const WorkoutDashboard = ({ onStartWorkout }) => {
 					<Text style={styles.TemplateTitle}>Templates </Text>
 
 					<Pressable
-						onPress={() => console.log("Bhumir Rules")}
+						onPress={() => console.log("Grady Rules")}
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
