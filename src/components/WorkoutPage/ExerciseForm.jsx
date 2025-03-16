@@ -9,19 +9,19 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const ExerciseForm = ({ exercise }) => {
+const ExerciseForm = ({ exercise, onFocus }) => {
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
-			return <BodyWeightExercises exercise={exercise} />;
+			return <BodyWeightExercises exercise={exercise} onFocus={onFocus} />;
 		case "weightlifting":
-			return <WeightLiftingExercises exercise={exercise} />;
+			return <WeightLiftingExercises exercise={exercise} onFocus={onFocus} />;
 		case "assisted-weight":
-			return <AssistedWeightExercises exercise={exercise} />;
+			return <AssistedWeightExercises exercise={exercise} onFocus={onFocus} />;
 		case "cardio-distance":
-			return <CardioDistanceExercises exercise={exercise} />;
+			return <CardioDistanceExercises exercise={exercise} onFocus={onFocus} />;
 		case "cardio-time":
-			return <CardioTimeExercises exercise={exercise} />;
+			return <CardioTimeExercises exercise={exercise} onFocus={onFocus} />;
 		default:
 			return <View></View>;
 	}
@@ -61,6 +61,8 @@ const UserInputSection = ({
 	placeholders,
 	functions,
 	lengths,
+	onFocus,
+	values,
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -81,15 +83,20 @@ const UserInputSection = ({
 				{inputTypes.map((inputType, inputIndex) => (
 					<TextInput
 						key={inputIndex}
-						style={[styles.inputField]}
+						style={[
+							styles.inputField,
+
+						]}
 						inputMode={inputType}
-						keyboardType="number-pad"
+						keyboardType={inputType === "decimal" ? "decimal-pad" : "number-pad"}
 						placeholder={placeholders[inputIndex]}
 						placeholderTextColor={"gray"}
 						maxLength={lengths[inputIndex]}
+						value={values && values[inputIndex]}
 						onChangeText={(text) =>
 							functions[inputIndex](text, index)
 						}
+						onFocus={(e) => onFocus && onFocus(e, index)}
 					/>
 				))}
 			</View>
@@ -97,7 +104,7 @@ const UserInputSection = ({
 	);
 };
 
-const BodyWeightExercises = ({ exercise }) => {
+const BodyWeightExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -114,7 +121,7 @@ const BodyWeightExercises = ({ exercise }) => {
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: number,
+			reps: number !== "" ? number : null,
 		});
 	};
 
@@ -126,14 +133,12 @@ const BodyWeightExercises = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					index={index}
-					inputTypes={["decimal"]}
+					inputTypes={["numeric"]}
 					placeholders={["12"]}
 					functions={[handleRepsChange]}
-					lengths={[2]}
-					inputAlert={
-						exercise.inputAlert &&
-						index === exercise.sets.length - 1
-					}
+					lengths={[3]}
+					values={[set.reps]}
+					onFocus={onFocus}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -143,7 +148,7 @@ const BodyWeightExercises = ({ exercise }) => {
 	);
 };
 
-const WeightLiftingExercises = ({ exercise }) => {
+const WeightLiftingExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -160,7 +165,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			weight: number,
+			weight: number !== "" ? number : null,
 		});
 	};
 
@@ -171,7 +176,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: number,
+			reps: number !== "" ? number : null,
 		});
 	};
 
@@ -183,14 +188,12 @@ const WeightLiftingExercises = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					index={index}
-					inputTypes={["decimal", "decimal"]}
+					inputTypes={["decimal", "numeric"]}
 					placeholders={["135", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
-					lengths={[3, 2]}
-					inputAlert={
-						exercise.inputAlert &&
-						index === exercise.sets.length - 1
-					}
+					lengths={[4, 3]}
+					values={[set.weight, set.reps]}
+					onFocus={onFocus}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -200,7 +203,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 	);
 };
 
-const AssistedWeightExercises = ({ exercise }) => {
+const AssistedWeightExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -217,7 +220,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			weight: number,
+			weight: number !== "" ? number : null,
 		});
 	};
 
@@ -228,7 +231,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			reps: number,
+			reps: number !== "" ? number : null,
 		});
 	};
 
@@ -240,14 +243,12 @@ const AssistedWeightExercises = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					index={index}
-					inputTypes={["decimal", "decimal"]}
-					placeholders={["50", "12"]}
+					inputTypes={["decimal", "numeric"]}
+					placeholders={["135", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
-					lengths={[3, 2]}
-					inputAlert={
-						exercise.inputAlert &&
-						index === exercise.sets.length - 1
-					}
+					lengths={[4, 3]}
+					values={[set.weight, set.reps]}
+					onFocus={onFocus}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -257,35 +258,86 @@ const AssistedWeightExercises = ({ exercise }) => {
 	);
 };
 
-const CardioDistanceExercises = ({ exercise }) => {
+const CardioDistanceExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
-		addSetToExercise(exercise.id, { time: null, miles: null });
+		addSetToExercise(exercise.id, { time: null, distance: null });
 	};
 
 	const handleTimeChange = (text, index) => {
-		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, "");
+		// Store the previous value to compare
+		const prevValue = exercise.sets[index]?.time || "";
 
-		// Update the time for the specific set by using the index of the set
+		// If user is trying to delete and the text is shorter
+		if (text.length < prevValue.length) {
+			// Handle backspace - we'll remove the last character
+			// But we need to handle cases where the last character is a colon
+			if (prevValue.endsWith(":")) {
+				// If deleting a colon, also remove the digit before it
+				const newValue = prevValue.slice(0, -2);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
+				return;
+			} else {
+				// Normal backspace - just remove the last character
+				const newValue = prevValue.slice(0, -1);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
+				return;
+			}
+		}
+
+		// For adding characters, keep only numbers and colons
+		let number = text.replace(/[^0-9:]/g, "");
+
+		// Format time as MM:SS or HH:MM:SS
+		if (number) {
+			// Remove any existing colons
+			const digits = number.replace(/:/g, "");
+
+			if (digits.length <= 2) {
+				// If 1-2 digits, treat as seconds only
+				number = digits;
+			} else if (digits.length <= 4) {
+				// Format as MM:SS
+				const minutes = digits.slice(0, digits.length - 2);
+				const seconds = digits.slice(digits.length - 2);
+				number = `${minutes}:${seconds}`;
+			} else {
+				// Format as HH:MM:SS for longer inputs
+				const seconds = digits.slice(digits.length - 2);
+				const minutes = digits.slice(
+					digits.length - 4,
+					digits.length - 2
+				);
+				const hours = digits.slice(0, digits.length - 4);
+				number = `${hours}:${minutes}:${seconds}`;
+			}
+		}
+
+		// Update the time for the specific set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			time: number,
+			time: number !== "" ? number : null,
 		});
 	};
 
 	const handleDistanceChange = (text, index) => {
-		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, "");
+		// Allow decimal points for distance
+		const number = text.replace(/[^0-9.]/g, "");
 
-		// Update the distance for the specific set by using the index of the set
+		// Update the distance for the specific set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			distance: number,
+			distance: number !== "" ? number : null,
 		});
 	};
 
@@ -298,13 +350,15 @@ const CardioDistanceExercises = ({ exercise }) => {
 					key={index}
 					index={index}
 					inputTypes={["numeric", "decimal"]}
-					placeholders={["1:00:00", "1.5"]}
+					placeholders={["30:00", "1.5"]}
 					functions={[handleTimeChange, handleDistanceChange]}
-					lengths={[3, 5]}
+					lengths={[7, 5]}
+					values={[set.time, set.distance]}
 					inputAlert={
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
+					onFocus={onFocus}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -314,7 +368,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 	);
 };
 
-const CardioTimeExercises = ({ exercise }) => {
+const CardioTimeExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -325,13 +379,38 @@ const CardioTimeExercises = ({ exercise }) => {
 	};
 
 	const handleTimeChange = (text, index) => {
-		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, "");
+		// Allow only numbers and colons
+		let number = text.replace(/[^0-9:]/g, "");
 
-		// Update the time for the specific set by using the index of the set
+		// Format time as MM:SS
+		if (number) {
+			// Remove any existing colons
+			const digits = number.replace(/:/g, "");
+
+			if (digits.length <= 2) {
+				// If 1-2 digits, treat as seconds only
+				number = digits;
+			} else if (digits.length <= 4) {
+				// Format as MM:SS
+				const minutes = digits.slice(0, digits.length - 2);
+				const seconds = digits.slice(digits.length - 2);
+				number = `${minutes}:${seconds}`;
+			} else {
+				// Format as HH:MM:SS for longer inputs
+				const seconds = digits.slice(digits.length - 2);
+				const minutes = digits.slice(
+					digits.length - 4,
+					digits.length - 2
+				);
+				const hours = digits.slice(0, digits.length - 4);
+				number = `${hours}:${minutes}:${seconds}`;
+			}
+		}
+
+		// Update the time for the specific set
 		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
-			time: text,
+			time: number !== "" ? number : null,
 		});
 	};
 
@@ -343,14 +422,16 @@ const CardioTimeExercises = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					index={index}
-					inputTypes={["decimal"]}
-					placeholders={["00:00"]}
+					inputTypes={["numeric"]}
+					placeholders={["10:00"]}
 					functions={[handleTimeChange]}
-					lengths={[3, 2]}
+					lengths={[7]}
+					values={[set.time]}
 					inputAlert={
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
+					onFocus={onFocus}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
