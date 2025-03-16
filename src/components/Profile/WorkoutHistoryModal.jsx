@@ -53,7 +53,6 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 									{selectedWorkout.name}
 								</Text>
 								<Text style={styles.text}>
-									<Text style={styles.bold}></Text>{" "}
 									{formatTimeStamptoDateString(
 										selectedWorkout.date
 									)}
@@ -67,16 +66,27 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 								}}
 							>
 								<Text style={styles.text}>
-									{formatTimeToText(selectedWorkout.duration)}
+									{selectedWorkout.duration
+										? formatTimeToText(
+												selectedWorkout.duration
+										  )
+										: "No duration"}
 								</Text>
 								<Text style={styles.text}>
-									{formatTimeStamptoTimeString(
-										selectedWorkout.startedAt
-									)}{" "}
-									-{" "}
-									{formatTimeStamptoTimeString(
-										selectedWorkout.completedAt
-									)}
+									{selectedWorkout.startedAt
+										? formatTimeStamptoTimeString(
+												selectedWorkout.startedAt
+										  )
+										: ""}{" "}
+									{selectedWorkout.startedAt &&
+									selectedWorkout.completedAt
+										? "-"
+										: ""}{" "}
+									{selectedWorkout.completedAt
+										? formatTimeStamptoTimeString(
+												selectedWorkout.completedAt
+										  )
+										: ""}
 								</Text>
 							</View>
 						</View>
@@ -114,16 +124,50 @@ const ExerciseCard = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	// Function to render set information based on exercise type
+	const renderSetInfo = (set) => {
+		if (
+			exercise.type === "weightlifting" ||
+			exercise.type === "assisted-weight"
+		) {
+			return `${set.weight || 0} lbs × ${set.reps || 0} reps`;
+		} else if (exercise.type === "bodyweight") {
+			return `${set.reps || 0} reps`;
+		} else if (exercise.type === "cardio-distance") {
+			return `${set.time || "0:00"} - ${set.distance || 0} miles`;
+		} else if (exercise.type === "cardio-time") {
+			return `${set.time || "0:00"}`;
+		}
+
+		// Default fallback if type is unknown or undefined
+		if (set.weight && set.reps) {
+			return `${set.weight} lbs × ${set.reps} reps`;
+		} else if (set.reps) {
+			return `${set.reps} reps`;
+		} else if (set.time) {
+			return `${set.time}${
+				set.distance ? ` - ${set.distance} miles` : ""
+			}`;
+		}
+
+		return "No data";
+	};
+
 	return (
 		<View style={styles.exerciseCard}>
 			<Text style={styles.exerciseTitle}>{exercise.name}</Text>
-			{exercise.sets.map((set, index) => (
-				<View key={index}>
-					<Text style={styles.exerciseText}>
-						{set.weight} lbs x {set.reps} reps
-					</Text>
-				</View>
-			))}
+			{exercise.sets &&
+				exercise.sets.map((set, index) => (
+					<View key={index} style={styles.setRow}>
+						<Text style={styles.setNumber}>Set {index + 1}</Text>
+						<Text style={styles.exerciseText}>
+							{renderSetInfo(set)}
+						</Text>
+					</View>
+				))}
+			{(!exercise.sets || exercise.sets.length === 0) && (
+				<Text style={styles.exerciseText}>No sets recorded</Text>
+			)}
 		</View>
 	);
 };
@@ -182,14 +226,25 @@ const createStyles = (themeStyle) =>
 		},
 		exerciseTitle: {
 			fontSize: 16,
-			marginBottom: 5,
+			marginBottom: 10,
 			fontWeight: "bold",
 			color: themeStyle.textColor || "#000",
 		},
-		exerciseText: {
-			fontSize: 14,
+		setRow: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginBottom: 5,
+			paddingVertical: 3,
+		},
+		setNumber: {
+			fontSize: 16,
+			fontWeight: "500",
 			color: themeStyle.textColorSecondary || "#000",
-			marginBottom: 2,
+		},
+		exerciseText: {
+			fontSize: 16,
+			color: themeStyle.textColorSecondary || "#000",
 		},
 		closeButton: {
 			backgroundColor: themeStyle.primary || "#3498db",
