@@ -53,12 +53,6 @@ export default function Profile({ navigation }) {
 				</TouchableWithoutFeedback>
 			</View>
 
-			<Button
-				title="Clear Workout History"
-				onPress={clearWorkoutHistory}
-				color="red"
-			/>
-
 			<WorkoutHistory />
 		</SafeAreaView>
 	);
