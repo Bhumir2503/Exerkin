@@ -8,11 +8,11 @@ import {
 	Dimensions,
 	FlatList,
 } from "react-native";
+import TemplatePreviewModal from "./TemplatePreviewModal";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useRef, useEffect } from "react";
-import { DraggableGrid } from "react-native-draggable-grid";
+import { useState, useEffect } from "react";
 
 const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const { themeStyle } = useTheme();
@@ -23,16 +23,28 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const screenWidth = Dimensions.get("window").width;
 
 	const [items, setItems] = useState([]);
+	const [visibleTemplatePreview, setVisibleTemplatePreview] = useState(false);
+	const [selectedTemplate, setSelectedTemplate] = useState(null);
 
 	const buttonPress = () => {
 		newWorkoutStarted(false);
 		onStartWorkout();
 	};
 
-	onTemplatePress = (item) => {
-		setActiveExercise(item.exercises);
+	const onTemplateStartButtonPressed = () => {
+		setActiveExercise(selectedTemplate.exercises);
 		newWorkoutStarted(true);
 		onStartWorkout();
+	};
+
+	const onTemplatePress = (item) => {
+		setSelectedTemplate(item);
+		setVisibleTemplatePreview(true);
+	};
+
+	const onTemplateClose = () => {
+		setSelectedTemplate(null);
+		setVisibleTemplatePreview(false);
 	};
 
 	useEffect(() => {
@@ -133,6 +145,12 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 							numColumns={2}
 							scrollEnabled={false}
 							contentContainerStyle={styles.templatesList}
+						/>
+						<TemplatePreviewModal
+							visible={visibleTemplatePreview}
+							onClose={onTemplateClose}
+							template={selectedTemplate}
+							onStart={onTemplateStartButtonPressed}
 						/>
 					</View>
 				) : (
@@ -248,7 +266,7 @@ const createStyles = (theme) => {
 			margin: 5,
 			padding: 10,
 			borderWidth: 1,
-			borderColor: theme.primary,
+			borderColor: theme.textColorSecondary,
 		},
 		templateItemText: {
 			color: theme.textColor,
@@ -258,9 +276,8 @@ const createStyles = (theme) => {
 			textAlign: "center",
 		},
 		templateItemSubtext: {
-			color: theme.textColor,
+			color: theme.textColorSecondary,
 			fontSize: 14,
-			opacity: 0.7,
 		},
 		emptyContainer: {
 			backgroundColor: theme.card,
@@ -277,9 +294,8 @@ const createStyles = (theme) => {
 			fontWeight: "bold",
 		},
 		emptySubtext: {
-			color: theme.textColor,
+			color: theme.textColorSecondary,
 			fontSize: 14,
-			opacity: 0.7,
 			marginTop: 5,
 		},
 	});
