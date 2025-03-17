@@ -5,22 +5,51 @@ import {
 	TouchableOpacity,
 	ScrollView,
 	Pressable,
+	Dimensions,
+	FlatList,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { DraggableGrid } from "react-native-draggable-grid";
 
 const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const { themeStyle } = useTheme();
-	const { newWorkoutStarted } = useWorkout();
+	const { newWorkoutStarted, workoutTemplate } = useWorkout();
 	const styles = createStyles(themeStyle);
+
+	const screenWidth = Dimensions.get("window").width;
+
+	const [items, setItems] = useState([]);
 
 	const buttonPress = () => {
 		newWorkoutStarted();
 		onStartWorkout();
 	};
+
+	useEffect(() => {
+		if (workoutTemplate && workoutTemplate.length > 0) {
+			const templateItems = workoutTemplate.map((template) => ({
+				key: template.id,
+				name: template.name,
+				exercises: template.exercises,
+				date: template.date,
+			}));
+			setItems(templateItems);
+		}
+	}, [workoutTemplate]);
+
+	const renderTemplateItem = ({ item }) => (
+		<View style={[styles.templateItem, { width: (screenWidth - 60) / 2 }]}>
+			<Text style={styles.templateItemText}>{item.name}</Text>
+			<Text style={styles.templateItemSubtext}>
+				{item.exercises
+					? `${item.exercises.length} exercises`
+					: "0 exercises"}
+			</Text>
+		</View>
+	);
 
 	return (
 		<View style={styles.container}>
@@ -81,10 +110,32 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 								fontWeight: "bold",
 							}}
 						>
-							create
+							New
 						</Text>
 					</Pressable>
 				</View>
+
+				{items.length > 0 ? (
+					<View style={styles.templatesContainer}>
+						<FlatList
+							data={items}
+							renderItem={renderTemplateItem}
+							keyExtractor={(item) => item.id}
+							numColumns={2}
+							scrollEnabled={false}
+							contentContainerStyle={styles.templatesList}
+						/>
+					</View>
+				) : (
+					<View style={styles.emptyContainer}>
+						<Text style={styles.emptyText}>
+							No workout templates yet
+						</Text>
+						<Text style={styles.emptySubtext}>
+							Create a new template to get started
+						</Text>
+					</View>
+				)}
 			</ScrollView>
 		</View>
 	);
@@ -154,7 +205,6 @@ const createStyles = (theme) => {
 			textAlign: "center",
 			marginLeft: 10,
 		},
-
 		DailyGoalTitle: {
 			color: theme.textColor,
 			fontSize: 18,
@@ -173,24 +223,55 @@ const createStyles = (theme) => {
 			fontWeight: "bold",
 			marginBottom: 10,
 		},
-		gridContainer: {
-			marginTop: 20,
-			padding: 10,
-			borderRadius: 10,
+		templatesContainer: {
+			marginTop: 10,
+			marginBottom: 20,
 		},
-		gridItem: {
-			width: 80,
-			height: 80,
-			backgroundColor: theme.primary,
-			borderRadius: 8,
+		templatesList: {
+			justifyContent: "space-between",
+		},
+		templateItem: {
+			height: 120,
+			backgroundColor: theme.card,
+			borderRadius: 10,
 			justifyContent: "center",
 			alignItems: "center",
-			margin: 4,
+			margin: 5,
+			padding: 10,
+			borderWidth: 1,
+			borderColor: theme.primary,
 		},
-		gridItemText: {
-			color: "#fff",
-			fontSize: 20,
+		templateItemText: {
+			color: theme.textColor,
+			fontSize: 18,
 			fontWeight: "bold",
+			marginBottom: 5,
+			textAlign: "center",
+		},
+		templateItemSubtext: {
+			color: theme.textColor,
+			fontSize: 14,
+			opacity: 0.7,
+		},
+		emptyContainer: {
+			backgroundColor: theme.card,
+			borderRadius: 10,
+			padding: 20,
+			marginTop: 10,
+			alignItems: "center",
+			justifyContent: "center",
+			height: 120,
+		},
+		emptyText: {
+			color: theme.textColor,
+			fontSize: 16,
+			fontWeight: "bold",
+		},
+		emptySubtext: {
+			color: theme.textColor,
+			fontSize: 14,
+			opacity: 0.7,
+			marginTop: 5,
 		},
 	});
 };
