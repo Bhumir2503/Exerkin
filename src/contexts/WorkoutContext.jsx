@@ -5,6 +5,10 @@ import {
 	getWorkoutHistoryCache,
 	resetWorkoutHistoryCache,
 } from "../cache/workoutHistoryCache";
+import {
+	addWorkoutToTemplateCache,
+	getWorkoutTemplateCache,
+} from "../cache/templateCache";
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 import {
@@ -22,6 +26,8 @@ export const WorkoutProvider = ({ children }) => {
 	// should be an array of objects that is stored in cache or firebase
 	// probably init if
 	const [workoutHistory, setWorkoutHistory] = useState([]);
+	// template for workout
+	const [workoutTemplate, setWorkoutTemplate] = useState([]);
 
 	// active workout state
 	// activeExercise scheme
@@ -44,6 +50,7 @@ export const WorkoutProvider = ({ children }) => {
 	//  time: "00:00:00",
 	// }
 	const [activeExercise, setActiveExercise] = useState([]);
+	const [activeTemplateExercises, setActiveTemplateExercises] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 	const [startTime, setStartTime] = useState(null);
 
@@ -63,13 +70,76 @@ export const WorkoutProvider = ({ children }) => {
 			}
 		};
 
+		const getWorkoutTemplate = async () => {
+			console.log("Getting workout template");
+			const template = await getWorkoutTemplateCache();
+			if (template.length === 0) {
+				console.log("No workout template found");
+				return;
+			} else {
+				console.log("Workout template found");
+				setWorkoutTemplate(template);
+			}
+		};
+
 		getWorkoutHistory();
+		getWorkoutTemplate();
 	}, []);
 
 	const newWorkoutStarted = () => {
 		setStartTime(firestore.Timestamp.now());
 		setActiveExercise([]);
 		setActiveId(uuid.v4());
+	};
+
+	const templateCompleted = (name) => {
+		const activeTemplateExercisesFiltered = activeTemplateExercises.map(
+			(exercise) => {
+				const sets = exercise.sets.filter(
+					(set) =>
+						set.weight !== null &&
+						set.weight !== "" &&
+						set.weight !== 0 &&
+						set.time !== null &&
+						set.time !== "" &&
+						set.time !== 0 &&
+						set.distance !== null &&
+						set.distance !== "" &&
+						set.distance !== 0
+				);
+				return { ...exercise, sets };
+			}
+		);
+
+		const activeTemplateExercisesChecked =
+			activeTemplateExercisesFiltered.filter(
+				(exercise) => exercise.sets.length > 0
+			);
+
+		if (activeTemplateExercisesChecked.length === 0) {
+			console.log("No exercises added");
+			setActiveTemplateExercises([]);
+			setActiveId(null);
+			return;
+		}
+
+		const template = {
+			userId: user.uid,
+			name: name,
+			id: activeId,
+			exercises: activeTemplateExercisesChecked,
+			date: firestore.Timestamp.now(),
+		};
+
+		// state
+		setWorkoutTemplate((prevTemplate) => [...prevTemplate, template]);
+		// cache
+		addWorkoutToTemplateCache(template);
+
+		console.log(workoutTemplate);
+
+		setActiveTemplateExercises([]);
+		setActiveId(null);
 	};
 
 	const workoutCompleted = (name, time) => {
@@ -131,11 +201,17 @@ export const WorkoutProvider = ({ children }) => {
 		setActiveId(null);
 	};
 
-
 	// Add excercise to active workout
 	const addExerciseToActiveWorkout = async (exercise) => {
 		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
+	};
+
+	const addExerciseToActiveTemplate = (exercise) => {
+		setActiveTemplateExercises((prevExercises) => [
+			...prevExercises,
+			exercise,
+		]);
 	};
 
 	// Remove exercise from active workout
@@ -146,49 +222,101 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	// Add set to exercise in active workout
-	const addSetToExercise = (exerciseId, set) => {
-		setActiveExercise((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
-					? { ...exercise, sets: [...exercise.sets, set] }
-					: exercise
-			)
-		);
+	const addSetToExercise = (exerciseId, set, type) => {
+		if (type === "template") {
+			setActiveTemplateExercises((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? { ...exercise, sets: [...exercise.sets, set] }
+						: exercise
+				)
+			);
+		} else if (type === "workout") {
+			setActiveExercise((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? { ...exercise, sets: [...exercise.sets, set] }
+						: exercise
+				)
+			);
+		}
 	};
 
 	// Update set in exercise in active workout
 	// setIndex is the index of the set in the exercise.sets array
-	const updateSetInExercise = (exerciseId, setIndex, set) => {
-		setActiveExercise((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
-					? {
-							...exercise,
-							sets: exercise.sets.map((prevSet, index) =>
-								index === setIndex ? set : prevSet
-							),
-					  }
-					: exercise
-			)
-		);
+	const updateSetInExercise = (exerciseId, setIndex, set, type) => {
+		if (type === "template") {
+			setActiveTemplateExercises((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? {
+								...exercise,
+								sets: exercise.sets.map((prevSet, index) =>
+									index === setIndex ? set : prevSet
+								),
+						  }
+						: exercise
+				)
+			);
+		} else if (type === "workout") {
+			setActiveExercise((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? {
+								...exercise,
+								sets: exercise.sets.map((prevSet, index) =>
+									index === setIndex ? set : prevSet
+								),
+						  }
+						: exercise
+				)
+			);
+		}
 	};
 
 	// Remove set from exercise in active workout
 	// setIndex is the index of the set in the exercise.sets array
-	const removeSetFromExercise = (exerciseId, setIndex) => {
-		setActiveExercise((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
-					? {
-							...exercise,
-							sets: exercise.sets.filter(
-								(_, index) => index !== setIndex
-							),
-					  }
-					: exercise
-			)
-		);
+	const removeSetFromExercise = (exerciseId, setIndex, type) => {
+		if (type === "template") {
+			setActiveTemplateExercises((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? {
+								...exercise,
+								sets: exercise.sets.filter(
+									(_, index) => index !== setIndex
+								),
+						  }
+						: exercise
+				)
+			);
+		} else if (type === "workout") {
+			setActiveExercise((prevExercises) =>
+				prevExercises.map((exercise) =>
+					exercise.id === exerciseId
+						? {
+								...exercise,
+								sets: exercise.sets.filter(
+									(_, index) => index !== setIndex
+								),
+						  }
+						: exercise
+				)
+			);
+		}
 	};
+
+	// Parameters: template object
+	// Add template to firestore, cache and state
+	const addTemplate = (template) => {};
+
+	// Parameters: templateId
+	// Remove template from firestore, cache and state
+	const removeTemplate = (templateId) => {};
+
+	// Parameters: templateId
+	// Update template in firestore, cache and state
+	const updateTemplate = (templateId) => {};
 
 	// Clear workout history
 	const clearWorkoutHistory = () => {
@@ -203,14 +331,20 @@ export const WorkoutProvider = ({ children }) => {
 			value={{
 				workoutHistory,
 				setWorkoutHistory,
+				workoutTemplate,
+				setWorkoutTemplate,
 				activeExercise,
 				setActiveExercise,
+				activeTemplateExercises,
+				setActiveTemplateExercises,
 				activeId,
 				newWorkoutStarted,
+				templateCompleted,
 				workoutCompleted,
 				workoutCancelled,
 				setActiveId,
 				addExerciseToActiveWorkout,
+				addExerciseToActiveTemplate,
 				removeExerciseFromActiveWorkout,
 				addSetToExercise,
 				updateSetInExercise,

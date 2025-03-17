@@ -15,6 +15,7 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
+import TemplateExerciseForm from "../../components/WorkoutPage/TemplateExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import CancelButton from "../../components/WorkoutPage/CancelButton";
 import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
@@ -28,14 +29,19 @@ export default function Workout() {
 	const {
 		activeExercise,
 		workoutCompleted,
+		templateCompleted,
 		workoutCancelled,
 		workoutHistory,
+		activeTemplateExercises,
+		setActiveTemplateExercises,
 	} = useWorkout();
 	const [modalIsVisible, setModalVisible] = useState(false);
+	const [type, setType] = useState("workout");
 	const [workoutTitle, setWorkoutTitle] = useState(
 		"Workout #" + (workoutHistory.length + 1)
 	);
 	const [titleError, setTitleError] = useState(false);
+
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
 	const scrollViewRef = useRef(null);
@@ -55,12 +61,34 @@ export default function Workout() {
 		setWorkoutTitle("Workout #" + (workoutLength + 2));
 	};
 
+	const saveTemplate = async () => {
+		if (workoutTitle === "") {
+			setTitleError(true);
+			return;
+		}
+		const workoutLength = workoutHistory.length;
+		setModalVisible(false);
+		templateCompleted(workoutTitle);	
+		setTitleError(false);
+		setWorkoutTitle("Workout #" + (workoutLength + 2));
+		setType("workout");
+	};
+
 	const cancelWorkout = () => {
 		setModalVisible(false);
 		timeRef.current = 0;
 		setTitleError(false);
 		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+		setType("workout");
 		workoutCancelled();
+	};
+
+	const cancelTemplate = () => {
+		setModalVisible(false);
+		setTitleError(false);
+		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+		setType("workout");
+		setActiveTemplateExercises([]);
 	};
 
 	// Function to handle input focus - scrolls to center the focused element
@@ -83,14 +111,20 @@ export default function Workout() {
 	};
 	return (
 		<SafeAreaView style={styles.primaryContent}>
-			<WorkoutDashboard onStartWorkout={() => setModalVisible(true)} />
-			<WorkoutModal visible={modalIsVisible} title="Workout">
+			<WorkoutDashboard
+				onStartWorkout={() => setModalVisible(true)}
+				setOnType={setType}
+			/>
+			<WorkoutModal visible={modalIsVisible}>
 				<WorkoutHeaderButtons
-					onFinishedPressed={saveWorkout}
+					onFinishedPressed={
+						type === "workout" ? saveWorkout : saveTemplate
+					}
 					setWorkoutTitle={setWorkoutTitle}
 					workoutTitle={workoutTitle}
 					titleError={titleError}
 					setTitleError={setTitleError}
+					type={type}
 				/>
 
 				<KeyboardAvoidingView
@@ -99,12 +133,14 @@ export default function Workout() {
 					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 				>
 					<View>
-						<View style={styles.timerStyle}>
-							<WorkoutTimer
-								visible={modalIsVisible}
-								timeRef={timeRef}
-							/>
-						</View>
+						{type === "workout" && (
+							<View style={styles.timerStyle}>
+								<WorkoutTimer
+									visible={modalIsVisible}
+									timeRef={timeRef}
+								/>
+							</View>
+						)}
 
 						<ScrollView
 							ref={scrollViewRef}
@@ -113,15 +149,38 @@ export default function Workout() {
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
-							{activeExercise.map((exercise, index) => (
-								<ExerciseForm
-									key={index}
-									exercise={exercise}
-									onFocus={(e) => handleInputFocus(e, index)}
-								/>
-							))}
-							<ExerciseSelector />
-							<CancelButton onPress={cancelWorkout} />
+							{type === "workout" &&
+								activeExercise.map((exercise, index) => (
+									<ExerciseForm
+										key={index}
+										exercise={exercise}
+										onFocus={(e) =>
+											handleInputFocus(e, index)
+										}
+										type={type}
+									/>
+								))}
+							{type === "template" &&
+								activeTemplateExercises.map(
+									(exercise, index) => (
+										<ExerciseForm
+											key={index}
+											exercise={exercise}
+											onFocus={(e) =>
+												handleInputFocus(e, index)
+											}
+											type={type}
+										/>
+									)
+								)}
+							<ExerciseSelector type={type} />
+							<CancelButton
+								onPress={
+									type === "workout"
+										? cancelWorkout
+										: cancelTemplate
+								}
+							/>
 						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>

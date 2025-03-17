@@ -20,9 +20,10 @@ const WorkoutHeaderButtons = ({
 	titleError,
 	workoutTitle,
 	setWorkoutTitle,
+	type,
 }) => {
 	const { themeStyle } = useTheme();
-	const { activeExercise } = useWorkout();
+	const { activeExercise, activeTemplateExercises } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const [modalVisible, setModalVisible] = useState(false);
@@ -38,13 +39,15 @@ const WorkoutHeaderButtons = ({
 	return (
 		<>
 			<View style={styles.container}>
-				<TouchableOpacity onPress={() => console.log("Timer")}>
-					<Ionicons
-						name="stopwatch-outline"
-						size={32}
-						color={themeStyle.textColor}
-					/>
-				</TouchableOpacity>
+				{type === "workout" && (
+					<TouchableOpacity onPress={() => console.log("Timer")}>
+						<Ionicons
+							name="stopwatch-outline"
+							size={32}
+							color={themeStyle.textColor}
+						/>
+					</TouchableOpacity>
+				)}
 				<TextInput
 					style={{
 						...styles.titleInput,
@@ -57,7 +60,7 @@ const WorkoutHeaderButtons = ({
 					onFocus={() => setTitleError(false)}
 					maxLength={32}
 				/>
-				{activeExercise.length > 0 && (
+				{(activeExercise.length > 0 || activeTemplateExercises.length >0 )&& (
 					<TouchableOpacity onPress={() => setModalVisible(true)}>
 						<Ionicons
 							name="checkmark-sharp"
@@ -67,6 +70,7 @@ const WorkoutHeaderButtons = ({
 					</TouchableOpacity>
 				)}
 				<FinishModal
+					type={type}
 					visible={modalVisible}
 					setVisible={setModalVisible}
 					setFinished={setFinished}
@@ -83,6 +87,7 @@ const createStyles = (themeStyle) => {
 			justifyContent: "space-between",
 			paddingHorizontal: 20,
 			paddingTop: 15,
+			paddingBottom: 20,
 		},
 		text: {
 			color: themeStyle.accent,

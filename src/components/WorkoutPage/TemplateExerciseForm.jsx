@@ -9,31 +9,22 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const ExerciseForm = ({ exercise, onFocus, type }) => {
+const ExerciseForm = ({ exercise, onFocus }) => {
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
 			return (
-				<BodyWeightExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
+				<BodyWeightExercises exercise={exercise} onFocus={onFocus} />
 			);
 		case "weightlifting":
 			return (
-				<WeightLiftingExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
+				<WeightLiftingExercises exercise={exercise} onFocus={onFocus} />
 			);
 		case "assisted-weight":
 			return (
 				<AssistedWeightExercises
 					exercise={exercise}
 					onFocus={onFocus}
-					type={type}
 				/>
 			);
 		case "cardio-distance":
@@ -41,16 +32,11 @@ const ExerciseForm = ({ exercise, onFocus, type }) => {
 				<CardioDistanceExercises
 					exercise={exercise}
 					onFocus={onFocus}
-					type={type}
 				/>
 			);
 		case "cardio-time":
 			return (
-				<CardioTimeExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
+				<CardioTimeExercises exercise={exercise} onFocus={onFocus} />
 			);
 		default:
 			return <View></View>;
@@ -135,14 +121,14 @@ const UserInputSection = ({
 	);
 };
 
-const BodyWeightExercises = ({ exercise, onFocus, type }) => {
+const BodyWeightExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
-		addSetToExercise(exercise.id, { reps: null }, type);
+		addSetToExercise(exercise.id, { reps: null });
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -150,15 +136,10 @@ const BodyWeightExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -184,14 +165,14 @@ const BodyWeightExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
+const WeightLiftingExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null }, type);
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -199,15 +180,10 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				weight: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			weight: number !== "" ? number : null,
+		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -215,15 +191,10 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -249,14 +220,14 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
+const AssistedWeightExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null }, type);
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -264,15 +235,10 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				weight: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			weight: number !== "" ? number : null,
+		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -280,15 +246,10 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -314,14 +275,14 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
+const CardioDistanceExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
-		addSetToExercise(exercise.id, { time: null, distance: null }, type);
+		addSetToExercise(exercise.id, { time: null, distance: null });
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -335,28 +296,18 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			}
 		}
@@ -390,15 +341,10 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				time: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			time: number !== "" ? number : null,
+		});
 	};
 
 	const handleDistanceChange = (text, index) => {
@@ -406,15 +352,10 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 		const number = text.replace(/[^0-9.]/g, "");
 
 		// Update the distance for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				distance: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			distance: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -444,57 +385,21 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const CardioTimeExercises = ({ exercise, onFocus, type }) => {
+const CardioTimeExercises = ({ exercise, onFocus }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time
-		addSetToExercise(exercise.id, { time: null }, type);
+		addSetToExercise(exercise.id, { time: null });
 	};
 
 	const handleTimeChange = (text, index) => {
-		// Store the previous value to compare
-		const prevValue = exercise.sets[index]?.time || "";
-
-		// If user is trying to delete and the text is shorter
-		if (text.length < prevValue.length) {
-			// Handle backspace - we'll remove the last character
-			// But we need to handle cases where the last character is a colon
-			if (prevValue.endsWith(":")) {
-				// If deleting a colon, also remove the digit before it
-				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
-				return;
-			} else {
-				// Normal backspace - just remove the last character
-				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
-				return;
-			}
-		}
-
-		// For adding characters, keep only numbers and colons
+		// Allow only numbers and colons
 		let number = text.replace(/[^0-9:]/g, "");
 
-		// Format time as MM:SS or HH:MM:SS
+		// Format time as MM:SS
 		if (number) {
 			// Remove any existing colons
 			const digits = number.replace(/:/g, "");
@@ -520,15 +425,10 @@ const CardioTimeExercises = ({ exercise, onFocus, type }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				time: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			time: number !== "" ? number : null,
+		});
 	};
 
 	return (

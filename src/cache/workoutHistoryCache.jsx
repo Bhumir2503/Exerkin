@@ -6,7 +6,6 @@ const key = "workoutHistory";
 /*
     WorkoutHistory Schema
     {
-        date: timestamp,
         workout: [
             {
                 name: string,
