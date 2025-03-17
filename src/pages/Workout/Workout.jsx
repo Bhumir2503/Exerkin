@@ -15,7 +15,6 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
-import TemplateExerciseForm from "../../components/WorkoutPage/TemplateExerciseForm";
 import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
 import CancelButton from "../../components/WorkoutPage/CancelButton";
 import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
