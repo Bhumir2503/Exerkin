@@ -8,17 +8,17 @@ import {
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const FinishModal = ({ visible, setVisible, setFinished }) => {
+const FinishModal = ({ visible, setVisible, setFinished, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const closeModal = () => {
 		setVisible(false);
 	};
 
-    const handleLogIt = () => {
-        setFinished(true);
-        closeModal();
-    }
+	const handleLogIt = () => {
+		setFinished(true);
+		closeModal();
+	};
 
 	return (
 		<Modal visible={visible} animationType="fade" transparent={true}>
@@ -26,28 +26,59 @@ const FinishModal = ({ visible, setVisible, setFinished }) => {
 				<TouchableWithoutFeedback onPress={closeModal}>
 					<View style={styles.backgroundOverlay} />
 				</TouchableWithoutFeedback>
-				<View style={styles.modalContainer}>
-					<View style={styles.modalContent}>
-						<Text style={styles.modalTitle}>
-							Log Workout as Complete?
-						</Text>
-						<Text style={styles.modalText}>
-							Log this workout and view your progress in your
-							training history.
-						</Text>
+				{type === "workout" && (
+					<View style={styles.modalContainer}>
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>
+								Log Workout as Complete?
+							</Text>
+							<Text style={styles.modalText}>
+								Log this workout and view your progress in your
+								training history.
+							</Text>
+						</View>
+						<View style={styles.buttonView}>
+							<Pressable
+								style={styles.closeButton}
+								onPress={closeModal}
+							>
+								<Text style={styles.closeText}>Close</Text>
+							</Pressable>
+							<Pressable
+								style={styles.submit}
+								onPress={handleLogIt}
+							>
+								<Text style={styles.submitText}>Log It!</Text>
+							</Pressable>
+						</View>
 					</View>
-					<View style={styles.buttonView}>
-						<Pressable
-							style={styles.closeButton}
-							onPress={closeModal}
-						>
-							<Text style={styles.closeText}>Close</Text>
-						</Pressable>
-						<Pressable style={styles.submit} onPress={handleLogIt}>
-							<Text style={styles.submitText}>Log It!</Text>
-						</Pressable>
+				)}
+				{type === "template" && (
+					<View style={styles.modalContainer}>
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>
+								Save Template?
+							</Text>
+							<Text style={styles.modalText}>
+								Save this template for future use.
+							</Text>
+						</View>
+						<View style={styles.buttonView}>
+							<Pressable
+								style={styles.closeButton}
+								onPress={closeModal}
+							>
+								<Text style={styles.closeText}>Close</Text>
+							</Pressable>
+							<Pressable
+								style={styles.submit}
+								onPress={handleLogIt}
+							>
+								<Text style={styles.submitText}>Save</Text>
+							</Pressable>
+						</View>
 					</View>
-				</View>
+				)}
 			</View>
 		</Modal>
 	);

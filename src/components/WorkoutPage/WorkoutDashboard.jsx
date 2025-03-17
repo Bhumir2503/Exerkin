@@ -9,9 +9,10 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { DraggableGrid } from "react-native-draggable-grid";
 
-const WorkoutDashboard = ({ onStartWorkout }) => {
+const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const { themeStyle } = useTheme();
 	const { newWorkoutStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
@@ -60,7 +61,10 @@ const WorkoutDashboard = ({ onStartWorkout }) => {
 					<Text style={styles.TemplateTitle}>Blueprints </Text>
 
 					<Pressable
-						onPress={() => console.log("Grady Rules")}
+						onPress={() => {
+							setOnType("template");
+							onStartWorkout();
+						}}
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
@@ -77,7 +81,7 @@ const WorkoutDashboard = ({ onStartWorkout }) => {
 								fontWeight: "bold",
 							}}
 						>
-							New
+							create
 						</Text>
 					</Pressable>
 				</View>
@@ -168,6 +172,25 @@ const createStyles = (theme) => {
 			fontSize: 24,
 			fontWeight: "bold",
 			marginBottom: 10,
+		},
+		gridContainer: {
+			marginTop: 20,
+			padding: 10,
+			borderRadius: 10,
+		},
+		gridItem: {
+			width: 80,
+			height: 80,
+			backgroundColor: theme.primary,
+			borderRadius: 8,
+			justifyContent: "center",
+			alignItems: "center",
+			margin: 4,
+		},
+		gridItemText: {
+			color: "#fff",
+			fontSize: 20,
+			fontWeight: "bold",
 		},
 	});
 };

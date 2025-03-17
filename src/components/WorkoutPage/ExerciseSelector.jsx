@@ -18,9 +18,14 @@ import {
 	getExercisesByCategory,
 } from "../../utils/ExerciseData";
 
-const ExerciseSelector = ({}) => {
+const ExerciseSelector = ({type}) => {
 	const { themeStyle } = useTheme();
-	const { addExerciseToActiveWorkout, activeExercise } = useWorkout();
+	const {
+		addExerciseToActiveWorkout,
+		addExerciseToActiveTemplate,
+		activeExercise,
+		activeTemplateExercises,
+	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	// Choose Modal Popup
@@ -35,7 +40,9 @@ const ExerciseSelector = ({}) => {
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 	// Get array of already added exercise IDs
 	const getAddedExerciseIds = () => {
-		return activeExercise.map((ex) => ex.id);
+		return type === "workout"
+			? activeExercise.map((ex) => ex.id)
+			: activeTemplateExercises.map((ex) => ex.id);
 	};
 
 	// Filter exercises based on search, category, and already added exercises
@@ -69,7 +76,7 @@ const ExerciseSelector = ({}) => {
 		}
 
 		setFilteredExercises(result);
-	}, [searchQuery, selectedCategory, activeExercise]);
+	}, [searchQuery, selectedCategory, activeExercise, activeTemplateExercises]);
 
 	// Close modal and reset state
 	const closeModal = () => {
@@ -105,12 +112,16 @@ const ExerciseSelector = ({}) => {
 				type: selectedExercise.type,
 				sets: setType,
 				notes: "",
-				order: activeExercise.length + 1,
+				order: type === "workout" ? activeExercise.length + 1 : activeTemplateExercises.length + 1,
 				completed: false,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
-			addExerciseToActiveWorkout(exercise);
+			if(type === "workout") {
+				addExerciseToActiveWorkout(exercise);
+			} else {
+				addExerciseToActiveTemplate(exercise);
+			}
 
 			closeModal();
 		}
