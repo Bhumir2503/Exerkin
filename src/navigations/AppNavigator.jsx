@@ -33,7 +33,7 @@ export default function AppNavigator() {
 					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
-						iconName = focused ? "body" : "body-outline";
+						iconName = focused ? "barbell" : "barbell-outline";
 					} else if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
 					}
