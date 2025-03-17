@@ -38,7 +38,7 @@ const WorkoutHeaderButtons = ({
 
 	return (
 		<>
-			<View style={styles.container}>
+			<View style={{...styles.container, }}>
 				{type === "workout" && (
 					<TouchableOpacity onPress={() => console.log("Timer")}>
 						<Ionicons
@@ -53,14 +53,18 @@ const WorkoutHeaderButtons = ({
 						...styles.titleInput,
 						borderColor: titleError ? "red" : themeStyle.textColor,
 						borderBottomWidth: titleError ? 2 : 0,
+						textAlign: type === "workout" ? "center": "left",
 					}}
 					value={workoutTitle}
-					placeholder="Add Title..."
+					placeholder={
+						type === "workout" ? "Add Title..." : "Template Title"
+					}
 					onChangeText={(text) => setWorkoutTitle(text)}
 					onFocus={() => setTitleError(false)}
 					maxLength={32}
 				/>
-				{(activeExercise.length > 0 || activeTemplateExercises.length >0 )&& (
+				{(activeExercise.length > 0 ||
+					activeTemplateExercises.length > 0) && (
 					<TouchableOpacity onPress={() => setModalVisible(true)}>
 						<Ionicons
 							name="checkmark-sharp"

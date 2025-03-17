@@ -9,33 +9,37 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useState, useEffect } from "react";
 
-const CancelButton = ({ onPress }) => {
+const CancelButton = ({ onPress, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
-    const [cancel, setCancel] = useState(false);
+	const [cancel, setCancel] = useState(false);
 
 	const closeModal = () => {
 		setVisible(false);
 	};
 
 	const handleCancel = () => {
-        setCancel(true);
+		setCancel(true);
 		closeModal();
 	};
 
-    useEffect(() => {
-        if (cancel) {
-            onPress();
-            setCancel(false);
-        }
-    }
-    , [cancel]);
+	useEffect(() => {
+		if (cancel) {
+			onPress();
+			setCancel(false);
+		}
+	}, [cancel]);
 
 	return (
 		<>
 			<Pressable onPress={() => setVisible(true)} style={styles.button}>
-				<Text style={styles.buttonText}>Cancel Workout</Text>
+				{type === "workout" && (
+					<Text style={styles.buttonText}>Cancel Workout</Text>
+				)}
+				{type === "template" && (
+					<Text style={styles.buttonText}>Cancel Template</Text>
+				)}
 			</Pressable>
 
 			<Modal visible={visible} animationType="fade" transparent={true}>
@@ -44,15 +48,28 @@ const CancelButton = ({ onPress }) => {
 						<View style={styles.backgroundOverlay} />
 					</TouchableWithoutFeedback>
 					<View style={styles.modalContainer}>
-						<View style={styles.modalContent}>
-							<Text style={styles.modalTitle}>
-								Cancel Workout?
-							</Text>
-							<Text style={styles.modalText}>
-								Your progress will not be saved. Active
-								exercises data will be lost.
-							</Text>
-						</View>
+						{type === "workout" && (
+							<View style={styles.modalContent}>
+								<Text style={styles.modalTitle}>
+									Cancel Workout?
+								</Text>
+								<Text style={styles.modalText}>
+									Your progress will not be saved. Active
+									exercises data will be lost.
+								</Text>
+							</View>
+						)}
+						{type === "template" && (
+							<View style={styles.modalContent}>
+								<Text style={styles.modalTitle}>
+									Cancel Template?
+								</Text>
+								<Text style={styles.modalText}>
+									Your progress will not be saved. Template
+									data will be lost.
+								</Text>
+							</View>
+						)}
 						<View style={styles.buttonView}>
 							<Pressable
 								style={styles.closeButton}
@@ -80,7 +97,7 @@ const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		button: {
 			marginVertical: 10,
-            marginBottom: 50,
+			marginBottom: 50,
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
 	View,
 	StyleSheet,
@@ -36,14 +36,20 @@ export default function Workout() {
 	} = useWorkout();
 	const [modalIsVisible, setModalVisible] = useState(false);
 	const [type, setType] = useState("workout");
-	const [workoutTitle, setWorkoutTitle] = useState(
-		"Workout #" + (workoutHistory.length + 1)
-	);
+	const [workoutTitle, setWorkoutTitle] = useState("");
 	const [titleError, setTitleError] = useState(false);
 
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
 	const scrollViewRef = useRef(null);
+
+	useEffect(() => {
+		if(type === "template") {
+			setWorkoutTitle("");
+		}else{
+			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+		}
+	}, [type]);
 
 	// Add keyboard listeners when component mounts
 
@@ -174,6 +180,7 @@ export default function Workout() {
 								)}
 							<ExerciseSelector type={type} />
 							<CancelButton
+								type={type}
 								onPress={
 									type === "workout"
 										? cancelWorkout

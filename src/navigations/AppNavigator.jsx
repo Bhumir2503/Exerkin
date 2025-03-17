@@ -28,16 +28,14 @@ export default function AppNavigator() {
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
 
-					if (route.name === "Profile") {
-						iconName = focused ? "person" : "person-outline";
+					if (route.name === "Home") {
+						iconName = focused ? "home" : "home-outline";
 					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
 						iconName = focused ? "body" : "body-outline";
-					} else if (route.name === "Stats") {
-						iconName = focused ? "pie-chart" : "pie-chart-outline";
-					} else if (route.name === "Settings") {
-						iconName = focused ? "settings" : "settings-outline";
+					} else if (route.name === "Profile") {
+						iconName = focused ? "person" : "person-outline";
 					}
 
 					// You can return any component that you like here!
@@ -60,9 +58,9 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Profile" component={ProfileNavigator} />
-			<Tab.Screen name="Feed" component={Friends} />
+			<Tab.Screen name="Home" component={ProfileNavigator} />
 			<Tab.Screen name="Workout" component={Workout} />
+			<Tab.Screen name="Profile" component={Friends} />
 		</Tab.Navigator>
 	);
 }
