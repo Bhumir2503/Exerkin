@@ -16,7 +16,8 @@ import { DraggableGrid } from "react-native-draggable-grid";
 
 const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const { themeStyle } = useTheme();
-	const { newWorkoutStarted, workoutTemplate } = useWorkout();
+	const { newWorkoutStarted, workoutTemplate, setActiveExercise } =
+		useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const screenWidth = Dimensions.get("window").width;
@@ -24,7 +25,13 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const [items, setItems] = useState([]);
 
 	const buttonPress = () => {
-		newWorkoutStarted();
+		newWorkoutStarted(false);
+		onStartWorkout();
+	};
+
+	onTemplatePress = (item) => {
+		setActiveExercise(item.exercises);
+		newWorkoutStarted(true);
 		onStartWorkout();
 	};
 
@@ -41,14 +48,17 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	}, [workoutTemplate]);
 
 	const renderTemplateItem = ({ item }) => (
-		<View style={[styles.templateItem, { width: (screenWidth - 60) / 2 }]}>
+		<Pressable
+			style={[styles.templateItem, { width: (screenWidth - 60) / 2 }]}
+			onPress={() => onTemplatePress(item)}
+		>
 			<Text style={styles.templateItemText}>{item.name}</Text>
 			<Text style={styles.templateItemSubtext}>
 				{item.exercises
 					? `${item.exercises.length} exercises`
 					: "0 exercises"}
 			</Text>
-		</View>
+		</Pressable>
 	);
 
 	return (
@@ -120,7 +130,6 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 						<FlatList
 							data={items}
 							renderItem={renderTemplateItem}
-							keyExtractor={(item) => item.id}
 							numColumns={2}
 							scrollEnabled={false}
 							contentContainerStyle={styles.templatesList}

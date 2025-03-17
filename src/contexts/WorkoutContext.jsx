@@ -86,9 +86,11 @@ export const WorkoutProvider = ({ children }) => {
 		getWorkoutTemplate();
 	}, []);
 
-	const newWorkoutStarted = () => {
+	const newWorkoutStarted = (skip) => {
 		setStartTime(firestore.Timestamp.now());
-		setActiveExercise([]);
+		if (!skip) {
+			setActiveExercise([]);
+		}
 		setActiveId(uuid.v4());
 	};
 
