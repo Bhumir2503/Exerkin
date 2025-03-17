@@ -8,6 +8,7 @@ import {
 import {
 	addWorkoutToTemplateCache,
 	getWorkoutTemplateCache,
+	resetWorkoutTemplateCache,
 } from "../cache/templateCache";
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
@@ -328,6 +329,11 @@ export const WorkoutProvider = ({ children }) => {
 		resetWorkoutHistoryCache();
 	};
 
+	const clearTemplates = () => {
+		setWorkoutTemplate([]);
+		resetWorkoutTemplateCache();
+	}
+
 	return (
 		<WorkoutContext.Provider
 			value={{
@@ -352,6 +358,7 @@ export const WorkoutProvider = ({ children }) => {
 				updateSetInExercise,
 				removeSetFromExercise,
 				clearWorkoutHistory,
+				clearTemplates,
 			}}
 		>
 			{children}

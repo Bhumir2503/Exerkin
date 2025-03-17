@@ -5,17 +5,22 @@ import {
 	Text,
 	ScrollView,
 	TouchableOpacity,
+	Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 export default function Settings({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { onLogout } = useUser();
+	const { clearWorkoutHistory, clearTemplates } = useWorkout();
 	const styles = createStyles(themeStyle);
+
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<ScrollView>
@@ -93,6 +98,25 @@ export default function Settings({ navigation }) {
 						/>
 					</View>
 				</View>
+				<View style={{ marginBottom: 20 }}>
+					<Text style={styles.subTitle}>Developer Tools</Text>
+					<View>
+						<DevToolButton
+							name="Clear Workout History"
+							onPress={clearWorkoutHistory}
+							themeStyle={themeStyle}
+							iconName="trash-outline"
+							dangerAction={true}
+						/>
+						<DevToolButton
+							name="Clear Templates"
+							onPress={clearTemplates}
+							themeStyle={themeStyle}
+							iconName="trash-outline"
+							dangerAction={true}
+						/>
+					</View>
+				</View>
 			</ScrollView>
 			<Text style={styles.logout} onPress={onLogout}>
 				Log Out
@@ -124,6 +148,26 @@ function ButtonSelector({ navigation, themeStyle, name, location }) {
 	);
 }
 
+function DevToolButton({ themeStyle, name, onPress, iconName, dangerAction }) {
+	const styles = createStyles(themeStyle);
+	return (
+		<TouchableOpacity
+			onPress={onPress}
+			style={{
+				flexDirection: "row",
+				justifyContent: "space-between",
+				alignItems: "center",
+				paddingHorizontal: 10,
+				marginLeft: 20,
+			}}
+		>
+			<Text style={[styles.category, dangerAction && styles.dangerText]}>
+				{name}
+			</Text>
+		</TouchableOpacity>
+	);
+}
+
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
@@ -147,6 +191,9 @@ const createStyles = (themeStyle) =>
 			fontSize: 16,
 			color: themeStyle.textColor,
 			padding: 10,
+		},
+		dangerText: {
+			color: themeStyle.error,
 		},
 		logout: {
 			fontWeight: "bold",
