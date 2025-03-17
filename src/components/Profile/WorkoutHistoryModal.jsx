@@ -127,8 +127,7 @@ const ExerciseCard = ({ exercise }) => {
 	// Function to render set information based on exercise type
 	const renderSetInfo = (set) => {
 		if (
-			exercise.type === "weightlifting" ||
-			exercise.type === "assisted-weight"
+			exercise.type === "weightlifting"
 		) {
 			return `${set.weight || 0} lbs × ${set.reps || 0} reps`;
 		} else if (exercise.type === "bodyweight") {
@@ -137,6 +136,8 @@ const ExerciseCard = ({ exercise }) => {
 			return `${set.time || "0:00"} - ${set.distance || 0} miles`;
 		} else if (exercise.type === "cardio-time") {
 			return `${set.time || "0:00"}`;
+		} else if (exercise.type === "assisted-weight") {
+			return `-${set.weight || 0} lbs × ${set.reps || 0} reps`;
 		}
 
 		// Default fallback if type is unknown or undefined

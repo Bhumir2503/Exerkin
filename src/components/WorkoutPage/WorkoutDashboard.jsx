@@ -57,7 +57,7 @@ const WorkoutDashboard = ({ onStartWorkout }) => {
 						marginTop: 20,
 					}}
 				>
-					<Text style={styles.TemplateTitle}>Templates </Text>
+					<Text style={styles.TemplateTitle}>Blueprints </Text>
 
 					<Pressable
 						onPress={() => console.log("Grady Rules")}
