@@ -45,11 +45,6 @@ export default function Profile({ navigation }) {
 		}
 	}, [workoutHistory]);
 
-	// Navigate to workout screen
-	const navigateToWorkout = () => {
-		navigation.navigate("Workout");
-	};
-
 	return (
 		<View style={styles.container}>
 			<SafeAreaView style={styles.safeArea}>
@@ -134,14 +129,6 @@ export default function Profile({ navigation }) {
 								Complete your first workout to start tracking
 								your fitness journey!
 							</Text>
-							<TouchableOpacity
-								style={styles.startWorkoutButton}
-								onPress={navigateToWorkout}
-							>
-								<Text style={styles.startWorkoutButtonText}>
-									Start a Workout
-								</Text>
-							</TouchableOpacity>
 						</View>
 					) : (
 						<WorkoutHistory />
