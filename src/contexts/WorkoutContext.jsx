@@ -54,6 +54,7 @@ export const WorkoutProvider = ({ children }) => {
 	const [activeTemplateExercises, setActiveTemplateExercises] = useState([]);
 	const [activeId, setActiveId] = useState(null);
 	const [startTime, setStartTime] = useState(null);
+	const [workoutNotes, setWorkoutNotes] = useState("");
 
 	const { user } = useUser();
 
@@ -145,6 +146,10 @@ export const WorkoutProvider = ({ children }) => {
 		setActiveId(null);
 	};
 
+	const updateWorkoutNotes = (notes) => {
+		setWorkoutNotes(notes);
+	};
+
 	const workoutCompleted = (name, time) => {
 		// loop through activeExercise to check for empty sets and remove them
 		const activeExerciseFiltered = activeExercise.map((exercise) => {
@@ -184,6 +189,7 @@ export const WorkoutProvider = ({ children }) => {
 			startedAt: startTime,
 			completedAt: firestore.Timestamp.now(),
 			duration: formatTime(time),
+			notes: workoutNotes,
 			date: firestore.Timestamp.now(), // TODO: change to start time
 		};
 
@@ -196,6 +202,7 @@ export const WorkoutProvider = ({ children }) => {
 		// Reset useStates
 		setActiveExercise([]);
 		setActiveId(null);
+		setWorkoutNotes("");
 	};
 
 	const workoutCancelled = () => {
@@ -359,6 +366,8 @@ export const WorkoutProvider = ({ children }) => {
 				removeSetFromExercise,
 				clearWorkoutHistory,
 				clearTemplates,
+				workoutNotes,
+				updateWorkoutNotes,
 			}}
 		>
 			{children}
