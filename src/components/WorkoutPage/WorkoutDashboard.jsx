@@ -7,7 +7,9 @@ import {
 	Pressable,
 	Dimensions,
 	FlatList,
+	Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import TemplatePreviewModal from "./TemplatePreviewModal";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
