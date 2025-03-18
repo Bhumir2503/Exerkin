@@ -1,13 +1,11 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Alert } from "react-native";
 import {
 	getUserCache,
 	updateUserCache,
-	removeUserCache,
 } from "../cache/userCache";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { checkUserSetup } from "../utils/UserFirestoreService";
 
 const UserContext = createContext();
@@ -43,7 +41,7 @@ export const UserProvider = ({ children }) => {
 			setBio("");
 			setIsNewUser(false);
 			setSetupComplete(false);
-			await removeUserCache();
+			await AsyncStorage.clear();
 
 			if (init) {
 				setInit(false);
@@ -173,7 +171,7 @@ export const UserProvider = ({ children }) => {
 			setSetupComplete(false);
 
 			// Remove user data from cache
-			await removeUserCache();
+			await AsyncStorage.clear();
 
 			console.log("User signed out successfully!");
 		} catch (error) {
@@ -182,7 +180,7 @@ export const UserProvider = ({ children }) => {
 			// If the main sign out failed, try a simpler approach
 			try {
 				await auth().signOut();
-				await removeUserCache();
+				await AsyncStorage.clear();
 			} catch (fallbackError) {
 				console.error("Fallback logout also failed:", fallbackError);
 				// At this point, we should inform the user that logout failed
