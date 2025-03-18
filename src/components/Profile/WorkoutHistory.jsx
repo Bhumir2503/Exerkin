@@ -30,7 +30,7 @@ const WorkoutHistory = () => {
 			<FlatList
 				bounces={false}
 				showsVerticalScrollIndicator={false}
-				style={{ width: "100%", padding: 20 }}
+				style={{ width: "100%" }}
 				data={[...workoutHistory].sort(
 					(a, b) => b.date.seconds - a.date.seconds
 				)}
@@ -109,11 +109,11 @@ const createStyles = (themeStyle) =>
 			marginBottom: 20,
 			shadowColor: "#000",
 			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.25,
-			shadowRadius: 3.84,
-			elevation: 5,
+			shadowOpacity: 0.1,
+			shadowRadius: 4,
+			elevation: 3,
 		},
-		workoutTitle:{
+		workoutTitle: {
 			fontSize: 18,
 			fontWeight: "bold",
 			color: themeStyle.textColor,

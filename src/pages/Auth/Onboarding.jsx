@@ -6,8 +6,10 @@ import {
 	Dimensions,
 	Image,
 	Platform,
+	TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
 
 import EmailAuthButton from "../../components/SignInButtons/EmailAuthButton";
 import GoogleAuthButton from "../../components/SignInButtons/GoogleAuthButton";
@@ -15,30 +17,44 @@ import AppleAuthButton from "../../components/SignInButtons/AppleAuthButton";
 
 export default function Onboarding() {
 	const { width, height } = Dimensions.get("window");
+	const navigation = useNavigation();
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Text style={styles.title}>Exerkin</Text>
+			<View style={styles.headerContainer}>
+				<Text style={styles.title}>Exerkin</Text>
+				<Text style={styles.subtitle}>Track, Share, Progress</Text>
+			</View>
+
 			<Image
 				source={require("../../../assets/Onboarding.png")}
-				style={{ width: width, height: width, marginBottom: 50 }}
+				style={styles.image}
+				resizeMode="contain"
 			/>
+
 			<View style={styles.authContainer}>
 				<GoogleAuthButton />
 				{Platform.OS === "ios" && <AppleAuthButton />}
-				<Text style={styles.or}>OR</Text>
+
+				<View style={styles.dividerContainer}>
+					<View style={styles.divider} />
+					<Text style={styles.orText}>OR</Text>
+					<View style={styles.divider} />
+				</View>
+
 				<EmailAuthButton />
-				<Text style={styles.subText}>
+
+				<Text style={styles.termsText}>
 					By continuing you agree to Exerkin's{" "}
 					<Text
-						style={{ textDecorationLine: "underline" }}
+						style={styles.termsLink}
 						onPress={() => console.log("Terms of Service")}
 					>
 						Terms of Service
 					</Text>{" "}
 					and{" "}
 					<Text
-						style={{ textDecorationLine: "underline" }}
+						style={styles.termsLink}
 						onPress={() => console.log("Privacy Policy")}
 					>
 						Privacy Policy
@@ -53,32 +69,78 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: "#121212",
+		backgroundColor: "#16161a", // midnightPurple.backgroundColor
 		alignItems: "center",
+		justifyContent: "space-between",
+		paddingVertical: 20,
+	},
+	headerContainer: {
+		alignItems: "center",
+		marginTop: 10,
 	},
 	title: {
-		fontSize: 24,
+		fontSize: 32,
 		fontWeight: "bold",
-		marginTop: 20,
+		color: "#7f2af0", // midnightPurple.primary
+		marginBottom: 8,
+	},
+	subtitle: {
+		fontSize: 16,
+		color: "#94a1b2", // midnightPurple.textColorSecondary
 		marginBottom: 20,
-		color: "#407BFF",
+	},
+	image: {
+		width: "90%",
+		height: "40%",
+		marginBottom: 20,
 	},
 	authContainer: {
-		justifyContent: "center",
+		width: "90%",
 		alignItems: "center",
-		position: "absolute",
-		bottom: 25,
+		marginBottom: 20,
+	},
+	dividerContainer: {
+		flexDirection: "row",
+		alignItems: "center",
 		width: "100%",
+		marginVertical: 20,
 	},
-	or: {
+	divider: {
+		flex: 1,
+		height: 1,
+		backgroundColor: "#383844", // midnightPurple.inputBorder
+	},
+	orText: {
 		fontWeight: "bold",
-		color: "#FFFFFF",
-		marginBottom: 5,
+		color: "#94a1b2", // midnightPurple.textColorSecondary
+		marginHorizontal: 15,
 	},
-	subText: {
-		color: "#FFFFFF",
+	loginContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginTop: 20,
+	},
+	accountText: {
+		color: "#fffffe", // midnightPurple.textColor
+	},
+	loginButton: {
+		marginLeft: 10,
+		paddingVertical: 5,
+		paddingHorizontal: 10,
+	},
+	loginText: {
+		color: "#7f2af0", // midnightPurple.primary
+		fontWeight: "bold",
+	},
+	termsText: {
+		color: "#94a1b2", // midnightPurple.textColorSecondary
 		textAlign: "center",
-		marginTop: 10,
+		marginTop: 25,
 		paddingHorizontal: 20,
+		fontSize: 12,
+	},
+	termsLink: {
+		color: "#7f2af0", // midnightPurple.primary
+		textDecorationLine: "underline",
 	},
 });

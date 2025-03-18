@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Platform, Text, ActivityIndicator, View } from "react-native";
-import auth from "@react-native-firebase/auth";
-import firestore from "@react-native-firebase/firestore";
 import {
-	AppleButton,
-	appleAuth,
-} from "@invertase/react-native-apple-authentication";
-
+	TouchableOpacity,
+	Text,
+	StyleSheet,
+	Platform,
+	ActivityIndicator,
+	View,
+	Image,
+} from "react-native";
+import auth from "@react-native-firebase/auth";
+import { appleAuth } from "@invertase/react-native-apple-authentication";
 import { useUser } from "../../contexts/UserContext";
 
 export default function AppleAuthButton() {
@@ -60,7 +63,6 @@ export default function AppleAuthButton() {
 
 			// Check if this is a new user
 			setIsNewUser(userCredential.additionalUserInfo?.isNewUser);
-			
 
 			return userCredential;
 		} catch (error) {
@@ -75,31 +77,91 @@ export default function AppleAuthButton() {
 	}
 
 	return (
-		<View style={{ marginBottom: 10 }}>
+		<TouchableOpacity
+			style={styles.appleButton}
+			onPress={onAppleButtonPress}
+			disabled={loading}
+			activeOpacity={0.8}
+		>
 			{loading ? (
-				<View
-					style={{
-						width: 250,
-						height: 40,
-						justifyContent: "center",
-						alignItems: "center",
-						backgroundColor: "#000",
-						borderRadius: 5,
-					}}
-				>
-					<ActivityIndicator color="#fff" />
-				</View>
+				<ActivityIndicator color="#ffffff" size="small" />
 			) : (
-				<AppleButton
-					buttonStyle={AppleButton.Style.WHITE}
-					buttonType={AppleButton.Type.SIGN_IN}
-					style={{
-						width: 250,
-						height: 40,
-					}}
-					onPress={onAppleButtonPress}
-				/>
+				<>
+					<View style={styles.appleIconContainer}>
+						<Image
+							source={require("../../../assets/apple-icon.png")}
+							style={styles.appleIcon}
+							resizeMode="contain"
+						/>
+					</View>
+					<Text style={styles.buttonText}>Continue with Apple</Text>
+				</>
 			)}
-		</View>
+		</TouchableOpacity>
 	);
 }
+
+const styles = StyleSheet.create({
+	googleButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#1e1e24",
+		borderRadius: 12, // Slightly more rounded corners
+		height: 52, // Slightly taller
+		width: "100%",
+		marginVertical: 6,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+		borderWidth: 1,
+		borderColor: "#383844",
+	},
+	appleButton: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#1e1e24",
+		borderRadius: 12,
+		height: 52,
+		width: "100%",
+		marginVertical: 6,
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+		borderWidth: 1,
+		borderColor: "#383844",
+	},
+	googleIconContainer: {
+		width: 22,
+		height: 22,
+		marginRight: 12,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	appleIconContainer: {
+		width: 22,
+		height: 22,
+		marginRight: 12,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	googleIcon: {
+		width: 22,
+		height: 22,
+	},
+	appleIcon: {
+		width: 22,
+		height: 22,
+	},
+	buttonText: {
+		color: "#fffffe",
+		fontSize: 16,
+		fontWeight: "500",
+		letterSpacing: 0.25, // Slightly improved letter spacing for modern look
+	},
+});

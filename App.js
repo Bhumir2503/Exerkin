@@ -10,21 +10,40 @@ import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
-import { useTheme } from "./src/contexts/ThemeContext";
 
 import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
 import SetUsername from "./src/pages/Auth/SetUsername";
+import SplashScreen from "./src/pages/Auth/SplashScreen"; // Create this component for better UX
 
 enableScreens();
 
 globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 
-export default function App() {
+// Define the theme object that will be used consistently throughout the app
+export const midnightPurpleTheme = {
+	backgroundColor: "#16161a",
+	primary: "#7f2af0",
+	secondary: "#72757e",
+	textColor: "#fffffe",
+	textColorSecondary: "#94a1b2",
+	card: "#2d2d3a", // Darker card background
+	cardAlt: "#2d2d3a", // Alternative card background for variety
+	inputBackground: "#1e1e24", // Text input field background
+	inputBorder: "#383844", // Text input border
+	accent: "#e53170",
+	success: "#72B01D",
+	error: "#F87060",
+	warning: "#F7B32B",
+	info: "#3DA9FC",
+};
 
-	
+export default function App() {
 	if (Platform.OS === "android") {
 		NavigationBar.setVisibilityAsync("hidden");
+		NavigationBar.setBackgroundColorAsync(
+			midnightPurpleTheme.backgroundColor
+		);
 	}
 
 	useEffect(() => {
@@ -56,17 +75,18 @@ export default function App() {
 
 function AppContent() {
 	const { user, init, isNewUser, setupComplete } = useUser();
-	const { theme } = useTheme();
-	const lightTheme = ["sunnyDaisy", "mintFresh", "rosePetal", "lavenderMist", "peachCream", "skyBlossom"];
-
 
 	if (init) {
-		return null;
+		// Show a splash screen while loading auth state
+		return <SplashScreen />;
 	}
 
 	return (
 		<NavigationContainer>
-			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"} />
+			<StatusBar
+				style="light"
+				backgroundColor={midnightPurpleTheme.backgroundColor}
+			/>
 			{!user ? (
 				<AuthNavigator />
 			) : isNewUser && !setupComplete ? (
