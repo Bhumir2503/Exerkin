@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import { Platform } from "react-native";
-import React, { useEffect } from "react";
+import { Platform, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -57,43 +57,85 @@ export default function App() {
 	}, []);
 
 	return (
-		<ThemeProvider>
-			<SafeAreaProvider>
-				<MenuProvider>
-					<GestureHandlerRootView style={{ flex: 1 }}>
-						<UserProvider>
-							<WorkoutProvider>
-								<AppContent />
-							</WorkoutProvider>
-						</UserProvider>
-					</GestureHandlerRootView>
-				</MenuProvider>
-			</SafeAreaProvider>
-		</ThemeProvider>
+		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
+			<ThemeProvider>
+				<SafeAreaProvider>
+					<MenuProvider>
+						<GestureHandlerRootView style={{ flex: 1 }}>
+							<UserProvider>
+								<WorkoutProvider>
+									<AppContent />
+								</WorkoutProvider>
+							</UserProvider>
+						</GestureHandlerRootView>
+					</MenuProvider>
+				</SafeAreaProvider>
+			</ThemeProvider>
+		</View>
 	);
 }
 
 function AppContent() {
 	const { user, init, isNewUser, setupComplete } = useUser();
+	const [splashFinished, setSplashFinished] = useState(false);
 
-	if (init) {
-		// Show a splash screen while loading auth state
-		return <SplashScreen />;
+	// For debugging - helps track authentication state changes
+	useEffect(() => {
+		console.log("Auth state in AppContent updated:", {
+			user: user ? "Logged in" : "Not logged in",
+			init,
+			isNewUser,
+			setupComplete,
+		});
+	}, [user, init, isNewUser, setupComplete]);
+
+	// Show splash screen if we're initializing or if splash animation isn't finished
+	if (init || !splashFinished) {
+		return (
+			<SplashScreen onAnimationComplete={() => setSplashFinished(true)} />
+		);
 	}
 
+	// No user - show auth flow
+	if (!user) {
+		return (
+			<NavigationContainer
+				theme={{
+					colors: {
+						background: midnightPurpleTheme.backgroundColor,
+					},
+				}}
+			>
+				<StatusBar
+					style="light"
+					backgroundColor={midnightPurpleTheme.backgroundColor}
+				/>
+				<AuthNavigator />
+			</NavigationContainer>
+		);
+	}
+
+	// User is logged in but hasn't completed setup
+	if (isNewUser && !setupComplete) {
+		return (
+			<NavigationContainer>
+				<StatusBar
+					style="light"
+					backgroundColor={midnightPurpleTheme.backgroundColor}
+				/>
+				<SetUsername />
+			</NavigationContainer>
+		);
+	}
+
+	// User is logged in and has completed setup
 	return (
 		<NavigationContainer>
 			<StatusBar
 				style="light"
 				backgroundColor={midnightPurpleTheme.backgroundColor}
 			/>
-			{!user ? (
-				<AuthNavigator />
-			) : isNewUser && !setupComplete ? (
-				<SetUsername />
-			) : (
-				<AppNavigator />
-			)}
+			<AppNavigator />
 		</NavigationContainer>
 	);
 }

@@ -1,7 +1,7 @@
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
 
-import App from './App';
-import 'react-native-gesture-handler';
+import App from "./App";
+import "react-native-gesture-handler";
 
 //test commentdd
 
