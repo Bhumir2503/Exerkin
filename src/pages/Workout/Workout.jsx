@@ -21,6 +21,7 @@ import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
 import WorkoutHeaderButtons from "../../components/WorkoutPage/WorkoutHeaderButtons";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
+import AddFirstExerciseCard from "../../components/WorkoutPage/AddFirstExerciseCard";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Workout() {
@@ -38,6 +39,7 @@ export default function Workout() {
 	const [type, setType] = useState("workout");
 	const [workoutTitle, setWorkoutTitle] = useState("");
 	const [titleError, setTitleError] = useState(false);
+	// Removed showExerciseSelector state since we always show the selector now
 
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
@@ -125,6 +127,7 @@ export default function Workout() {
 			setActiveTemplateExercises([]);
 		}, 0);
 	};
+
 	// Function to handle input focus - scrolls to center the focused element
 	const handleInputFocus = (event, index) => {
 		// Get dimensions of the scroll view container and the input element
@@ -143,6 +146,16 @@ export default function Workout() {
 			});
 		});
 	};
+
+	// Check if we should show the empty state card
+	const hasExercises =
+		type === "workout"
+			? activeExercise.length > 0
+			: activeTemplateExercises.length > 0;
+
+	// We don't need the handleAddFirstExercise function anymore since
+	// the card is now just informational
+
 	return (
 		<SafeAreaView style={styles.primaryContent}>
 			<WorkoutDashboard
@@ -183,6 +196,7 @@ export default function Workout() {
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
+							{/* Always show exercises if there are any */}
 							{type === "workout" &&
 								activeExercise.map((exercise, index) => (
 									<ExerciseForm
@@ -207,7 +221,13 @@ export default function Workout() {
 										/>
 									)
 								)}
+
+							{/* Show help card only when there are no exercises */}
+							{!hasExercises && <AddFirstExerciseCard />}
+
+							{/* Always show the exercise selector */}
 							<ExerciseSelector type={type} />
+
 							<CancelButton
 								type={type}
 								onPress={
