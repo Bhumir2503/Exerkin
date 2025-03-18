@@ -193,8 +193,6 @@ export default function Workout() {
 							</View>
 						)}
 
-						<WorkoutNotes workoutNotesRef={workoutNotesRef} />
-
 						<ScrollView
 							ref={scrollViewRef}
 							contentContainerStyle={styles.scrollView}
@@ -202,15 +200,13 @@ export default function Workout() {
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
+							<WorkoutNotes workoutNotesRef={workoutNotesRef} />
 							{/* Always show exercises if there are any */}
 							{type === "workout" &&
 								activeExercise.map((exercise, index) => (
 									<ExerciseForm
 										key={index}
 										exercise={exercise}
-										onFocus={(e) =>
-											handleInputFocus(e, index)
-										}
 										type={type}
 									/>
 								))}
