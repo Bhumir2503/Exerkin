@@ -1,13 +1,20 @@
-import React, { useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import {
 	View,
 	Text,
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
+	Pressable
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+	SharedValue,
+	useAnimatedStyle,
+  } from 'react-native-reanimated';
+import { Ionicons } from "@expo/vector-icons";
 
 const ExerciseForm = ({ exercise, onFocus, type }) => {
 	// Checks exercise type and renders the appropriate component
@@ -85,6 +92,40 @@ const Header = ({ repetitionType, metrics }) => {
 	);
 };
 
+//this is what renders the item that comes from the right when sliding.
+function DeleteIcon(progress, drag){
+	const styleAnimation = useAnimatedStyle(() => {
+		return {
+		  width: Math.max(drag.value * -1, 80), //so that the red box extends dynamically
+		  opacity: progress.value,
+		};
+	  });
+	  return (
+		<Reanimated.View 
+			style={[
+				{
+					backgroundColor: "red",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "90%",
+					borderRadius: 5,
+					marginVertical: 5,
+					elevation: 5,
+				},
+				styleAnimation,
+
+			]}
+		>
+		  <View style={{alignItems: "center", justifyContent: "center"}}>
+			<Ionicons name="trash" size={20} color="white" />
+			<Text style={{ color: "white", fontWeight: "bold", fontSize: 10 }}>
+				Delete Set
+			</Text>
+		  </View>
+		</Reanimated.View>
+	  );
+};
+
 const UserInputSection = ({
 	index,
 	inputTypes,
@@ -93,11 +134,37 @@ const UserInputSection = ({
 	lengths,
 	onFocus,
 	values,
+	exerciseId,
+	type,
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+	const { removeSetFromExercise } = useWorkout();
+	const swipeableRef = useRef(null);
+
+	//This function makes the set
+	const handleRemoveSet = () => {
+		// if(swipeableRef.current){
+		// 	swipeableRef.current.close();
+		// }
+		removeSetFromExercise(exerciseId, index, type);
+	};
+
+	//this is to make sure the set that moves up gets set to a closed swipe state, previously was slightly open
+	useEffect(() => {
+		if(swipeableRef.current) {
+			swipeableRef.current.close();
+		}
+	}, [values]);
 
 	return (
+		<ReanimatedSwipeable
+			ref={swipeableRef}
+			rightThreshold={120}
+			onSwipeableOpen={handleRemoveSet}
+			renderRightActions={DeleteIcon}
+			overshootLeft={false}
+		>
 		<View style={styles.setRows}>
 			<Text
 				style={{
@@ -132,6 +199,7 @@ const UserInputSection = ({
 				))}
 			</View>
 		</View>
+		</ReanimatedSwipeable>
 	);
 };
 
@@ -175,6 +243,8 @@ const BodyWeightExercises = ({ exercise, onFocus, type }) => {
 					lengths={[3]}
 					values={[set.reps]}
 					onFocus={onFocus}
+					exerciseId={exercise.id}
+					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -240,6 +310,8 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					onFocus={onFocus}
+					exerciseId={exercise.id}
+					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -305,6 +377,8 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					onFocus={onFocus}
+					exerciseId={exercise.id}
+					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -435,6 +509,8 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 						index === exercise.sets.length - 1
 					}
 					onFocus={onFocus}
+					exerciseId={exercise.id}
+					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -549,6 +625,8 @@ const CardioTimeExercises = ({ exercise, onFocus, type }) => {
 						index === exercise.sets.length - 1
 					}
 					onFocus={onFocus}
+					exerciseId={exercise.id}
+					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
