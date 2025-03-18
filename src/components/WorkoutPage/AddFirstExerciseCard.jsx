@@ -10,12 +10,13 @@ const AddFirstExerciseCard = () => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.content}>
-                <Ionicons
-                    name="add-circle"
-                    size={48}
-                    color={themeStyle.primary}
-                    style={styles.icon}
-                />
+				<View style={styles.IconContainer}>
+					<Ionicons
+						name="barbell"
+						size={40}
+						color={themeStyle.primary}
+					/>
+				</View>
 				<View style={styles.textContainer}>
 					<Text style={styles.title}>
 						Get Started With Your Workout
@@ -58,13 +59,20 @@ const createStyles = (themeStyle) => {
 			width: "100%",
 			marginBottom: 12,
 		},
-		icon: {
-			marginBottom: 10,
+		IconContainer: {
+			backgroundColor: `${themeStyle.primary}20`, // 20% opacity of primary color
+			width: 80,
+			height: 80,
+			borderRadius: 40,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 15,
 		},
+
 		textContainer: {
 			flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
+			justifyContent: "center",
+			alignItems: "center",
 		},
 		title: {
 			fontSize: 18,
@@ -76,7 +84,7 @@ const createStyles = (themeStyle) => {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,
 			lineHeight: 20,
-            textAlign: "center",
+			textAlign: "center",
 		},
 	});
 };
