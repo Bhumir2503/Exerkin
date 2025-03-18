@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
+import RestTimer from "./RestTimer";
 
 const WorkoutHeaderButtons = ({
 	onFinishedPressed,
@@ -28,7 +29,7 @@ const WorkoutHeaderButtons = ({
 
 	const [modalVisible, setModalVisible] = useState(false);
 	const [finished, setFinished] = useState(false);
-
+	console.log("test");
 	useEffect(() => {
 		if (finished) {
 			onFinishedPressed();
@@ -38,41 +39,48 @@ const WorkoutHeaderButtons = ({
 
 	return (
 		<>
-			<View style={{...styles.container, }}>
-				{type === "workout" && (
-					<TouchableOpacity onPress={() => console.log("Timer")}>
-						<Ionicons
-							name="stopwatch-outline"
-							size={32}
-							color={themeStyle.textColor}
-						/>
-					</TouchableOpacity>
-				)}
-				<TextInput
-					style={{
-						...styles.titleInput,
-						borderColor: titleError ? "red" : themeStyle.textColor,
-						borderBottomWidth: titleError ? 2 : 0,
-						textAlign: type === "workout" ? "center": "left",
-					}}
-					value={workoutTitle}
-					placeholder={
-						type === "workout" ? "Add Title..." : "Template Title"
-					}
-					onChangeText={(text) => setWorkoutTitle(text)}
-					onFocus={() => setTitleError(false)}
-					maxLength={32}
-				/>
-				{(activeExercise.length > 0 ||
-					activeTemplateExercises.length > 0) && (
-					<TouchableOpacity onPress={() => setModalVisible(true)}>
-						<Ionicons
-							name="checkmark-sharp"
-							size={32}
-							color={themeStyle.primary}
-						/>
-					</TouchableOpacity>
-				)}
+			<View style={{ ...styles.container }}>
+				{/* Left section */}
+				<View style={styles.leftSection}>
+					{type === "workout" && <RestTimer />}
+				</View>
+
+				{/* Center section - always centered */}
+				<View style={styles.centerSection}>
+					<TextInput
+						style={{
+							...styles.titleInput,
+							borderColor: titleError
+								? "red"
+								: themeStyle.textColor,
+							borderBottomWidth: titleError ? 2 : 0,
+						}}
+						value={workoutTitle}
+						placeholder={
+							type === "workout"
+								? "Add Title..."
+								: "Template Title"
+						}
+						onChangeText={(text) => setWorkoutTitle(text)}
+						onFocus={() => setTitleError(false)}
+						maxLength={32}
+						placeholderTextColor={themeStyle.textColorSecondary}
+					/>
+				</View>
+
+				{/* Right section */}
+				<View style={styles.rightSection}>
+					{(activeExercise.length > 0 ||
+						activeTemplateExercises.length > 0) && (
+						<TouchableOpacity onPress={() => setModalVisible(true)}>
+							<Ionicons
+								name="checkmark-sharp"
+								size={32}
+								color={themeStyle.primary}
+							/>
+						</TouchableOpacity>
+					)}
+				</View>
 				<FinishModal
 					type={type}
 					visible={modalVisible}
@@ -88,10 +96,22 @@ const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		container: {
 			flexDirection: "row",
-			justifyContent: "space-between",
 			paddingHorizontal: 20,
 			paddingTop: 15,
 			paddingBottom: 20,
+			alignItems: "center",
+		},
+		leftSection: {
+			flex: 1,
+			alignItems: "flex-start",
+		},
+		centerSection: {
+			flex: 4,
+			alignItems: "center",
+		},
+		rightSection: {
+			flex: 1,
+			alignItems: "flex-end",
 		},
 		text: {
 			color: themeStyle.accent,
@@ -100,8 +120,6 @@ const createStyles = (themeStyle) => {
 		titleInput: {
 			color: themeStyle.textColor,
 			fontSize: 24,
-			flex: 1,
-			marginHorizontal: 20,
 			textAlign: "center",
 			fontWeight: "bold",
 		},
