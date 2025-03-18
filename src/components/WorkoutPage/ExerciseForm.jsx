@@ -94,6 +94,7 @@ const Header = ({ repetitionType, metrics }) => {
 
 //this is what renders the item that comes from the right when sliding.
 function DeleteIcon(progress, drag){
+	const { themeStyle } = useTheme();
 	const styleAnimation = useAnimatedStyle(() => {
 		return {
 		  width: Math.max(drag.value * -1, 80), //so that the red box extends dynamically
@@ -104,7 +105,7 @@ function DeleteIcon(progress, drag){
 		<Reanimated.View 
 			style={[
 				{
-					backgroundColor: "red",
+					backgroundColor: themeStyle.error,
 					justifyContent: "center",
 					alignItems: "center",
 					height: "90%",
