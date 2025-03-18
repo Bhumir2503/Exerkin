@@ -5,15 +5,15 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	Pressable
+	Pressable,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
 	SharedValue,
 	useAnimatedStyle,
-  } from 'react-native-reanimated';
+} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
 const ExerciseForm = ({ exercise, onFocus, type }) => {
@@ -93,16 +93,16 @@ const Header = ({ repetitionType, metrics }) => {
 };
 
 //this is what renders the item that comes from the right when sliding.
-function DeleteIcon(progress, drag){
+function DeleteIcon(progress, drag) {
 	const { themeStyle } = useTheme();
 	const styleAnimation = useAnimatedStyle(() => {
 		return {
-		  width: Math.max(drag.value * -1, 80), //so that the red box extends dynamically
-		  opacity: progress.value,
+			width: Math.max(drag.value * -1, 80), //so that the red box extends dynamically
+			opacity: progress.value,
 		};
-	  });
-	  return (
-		<Reanimated.View 
+	});
+	return (
+		<Reanimated.View
 			style={[
 				{
 					backgroundColor: themeStyle.error,
@@ -114,18 +114,19 @@ function DeleteIcon(progress, drag){
 					elevation: 5,
 				},
 				styleAnimation,
-
 			]}
 		>
-		  <View style={{alignItems: "center", justifyContent: "center"}}>
-			<Ionicons name="trash" size={20} color="white" />
-			<Text style={{ color: "white", fontWeight: "bold", fontSize: 10 }}>
-				Delete Set
-			</Text>
-		  </View>
+			<View style={{ alignItems: "center", justifyContent: "center" }}>
+				<Ionicons name="trash" size={20} color="white" />
+				<Text
+					style={{ color: "white", fontWeight: "bold", fontSize: 10 }}
+				>
+					Delete Set
+				</Text>
+			</View>
 		</Reanimated.View>
-	  );
-};
+	);
+}
 
 const UserInputSection = ({
 	index,
@@ -153,54 +154,54 @@ const UserInputSection = ({
 
 	//this is to make sure the set that moves up gets set to a closed swipe state, previously was slightly open
 	useEffect(() => {
-		if(swipeableRef.current) {
+		if (swipeableRef.current) {
 			swipeableRef.current.close();
 		}
 	}, [values]);
 
 	return (
-		<ReanimatedSwipeable
-			ref={swipeableRef}
-			rightThreshold={120}
-			onSwipeableOpen={handleRemoveSet}
-			renderRightActions={DeleteIcon}
-			overshootLeft={false}
-		>
-		<View style={styles.setRows}>
-			<Text
-				style={{
-					fontSize: 16,
-					fontWeight: "bold",
-					color: themeStyle.textColor,
-					marginLeft: 5,
-				}}
-			>
-				{index + 1}
-			</Text>
-			<View style={{ flexDirection: "row" }}>
-				{inputTypes.map((inputType, inputIndex) => (
-					<TextInput
-						key={inputIndex}
-						style={[styles.inputField]}
-						inputMode={inputType}
-						keyboardType={
-							inputType === "decimal"
-								? "decimal-pad"
-								: "number-pad"
-						}
-						placeholder={placeholders[inputIndex]}
-						placeholderTextColor={"gray"}
-						maxLength={lengths[inputIndex]}
-						value={values && values[inputIndex]}
-						onChangeText={(text) =>
-							functions[inputIndex](text, index)
-						}
-						onFocus={(e) => onFocus && onFocus(e, index)}
-					/>
-				))}
+		// <ReanimatedSwipeable
+		// 	ref={swipeableRef}
+		// 	rightThreshold={120}
+		// 	onSwipeableOpen={handleRemoveSet}
+		// 	renderRightActions={DeleteIcon}
+		// 	overshootLeft={false}
+		// >
+			<View style={styles.setRows}>
+				<Text
+					style={{
+						fontSize: 16,
+						fontWeight: "bold",
+						color: themeStyle.textColor,
+						marginLeft: 5,
+					}}
+				>
+					{index + 1}
+				</Text>
+				<View style={{ flexDirection: "row" }}>
+					{inputTypes.map((inputType, inputIndex) => (
+						<TextInput
+							key={inputIndex}
+							style={[styles.inputField]}
+							inputMode={inputType}
+							keyboardType={
+								inputType === "decimal"
+									? "decimal-pad"
+									: "number-pad"
+							}
+							placeholder={placeholders[inputIndex]}
+							placeholderTextColor={"gray"}
+							maxLength={lengths[inputIndex]}
+							value={values && values[inputIndex]}
+							onChangeText={(text) =>
+								functions[inputIndex](text, index)
+							}
+							onFocus={(e) => onFocus && onFocus(e, index)}
+						/>
+					))}
+				</View>
 			</View>
-		</View>
-		</ReanimatedSwipeable>
+		// </ReanimatedSwipeable>
 	);
 };
 
