@@ -10,6 +10,7 @@ import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
+import { useTheme } from "./src/contexts/ThemeContext";
 
 import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
@@ -78,6 +79,15 @@ export default function App() {
 function AppContent() {
 	const { user, init, isNewUser, setupComplete } = useUser();
 	const [splashFinished, setSplashFinished] = useState(false);
+	const { theme } = useTheme();
+	const lightTheme = [
+		"sunnyDaisy",
+		"mintFresh",
+		"rosePetal",
+		"lavenderMist",
+		"peachCream",
+		"skyBlossom",
+	];
 
 	// For debugging - helps track authentication state changes
 	useEffect(() => {
@@ -131,10 +141,7 @@ function AppContent() {
 	// User is logged in and has completed setup
 	return (
 		<NavigationContainer>
-			<StatusBar
-				style="light"
-				backgroundColor={midnightPurpleTheme.backgroundColor}
-			/>
+			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"} />
 			<AppNavigator />
 		</NavigationContainer>
 	);

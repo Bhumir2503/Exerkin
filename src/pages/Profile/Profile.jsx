@@ -61,9 +61,7 @@ export default function Profile({ navigation }) {
 								color={themeStyle.textColor}
 							/>
 						</TouchableOpacity>
-
-						<Text style={styles.appTitle}>Profile</Text>
-
+						<Text style={styles.appTitle}>Home</Text>
 						<TouchableOpacity
 							style={styles.iconButton}
 							onPress={() => navigation.navigate("Settings")}
