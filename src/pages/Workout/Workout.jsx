@@ -44,58 +44,87 @@ export default function Workout() {
 	const scrollViewRef = useRef(null);
 
 	useEffect(() => {
-		if(type === "template") {
+		if (type === "template") {
 			setWorkoutTitle("");
-		}else{
+		} else {
 			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 		}
 	}, [type]);
 
-	// Add keyboard listeners when component mounts
-
+	// Updated saveWorkout function to close modal first
 	const saveWorkout = async () => {
 		if (workoutTitle === "") {
 			setTitleError(true);
 			return;
 		}
+
 		const workoutLength = workoutHistory.length;
+
+		// Step 1: Capture necessary values and close modal first
+		const capturedTitle = workoutTitle;
+		const capturedTime = timeRef.current;
 		setModalVisible(false);
-		workoutCompleted(workoutTitle, timeRef.current);
-		timeRef.current = 0;
-		setTitleError(false);
-		setWorkoutTitle("Workout #" + (workoutLength + 2));
+
+		// Step 2: Use setTimeout to push the state changes to the next event loop cycle
+		// This ensures the modal close animation can complete before other state changes
+		setTimeout(() => {
+			workoutCompleted(capturedTitle, capturedTime);
+			timeRef.current = 0;
+			setTitleError(false);
+			setWorkoutTitle("Workout #" + (workoutLength + 2));
+		}, 0);
 	};
 
+	// Updated saveTemplate function
 	const saveTemplate = async () => {
 		if (workoutTitle === "") {
 			setTitleError(true);
 			return;
 		}
+
 		const workoutLength = workoutHistory.length;
+
+		// Step 1: Capture necessary values and close modal first
+		const capturedTitle = workoutTitle;
 		setModalVisible(false);
-		templateCompleted(workoutTitle);	
-		setTitleError(false);
-		setWorkoutTitle("Workout #" + (workoutLength + 2));
-		setType("workout");
+
+		// Step 2: Push the remaining operations to the next event loop cycle
+		setTimeout(() => {
+			templateCompleted(capturedTitle);
+			setTitleError(false);
+			setWorkoutTitle("Workout #" + (workoutLength + 2));
+			setType("workout");
+		}, 0);
 	};
 
+	// Updated cancelWorkout function
 	const cancelWorkout = () => {
+		// Step 1: Close modal first
 		setModalVisible(false);
-		timeRef.current = 0;
-		setTitleError(false);
-		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
-		setType("workout");
-		workoutCancelled();
+
+		// Step 2: Push the remaining operations to the next event loop cycle
+		setTimeout(() => {
+			timeRef.current = 0;
+			setTitleError(false);
+			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+			setType("workout");
+			workoutCancelled();
+		}, 0);
 	};
 
+	// Updated cancelTemplate function
 	const cancelTemplate = () => {
+		// Step 1: Close modal first
 		setModalVisible(false);
-		setTitleError(false);
-		setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
-		setType("workout");
-		setActiveTemplateExercises([]);
-	};
 
+		// Step 2: Push the remaining operations to the next event loop cycle
+		setTimeout(() => {
+			setTitleError(false);
+			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
+			setType("workout");
+			setActiveTemplateExercises([]);
+		}, 0);
+	};
 	// Function to handle input focus - scrolls to center the focused element
 	const handleInputFocus = (event, index) => {
 		// Get dimensions of the scroll view container and the input element
