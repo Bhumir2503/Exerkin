@@ -23,6 +23,7 @@ import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import AddFirstExerciseCard from "../../components/WorkoutPage/AddFirstExerciseCard";
 import { Ionicons } from "@expo/vector-icons";
+import WorkoutNotes from "../../components/WorkoutPage/WorkoutNotes";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
@@ -188,6 +189,8 @@ export default function Workout() {
 								/>
 							</View>
 						)}
+
+						<WorkoutNotes />
 
 						<ScrollView
 							ref={scrollViewRef}

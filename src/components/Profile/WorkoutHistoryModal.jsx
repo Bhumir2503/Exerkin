@@ -89,6 +89,9 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 										: ""}
 								</Text>
 							</View>
+							<Text style={styles.text}>
+									<Text style={{fontWeight: "bold"}}>Notes:</Text> {selectedWorkout.notes}
+							</Text>
 						</View>
 						<ScrollView
 							style={styles.scrollView}
