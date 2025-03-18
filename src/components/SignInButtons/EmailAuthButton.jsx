@@ -334,16 +334,6 @@ function ForgotPassword({ visible, setVisible, setModalVisible }) {
 				>
 					<View style={styles.modalContent}>
 						<View style={styles.modalHeader}>
-							<TouchableOpacity
-								onPress={handleClose}
-								style={styles.closeButton}
-							>
-								<Ionicons
-									name="close"
-									size={24}
-									color="#7f2af0"
-								/>
-							</TouchableOpacity>
 							<Text style={styles.modalTitle}>
 								Reset Password
 							</Text>
@@ -561,6 +551,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		marginVertical: 8,
+		paddingHorizontal: 16,
 	},
 	submitButtonText: {
 		color: "#fffffe",
