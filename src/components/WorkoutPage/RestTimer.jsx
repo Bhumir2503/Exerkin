@@ -302,14 +302,6 @@ const createStyles = (themeStyle) => {
 			borderRadius: 20,
 			padding: 10,
 			paddingHorizontal: 15,
-			shadowColor: "#000",
-			shadowOffset: {
-				width: 0,
-				height: 2,
-			},
-			shadowOpacity: 0.25,
-			shadowRadius: 3.84,
-			elevation: 5,
 		},
 		buttonContent: {
 			flexDirection: "row",

@@ -44,6 +44,7 @@ export default function Workout() {
 
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);
+	const workoutNotesRef = useRef("");
 	const scrollViewRef = useRef(null);
 
 	useEffect(() => {
@@ -66,12 +67,13 @@ export default function Workout() {
 		// Step 1: Capture necessary values and close modal first
 		const capturedTitle = workoutTitle;
 		const capturedTime = timeRef.current;
+		const capturedNotes = workoutNotesRef.current;
 		setModalVisible(false);
 
 		// Step 2: Use setTimeout to push the state changes to the next event loop cycle
 		// This ensures the modal close animation can complete before other state changes
 		setTimeout(() => {
-			workoutCompleted(capturedTitle, capturedTime);
+			workoutCompleted(capturedTitle, capturedTime, capturedNotes);
 			timeRef.current = 0;
 			setTitleError(false);
 			setWorkoutTitle("Workout #" + (workoutLength + 2));
@@ -108,6 +110,7 @@ export default function Workout() {
 		// Step 2: Push the remaining operations to the next event loop cycle
 		setTimeout(() => {
 			timeRef.current = 0;
+			workoutNotesRef.current = "";
 			setTitleError(false);
 			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 			setType("workout");
@@ -190,7 +193,7 @@ export default function Workout() {
 							</View>
 						)}
 
-						<WorkoutNotes />
+						<WorkoutNotes workoutNotesRef={workoutNotesRef} />
 
 						<ScrollView
 							ref={scrollViewRef}

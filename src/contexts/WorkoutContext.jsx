@@ -146,11 +146,7 @@ export const WorkoutProvider = ({ children }) => {
 		setActiveId(null);
 	};
 
-	const updateWorkoutNotes = (notes) => {
-		setWorkoutNotes(notes);
-	};
-
-	const workoutCompleted = (name, time) => {
+	const workoutCompleted = (name, time, note) => {
 		// loop through activeExercise to check for empty sets and remove them
 		const activeExerciseFiltered = activeExercise.map((exercise) => {
 			const sets = exercise.sets.filter(
@@ -189,7 +185,7 @@ export const WorkoutProvider = ({ children }) => {
 			startedAt: startTime,
 			completedAt: firestore.Timestamp.now(),
 			duration: formatTime(time),
-			notes: workoutNotes,
+			notes: note,
 			date: firestore.Timestamp.now(), // TODO: change to start time
 		};
 
@@ -367,7 +363,6 @@ export const WorkoutProvider = ({ children }) => {
 				clearWorkoutHistory,
 				clearTemplates,
 				workoutNotes,
-				updateWorkoutNotes,
 			}}
 		>
 			{children}

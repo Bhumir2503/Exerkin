@@ -98,7 +98,7 @@ const createStyles = (themeStyle) => {
 			flexDirection: "row",
 			paddingHorizontal: 20,
 			paddingTop: 15,
-			paddingBottom: 20,
+			paddingBottom: 0,
 			alignItems: "center",
 		},
 		leftSection: {
