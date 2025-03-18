@@ -23,6 +23,49 @@ const WorkoutHistory = () => {
 		setSelectedWorkout(workout);
 	};
 
+	const truncateNotes = (text, maxLength = 80) => {
+		if (!text) return "No notes";
+	
+		//splitting by punctuation
+		const sentences = text.match(/[^.!?]+[.!?]*/g);
+	
+		if (sentences && sentences.length > 0) {
+			//when there is punctuation, return this
+			let truncatedText = sentences[0].trim();
+			if (truncatedText.length >= maxLength) {
+				return truncatedText.substring(0, maxLength - 3).trim() + " ...";
+			}
+	
+			//add part of the second sentence.
+			if (sentences.length > 1) {
+				let secondSentenceHalf = sentences[1].trim().split(" ").slice(0, 4).join(" ");
+				let combinedText = `${truncatedText} ${secondSentenceHalf}`;
+	
+				if (combinedText.length > maxLength) {
+					return truncatedText + " ...";
+				}
+				return combinedText + " ...";
+			}
+	
+			return truncatedText + " ...";
+		} 
+	
+		// if there is no punctuation, split by spaces and limit
+		if (text.includes(" ")) {
+			// Truncate by words
+			const words = text.split(" ");
+			let truncatedText = words.slice(0, 15).join(" ");
+	
+			if (text.length > maxLength) {
+				return truncatedText + " ...";
+			}
+			return truncatedText;
+		}
+	
+		// if there is no space or punctuation, stop using hardcode maxlength.
+		return text.substring(0, maxLength - 3) + " ...";
+	};
+
 	// if the workout history is empty, display a message
 	// otherwise, display the workout history
 	return workoutHistory.length > 0 ? (
@@ -52,7 +95,7 @@ const WorkoutHistory = () => {
 								{item.exercises.length} workouts
 							</Text>
 							<Text style={styles.workoutNote}>
-								{item.note || "No notes"}
+								{truncateNotes(item.notes)}
 							</Text>
 						</View>
 					</TouchableWithoutFeedback>
