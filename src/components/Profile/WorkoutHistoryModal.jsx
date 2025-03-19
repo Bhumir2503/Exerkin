@@ -28,6 +28,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 			visible={!!selectedWorkout}
 			animationType="fade"
 			transparent={true}
+			statusBarTranslucent={true}
 		>
 			<View style={styles.modalOverlay}>
 				<TouchableWithoutFeedback onPress={closeModal}>
@@ -89,9 +90,14 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 										: ""}
 								</Text>
 							</View>
-							{selectedWorkout.notes !== "" && <Text style={styles.text}>
-									<Text style={{fontWeight: "bold"}}>Notes:</Text> {selectedWorkout.notes}
-							</Text>}
+							{selectedWorkout.notes !== "" && (
+								<Text style={styles.text}>
+									<Text style={{ fontWeight: "bold" }}>
+										Notes:
+									</Text>{" "}
+									{selectedWorkout.notes}
+								</Text>
+							)}
 						</View>
 						<ScrollView
 							style={styles.scrollView}

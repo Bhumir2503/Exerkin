@@ -61,6 +61,7 @@ const WorkoutNotes = ({ workoutNotesRef }) => {
 				transparent={true}
 				visible={modalVisible}
 				onRequestClose={cancelNotes}
+				statusBarTranslucent={true}
 			>
 				<View style={{ flex: 1, alignItems: "center" }}>
 					<TouchableWithoutFeedback onPress={cancelNotes}>

@@ -141,7 +141,7 @@ function AppContent() {
 	// User is logged in and has completed setup
 	return (
 		<NavigationContainer>
-			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"} />
+			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"}/>
 			<AppNavigator />
 		</NavigationContainer>
 	);

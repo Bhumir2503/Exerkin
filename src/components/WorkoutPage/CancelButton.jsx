@@ -42,7 +42,12 @@ const CancelButton = ({ onPress, type }) => {
 				)}
 			</Pressable>
 
-			<Modal visible={visible} animationType="fade" transparent={true}>
+			<Modal
+				visible={visible}
+				animationType="fade"
+				transparent={true}
+				statusBarTranslucent={true}
+			>
 				<View style={styles.modalOverlay}>
 					<TouchableWithoutFeedback onPress={closeModal}>
 						<View style={styles.backgroundOverlay} />

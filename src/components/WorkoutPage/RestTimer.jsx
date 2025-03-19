@@ -150,6 +150,7 @@ const RestTimer = () => {
 				transparent={true}
 				visible={modalVisible}
 				onRequestClose={() => setModalVisible(false)}
+				statusBarTranslucent={true}
 			>
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
