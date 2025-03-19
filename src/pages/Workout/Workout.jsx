@@ -2,15 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import {
 	View,
 	StyleSheet,
-	Text,
 	ScrollView,
 	KeyboardAvoidingView,
 	Platform,
-	Keyboard,
-	TouchableWithoutFeedback,
-	TextInput,
 	SafeAreaView,
 } from "react-native";
+import firestore from "@react-native-firebase/firestore";
 
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
@@ -22,9 +19,9 @@ import WorkoutHeaderButtons from "../../components/WorkoutPage/WorkoutHeaderButt
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import AddFirstExerciseCard from "../../components/WorkoutPage/AddFirstExerciseCard";
-import { Ionicons } from "@expo/vector-icons";
 import WorkoutNotes from "../../components/WorkoutPage/WorkoutNotes";
 import RestTimer from "../../components/WorkoutPage/RestTimer";
+import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
@@ -38,68 +35,54 @@ export default function Workout() {
 		setActiveTemplateExercises,
 	} = useWorkout();
 	const [modalIsVisible, setModalVisible] = useState(false);
+	const [startTimeStamp, setStartTimeStamp] = useState(null);
 	const [type, setType] = useState("workout");
-	const [workoutTitle, setWorkoutTitle] = useState("");
-	const [titleError, setTitleError] = useState(false);
-	// Removed showExerciseSelector state since we always show the selector now
+
 	console.log("Workout Page Rendered");
 
 	const styles = createStyles(themeStyle);
+	const workoutTitleRef = useRef("");
 	const timeRef = useRef(0);
 	const workoutNotesRef = useRef("");
-	const scrollViewRef = useRef(null);
 
-	useEffect(() => {
-		if (type === "template") {
-			setWorkoutTitle("");
-		} else {
-			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
-		}
-	}, [type]);
-
-	// Updated saveWorkout function to close modal first
-	const saveWorkout = async () => {
-		if (workoutTitle === "") {
-			setTitleError(true);
+	// Updated saveWorkout function to handle minimizing
+	const saveWorkout = async (shouldFinish = true) => {
+		// Original save functionality
+		if (workoutTitleRef.current === "") {
+			workoutTitleRef.current = "Untitled Workout";
 			return;
 		}
 
-		const workoutLength = workoutHistory.length;
-
 		// Step 1: Capture necessary values and close modal first
-		const capturedTitle = workoutTitle;
+		const capturedTitle = workoutTitleRef.current;
 		const capturedTime = timeRef.current;
 		const capturedNotes = workoutNotesRef.current;
+		setStartTimeStamp(null);
 		setModalVisible(false);
 
 		// Step 2: Use setTimeout to push the state changes to the next event loop cycle
-		// This ensures the modal close animation can complete before other state changes
 		setTimeout(() => {
 			workoutCompleted(capturedTitle, capturedTime, capturedNotes);
 			timeRef.current = 0;
-			setTitleError(false);
-			setWorkoutTitle("Workout #" + (workoutLength + 2));
+			workoutNotesRef.current = "";
 		}, 0);
 	};
 
-	// Updated saveTemplate function
-	const saveTemplate = async () => {
-		if (workoutTitle === "") {
-			setTitleError(true);
+	// Updated saveTemplate function to handle minimizing
+	const saveTemplate = async (shouldFinish = true) => {
+		// Original save functionality
+		if (workoutTitleRef.current === "") {
+			workoutTitleRef.current = "Untitled Template";
 			return;
 		}
 
-		const workoutLength = workoutHistory.length;
-
 		// Step 1: Capture necessary values and close modal first
-		const capturedTitle = workoutTitle;
+		const capturedTitle = workoutTitleRef.current;
 		setModalVisible(false);
 
 		// Step 2: Push the remaining operations to the next event loop cycle
 		setTimeout(() => {
 			templateCompleted(capturedTitle);
-			setTitleError(false);
-			setWorkoutTitle("Workout #" + (workoutLength + 2));
 			setType("workout");
 		}, 0);
 	};
@@ -107,14 +90,13 @@ export default function Workout() {
 	// Updated cancelWorkout function
 	const cancelWorkout = () => {
 		// Step 1: Close modal first
+		setStartTimeStamp(null);
 		setModalVisible(false);
 
 		// Step 2: Push the remaining operations to the next event loop cycle
 		setTimeout(() => {
 			timeRef.current = 0;
 			workoutNotesRef.current = "";
-			setTitleError(false);
-			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 			setType("workout");
 			workoutCancelled();
 		}, 0);
@@ -127,30 +109,9 @@ export default function Workout() {
 
 		// Step 2: Push the remaining operations to the next event loop cycle
 		setTimeout(() => {
-			setTitleError(false);
-			setWorkoutTitle("Workout #" + (workoutHistory.length + 1));
 			setType("workout");
 			setActiveTemplateExercises([]);
 		}, 0);
-	};
-
-	// Function to handle input focus - scrolls to center the focused element
-	const handleInputFocus = (event, index) => {
-		// Get dimensions of the scroll view container and the input element
-		const scrollViewHeight =
-			scrollViewRef.current?.getInnerViewNode?.()?.clientHeight || 300;
-
-		// Get the y position of the input
-		event.target.measure((fx, fy, width, height, px, py) => {
-			// Calculate position to center the input in the visible area
-			// Subtract half the scroll view height to position input in the middle
-			const scrollToY = Math.max(0, py - 600);
-
-			scrollViewRef.current?.scrollTo({
-				y: scrollToY,
-				animated: true,
-			});
-		});
 	};
 
 	// Check if we should show the empty state card
@@ -159,25 +120,29 @@ export default function Workout() {
 			? activeExercise.length > 0
 			: activeTemplateExercises.length > 0;
 
-	// We don't need the handleAddFirstExercise function anymore since
-	// the card is now just informational
-
 	return (
 		<SafeAreaView style={styles.primaryContent}>
 			<WorkoutDashboard
-				onStartWorkout={() => setModalVisible(true)}
+				onStartWorkout={() => {setModalVisible(true); setStartTimeStamp(firestore.Timestamp.now());}}
 				setOnType={setType}
+				startTimestamp={startTimeStamp}
+			/>
+			<ActiveWorkoutBar
+				timeRef={timeRef}
+				visible={!modalIsVisible && startTimeStamp}
+				exerciseCount={activeExercise.length}
+				title={workoutTitleRef.current }
+				startTimeStamp={startTimeStamp}
+				onPress={() => setModalVisible(true)}
 			/>
 			<WorkoutModal visible={modalIsVisible}>
 				<WorkoutHeaderButtons
 					onFinishedPressed={
 						type === "workout" ? saveWorkout : saveTemplate
 					}
-					setWorkoutTitle={setWorkoutTitle}
-					workoutTitle={workoutTitle}
-					titleError={titleError}
-					setTitleError={setTitleError}
+					workoutTitleRef={workoutTitleRef}
 					type={type}
+					setMainModalVisible={setModalVisible}
 				/>
 
 				<KeyboardAvoidingView
@@ -191,6 +156,7 @@ export default function Workout() {
 								<WorkoutTimer
 									visible={modalIsVisible}
 									timeRef={timeRef}
+									startTimeStamp={startTimeStamp}
 								/>
 								<View style={{ flexDirection: "row" }}>
 									<WorkoutNotes
@@ -202,7 +168,6 @@ export default function Workout() {
 						)}
 
 						<ScrollView
-							ref={scrollViewRef}
 							contentContainerStyle={styles.scrollView}
 							style={[{ width: "100%" }]}
 							keyboardShouldPersistTaps="handled"
@@ -223,9 +188,6 @@ export default function Workout() {
 										<ExerciseForm
 											key={index}
 											exercise={exercise}
-											onFocus={(e) =>
-												handleInputFocus(e, index)
-											}
 											type={type}
 										/>
 									)
