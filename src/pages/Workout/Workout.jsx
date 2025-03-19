@@ -42,6 +42,7 @@ export default function Workout() {
 	const [workoutTitle, setWorkoutTitle] = useState("");
 	const [titleError, setTitleError] = useState(false);
 	// Removed showExerciseSelector state since we always show the selector now
+	console.log("Workout Page Rendered");
 
 	const styles = createStyles(themeStyle);
 	const timeRef = useRef(0);

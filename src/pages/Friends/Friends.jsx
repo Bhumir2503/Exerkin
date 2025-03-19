@@ -7,6 +7,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 export default function Profile() {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+	console.log("Friends Page Rendered");
 	return (
 		<SafeAreaView style={styles.container}>
 			<View>
