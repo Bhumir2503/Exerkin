@@ -107,12 +107,12 @@ const RestTimer = () => {
 				onPress={() => setModalVisible(true)}
 			>
 				<View style={styles.buttonContent}>
-					<Ionicons
+					{!isPlaying && <Ionicons
 						name="timer-outline"
 						size={20}
 						color={themeStyle.textColor}
-					/>
-					<Text style={styles.restButtonText}>
+					/>}
+					{isPlaying && <Text style={styles.restButtonText}>
 						{isPlaying
 							? `${formatTime(remainingTime)}`
 							: completed
@@ -120,7 +120,7 @@ const RestTimer = () => {
 							: remainingTime < duration
 							? `${formatTime(remainingTime)}`
 							: ""}
-					</Text>
+					</Text>}
 				</View>
 			</TouchableOpacity>
 
@@ -298,8 +298,8 @@ const createStyles = (themeStyle) => {
 			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "center",
-			backgroundColor: themeStyle.cardBackground,
-			borderRadius: 20,
+			backgroundColor: themeStyle.primary,
+			borderRadius: 12,
 			padding: 10,
 			paddingHorizontal: 15,
 		},
@@ -310,7 +310,8 @@ const createStyles = (themeStyle) => {
 		restButtonText: {
 			color: themeStyle.textColor,
 			fontWeight: "bold",
-			marginLeft: 5,
+			width: 50,
+			textAlign: "center",
 			fontSize: 16,
 		},
 		centeredView: {

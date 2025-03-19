@@ -24,6 +24,7 @@ import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import AddFirstExerciseCard from "../../components/WorkoutPage/AddFirstExerciseCard";
 import { Ionicons } from "@expo/vector-icons";
 import WorkoutNotes from "../../components/WorkoutPage/WorkoutNotes";
+import RestTimer from "../../components/WorkoutPage/RestTimer";
 
 export default function Workout() {
 	const { themeStyle } = useTheme();
@@ -190,6 +191,9 @@ export default function Workout() {
 									visible={modalIsVisible}
 									timeRef={timeRef}
 								/>
+								<View>
+									<RestTimer />
+								</View>
 							</View>
 						)}
 
@@ -269,6 +273,7 @@ const createStyles = (theme) => {
 			paddingHorizontal: 20,
 			flexDirection: "row",
 			alignItems: "center",
+			justifyContent: "space-between",
 		},
 	});
 };

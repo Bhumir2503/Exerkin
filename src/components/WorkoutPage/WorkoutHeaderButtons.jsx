@@ -42,7 +42,7 @@ const WorkoutHeaderButtons = ({
 			<View style={{ ...styles.container }}>
 				{/* Left section */}
 				<View style={styles.leftSection}>
-					{type === "workout" && <RestTimer />}
+	
 				</View>
 
 				{/* Center section - always centered */}
