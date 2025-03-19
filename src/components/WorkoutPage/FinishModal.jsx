@@ -7,9 +7,12 @@ import {
 	Text,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
-const FinishModal = ({ visible, setVisible, setFinished, type }) => {
+const FinishModal = ({ visible, setVisible, setFinished }) => {
 	const { themeStyle } = useTheme();
+	const {ModalType} = useWorkout();
+
 	const styles = createStyles(themeStyle);
 	const closeModal = () => {
 		setVisible(false);
@@ -31,7 +34,7 @@ const FinishModal = ({ visible, setVisible, setFinished, type }) => {
 				<TouchableWithoutFeedback onPress={closeModal}>
 					<View style={styles.backgroundOverlay} />
 				</TouchableWithoutFeedback>
-				{type === "workout" && (
+				{ModalType.current === "WorkoutModal" && (
 					<View style={styles.modalContainer}>
 						<View style={styles.modalContent}>
 							<Text style={styles.modalTitle}>
@@ -58,7 +61,7 @@ const FinishModal = ({ visible, setVisible, setFinished, type }) => {
 						</View>
 					</View>
 				)}
-				{type === "template" && (
+				{ModalType.current === "TemplateModal" && (
 					<View style={styles.modalContainer}>
 						<View style={styles.modalContent}>
 							<Text style={styles.modalTitle}>

@@ -55,7 +55,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 								</Text>
 								<Text style={styles.text}>
 									{formatTimeStamptoDateString(
-										selectedWorkout.date
+										selectedWorkout.startedAt
 									)}
 								</Text>
 							</View>

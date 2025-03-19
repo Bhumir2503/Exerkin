@@ -1,35 +1,49 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View, TextInput } from "react-native";
+import {
+	StyleSheet,
+	TouchableOpacity,
+	View,
+	TextInput,
+	Modal,
+} from "react-native";
 import FinishModal from "./FinishModal";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const WorkoutHeaderButtons = ({ onFinishedPressed, workoutTitleRef, type, setMainModalVisible, }) => {
+const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 	const { themeStyle } = useTheme();
-	const { activeExercise, activeTemplateExercises } = useWorkout();
+	const {
+		workoutExercises,
+		WorkoutTitle: WorkoutTitleRef,
+	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
-	const [modalVisible, setModalVisible] = useState(false);
+	const [subModalVisible, setSubModalVisible] = useState(false);
 	const [finished, setFinished] = useState(false);
 	const [workoutTitle, setWorkoutTitle] = useState("");
 
 	useEffect(() => {
 		if (finished) {
-			onFinishedPressed();
 			setFinished(false);
 		}
 	}, [finished]);
 
 	const handleTitleChange = (text) => {
 		setWorkoutTitle(text);
-		workoutTitleRef.current = text;
+		WorkoutTitleRef.current = text;
 	};
 
 	const handleDownArrowPress = () => {
 		setMainModalVisible(false);
 	};
+
+	const handleFinishPress = () => {
+		setSubModalVisible(true);
+		onFinish();
+	}
+
 
 	return (
 		<>
@@ -47,15 +61,9 @@ const WorkoutHeaderButtons = ({ onFinishedPressed, workoutTitleRef, type, setMai
 				{/* Center section - always centered */}
 				<View style={styles.centerSection}>
 					<TextInput
-						style={{
-							...styles.titleInput,
-						}}
+						style={styles.titleInput}
 						value={workoutTitle}
-						placeholder={
-							type === "workout"
-								? "Workout Title..."
-								: "Template Title..."
-						}
+						placeholder={"Workout Title..."}
 						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={32}
 						placeholderTextColor={themeStyle.textColorSecondary}
@@ -64,9 +72,8 @@ const WorkoutHeaderButtons = ({ onFinishedPressed, workoutTitleRef, type, setMai
 
 				{/* Right section */}
 				<View style={styles.rightSection}>
-					{(activeExercise.length > 0 ||
-						activeTemplateExercises.length > 0) && (
-						<TouchableOpacity onPress={() => setModalVisible(true)}>
+					{workoutExercises.length > 0 && (
+						<TouchableOpacity onPress={() => handleFinishPress()}>
 							<Ionicons
 								name="checkmark-sharp"
 								size={32}
@@ -76,9 +83,8 @@ const WorkoutHeaderButtons = ({ onFinishedPressed, workoutTitleRef, type, setMai
 					)}
 				</View>
 				<FinishModal
-					type={type}
-					visible={modalVisible}
-					setVisible={setModalVisible}
+					visible={subModalVisible}
+					setVisible={setSubModalVisible}
 					setFinished={setFinished}
 				/>
 			</View>

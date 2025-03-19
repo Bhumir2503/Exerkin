@@ -2,13 +2,21 @@ import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import WorkoutTimer from "./WorkoutTimer";
 
-const ActiveWorkoutBar = ({ onPress, exerciseCount, timeRef, title, visible, startTimeStamp }) => {
+const ActiveWorkoutBar = ({ onPress, visible }) => {
 	const { themeStyle } = useTheme();
+	const {
+		workoutExercises,
+		WorkoutTimer: WorkoutTimerRef,
+		WorkoutTitle,
+		WorkoutStartTime,
+	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
-    if(!visible && !startTimeStamp) return null;
+    if(!visible && !WorkoutStartTime.current) return null;
+
 
 	return (
 		<Pressable style={styles.container} onPress={onPress}>
@@ -20,14 +28,14 @@ const ActiveWorkoutBar = ({ onPress, exerciseCount, timeRef, title, visible, sta
 				/>
 			</View>
 			<View style={styles.infoContainer}>
-				<Text style={styles.title}>{title || "Active Workout"}</Text>
+				<Text style={styles.title}>{WorkoutTitle.current || "Active Workout"}</Text>
 				<Text style={styles.subtitle}>
-					{exerciseCount}{" "}
-					{exerciseCount === 1 ? "exercise" : "exercises"}
+					{workoutExercises.length}{" "}
+					{workoutExercises.length === 1 ? "exercise" : "exercises"}
 				</Text>
 			</View>
 			<View style={styles.timerContainer}>
-				<WorkoutTimer timeRef={timeRef} visible={visible} startTimeStamp={startTimeStamp} />
+				<WorkoutTimer timeRef={WorkoutTimerRef} visible={visible} startTimeStamp={WorkoutStartTime.current} />
 			</View>
 		</Pressable>
 	);

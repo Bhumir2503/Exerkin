@@ -12,15 +12,17 @@ import {
 	Pressable,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const MAX_CHARACTERS = 256;
 
-const WorkoutNotes = ({ workoutNotesRef }) => {
+const WorkoutNotes = () => {
 	const [workoutNotes, setWorkoutNotes] = useState("");
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tempNotes, setTempNotes] = useState("");
 	const { themeStyle } = useTheme();
+	const { WorkoutNote } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	// Initialize tempNotes when modal opens
@@ -36,7 +38,7 @@ const WorkoutNotes = ({ workoutNotesRef }) => {
 
 	const saveNotes = () => {
 		setWorkoutNotes(tempNotes);
-		workoutNotesRef.current = tempNotes;
+		WorkoutNote.current = tempNotes;
 		setModalVisible(false);
 	};
 

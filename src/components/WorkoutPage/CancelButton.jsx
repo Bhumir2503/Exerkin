@@ -8,9 +8,11 @@ import {
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useState, useEffect } from "react";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
-const CancelButton = ({ onPress, type }) => {
+const CancelButton = ({ onPress }) => {
 	const { themeStyle } = useTheme();
+	const { ModalType } = useWorkout();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
 	const [cancel, setCancel] = useState(false);
@@ -34,10 +36,10 @@ const CancelButton = ({ onPress, type }) => {
 	return (
 		<>
 			<Pressable onPress={() => setVisible(true)} style={styles.button}>
-				{type === "workout" && (
+				{ModalType.current === "WorkoutModal" && (
 					<Text style={styles.buttonText}>Cancel Workout</Text>
 				)}
-				{type === "template" && (
+				{ModalType.current === "TemplateModal" && (
 					<Text style={styles.buttonText}>Cancel Template</Text>
 				)}
 			</Pressable>
@@ -53,7 +55,7 @@ const CancelButton = ({ onPress, type }) => {
 						<View style={styles.backgroundOverlay} />
 					</TouchableWithoutFeedback>
 					<View style={styles.modalContainer}>
-						{type === "workout" && (
+						{ModalType === "WorkoutModal" && (
 							<View style={styles.modalContent}>
 								<Text style={styles.modalTitle}>
 									Cancel Workout?
@@ -64,7 +66,7 @@ const CancelButton = ({ onPress, type }) => {
 								</Text>
 							</View>
 						)}
-						{type === "template" && (
+						{ModalType === "TemplateModal" && (
 							<View style={styles.modalContent}>
 								<Text style={styles.modalTitle}>
 									Cancel Template?

@@ -18,13 +18,11 @@ import {
 	getExercisesByCategory,
 } from "../../utils/ExerciseData";
 
-const ExerciseSelector = ({type}) => {
+const ExerciseSelector = () => {
 	const { themeStyle } = useTheme();
 	const {
-		addExerciseToActiveWorkout,
-		addExerciseToActiveTemplate,
-		activeExercise,
-		activeTemplateExercises,
+		addExerciseToWorkout,
+		workoutExercises,
 	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
@@ -40,9 +38,7 @@ const ExerciseSelector = ({type}) => {
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 	// Get array of already added exercise IDs
 	const getAddedExerciseIds = () => {
-		return type === "workout"
-			? activeExercise.map((ex) => ex.id)
-			: activeTemplateExercises.map((ex) => ex.id);
+		return workoutExercises.map((exercise) => exercise.id);
 	};
 
 	// Filter exercises based on search, category, and already added exercises
@@ -76,7 +72,7 @@ const ExerciseSelector = ({type}) => {
 		}
 
 		setFilteredExercises(result);
-	}, [searchQuery, selectedCategory, activeExercise, activeTemplateExercises]);
+	}, [searchQuery, selectedCategory, workoutExercises]);
 
 	// Close modal and reset state
 	const closeModal = () => {
@@ -112,16 +108,13 @@ const ExerciseSelector = ({type}) => {
 				type: selectedExercise.type,
 				sets: setType,
 				notes: "",
-				order: type === "workout" ? activeExercise.length + 1 : activeTemplateExercises.length + 1,
+				order: workoutExercises.length+1,
 				completed: false,
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
 			};
-			if(type === "workout") {
-				addExerciseToActiveWorkout(exercise);
-			} else {
-				addExerciseToActiveTemplate(exercise);
-			}
+
+			addExerciseToWorkout(exercise)
 
 			closeModal();
 		}

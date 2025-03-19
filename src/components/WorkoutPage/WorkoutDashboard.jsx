@@ -4,81 +4,22 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 	ScrollView,
-	Pressable,
-	Dimensions,
-	FlatList,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import TemplatePreviewModal from "./TemplatePreviewModal";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect, useRef } from "react";
-import ActiveWorkoutBar from "./ActiveWorkoutBar";
+import { useState} from "react";
 
-const WorkoutDashboard = ({ onStartWorkout, setOnType, startTimestamp }) => {
+
+const WorkoutDashboard = ({ onStartWorkout }) => {
 	const { themeStyle } = useTheme();
-	const { newWorkoutStarted, workoutTemplate, setActiveExercise } =
-		useWorkout();
+	const { workoutStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
 
-	const screenWidth = Dimensions.get("window").width;
-
-	const [items, setItems] = useState([]);
-	const [visibleTemplatePreview, setVisibleTemplatePreview] = useState(false);
-	const [selectedTemplate, setSelectedTemplate] = useState(null);
-
 	const startButtonPressed = () => {
-		newWorkoutStarted(false);
+		workoutStarted();
 		onStartWorkout();
 	};
-
-	const onTemplateStartButtonPressed = () => {
-		setActiveExercise(selectedTemplate.exercises);
-		newWorkoutStarted(true);
-		onStartWorkout();
-	};
-
-	const onTemplateOptionPress = (item) => {
-		setSelectedTemplate(item);
-		setVisibleTemplatePreview(true);
-	};
-
-	const onTemplateClose = () => {
-		setSelectedTemplate(null);
-		setVisibleTemplatePreview(false);
-	};
-
-	// Resume active workout
-	const resumeActiveWorkout = () => {
-		onStartWorkout();
-	};
-
-	useEffect(() => {
-		if (workoutTemplate && workoutTemplate.length > 0) {
-			const templateItems = workoutTemplate.map((template) => ({
-				key: template.id,
-				name: template.name,
-				exercises: template.exercises,
-				date: template.date,
-			}));
-			setItems(templateItems);
-		}
-	}, [workoutTemplate]);
-
-	const renderTemplateItem = ({ item }) => (
-		<Pressable
-			style={[styles.templateItem, { width: (screenWidth - 60) / 2 }]}
-			onPress={() => onTemplateOptionPress(item)}
-		>
-			<Text style={styles.templateItemText}>{item.name}</Text>
-			<Text style={styles.templateItemSubtext}>
-				{item.exercises
-					? `${item.exercises.length} exercises`
-					: "0 exercises"}
-			</Text>
-		</Pressable>
-	);
 
 	return (
 		<View style={styles.container}>
@@ -87,7 +28,6 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType, startTimestamp }) => {
 			<StartWorkoutButton
 				title="Start Workout"
 				onPress={startButtonPressed}
-				startTimestamp={startTimestamp}
 			/>
 			<ScrollView
 				bounces={false}
@@ -112,86 +52,20 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType, startTimestamp }) => {
 					<DailyGoal goalName="100 Sit-Ups" />
 					<DailyGoal goalName="100 Squats" />
 				</View>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-between",
-						alignItems: "center",
-						marginTop: 20,
-					}}
-				>
-					<Text style={styles.TemplateTitle}>Blueprints </Text>
-
-					<Pressable
-						onPress={() => {
-							setOnType("template");
-							onStartWorkout();
-						}}
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							padding: 5,
-							paddingHorizontal: 15,
-							backgroundColor: themeStyle.primary,
-							borderRadius: 5,
-						}}
-					>
-						<Text
-							style={{
-								color: themeStyle.textColor,
-								fontSize: 16,
-								fontWeight: "bold",
-							}}
-						>
-							New
-						</Text>
-					</Pressable>
-				</View>
-
-				{items.length > 0 ? (
-					<View style={styles.templatesContainer}>
-						<FlatList
-							data={items}
-							renderItem={renderTemplateItem}
-							numColumns={2}
-							scrollEnabled={false}
-							contentContainerStyle={styles.templatesList}
-						/>
-						<TemplatePreviewModal
-							visible={visibleTemplatePreview}
-							onClose={onTemplateClose}
-							template={selectedTemplate}
-							onStart={onTemplateStartButtonPressed}
-						/>
-					</View>
-				) : (
-					<View style={styles.emptyContainer}>
-						<Text style={styles.emptyText}>
-							No workout templates yet
-						</Text>
-						<Text style={styles.emptySubtext}>
-							Create a new template to get started
-						</Text>
-					</View>
-				)}
 			</ScrollView>
 		</View>
 	);
 };
 
-const StartWorkoutButton = ({ title, onPress, startTimestamp }) => {
+const StartWorkoutButton = ({ title, onPress }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
 		<TouchableOpacity
 			style={{
 				...styles.button,
-				backgroundColor: startTimestamp
-					? `${themeStyle.primary}40`
-					: themeStyle.primary,
 			}}
 			onPress={onPress}
-			disabled={startTimestamp !== null}
 		>
 			<Ionicons name="fitness-sharp" size={24} color={"#fff"} />
 			<Text style={styles.buttonText}>{title}</Text>

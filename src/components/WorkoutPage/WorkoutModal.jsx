@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
 	Modal,
 	View,
@@ -10,35 +10,48 @@ import {
 	ScrollView,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-// import {
-// 	SafeAreaView,
-// 	useSafeAreaInsets,
-// } from "react-native-safe-area-context";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
 import WorkoutNotes from "./WorkoutNotes";
 import RestTimer from "./RestTimer";
-import ExerciseForm from "./ExerciseForm";
+import ExerciseForm from "./ExerciseForm"; // Import your optimized component
 import ExerciseSelector from "./ExerciseSelector";
 import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
+import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
-const WorkoutModal = ({
-	visible,
-	type = "workout",
-	onFinish,
-	onCancel,
-	workoutTitleRef,
-	timeRef,
-	workoutNotesRef,
-	startTimeStamp,
-	activeExercises = [],
-	setModalVisible,
-	hasExercises = false,
-}) => {
+const WorkoutModal = ({ visible, setModalVisible }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+
+	const { workoutExercises, workoutCompleted, workoutCancelled } =
+		useWorkout();
+
+	const onCancel = () => {
+		setModalVisible(false);
+		workoutCancelled();
+	};
+
+	const onFinish = () => {
+		setModalVisible(false);
+		workoutCompleted();
+	};
+
+	// Use useMemo to only calculate this when workoutExercises changes
+	const hasExercises = useMemo(
+		() => workoutExercises.length > 0,
+		[workoutExercises.length]
+	);
+
+	// Memoize the exercise forms to prevent unnecessary re-renders
+	// Only the IDs are needed since the actual data will be retrieved by each component
+	const exerciseForms = useMemo(() => {
+		return workoutExercises.map((exercise, index) => (
+			<ExerciseForm key={exercise.id} exercise={exercise} />
+		));
+	}, [workoutExercises]);
 
 	return (
 		<Modal
@@ -52,10 +65,8 @@ const WorkoutModal = ({
 				edges={["top", "right", "left", "bottom"]}
 			>
 				<WorkoutHeaderButtons
-					onFinishedPressed={onFinish}
-					workoutTitleRef={workoutTitleRef}
-					type={type}
 					setMainModalVisible={setModalVisible}
+					onFinish={onFinish}
 				/>
 
 				<KeyboardAvoidingView
@@ -64,21 +75,13 @@ const WorkoutModal = ({
 					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 				>
 					<View>
-						{type === "workout" && (
-							<View style={styles.timerStyle}>
-								<WorkoutTimer
-									visible={visible}
-									timeRef={timeRef}
-									startTimeStamp={startTimeStamp}
-								/>
-								<View style={{ flexDirection: "row" }}>
-									<WorkoutNotes
-										workoutNotesRef={workoutNotesRef}
-									/>
-									<RestTimer />
-								</View>
+						<View style={styles.timerStyle}>
+							<WorkoutTimer visible={visible} />
+							<View style={{ flexDirection: "row" }}>
+								<WorkoutNotes />
+								<RestTimer />
 							</View>
-						)}
+						</View>
 
 						<ScrollView
 							contentContainerStyle={styles.scrollView}
@@ -86,22 +89,16 @@ const WorkoutModal = ({
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
-							{/* Display exercises */}
-							{activeExercises.map((exercise, index) => (
-								<ExerciseForm
-									key={index}
-									exercise={exercise}
-									type={type}
-								/>
-							))}
+							{/* Display exercise forms - now using memoized list */}
+							{exerciseForms}
 
 							{/* Show help card only when there are no exercises */}
 							{!hasExercises && <AddFirstExerciseCard />}
 
 							{/* Always show the exercise selector */}
-							<ExerciseSelector type={type} />
+							<ExerciseSelector />
 
-							<CancelButton type={type} onPress={onCancel} />
+							<CancelButton onPress={onCancel} />
 						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>
@@ -141,4 +138,4 @@ const createStyles = (theme) => {
 	});
 };
 
-export default WorkoutModal;
+export default React.memo(WorkoutModal);

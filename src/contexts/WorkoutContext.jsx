@@ -1,5 +1,13 @@
 // contexts/WorkoutContext.jsx
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, {
+	createContext,
+	useState,
+	useContext,
+	useEffect,
+	useRef,
+	useMemo,
+	useCallback,
+} from "react";
 import {
 	addWorkoutToHistoryCache,
 	getWorkoutHistoryCache,
@@ -13,7 +21,6 @@ import {
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 import {
-	getWorkoutsFromFirestore,
 	addWorkoutToFirestore,
 	batchDeleteWorkoutFromFirestore,
 } from "../utils/WorkoutFirestoreServices";
@@ -23,40 +30,19 @@ import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
-	// workouts history state
-	// should be an array of objects that is stored in cache or firebase
-	// probably init if
-	const [workoutHistory, setWorkoutHistory] = useState([]);
-	// template for workout
-	const [workoutTemplate, setWorkoutTemplate] = useState([]);
-
-	// active workout state
-	// activeExercise scheme
-	// {
-	// 	id: 1,
-	// 	name: "Bench Press",
-	// 	sets: [
-	// 		{ reps: 10, weight: 100 },
-	// 		{ reps: 8, weight: 110 },
-	// 		{ reps: 6, weight: 120 },
-	// 	],
-	// 	rest: 60,
-	// 	notes: "Felt good",
-	// 	order: 1,
-	// 	completed: false,
-	// 	createdAt: "2023-10-01T12:00:00Z",
-	// 	updatedAt: "2023-10-01T12:00:00Z",
-	//  exercise: excercise object
-	//  date: "2023-10-01T12:00:00Z",
-	//  time: "00:00:00",
-	// }
-	const [activeExercise, setActiveExercise] = useState([]);
-	const [activeTemplateExercises, setActiveTemplateExercises] = useState([]);
-	const [activeId, setActiveId] = useState(null);
-	const [startTime, setStartTime] = useState(null);
-	const [workoutNotes, setWorkoutNotes] = useState("");
-
 	const { user } = useUser();
+
+	//Workout Section States
+	const ModalType = useRef("WorkoutModal");
+
+	//  Workout History, Workout Exercises, Workout Notes, Workout Title, Workout Start Time, Workout Date
+	const WorkoutId = useRef(null);
+	const [workoutHistory, setWorkoutHistory] = useState([]);
+	const [workoutExercises, setWorkoutExercises] = useState([]);
+	const WorkoutTitle = useRef("");
+	const WorkoutNote = useRef("");
+	const WorkoutStartTime = useRef(null);
+	const WorkoutTimer = useRef(0);
 
 	// retrieve workout history from cache
 	useEffect(() => {
@@ -88,67 +74,16 @@ export const WorkoutProvider = ({ children }) => {
 		getWorkoutTemplate();
 	}, []);
 
-	const newWorkoutStarted = (skip) => {
-		setStartTime(firestore.Timestamp.now());
-		if (!skip) {
-			setActiveExercise([]);
-		}
-		setActiveId(uuid.v4());
-	};
+	// Using useCallback to memoize functions that modify exercises
+	const workoutStarted = useCallback(() => {
+		setWorkoutExercises([]);
+		WorkoutStartTime.current = firestore.Timestamp.now();
+		WorkoutId.current = uuid.v4();
+	}, []);
 
-	const templateCompleted = (name) => {
-		const activeTemplateExercisesFiltered = activeTemplateExercises.map(
-			(exercise) => {
-				const sets = exercise.sets.filter(
-					(set) =>
-						set.weight !== null &&
-						set.weight !== "" &&
-						set.weight !== 0 &&
-						set.time !== null &&
-						set.time !== "" &&
-						set.time !== 0 &&
-						set.distance !== null &&
-						set.distance !== "" &&
-						set.distance !== 0
-				);
-				return { ...exercise, sets };
-			}
-		);
-
-		const activeTemplateExercisesChecked =
-			activeTemplateExercisesFiltered.filter(
-				(exercise) => exercise.sets.length > 0
-			);
-
-		if (activeTemplateExercisesChecked.length === 0) {
-			console.log("No exercises added");
-			setActiveTemplateExercises([]);
-			setActiveId(null);
-			return;
-		}
-
-		const template = {
-			userId: user.uid,
-			name: name,
-			id: activeId,
-			exercises: activeTemplateExercisesChecked,
-			date: firestore.Timestamp.now(),
-		};
-
-		// state
-		setWorkoutTemplate((prevTemplate) => [...prevTemplate, template]);
-		// cache
-		addWorkoutToTemplateCache(template);
-
-		console.log(workoutTemplate);
-
-		setActiveTemplateExercises([]);
-		setActiveId(null);
-	};
-
-	const workoutCompleted = (name, time, note) => {
+	const workoutCompleted = useCallback(() => {
 		// loop through activeExercise to check for empty sets and remove them
-		const activeExerciseFiltered = activeExercise.map((exercise) => {
+		const WorkoutExerciseFiltered = workoutExercises.map((exercise) => {
 			const sets = exercise.sets.filter(
 				(set) =>
 					set.weight !== null &&
@@ -165,28 +100,31 @@ export const WorkoutProvider = ({ children }) => {
 		});
 
 		// loops through activeExercise to check for empty exercises and remove them
-		const activeExerciseChecked = activeExerciseFiltered.filter(
+		const WorkoutExerciseChecked = WorkoutExerciseFiltered.filter(
 			(exercise) => exercise.sets.length > 0
 		);
 
 		// if no exercises are added, return
-		if (activeExerciseChecked.length === 0) {
+		if (WorkoutExerciseChecked.length === 0) {
 			console.log("No exercises added");
-			setActiveExercise([]);
-			setActiveId(null);
+			setWorkoutExercises([]);
 			return;
+		}
+
+		const WorkoutFinishTime = firestore.Timestamp.now();
+		if (WorkoutTitle.current === "") {
+			WorkoutTitle.current = "Untitled Workout";
 		}
 
 		const workout = {
 			userId: user.uid,
-			name: name,
-			id: activeId,
-			exercises: activeExerciseChecked,
-			startedAt: startTime,
-			completedAt: firestore.Timestamp.now(),
-			duration: formatTime(time),
-			notes: note,
-			date: firestore.Timestamp.now(), // TODO: change to start time
+			name: WorkoutTitle.current,
+			id: WorkoutId.current,
+			exercises: WorkoutExerciseChecked,
+			startedAt: WorkoutStartTime.current,
+			completedAt: WorkoutFinishTime,
+			duration: formatTime(WorkoutTimer.current),
+			notes: WorkoutNote.current,
 		};
 
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
@@ -196,178 +134,153 @@ export const WorkoutProvider = ({ children }) => {
 		addWorkoutToHistoryCache(workout);
 
 		// Reset useStates
-		setActiveExercise([]);
-		setActiveId(null);
-		setWorkoutNotes("");
-	};
+		workoutCancelled();
+	}, [workoutExercises, user]);
 
-	const workoutCancelled = () => {
+	const workoutCancelled = useCallback(() => {
 		// Reset useStates
-		setActiveExercise([]);
-		setActiveId(null);
-	};
+		setWorkoutExercises([]);
+		WorkoutId.current = null;
+		WorkoutTitle.current = "";
+		WorkoutNote.current = "";
+		WorkoutStartTime.current = null;
+		WorkoutTimer.current = 0;
+	}, []);
 
-	// Add excercise to active workout
-	const addExerciseToActiveWorkout = async (exercise) => {
-		setActiveExercise((prevExercises) => [...prevExercises, exercise]);
-		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
-	};
-
-	const addExerciseToActiveTemplate = (exercise) => {
-		setActiveTemplateExercises((prevExercises) => [
-			...prevExercises,
-			exercise,
-		]);
-	};
+	// Add exercise to active workout
+	const addExerciseToWorkout = useCallback(async (exercise) => {
+		setWorkoutExercises((prevExercises) => [...prevExercises, exercise]);
+	}, []);
 
 	// Remove exercise from active workout
-	const removeExerciseFromActiveWorkout = (exerciseId) => {
-		setActiveExercise((prevExercises) =>
+	const removeExerciseFromWorkout = useCallback((exerciseId) => {
+		setWorkoutExercises((prevExercises) =>
 			prevExercises.filter((exercise) => exercise.id !== exerciseId)
 		);
-	};
+	}, []);
 
-	// Add set to exercise in active workout
-	const addSetToExercise = (exerciseId, set, type) => {
-		if (type === "template") {
-			setActiveTemplateExercises((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? { ...exercise, sets: [...exercise.sets, set] }
-						: exercise
-				)
-			);
-		} else if (type === "workout") {
-			setActiveExercise((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? { ...exercise, sets: [...exercise.sets, set] }
-						: exercise
-				)
-			);
-		}
-	};
+	// Add set to exercise in active workout - optimized
+	const addSetToExercise = useCallback((exerciseId, set) => {
+		setWorkoutExercises((prevExercises) => {
+			return prevExercises.map((exercise) => {
+				if (exercise.id === exerciseId) {
+					return {
+						...exercise,
+						sets: [...exercise.sets, set],
+					};
+				}
+				return exercise;
+			});
+		});
+	}, []);
 
-	// Update set in exercise in active workout
-	// setIndex is the index of the set in the exercise.sets array
-	const updateSetInExercise = (exerciseId, setIndex, set, type) => {
-		if (type === "template") {
-			setActiveTemplateExercises((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? {
-								...exercise,
-								sets: exercise.sets.map((prevSet, index) =>
-									index === setIndex ? set : prevSet
-								),
-						  }
-						: exercise
-				)
-			);
-		} else if (type === "workout") {
-			setActiveExercise((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? {
-								...exercise,
-								sets: exercise.sets.map((prevSet, index) =>
-									index === setIndex ? set : prevSet
-								),
-						  }
-						: exercise
-				)
-			);
-		}
-	};
+	// Update set in exercise in active workout - optimized
+	const updateSetInExercise = useCallback((exerciseId, setIndex, set) => {
+		setWorkoutExercises((prevExercises) => {
+			return prevExercises.map((exercise) => {
+				if (exercise.id === exerciseId) {
+					const updatedSets = [...exercise.sets];
+					updatedSets[setIndex] = set;
+					return {
+						...exercise,
+						sets: updatedSets,
+					};
+				}
+				return exercise;
+			});
+		});
+	}, []);
 
-	// Remove set from exercise in active workout
-	// setIndex is the index of the set in the exercise.sets array
-	const removeSetFromExercise = (exerciseId, setIndex, type) => {
-		if (type === "template") {
-			setActiveTemplateExercises((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? {
-								...exercise,
-								sets: exercise.sets.filter(
-									(_, index) => index !== setIndex
-								),
-						  }
-						: exercise
-				)
-			);
-		} else if (type === "workout") {
-			setActiveExercise((prevExercises) =>
-				prevExercises.map((exercise) =>
-					exercise.id === exerciseId
-						? {
-								...exercise,
-								sets: exercise.sets.filter(
-									(_, index) => index !== setIndex
-								),
-						  }
-						: exercise
-				)
-			);
-		}
-	};
-
-	// Parameters: template object
-	// Add template to firestore, cache and state
-	const addTemplate = (template) => {};
-
-	// Parameters: templateId
-	// Remove template from firestore, cache and state
-	const removeTemplate = (templateId) => {};
-
-	// Parameters: templateId
-	// Update template in firestore, cache and state
-	const updateTemplate = (templateId) => {};
+	// Remove set from exercise in active workout - optimized
+	const removeSetFromExercise = useCallback((exerciseId, setIndex) => {
+		setWorkoutExercises((prevExercises) => {
+			return prevExercises.map((exercise) => {
+				if (exercise.id === exerciseId) {
+					return {
+						...exercise,
+						sets: exercise.sets.filter(
+							(_, index) => index !== setIndex
+						),
+					};
+				}
+				return exercise;
+			});
+		});
+	}, []);
 
 	// Clear workout history
-	const clearWorkoutHistory = () => {
+	const clearWorkoutHistory = useCallback(() => {
 		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
 		setWorkoutHistory([]);
 		batchDeleteWorkoutFromFirestore(deleteWorkoutId);
 		resetWorkoutHistoryCache();
-	};
+	}, [workoutHistory]);
 
-	const clearTemplates = () => {
-		setWorkoutTemplate([]);
-		resetWorkoutTemplateCache();
-	}
+	// Create a memoized value object for the context to prevent unnecessary re-renders
+	const contextValue = useMemo(
+		() => ({
+			ModalType,
+
+			workoutStarted,
+			workoutCompleted,
+			workoutCancelled,
+			addSetToExercise,
+			updateSetInExercise,
+			removeSetFromExercise,
+
+			workoutExercises,
+			setWorkoutExercises,
+			workoutHistory,
+			setWorkoutHistory,
+			WorkoutId,
+			WorkoutNote,
+			WorkoutTitle,
+			WorkoutStartTime,
+			WorkoutTimer,
+			addExerciseToWorkout,
+			removeExerciseFromWorkout,
+
+			clearWorkoutHistory,
+		}),
+		[
+			workoutExercises,
+			workoutHistory,
+			workoutStarted,
+			workoutCompleted,
+			workoutCancelled,
+			addSetToExercise,
+			updateSetInExercise,
+			removeSetFromExercise,
+			addExerciseToWorkout,
+			removeExerciseFromWorkout,
+			clearWorkoutHistory,
+		]
+	);
 
 	return (
-		<WorkoutContext.Provider
-			value={{
-				workoutHistory,
-				setWorkoutHistory,
-				workoutTemplate,
-				setWorkoutTemplate,
-				activeExercise,
-				setActiveExercise,
-				activeTemplateExercises,
-				setActiveTemplateExercises,
-				activeId,
-				newWorkoutStarted,
-				templateCompleted,
-				workoutCompleted,
-				workoutCancelled,
-				setActiveId,
-				addExerciseToActiveWorkout,
-				addExerciseToActiveTemplate,
-				removeExerciseFromActiveWorkout,
-				addSetToExercise,
-				updateSetInExercise,
-				removeSetFromExercise,
-				clearWorkoutHistory,
-				clearTemplates,
-				workoutNotes,
-			}}
-		>
+		<WorkoutContext.Provider value={contextValue}>
 			{children}
 		</WorkoutContext.Provider>
 	);
 };
 
+// This custom hook will allow individual exercise components to subscribe only to their specific exercise
+export const useExercise = (exerciseId) => {
+	const context = useContext(WorkoutContext);
+
+	// Get only the specific exercise from the workoutExercises array
+	const exercise = useMemo(() => {
+		return context.workoutExercises.find((ex) => ex.id === exerciseId);
+	}, [context.workoutExercises, exerciseId]);
+
+	// Return only what's needed for this specific exercise
+	return {
+		exercise,
+		addSetToExercise: context.addSetToExercise,
+		updateSetInExercise: context.updateSetInExercise,
+		removeSetFromExercise: context.removeSetFromExercise,
+	};
+};
+
+// For components that need the full context
 export const useWorkout = () => useContext(WorkoutContext);

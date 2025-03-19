@@ -75,7 +75,7 @@ const WorkoutHistory = () => {
 				showsVerticalScrollIndicator={false}
 				style={{ width: "100%" }}
 				data={[...workoutHistory].sort(
-					(a, b) => b.date.seconds - a.date.seconds
+					(a, b) => b.startedAt.seconds - a.startedAt.seconds
 				)}
 				renderItem={({ item }) => (
 					<TouchableWithoutFeedback
@@ -85,7 +85,7 @@ const WorkoutHistory = () => {
 							<View style={styles.workoutHeader}>
 								<Text style={styles.workoutTitle}>
 									{item.name ? item.name : "Workout"} -{" "}
-									{formatTimeStamptoDateString(item.date)}
+									{formatTimeStamptoDateString(item.startedAt)}
 								</Text>
 								<Text style={styles.workoutTime}>
 									{item.time}
