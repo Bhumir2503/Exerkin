@@ -1,26 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-	View,
-	StyleSheet,
-	ScrollView,
-	KeyboardAvoidingView,
-	Platform,
-	SafeAreaView,
-} from "react-native";
+import { View, StyleSheet, SafeAreaView } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import ExerciseForm from "../../components/WorkoutPage/ExerciseForm";
-import ExerciseSelector from "../../components/WorkoutPage/ExerciseSelector";
-import CancelButton from "../../components/WorkoutPage/CancelButton";
-import WorkoutTimer from "../../components/WorkoutPage/WorkoutTimer";
-import WorkoutHeaderButtons from "../../components/WorkoutPage/WorkoutHeaderButtons";
-import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
-import AddFirstExerciseCard from "../../components/WorkoutPage/AddFirstExerciseCard";
-import WorkoutNotes from "../../components/WorkoutPage/WorkoutNotes";
-import RestTimer from "../../components/WorkoutPage/RestTimer";
+import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 
 export default function Workout() {
@@ -46,7 +31,7 @@ export default function Workout() {
 	const workoutNotesRef = useRef("");
 
 	// Updated saveWorkout function to handle minimizing
-	const saveWorkout = async (shouldFinish = true) => {
+	const saveWorkout = async () => {
 		// Original save functionality
 		if (workoutTitleRef.current === "") {
 			workoutTitleRef.current = "Untitled Workout";
@@ -69,7 +54,7 @@ export default function Workout() {
 	};
 
 	// Updated saveTemplate function to handle minimizing
-	const saveTemplate = async (shouldFinish = true) => {
+	const saveTemplate = async () => {
 		// Original save functionality
 		if (workoutTitleRef.current === "") {
 			workoutTitleRef.current = "Untitled Template";
@@ -123,7 +108,10 @@ export default function Workout() {
 	return (
 		<SafeAreaView style={styles.primaryContent}>
 			<WorkoutDashboard
-				onStartWorkout={() => {setModalVisible(true); setStartTimeStamp(firestore.Timestamp.now());}}
+				onStartWorkout={() => {
+					setModalVisible(true);
+					setStartTimeStamp(firestore.Timestamp.now());
+				}}
 				setOnType={setType}
 				startTimestamp={startTimeStamp}
 			/>
@@ -131,86 +119,27 @@ export default function Workout() {
 				timeRef={timeRef}
 				visible={!modalIsVisible && startTimeStamp}
 				exerciseCount={activeExercise.length}
-				title={workoutTitleRef.current }
+				title={workoutTitleRef.current}
 				startTimeStamp={startTimeStamp}
 				onPress={() => setModalVisible(true)}
 			/>
-			<WorkoutModal visible={modalIsVisible}>
-				<WorkoutHeaderButtons
-					onFinishedPressed={
-						type === "workout" ? saveWorkout : saveTemplate
-					}
-					workoutTitleRef={workoutTitleRef}
-					type={type}
-					setMainModalVisible={setModalVisible}
-				/>
-
-				<KeyboardAvoidingView
-					behavior={Platform.OS === "ios" ? "padding" : "height"}
-					style={styles.modalContent}
-					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-				>
-					<View>
-						{type === "workout" && (
-							<View style={styles.timerStyle}>
-								<WorkoutTimer
-									visible={modalIsVisible}
-									timeRef={timeRef}
-									startTimeStamp={startTimeStamp}
-								/>
-								<View style={{ flexDirection: "row" }}>
-									<WorkoutNotes
-										workoutNotesRef={workoutNotesRef}
-									/>
-									<RestTimer />
-								</View>
-							</View>
-						)}
-
-						<ScrollView
-							contentContainerStyle={styles.scrollView}
-							style={[{ width: "100%" }]}
-							keyboardShouldPersistTaps="handled"
-							bounces={false}
-						>
-							{/* Always show exercises if there are any */}
-							{type === "workout" &&
-								activeExercise.map((exercise, index) => (
-									<ExerciseForm
-										key={index}
-										exercise={exercise}
-										type={type}
-									/>
-								))}
-							{type === "template" &&
-								activeTemplateExercises.map(
-									(exercise, index) => (
-										<ExerciseForm
-											key={index}
-											exercise={exercise}
-											type={type}
-										/>
-									)
-								)}
-
-							{/* Show help card only when there are no exercises */}
-							{!hasExercises && <AddFirstExerciseCard />}
-
-							{/* Always show the exercise selector */}
-							<ExerciseSelector type={type} />
-
-							<CancelButton
-								type={type}
-								onPress={
-									type === "workout"
-										? cancelWorkout
-										: cancelTemplate
-								}
-							/>
-						</ScrollView>
-					</View>
-				</KeyboardAvoidingView>
-			</WorkoutModal>
+			<WorkoutModal
+				visible={modalIsVisible}
+				type={type}
+				onFinish={type === "workout" ? saveWorkout : saveTemplate}
+				onCancel={type === "workout" ? cancelWorkout : cancelTemplate}
+				workoutTitleRef={workoutTitleRef}
+				timeRef={timeRef}
+				workoutNotesRef={workoutNotesRef}
+				startTimeStamp={startTimeStamp}
+				activeExercises={
+					type === "workout"
+						? activeExercise
+						: activeTemplateExercises
+				}
+				setModalVisible={setModalVisible}
+				hasExercises={hasExercises}
+			/>
 		</SafeAreaView>
 	);
 }
@@ -220,25 +149,6 @@ const createStyles = (theme) => {
 		primaryContent: {
 			flex: 1,
 			backgroundColor: theme.backgroundColor,
-		},
-		modalContent: {
-			flex: 1,
-			width: "100%",
-		},
-		workoutTitle: {
-			color: theme.textColor,
-			fontSize: 32,
-		},
-		scrollView: {
-			width: "100%",
-			alignItems: "center",
-		},
-		timerStyle: {
-			paddingVertical: 15,
-			paddingHorizontal: 20,
-			flexDirection: "row",
-			alignItems: "center",
-			justifyContent: "space-between",
 		},
 	});
 };
