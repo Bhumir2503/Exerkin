@@ -42,7 +42,12 @@ const WorkoutHeaderButtons = ({
 			<View style={{ ...styles.container }}>
 				{/* Left section */}
 				<View style={styles.leftSection}>
-	
+					<Ionicons
+						name="chevron-down"
+						size={32}
+						color={themeStyle.primary}
+						onPress={() => console.log("Bhumir was here. Not Press Me!")}
+					/>
 				</View>
 
 				{/* Center section - always centered */}
