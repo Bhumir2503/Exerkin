@@ -62,46 +62,47 @@ const WorkoutNotes = ({ workoutNotesRef }) => {
 				visible={modalVisible}
 				onRequestClose={cancelNotes}
 			>
-				<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-					<View style={styles.centeredView}>
-						<View style={styles.modalView}>
-							<View style={styles.modalHeader}>
-								<Text style={styles.modalTitle}>
-									Workout Notes
-								</Text>
-								<TouchableOpacity
-									onPress={cancelNotes}
-									style={styles.closeButton}
-								>
-									<Ionicons
-										name="close"
-										size={24}
-										color={themeStyle.textColor}
-									/>
-								</TouchableOpacity>
-							</View>
+				<View style={{ flex: 1, alignItems: "center" }}>
+					<TouchableWithoutFeedback onPress={cancelNotes}>
+						<View style={styles.backgroundOverlay}></View>
+					</TouchableWithoutFeedback>
 
-							<View style={styles.inputContainer}>
-								<TextInput
-									style={styles.textInput}
-									placeholder="Add workout notes..."
-									placeholderTextColor={
-										themeStyle.textColorSecondary
-									}
-									value={tempNotes}
-									onChangeText={handleWorkoutNotesChange}
-									multiline
-									maxLength={MAX_CHARACTERS}
-									autoFocus
+					<View style={styles.modalView}>
+						<View style={styles.modalHeader}>
+							<Text style={styles.modalTitle}>Workout Notes</Text>
+							<TouchableOpacity
+								onPress={cancelNotes}
+								style={styles.closeButton}
+							>
+								<Ionicons
+									name="close"
+									size={24}
+									color={themeStyle.textColor}
 								/>
-								<Text style={styles.charCount}>
-									{MAX_CHARACTERS - tempNotes.length} /{" "}
-									{MAX_CHARACTERS}
-								</Text>
-							</View>
+							</TouchableOpacity>
+						</View>
 
-							<View style={styles.buttonContainer}>
-								{/* <TouchableOpacity
+						<View style={styles.inputContainer}>
+							<TextInput
+								style={styles.textInput}
+								placeholder="Add workout notes..."
+								placeholderTextColor={
+									themeStyle.textColorSecondary
+								}
+								value={tempNotes}
+								onChangeText={handleWorkoutNotesChange}
+								multiline
+								maxLength={MAX_CHARACTERS}
+								autoFocus
+							/>
+							<Text style={styles.charCount}>
+								{MAX_CHARACTERS - tempNotes.length} /{" "}
+								{MAX_CHARACTERS}
+							</Text>
+						</View>
+
+						<View style={styles.buttonContainer}>
+							{/* <TouchableOpacity
 									style={[styles.button, styles.cancelButton]}
 									onPress={cancelNotes}
 								>
@@ -109,18 +110,17 @@ const WorkoutNotes = ({ workoutNotesRef }) => {
 										Cancel
 									</Text>
 								</TouchableOpacity> */}
-								<TouchableOpacity
-									style={[styles.button, styles.saveButton]}
-									onPress={saveNotes}
-								>
-									<Text style={styles.saveButtonText}>
-										Save Notes
-									</Text>
-								</TouchableOpacity>
-							</View>
+							<TouchableOpacity
+								style={[styles.button, styles.saveButton]}
+								onPress={saveNotes}
+							>
+								<Text style={styles.saveButtonText}>
+									Save Notes
+								</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
-				</TouchableWithoutFeedback>
+				</View>
 			</Modal>
 		</>
 	);
@@ -143,11 +143,13 @@ const createStyles = (themeStyle) =>
 			marginLeft: 8,
 			fontSize: 15,
 		},
-		centeredView: {
-			flex: 1,
-			alignItems: "center",
+		backgroundOverlay: {
+			position: "absolute",
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0,
 			backgroundColor: "rgba(0, 0, 0, 0.75)",
-			zIndex: 1,
 		},
 		modalView: {
 			zIndex: 2,
@@ -156,14 +158,6 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.backgroundColor,
 			borderRadius: 15,
 			overflow: "hidden",
-			shadowColor: "#000",
-			shadowOffset: {
-				width: 0,
-				height: 2,
-			},
-			shadowOpacity: 0.25,
-			shadowRadius: 4,
-			elevation: 5,
 		},
 		modalHeader: {
 			flexDirection: "row",
