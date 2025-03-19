@@ -10,9 +10,9 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const CancelButton = ({ onPress }) => {
+const CancelButton = ({ setMainModalVisible }) => {
 	const { themeStyle } = useTheme();
-	const { ModalType } = useWorkout();
+	const { ModalType, workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
 	const [cancel, setCancel] = useState(false);
@@ -28,7 +28,8 @@ const CancelButton = ({ onPress }) => {
 
 	useEffect(() => {
 		if (cancel) {
-			onPress();
+			setMainModalVisible(false);
+			workoutCancelled();
 			setCancel(false);
 		}
 	}, [cancel]);

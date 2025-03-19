@@ -10,11 +10,6 @@ import {
 	ScrollView,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
-// import {
-// 	SafeAreaView,
-// 	useSafeAreaInsets,
-// } from "react-native-safe-area-context";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
@@ -27,23 +22,9 @@ import AddFirstExerciseCard from "./AddFirstExerciseCard";
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
 const WorkoutModal = ({ visible, setModalVisible }) => {
+	console.log("Workout Modal Rendered");
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-
-	const { workoutExercises, workoutCompleted, workoutCancelled } =
-		useWorkout();
-
-	const onCancel = () => {
-		setModalVisible(false);
-		workoutCancelled();
-	};
-
-	const onFinish = () => {
-		setModalVisible(false);
-		workoutCompleted();
-	};
-
-	const hasExercises = workoutExercises.length > 0;
 
 	return (
 		<Modal
@@ -56,10 +37,7 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 				style={styles.modal}
 				edges={["top", "right", "left", "bottom"]}
 			>
-				<WorkoutHeaderButtons
-					setMainModalVisible={setModalVisible}
-					onFinish={onFinish}
-				/>
+				<WorkoutHeaderButtons setMainModalVisible={setModalVisible} />
 
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -82,17 +60,18 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 							bounces={false}
 						>
 							{/* Display exercises */}
-							{workoutExercises.map((exercise, index) => (
-								<ExerciseForm key={index} exercise={exercise} />
-							))}
+
+							<ExerciseForm />
 
 							{/* Show help card only when there are no exercises */}
-							{!hasExercises && <AddFirstExerciseCard />}
+							<AddFirstExerciseCard />
 
 							{/* Always show the exercise selector */}
 							<ExerciseSelector />
 
-							<CancelButton onPress={onCancel} />
+							<CancelButton
+								setMainModalVisible={setModalVisible}
+							/>
 						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>

@@ -3,7 +3,6 @@ import { View, StyleSheet, SafeAreaView, Modal } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 
@@ -11,7 +10,6 @@ export default function Workout() {
 	console.log("Workout Page Rendered");
 
 	const { themeStyle } = useTheme();
-	const { WorkoutStartTime } = useWorkout();
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const styles = createStyles(themeStyle);

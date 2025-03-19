@@ -11,22 +11,60 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
-const ExerciseForm = ({ exercise }) => {
-	// Checks exercise type and renders the appropriate component
-	switch (exercise.type) {
-		case "bodyweight":
-			return <BodyWeightExercises exercise={exercise} />;
-		case "weightlifting":
-			return <WeightLiftingExercises exercise={exercise} />;
-		case "assisted-weight":
-			return <AssistedWeightExercises exercise={exercise} />;
-		case "cardio-distance":
-			return <CardioDistanceExercises exercise={exercise} />;
-		case "cardio-time":
-			return <CardioTimeExercises exercise={exercise} />;
-		default:
-			return <View></View>;
+const ExerciseForm = () => {
+	const { workoutExercises } = useWorkout();
+
+	// If there are no exercises, return nothing
+	if (!workoutExercises || workoutExercises.length === 0) {
+		return null;
 	}
+
+	// Return a fragment containing all exercise components
+	return (
+		<>
+			{workoutExercises.map((exercise) => {
+				switch (exercise.type) {
+					case "bodyweight":
+						return (
+							<BodyWeightExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "weightlifting":
+						return (
+							<WeightLiftingExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "assisted-weight":
+						return (
+							<AssistedWeightExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "cardio-distance":
+						return (
+							<CardioDistanceExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "cardio-time":
+						return (
+							<CardioTimeExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					default:
+						return <View key={exercise.id}></View>;
+				}
+			})}
+		</>
+	);
 };
 
 const Header = ({ repetitionType, metrics }) => {
@@ -325,7 +363,6 @@ const CardioDistanceExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	console.log("Exercise:", exercise);
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
@@ -335,7 +372,6 @@ const CardioDistanceExercises = ({ exercise }) => {
 	const handleTimeChange = (text, index) => {
 		// Store the previous value to compare
 		const prevValue = exercise.sets[index]?.time || "";
-		console.log("Text:", text, "Index:", index, "PrevValue:", prevValue);
 
 		// If user is trying to delete and the text is shorter
 		if (text.length < prevValue.length) {

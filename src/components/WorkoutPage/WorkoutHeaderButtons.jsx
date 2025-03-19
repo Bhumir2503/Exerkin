@@ -17,6 +17,7 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 	const {
 		workoutExercises,
 		WorkoutTitle: WorkoutTitleRef,
+		workoutCompleted,
 	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
@@ -41,7 +42,8 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 
 	const handleFinishPress = () => {
 		setSubModalVisible(true);
-		onFinish();
+		setMainModalVisible(false);
+		workoutCompleted();
 	}
 
 
