@@ -329,7 +329,7 @@ const createStyles = (themeStyle) => {
 			width: "90%",
 			backgroundColor: themeStyle.backgroundColor,
 			borderRadius: 20,
-			padding: 20,
+			padding: 15,
 			alignItems: "center",
 			shadowColor: "#000",
 			shadowOffset: {
@@ -349,7 +349,7 @@ const createStyles = (themeStyle) => {
 		},
 		modalTitle: {
 			color: themeStyle.textColor,
-			fontSize: 24,
+			fontSize: 18,
 			fontWeight: "bold",
 		},
 		closeButton: {
