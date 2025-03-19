@@ -191,7 +191,10 @@ export default function Workout() {
 									visible={modalIsVisible}
 									timeRef={timeRef}
 								/>
-								<View>
+								<View style={{ flexDirection: "row" }}>
+									<WorkoutNotes
+										workoutNotesRef={workoutNotesRef}
+									/>
 									<RestTimer />
 								</View>
 							</View>
@@ -204,7 +207,6 @@ export default function Workout() {
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
-							<WorkoutNotes workoutNotesRef={workoutNotesRef} />
 							{/* Always show exercises if there are any */}
 							{type === "workout" &&
 								activeExercise.map((exercise, index) => (
