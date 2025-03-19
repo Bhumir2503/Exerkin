@@ -7,16 +7,16 @@ import {
 	Pressable,
 	Dimensions,
 	FlatList,
-	Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TemplatePreviewModal from "./TemplatePreviewModal";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
-const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
+const WorkoutDashboard = ({ onStartWorkout, setOnType, startTimestamp }) => {
 	const { themeStyle } = useTheme();
 	const { newWorkoutStarted, workoutTemplate, setActiveExercise } =
 		useWorkout();
@@ -28,7 +28,7 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const [visibleTemplatePreview, setVisibleTemplatePreview] = useState(false);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-	const buttonPress = () => {
+	const startButtonPressed = () => {
 		newWorkoutStarted(false);
 		onStartWorkout();
 	};
@@ -39,7 +39,7 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 		onStartWorkout();
 	};
 
-	const onTemplatePress = (item) => {
+	const onTemplateOptionPress = (item) => {
 		setSelectedTemplate(item);
 		setVisibleTemplatePreview(true);
 	};
@@ -47,6 +47,11 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const onTemplateClose = () => {
 		setSelectedTemplate(null);
 		setVisibleTemplatePreview(false);
+	};
+
+	// Resume active workout
+	const resumeActiveWorkout = () => {
+		onStartWorkout();
 	};
 
 	useEffect(() => {
@@ -64,7 +69,7 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	const renderTemplateItem = ({ item }) => (
 		<Pressable
 			style={[styles.templateItem, { width: (screenWidth - 60) / 2 }]}
-			onPress={() => onTemplatePress(item)}
+			onPress={() => onTemplateOptionPress(item)}
 		>
 			<Text style={styles.templateItemText}>{item.name}</Text>
 			<Text style={styles.templateItemSubtext}>
@@ -79,7 +84,11 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 		<View style={styles.container}>
 			<Text style={styles.title}>Get Started</Text>
 			<Text style={styles.description}>Ready to start your workout?</Text>
-			<StartWorkoutButton title="Start Workout" onPress={buttonPress} />
+			<StartWorkoutButton
+				title="Start Workout"
+				onPress={startButtonPressed}
+				startTimestamp={startTimestamp}
+			/>
 			<ScrollView
 				bounces={false}
 				showsVerticalScrollIndicator={false}
@@ -170,11 +179,20 @@ const WorkoutDashboard = ({ onStartWorkout, setOnType }) => {
 	);
 };
 
-const StartWorkoutButton = ({ title, onPress }) => {
+const StartWorkoutButton = ({ title, onPress, startTimestamp }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
-		<TouchableOpacity style={styles.button} onPress={onPress}>
+		<TouchableOpacity
+			style={{
+				...styles.button,
+				backgroundColor: startTimestamp
+					? `${themeStyle.primary}40`
+					: themeStyle.primary,
+			}}
+			onPress={onPress}
+			disabled={startTimestamp !== null}
+		>
 			<Ionicons name="fitness-sharp" size={24} color={"#fff"} />
 			<Text style={styles.buttonText}>{title}</Text>
 		</TouchableOpacity>
@@ -299,6 +317,12 @@ const createStyles = (theme) => {
 			color: theme.textColorSecondary,
 			fontSize: 14,
 			marginTop: 5,
+		},
+		activeWorkoutBarContainer: {
+			position: "absolute",
+			bottom: 10,
+			left: 0,
+			right: 0,
 		},
 	});
 };

@@ -16,49 +16,19 @@ import Reanimated, {
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
-const ExerciseForm = ({ exercise, onFocus, type }) => {
+const ExerciseForm = ({ exercise, type }) => {
 	// Checks exercise type and renders the appropriate component
 	switch (exercise.type) {
 		case "bodyweight":
-			return (
-				<BodyWeightExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
-			);
+			return <BodyWeightExercises exercise={exercise} type={type} />;
 		case "weightlifting":
-			return (
-				<WeightLiftingExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
-			);
+			return <WeightLiftingExercises exercise={exercise} type={type} />;
 		case "assisted-weight":
-			return (
-				<AssistedWeightExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
-			);
+			return <AssistedWeightExercises exercise={exercise} type={type} />;
 		case "cardio-distance":
-			return (
-				<CardioDistanceExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
-			);
+			return <CardioDistanceExercises exercise={exercise} type={type} />;
 		case "cardio-time":
-			return (
-				<CardioTimeExercises
-					exercise={exercise}
-					onFocus={onFocus}
-					type={type}
-				/>
-			);
+			return <CardioTimeExercises exercise={exercise} type={type} />;
 		default:
 			return <View></View>;
 	}
@@ -134,7 +104,6 @@ const UserInputSection = ({
 	placeholders,
 	functions,
 	lengths,
-	onFocus,
 	values,
 	exerciseId,
 	type,
@@ -167,45 +136,44 @@ const UserInputSection = ({
 		// 	renderRightActions={DeleteIcon}
 		// 	overshootLeft={false}
 		// >
-			<View style={styles.setRows}>
-				<Text
-					style={{
-						fontSize: 16,
-						fontWeight: "bold",
-						color: themeStyle.textColor,
-						marginLeft: 5,
-					}}
-				>
-					{index + 1}
-				</Text>
-				<View style={{ flexDirection: "row" }}>
-					{inputTypes.map((inputType, inputIndex) => (
-						<TextInput
-							key={inputIndex}
-							style={[styles.inputField]}
-							inputMode={inputType}
-							keyboardType={
-								inputType === "decimal"
-									? "decimal-pad"
-									: "number-pad"
-							}
-							placeholder={placeholders[inputIndex]}
-							placeholderTextColor={"gray"}
-							maxLength={lengths[inputIndex]}
-							value={values && values[inputIndex]}
-							onChangeText={(text) =>
-								functions[inputIndex](text, index)
-							}
-							onFocus={(e) => onFocus && onFocus(e, index)}
-						/>
-					))}
-				</View>
+		<View style={styles.setRows}>
+			<Text
+				style={{
+					fontSize: 16,
+					fontWeight: "bold",
+					color: themeStyle.textColor,
+					marginLeft: 5,
+				}}
+			>
+				{index + 1}
+			</Text>
+			<View style={{ flexDirection: "row" }}>
+				{inputTypes.map((inputType, inputIndex) => (
+					<TextInput
+						key={inputIndex}
+						style={[styles.inputField]}
+						inputMode={inputType}
+						keyboardType={
+							inputType === "decimal"
+								? "decimal-pad"
+								: "number-pad"
+						}
+						placeholder={placeholders[inputIndex]}
+						placeholderTextColor={"gray"}
+						maxLength={lengths[inputIndex]}
+						value={values && values[inputIndex]}
+						onChangeText={(text) =>
+							functions[inputIndex](text, index)
+						}
+					/>
+				))}
 			</View>
+		</View>
 		// </ReanimatedSwipeable>
 	);
 };
 
-const BodyWeightExercises = ({ exercise, onFocus, type }) => {
+const BodyWeightExercises = ({ exercise, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -244,7 +212,6 @@ const BodyWeightExercises = ({ exercise, onFocus, type }) => {
 					functions={[handleRepsChange]}
 					lengths={[3]}
 					values={[set.reps]}
-					onFocus={onFocus}
 					exerciseId={exercise.id}
 					type={type}
 				/>
@@ -256,7 +223,7 @@ const BodyWeightExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
+const WeightLiftingExercises = ({ exercise, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -311,7 +278,6 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
-					onFocus={onFocus}
 					exerciseId={exercise.id}
 					type={type}
 				/>
@@ -323,7 +289,7 @@ const WeightLiftingExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
+const AssistedWeightExercises = ({ exercise, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -378,7 +344,6 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
-					onFocus={onFocus}
 					exerciseId={exercise.id}
 					type={type}
 				/>
@@ -390,7 +355,7 @@ const AssistedWeightExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
+const CardioDistanceExercises = ({ exercise, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -510,7 +475,6 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
-					onFocus={onFocus}
 					exerciseId={exercise.id}
 					type={type}
 				/>
@@ -522,7 +486,7 @@ const CardioDistanceExercises = ({ exercise, onFocus, type }) => {
 	);
 };
 
-const CardioTimeExercises = ({ exercise, onFocus, type }) => {
+const CardioTimeExercises = ({ exercise, type }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -626,7 +590,6 @@ const CardioTimeExercises = ({ exercise, onFocus, type }) => {
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
-					onFocus={onFocus}
 					exerciseId={exercise.id}
 					type={type}
 				/>

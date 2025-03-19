@@ -12,7 +12,7 @@ export const formatTime = (seconds) => {
 	return timeString;
 };
 
-const WorkoutTimer = ({ visible, timeRef }) => {
+const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 	const [displayTime, setDisplayTime] = useState("00:00:00");
 	const [isRunning, setIsRunning] = useState(false);
 
@@ -24,16 +24,35 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	// Initialize timer with elapsed time if startTimeStamp is provided
+	useEffect(() => {
+		if (startTimeStamp) {
+			const now = Date.now();
+			// Convert Firestore timestamp to milliseconds if needed
+			const startTime = startTimeStamp.toMillis
+				? startTimeStamp.toMillis()
+				: startTimeStamp;
+			const initialElapsedSeconds = Math.floor((now - startTime) / 1000);
+
+			// Set the initial timeRef value
+			timeRef.current = initialElapsedSeconds;
+			setDisplayTime(formatTime(initialElapsedSeconds));
+		}
+	}, [startTimeStamp]);
+
 	// Use visible prop to toggle isRunning state of the timer
 	useEffect(() => {
 		if (visible) {
 			setIsRunning(true);
 		} else {
 			setIsRunning(false);
-			timeRef.current = 0;
-			setDisplayTime(formatTime(0));
+			if (!startTimeStamp) {
+				// Only reset if not using a persistent startTimeStamp
+				timeRef.current = 0;
+				setDisplayTime(formatTime(0));
+			}
 		}
-	}, [visible]);
+	}, [visible, startTimeStamp]);
 
 	// Handle app state changes
 	useEffect(() => {
@@ -47,12 +66,23 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 					appStateRef.current.match(/inactive|background/) &&
 					nextAppState === "active"
 				) {
-					if (isRunning) {
-						// Calculate elapsed time while in background
-						const elapsedSeconds = Math.floor(
-							(now - lastTickRef.current) / 1000
-						);
-						timeRef.current += elapsedSeconds;
+					if (isRunning || startTimeStamp) {
+						if (startTimeStamp) {
+							// If using startTimeStamp, calculate total elapsed time from start
+							const startTime = startTimeStamp.toMillis
+								? startTimeStamp.toMillis()
+								: startTimeStamp;
+							const totalElapsedSeconds = Math.floor(
+								(now - startTime) / 1000
+							);
+							timeRef.current = totalElapsedSeconds;
+						} else if (isRunning) {
+							// Calculate elapsed time while in background
+							const elapsedSeconds = Math.floor(
+								(now - lastTickRef.current) / 1000
+							);
+							timeRef.current += elapsedSeconds;
+						}
 						setDisplayTime(formatTime(timeRef.current));
 					}
 				}
@@ -65,30 +95,46 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 		return () => {
 			subscription.remove();
 		};
-	}, [isRunning]);
+	}, [isRunning, startTimeStamp]);
 
 	// Handle timer logic
 	useEffect(() => {
-		if (isRunning) {
+		// Clear any existing interval
+		if (intervalRef.current) {
+			clearInterval(intervalRef.current);
+			intervalRef.current = null;
+		}
+
+		if (isRunning || startTimeStamp) {
 			// Store current timestamp when starting
 			lastTickRef.current = Date.now();
 
 			// Set up interval that updates every second
 			intervalRef.current = setInterval(() => {
 				const now = Date.now();
-				const elapsed = Math.floor((now - lastTickRef.current) / 1000);
 
-				if (elapsed >= 1) {
-					timeRef.current += elapsed;
-					setDisplayTime(formatTime(timeRef.current));
-					lastTickRef.current = now;
+				if (startTimeStamp) {
+					// If using startTimeStamp, calculate based on the original start time
+					const startTime = startTimeStamp.toMillis
+						? startTimeStamp.toMillis()
+						: startTimeStamp;
+					const totalElapsedSeconds = Math.floor(
+						(now - startTime) / 1000
+					);
+					timeRef.current = totalElapsedSeconds;
+				} else {
+					// Otherwise, increment based on the elapsed time since last tick
+					const elapsed = Math.floor(
+						(now - lastTickRef.current) / 1000
+					);
+					if (elapsed >= 1) {
+						timeRef.current += elapsed;
+						lastTickRef.current = now;
+					}
 				}
+
+				setDisplayTime(formatTime(timeRef.current));
 			}, 1000);
-		} else {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-				intervalRef.current = null;
-			}
 		}
 
 		return () => {
@@ -97,7 +143,7 @@ const WorkoutTimer = ({ visible, timeRef }) => {
 				intervalRef.current = null;
 			}
 		};
-	}, [isRunning]);
+	}, [isRunning, startTimeStamp]);
 
 	return <Text style={styles.timeText}>{displayTime}</Text>;
 };

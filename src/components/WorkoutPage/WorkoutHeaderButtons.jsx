@@ -1,41 +1,35 @@
 import React from "react";
-import {
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-	View,
-	TextInput,
-	Modal,
-	Pressable,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View, TextInput } from "react-native";
 import FinishModal from "./FinishModal";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import RestTimer from "./RestTimer";
 
-const WorkoutHeaderButtons = ({
-	onFinishedPressed,
-	setTitleError,
-	titleError,
-	workoutTitle,
-	setWorkoutTitle,
-	type,
-}) => {
+const WorkoutHeaderButtons = ({ onFinishedPressed, workoutTitleRef, type, setMainModalVisible, }) => {
 	const { themeStyle } = useTheme();
 	const { activeExercise, activeTemplateExercises } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const [modalVisible, setModalVisible] = useState(false);
 	const [finished, setFinished] = useState(false);
-	console.log("test");
+	const [workoutTitle, setWorkoutTitle] = useState("");
+
 	useEffect(() => {
 		if (finished) {
 			onFinishedPressed();
 			setFinished(false);
 		}
 	}, [finished]);
+
+	const handleTitleChange = (text) => {
+		setWorkoutTitle(text);
+		workoutTitleRef.current = text;
+	};
+
+	const handleDownArrowPress = () => {
+		setMainModalVisible(false);
+	};
 
 	return (
 		<>
@@ -46,7 +40,7 @@ const WorkoutHeaderButtons = ({
 						name="chevron-down"
 						size={32}
 						color={themeStyle.primary}
-						onPress={() => console.log("Bhumir was here. Not Press Me!")}
+						onPress={handleDownArrowPress}
 					/>
 				</View>
 
@@ -55,19 +49,14 @@ const WorkoutHeaderButtons = ({
 					<TextInput
 						style={{
 							...styles.titleInput,
-							borderColor: titleError
-								? "red"
-								: themeStyle.textColor,
-							borderBottomWidth: titleError ? 2 : 0,
 						}}
 						value={workoutTitle}
 						placeholder={
 							type === "workout"
-								? "Add Title..."
-								: "Template Title"
+								? "Workout Title..."
+								: "Template Title..."
 						}
-						onChangeText={(text) => setWorkoutTitle(text)}
-						onFocus={() => setTitleError(false)}
+						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={32}
 						placeholderTextColor={themeStyle.textColorSecondary}
 					/>
