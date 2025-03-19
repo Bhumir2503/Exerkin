@@ -18,11 +18,11 @@ import { Ionicons } from "@expo/vector-icons";
 const MAX_CHARACTERS = 256;
 
 const WorkoutNotes = () => {
-	const [workoutNotes, setWorkoutNotes] = useState("");
+	const { WorkoutNote } = useWorkout();
+	const [workoutNotes, setWorkoutNotes] = useState(WorkoutNote.current);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tempNotes, setTempNotes] = useState("");
 	const { themeStyle } = useTheme();
-	const { WorkoutNote } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	// Initialize tempNotes when modal opens

@@ -12,6 +12,8 @@ import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
 const ExerciseForm = () => {
+	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
+	
 	const { workoutExercises } = useWorkout();
 
 	// If there are no exercises, return nothing

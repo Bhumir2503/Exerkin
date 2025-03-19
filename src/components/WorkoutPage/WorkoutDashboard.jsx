@@ -10,10 +10,12 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useState} from "react";
 
+import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
-const WorkoutDashboard = ({ onStartWorkout }) => {
+
+const WorkoutDashboard = ({ onStartWorkout,}) => {
 	const { themeStyle } = useTheme();
-	const { workoutStarted } = useWorkout();
+	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const startButtonPressed = () => {
@@ -53,6 +55,8 @@ const WorkoutDashboard = ({ onStartWorkout }) => {
 					<DailyGoal goalName="100 Squats" />
 				</View>
 			</ScrollView>
+
+			{WorkoutId && <ActiveWorkoutBar onPress={onStartWorkout} />}
 		</View>
 	);
 };

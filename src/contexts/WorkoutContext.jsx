@@ -125,8 +125,7 @@ export const WorkoutProvider = ({ children }) => {
 		// if no exercises are added, return
 		if (WorkoutExerciseChecked.length === 0) {
 			console.log("No exercises added");
-			setWorkoutExercises([]);
-			setActiveId(null);
+			workoutCancelled();
 			return;
 		}
 

@@ -12,7 +12,7 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 
 const CancelButton = ({ setMainModalVisible }) => {
 	const { themeStyle } = useTheme();
-	const { ModalType, workoutCancelled } = useWorkout();
+	const { workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
 	const [cancel, setCancel] = useState(false);
@@ -37,12 +37,7 @@ const CancelButton = ({ setMainModalVisible }) => {
 	return (
 		<>
 			<Pressable onPress={() => setVisible(true)} style={styles.button}>
-				{ModalType.current === "WorkoutModal" && (
-					<Text style={styles.buttonText}>Cancel Workout</Text>
-				)}
-				{ModalType.current === "TemplateModal" && (
-					<Text style={styles.buttonText}>Cancel Template</Text>
-				)}
+				<Text style={styles.buttonText}>Cancel Workout</Text>
 			</Pressable>
 
 			<Modal
@@ -56,28 +51,15 @@ const CancelButton = ({ setMainModalVisible }) => {
 						<View style={styles.backgroundOverlay} />
 					</TouchableWithoutFeedback>
 					<View style={styles.modalContainer}>
-						{ModalType === "WorkoutModal" && (
-							<View style={styles.modalContent}>
-								<Text style={styles.modalTitle}>
-									Cancel Workout?
-								</Text>
-								<Text style={styles.modalText}>
-									Your progress will not be saved. Active
-									exercises data will be lost.
-								</Text>
-							</View>
-						)}
-						{ModalType === "TemplateModal" && (
-							<View style={styles.modalContent}>
-								<Text style={styles.modalTitle}>
-									Cancel Template?
-								</Text>
-								<Text style={styles.modalText}>
-									Your progress will not be saved. Template
-									data will be lost.
-								</Text>
-							</View>
-						)}
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>
+								Cancel Workout?
+							</Text>
+							<Text style={styles.modalText}>
+								Your progress will not be saved. Active
+								exercises data will be lost.
+							</Text>
+						</View>
 						<View style={styles.buttonView}>
 							<Pressable
 								style={styles.closeButton}

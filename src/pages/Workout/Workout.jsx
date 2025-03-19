@@ -20,7 +20,7 @@ export default function Workout() {
 
 	return (
 		<SafeAreaView style={styles.primaryContent}>
-			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()} />
+			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()}  />
 			<WorkoutModal
 				visible={isModalOpen}
 				setModalVisible={setIsModalOpen}

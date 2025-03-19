@@ -17,19 +17,11 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 	const {
 		workoutExercises,
 		WorkoutTitle: WorkoutTitleRef,
-		workoutCompleted,
 	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
-	const [subModalVisible, setSubModalVisible] = useState(false);
-	const [finished, setFinished] = useState(false);
-	const [workoutTitle, setWorkoutTitle] = useState("");
+	const [workoutTitle, setWorkoutTitle] = useState(WorkoutTitleRef.current);
 
-	useEffect(() => {
-		if (finished) {
-			setFinished(false);
-		}
-	}, [finished]);
 
 	const handleTitleChange = (text) => {
 		setWorkoutTitle(text);
@@ -39,12 +31,6 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 	const handleDownArrowPress = () => {
 		setMainModalVisible(false);
 	};
-
-	const handleFinishPress = () => {
-		setSubModalVisible(true);
-		setMainModalVisible(false);
-		workoutCompleted();
-	}
 
 
 	return (
@@ -75,20 +61,10 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 				{/* Right section */}
 				<View style={styles.rightSection}>
 					{workoutExercises.length > 0 && (
-						<TouchableOpacity onPress={() => handleFinishPress()}>
-							<Ionicons
-								name="checkmark-sharp"
-								size={32}
-								color={themeStyle.primary}
-							/>
-						</TouchableOpacity>
+						<FinishModal setMainModalVisible={setMainModalVisible} />
 					)}
 				</View>
-				<FinishModal
-					visible={subModalVisible}
-					setVisible={setSubModalVisible}
-					setFinished={setFinished}
-				/>
+
 			</View>
 		</>
 	);
