@@ -107,20 +107,24 @@ const RestTimer = () => {
 				onPress={() => setModalVisible(true)}
 			>
 				<View style={styles.buttonContent}>
-					{!isPlaying && <Ionicons
-						name="timer-outline"
-						size={20}
-						color={themeStyle.textColor}
-					/>}
-					{isPlaying && <Text style={styles.restButtonText}>
-						{isPlaying
-							? `${formatTime(remainingTime)}`
-							: completed
-							? "DONE"
-							: remainingTime < duration
-							? `${formatTime(remainingTime)}`
-							: ""}
-					</Text>}
+					{!isPlaying && (
+						<Ionicons
+							name="stopwatch-outline"
+							size={20}
+							color={"#fff"}
+						/>
+					)}
+					{isPlaying && (
+						<Text style={styles.restButtonText}>
+							{isPlaying
+								? `${formatTime(remainingTime)}`
+								: completed
+								? "DONE"
+								: remainingTime < duration
+								? `${formatTime(remainingTime)}`
+								: ""}
+						</Text>
+					)}
 				</View>
 			</TouchableOpacity>
 
@@ -308,7 +312,7 @@ const createStyles = (themeStyle) => {
 			alignItems: "center",
 		},
 		restButtonText: {
-			color: themeStyle.textColor,
+			color: "#fff",
 			fontWeight: "bold",
 			width: 50,
 			textAlign: "center",
