@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, memo } from "react";
+import React, { useRef, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -7,30 +7,23 @@ import {
 	TouchableOpacity,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useExercise } from "../../contexts/WorkoutContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
-// Main component is now a wrapper that uses useExercise hook
 const ExerciseForm = ({ exercise }) => {
-	// Use the ID to get the most up-to-date exercise data without causing the entire list to re-render
-	const { exercise: currentExercise } = useExercise(exercise.id);
-
-	// If somehow the exercise is no longer in context, don't render anything
-	if (!currentExercise) return null;
-
 	// Checks exercise type and renders the appropriate component
-	switch (currentExercise.type) {
+	switch (exercise.type) {
 		case "bodyweight":
-			return <BodyWeightExercises exerciseId={currentExercise.id} />;
+			return <BodyWeightExercises exercise={exercise} />;
 		case "weightlifting":
-			return <WeightLiftingExercises exerciseId={currentExercise.id} />;
+			return <WeightLiftingExercises exercise={exercise} />;
 		case "assisted-weight":
-			return <AssistedWeightExercises exerciseId={currentExercise.id} />;
+			return <AssistedWeightExercises exercise={exercise} />;
 		case "cardio-distance":
-			return <CardioDistanceExercises exerciseId={currentExercise.id} />;
+			return <CardioDistanceExercises exercise={exercise} />;
 		case "cardio-time":
-			return <CardioTimeExercises exerciseId={currentExercise.id} />;
+			return <CardioTimeExercises exercise={exercise} />;
 		default:
 			return <View></View>;
 	}
@@ -111,7 +104,7 @@ const UserInputSection = ({
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { removeSetFromExercise } = useExercise(exerciseId);
+	const { removeSetFromExercise } = useWorkout();
 	const swipeableRef = useRef(null);
 
 	//This function makes the set
@@ -174,16 +167,14 @@ const UserInputSection = ({
 	);
 };
 
-// Exercise type components now use useExercise hook
-const BodyWeightExercises = ({ exerciseId }) => {
+const BodyWeightExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { exercise, addSetToExercise, updateSetInExercise } =
-		useExercise(exerciseId);
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
-		addSetToExercise(exerciseId, { reps: null });
+		addSetToExercise(exercise.id, { reps: null });
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -191,7 +182,7 @@ const BodyWeightExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
@@ -210,7 +201,7 @@ const BodyWeightExercises = ({ exerciseId }) => {
 					functions={[handleRepsChange]}
 					lengths={[3]}
 					values={[set.reps]}
-					exerciseId={exerciseId}
+					exerciseId={exercise.id}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -220,15 +211,14 @@ const BodyWeightExercises = ({ exerciseId }) => {
 	);
 };
 
-const WeightLiftingExercises = ({ exerciseId }) => {
+const WeightLiftingExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { exercise, addSetToExercise, updateSetInExercise } =
-		useExercise(exerciseId);
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exerciseId, { weight: null, reps: null });
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -236,7 +226,7 @@ const WeightLiftingExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			weight: number !== "" ? number : null,
 		});
@@ -247,7 +237,7 @@ const WeightLiftingExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
@@ -266,7 +256,7 @@ const WeightLiftingExercises = ({ exerciseId }) => {
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
-					exerciseId={exerciseId}
+					exerciseId={exercise.id}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -276,15 +266,14 @@ const WeightLiftingExercises = ({ exerciseId }) => {
 	);
 };
 
-const AssistedWeightExercises = ({ exerciseId }) => {
+const AssistedWeightExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { exercise, addSetToExercise, updateSetInExercise } =
-		useExercise(exerciseId);
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exerciseId, { weight: null, reps: null });
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -292,7 +281,7 @@ const AssistedWeightExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			weight: number !== "" ? number : null,
 		});
@@ -303,7 +292,7 @@ const AssistedWeightExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
@@ -322,7 +311,7 @@ const AssistedWeightExercises = ({ exerciseId }) => {
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
-					exerciseId={exerciseId}
+					exerciseId={exercise.id}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -332,20 +321,21 @@ const AssistedWeightExercises = ({ exerciseId }) => {
 	);
 };
 
-const CardioDistanceExercises = ({ exerciseId }) => {
+const CardioDistanceExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { exercise, addSetToExercise, updateSetInExercise } =
-		useExercise(exerciseId);
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	console.log("Exercise:", exercise);
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
-		addSetToExercise(exerciseId, { time: null, distance: null });
+		addSetToExercise(exercise.id, { time: null, distance: null });
 	};
 
 	const handleTimeChange = (text, index) => {
 		// Store the previous value to compare
 		const prevValue = exercise.sets[index]?.time || "";
+		console.log("Text:", text, "Index:", index, "PrevValue:", prevValue);
 
 		// If user is trying to delete and the text is shorter
 		if (text.length < prevValue.length) {
@@ -354,7 +344,7 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(exerciseId, index, {
+				updateSetInExercise(exercise.id, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -362,7 +352,7 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(exerciseId, index, {
+				updateSetInExercise(exercise.id, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -399,7 +389,7 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			time: number !== "" ? number : null,
 		});
@@ -410,7 +400,7 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 		const number = text.replace(/[^0-9.]/g, "");
 
 		// Update the distance for the specific set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			distance: number !== "" ? number : null,
 		});
@@ -433,7 +423,7 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
-					exerciseId={exerciseId}
+					exerciseId={exercise.id}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -443,15 +433,14 @@ const CardioDistanceExercises = ({ exerciseId }) => {
 	);
 };
 
-const CardioTimeExercises = ({ exerciseId }) => {
+const CardioTimeExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { exercise, addSetToExercise, updateSetInExercise } =
-		useExercise(exerciseId);
+	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time
-		addSetToExercise(exerciseId, { time: null });
+		addSetToExercise(exercise.id, { time: null });
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -465,7 +454,7 @@ const CardioTimeExercises = ({ exerciseId }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(exerciseId, index, {
+				updateSetInExercise(exercise.id, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -473,7 +462,7 @@ const CardioTimeExercises = ({ exerciseId }) => {
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(exerciseId, index, {
+				updateSetInExercise(exercise.id, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -510,7 +499,7 @@ const CardioTimeExercises = ({ exerciseId }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(exerciseId, index, {
+		updateSetInExercise(exercise.id, index, {
 			...exercise.sets[index],
 			time: number !== "" ? number : null,
 		});
@@ -533,7 +522,7 @@ const CardioTimeExercises = ({ exerciseId }) => {
 						exercise.inputAlert &&
 						index === exercise.sets.length - 1
 					}
-					exerciseId={exerciseId}
+					exerciseId={exercise.id}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -614,5 +603,4 @@ const createStyles = (themeStyle) =>
 		},
 	});
 
-// Export with memo to prevent unnecessary re-renders
-export default memo(ExerciseForm);
+export default ExerciseForm;

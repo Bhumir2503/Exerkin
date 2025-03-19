@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
 	Modal,
 	View,
@@ -11,12 +11,16 @@ import {
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
+// import {
+// 	SafeAreaView,
+// 	useSafeAreaInsets,
+// } from "react-native-safe-area-context";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
 import WorkoutNotes from "./WorkoutNotes";
 import RestTimer from "./RestTimer";
-import ExerciseForm from "./ExerciseForm"; // Import your optimized component
+import ExerciseForm from "./ExerciseForm";
 import ExerciseSelector from "./ExerciseSelector";
 import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
@@ -39,19 +43,7 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 		workoutCompleted();
 	};
 
-	// Use useMemo to only calculate this when workoutExercises changes
-	const hasExercises = useMemo(
-		() => workoutExercises.length > 0,
-		[workoutExercises.length]
-	);
-
-	// Memoize the exercise forms to prevent unnecessary re-renders
-	// Only the IDs are needed since the actual data will be retrieved by each component
-	const exerciseForms = useMemo(() => {
-		return workoutExercises.map((exercise, index) => (
-			<ExerciseForm key={exercise.id} exercise={exercise} />
-		));
-	}, [workoutExercises]);
+	const hasExercises = workoutExercises.length > 0;
 
 	return (
 		<Modal
@@ -89,8 +81,10 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 							keyboardShouldPersistTaps="handled"
 							bounces={false}
 						>
-							{/* Display exercise forms - now using memoized list */}
-							{exerciseForms}
+							{/* Display exercises */}
+							{workoutExercises.map((exercise, index) => (
+								<ExerciseForm key={index} exercise={exercise} />
+							))}
 
 							{/* Show help card only when there are no exercises */}
 							{!hasExercises && <AddFirstExerciseCard />}
@@ -138,4 +132,4 @@ const createStyles = (theme) => {
 	});
 };
 
-export default React.memo(WorkoutModal);
+export default WorkoutModal;
