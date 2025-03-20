@@ -28,9 +28,12 @@ const CancelButton = ({ setMainModalVisible }) => {
 
 	useEffect(() => {
 		if (cancel) {
-			workoutCancelled();
 			setMainModalVisible(false);
 			setCancel(false);
+
+			setTimeout(() => {
+				workoutCancelled();
+			}, 500);
 		}
 	}, [cancel]);
 
