@@ -7,10 +7,12 @@ import {
 	TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import { useState, useEffect } from "react";
 
-const CancelButton = ({ onPress, type }) => {
+const CancelButton = ({ setMainModalVisible }) => {
 	const { themeStyle } = useTheme();
+	const { workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
 	const [cancel, setCancel] = useState(false);
@@ -26,7 +28,8 @@ const CancelButton = ({ onPress, type }) => {
 
 	useEffect(() => {
 		if (cancel) {
-			onPress();
+			workoutCancelled();
+			setMainModalVisible(false);
 			setCancel(false);
 		}
 	}, [cancel]);
@@ -34,12 +37,7 @@ const CancelButton = ({ onPress, type }) => {
 	return (
 		<>
 			<Pressable onPress={() => setVisible(true)} style={styles.button}>
-				{type === "workout" && (
-					<Text style={styles.buttonText}>Cancel Workout</Text>
-				)}
-				{type === "template" && (
-					<Text style={styles.buttonText}>Cancel Template</Text>
-				)}
+				<Text style={styles.buttonText}>Cancel Workout</Text>
 			</Pressable>
 
 			<Modal
@@ -53,28 +51,16 @@ const CancelButton = ({ onPress, type }) => {
 						<View style={styles.backgroundOverlay} />
 					</TouchableWithoutFeedback>
 					<View style={styles.modalContainer}>
-						{type === "workout" && (
-							<View style={styles.modalContent}>
-								<Text style={styles.modalTitle}>
-									Cancel Workout?
-								</Text>
-								<Text style={styles.modalText}>
-									Your progress will not be saved. Active
-									exercises data will be lost.
-								</Text>
-							</View>
-						)}
-						{type === "template" && (
-							<View style={styles.modalContent}>
-								<Text style={styles.modalTitle}>
-									Cancel Template?
-								</Text>
-								<Text style={styles.modalText}>
-									Your progress will not be saved. Template
-									data will be lost.
-								</Text>
-							</View>
-						)}
+						<View style={styles.modalContent}>
+							<Text style={styles.modalTitle}>
+								Cancel Workout?
+							</Text>
+							<Text style={styles.modalText}>
+								Your progress will not be saved. Active
+								exercises data will be lost.
+							</Text>
+						</View>
+
 						<View style={styles.buttonView}>
 							<Pressable
 								style={styles.closeButton}

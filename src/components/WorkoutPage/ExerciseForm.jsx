@@ -1,37 +1,72 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import {
 	View,
 	Text,
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	Pressable,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import Reanimated, {
-	SharedValue,
-	useAnimatedStyle,
-} from "react-native-reanimated";
+import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 
-const ExerciseForm = ({ exercise, type }) => {
-	// Checks exercise type and renders the appropriate component
-	switch (exercise.type) {
-		case "bodyweight":
-			return <BodyWeightExercises exercise={exercise} type={type} />;
-		case "weightlifting":
-			return <WeightLiftingExercises exercise={exercise} type={type} />;
-		case "assisted-weight":
-			return <AssistedWeightExercises exercise={exercise} type={type} />;
-		case "cardio-distance":
-			return <CardioDistanceExercises exercise={exercise} type={type} />;
-		case "cardio-time":
-			return <CardioTimeExercises exercise={exercise} type={type} />;
-		default:
-			return <View></View>;
+const ExerciseForm = () => {
+	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
+	
+	const { workoutExercises } = useWorkout();
+
+	// If there are no exercises, return nothing
+	if (!workoutExercises || workoutExercises.length === 0) {
+		return null;
 	}
+
+	// Return a fragment containing all exercise components
+	return (
+		<>
+			{workoutExercises.map((exercise) => {
+				switch (exercise.type) {
+					case "bodyweight":
+						return (
+							<BodyWeightExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "weightlifting":
+						return (
+							<WeightLiftingExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "assisted-weight":
+						return (
+							<AssistedWeightExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "cardio-distance":
+						return (
+							<CardioDistanceExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					case "cardio-time":
+						return (
+							<CardioTimeExercises
+								key={exercise.id}
+								exercise={exercise}
+							/>
+						);
+					default:
+						return <View key={exercise.id}></View>;
+				}
+			})}
+		</>
+	);
 };
 
 const Header = ({ repetitionType, metrics }) => {
@@ -106,7 +141,6 @@ const UserInputSection = ({
 	lengths,
 	values,
 	exerciseId,
-	type,
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -118,7 +152,7 @@ const UserInputSection = ({
 		// if(swipeableRef.current){
 		// 	swipeableRef.current.close();
 		// }
-		removeSetFromExercise(exerciseId, index, type);
+		removeSetFromExercise(exerciseId, index);
 	};
 
 	//this is to make sure the set that moves up gets set to a closed swipe state, previously was slightly open
@@ -173,14 +207,14 @@ const UserInputSection = ({
 	);
 };
 
-const BodyWeightExercises = ({ exercise, type }) => {
+const BodyWeightExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
-		addSetToExercise(exercise.id, { reps: null }, type);
+		addSetToExercise(exercise.id, { reps: null });
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -188,15 +222,10 @@ const BodyWeightExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -213,7 +242,6 @@ const BodyWeightExercises = ({ exercise, type }) => {
 					lengths={[3]}
 					values={[set.reps]}
 					exerciseId={exercise.id}
-					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -223,14 +251,14 @@ const BodyWeightExercises = ({ exercise, type }) => {
 	);
 };
 
-const WeightLiftingExercises = ({ exercise, type }) => {
+const WeightLiftingExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null }, type);
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -238,15 +266,10 @@ const WeightLiftingExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				weight: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			weight: number !== "" ? number : null,
+		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -254,15 +277,10 @@ const WeightLiftingExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -279,7 +297,6 @@ const WeightLiftingExercises = ({ exercise, type }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					exerciseId={exercise.id}
-					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -289,14 +306,14 @@ const WeightLiftingExercises = ({ exercise, type }) => {
 	);
 };
 
-const AssistedWeightExercises = ({ exercise, type }) => {
+const AssistedWeightExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null }, type);
+		addSetToExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -304,15 +321,10 @@ const AssistedWeightExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				weight: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			weight: number !== "" ? number : null,
+		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -320,15 +332,10 @@ const AssistedWeightExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				reps: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -345,7 +352,6 @@ const AssistedWeightExercises = ({ exercise, type }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					exerciseId={exercise.id}
-					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -355,14 +361,14 @@ const AssistedWeightExercises = ({ exercise, type }) => {
 	);
 };
 
-const CardioDistanceExercises = ({ exercise, type }) => {
+const CardioDistanceExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
-		addSetToExercise(exercise.id, { time: null, distance: null }, type);
+		addSetToExercise(exercise.id, { time: null, distance: null });
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -376,28 +382,18 @@ const CardioDistanceExercises = ({ exercise, type }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			}
 		}
@@ -431,15 +427,10 @@ const CardioDistanceExercises = ({ exercise, type }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				time: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			time: number !== "" ? number : null,
+		});
 	};
 
 	const handleDistanceChange = (text, index) => {
@@ -447,15 +438,10 @@ const CardioDistanceExercises = ({ exercise, type }) => {
 		const number = text.replace(/[^0-9.]/g, "");
 
 		// Update the distance for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				distance: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			distance: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -476,7 +462,6 @@ const CardioDistanceExercises = ({ exercise, type }) => {
 						index === exercise.sets.length - 1
 					}
 					exerciseId={exercise.id}
-					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -486,14 +471,14 @@ const CardioDistanceExercises = ({ exercise, type }) => {
 	);
 };
 
-const CardioTimeExercises = ({ exercise, type }) => {
+const CardioTimeExercises = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for time
-		addSetToExercise(exercise.id, { time: null }, type);
+		addSetToExercise(exercise.id, { time: null });
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -507,28 +492,18 @@ const CardioTimeExercises = ({ exercise, type }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(
-					exercise.id,
-					index,
-					{
-						...exercise.sets[index],
-						time: newValue !== "" ? newValue : null,
-					},
-					type
-				);
+				updateSetInExercise(exercise.id, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
 				return;
 			}
 		}
@@ -562,15 +537,10 @@ const CardioTimeExercises = ({ exercise, type }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInExercise(
-			exercise.id,
-			index,
-			{
-				...exercise.sets[index],
-				time: number !== "" ? number : null,
-			},
-			type
-		);
+		updateSetInExercise(exercise.id, index, {
+			...exercise.sets[index],
+			time: number !== "" ? number : null,
+		});
 	};
 
 	return (
@@ -591,7 +561,6 @@ const CardioTimeExercises = ({ exercise, type }) => {
 						index === exercise.sets.length - 1
 					}
 					exerciseId={exercise.id}
-					type={type}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>

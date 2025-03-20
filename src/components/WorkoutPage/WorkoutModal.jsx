@@ -10,10 +10,6 @@ import {
 	ScrollView,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-// import {
-// 	SafeAreaView,
-// 	useSafeAreaInsets,
-// } from "react-native-safe-area-context";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
@@ -23,20 +19,10 @@ import ExerciseForm from "./ExerciseForm";
 import ExerciseSelector from "./ExerciseSelector";
 import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
+import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
-const WorkoutModal = ({
-	visible,
-	type = "workout",
-	onFinish,
-	onCancel,
-	workoutTitleRef,
-	timeRef,
-	workoutNotesRef,
-	startTimeStamp,
-	activeExercises = [],
-	setModalVisible,
-	hasExercises = false,
-}) => {
+const WorkoutModal = ({ visible, setModalVisible }) => {
+	console.log("Workout Modal Rendered");
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
@@ -51,12 +37,7 @@ const WorkoutModal = ({
 				style={styles.modal}
 				edges={["top", "right", "left", "bottom"]}
 			>
-				<WorkoutHeaderButtons
-					onFinishedPressed={onFinish}
-					workoutTitleRef={workoutTitleRef}
-					type={type}
-					setMainModalVisible={setModalVisible}
-				/>
+				<WorkoutHeaderButtons setMainModalVisible={setModalVisible} />
 
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -64,21 +45,13 @@ const WorkoutModal = ({
 					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 				>
 					<View>
-						{type === "workout" && (
-							<View style={styles.timerStyle}>
-								<WorkoutTimer
-									visible={visible}
-									timeRef={timeRef}
-									startTimeStamp={startTimeStamp}
-								/>
-								<View style={{ flexDirection: "row" }}>
-									<WorkoutNotes
-										workoutNotesRef={workoutNotesRef}
-									/>
-									<RestTimer />
-								</View>
+						<View style={styles.timerStyle}>
+							<WorkoutTimer visible={visible} />
+							<View style={{ flexDirection: "row" }}>
+								<WorkoutNotes />
+								<RestTimer />
 							</View>
-						)}
+						</View>
 
 						<ScrollView
 							contentContainerStyle={styles.scrollView}
@@ -87,21 +60,18 @@ const WorkoutModal = ({
 							bounces={false}
 						>
 							{/* Display exercises */}
-							{activeExercises.map((exercise, index) => (
-								<ExerciseForm
-									key={index}
-									exercise={exercise}
-									type={type}
-								/>
-							))}
+
+							<ExerciseForm />
 
 							{/* Show help card only when there are no exercises */}
-							{!hasExercises && <AddFirstExerciseCard />}
+							<AddFirstExerciseCard />
 
 							{/* Always show the exercise selector */}
-							<ExerciseSelector type={type} />
+							<ExerciseSelector />
 
-							<CancelButton type={type} onPress={onCancel} />
+							<CancelButton
+								setMainModalVisible={setModalVisible}
+							/>
 						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>

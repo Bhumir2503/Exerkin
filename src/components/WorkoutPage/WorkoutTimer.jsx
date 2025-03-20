@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Text, StyleSheet, AppState } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 export const formatTime = (seconds) => {
 	const hrs = Math.floor(seconds / 3600);
@@ -12,7 +13,9 @@ export const formatTime = (seconds) => {
 	return timeString;
 };
 
-const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
+const WorkoutTimer = ({ visible }) => {
+	const { WorkoutTimer, WorkoutStartTime } = useWorkout();
+
 	const [displayTime, setDisplayTime] = useState("00:00:00");
 	const [isRunning, setIsRunning] = useState(false);
 
@@ -24,21 +27,21 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-	// Initialize timer with elapsed time if startTimeStamp is provided
+	// Initialize timer with elapsed time if WorkoutStartTime.current is provided
 	useEffect(() => {
-		if (startTimeStamp) {
+		if (WorkoutStartTime.current) {
 			const now = Date.now();
 			// Convert Firestore timestamp to milliseconds if needed
-			const startTime = startTimeStamp.toMillis
-				? startTimeStamp.toMillis()
-				: startTimeStamp;
+			const startTime = WorkoutStartTime.current.toMillis
+				? WorkoutStartTime.current.toMillis()
+				: WorkoutStartTime.current;
 			const initialElapsedSeconds = Math.floor((now - startTime) / 1000);
 
 			// Set the initial timeRef value
-			timeRef.current = initialElapsedSeconds;
+			WorkoutTimer.current = initialElapsedSeconds;
 			setDisplayTime(formatTime(initialElapsedSeconds));
 		}
-	}, [startTimeStamp]);
+	}, [WorkoutStartTime.current]);
 
 	// Use visible prop to toggle isRunning state of the timer
 	useEffect(() => {
@@ -46,13 +49,13 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 			setIsRunning(true);
 		} else {
 			setIsRunning(false);
-			if (!startTimeStamp) {
-				// Only reset if not using a persistent startTimeStamp
-				timeRef.current = 0;
+			if (!WorkoutStartTime.current) {
+				// Only reset if not using a persistent WorkoutStartTime.current
+				WorkoutTimer.current = 0;
 				setDisplayTime(formatTime(0));
 			}
 		}
-	}, [visible, startTimeStamp]);
+	}, [visible, WorkoutStartTime.current]);
 
 	// Handle app state changes
 	useEffect(() => {
@@ -66,24 +69,24 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 					appStateRef.current.match(/inactive|background/) &&
 					nextAppState === "active"
 				) {
-					if (isRunning || startTimeStamp) {
-						if (startTimeStamp) {
-							// If using startTimeStamp, calculate total elapsed time from start
-							const startTime = startTimeStamp.toMillis
-								? startTimeStamp.toMillis()
-								: startTimeStamp;
+					if (isRunning || WorkoutStartTime.current) {
+						if (WorkoutStartTime.current) {
+							// If using WorkoutStartTime.current, calculate total elapsed time from start
+							const startTime = WorkoutStartTime.current.toMillis
+								? WorkoutStartTime.current.toMillis()
+								: WorkoutStartTime.current;
 							const totalElapsedSeconds = Math.floor(
 								(now - startTime) / 1000
 							);
-							timeRef.current = totalElapsedSeconds;
+							WorkoutTimer.current = totalElapsedSeconds;
 						} else if (isRunning) {
 							// Calculate elapsed time while in background
 							const elapsedSeconds = Math.floor(
 								(now - lastTickRef.current) / 1000
 							);
-							timeRef.current += elapsedSeconds;
+							WorkoutTimer.current += elapsedSeconds;
 						}
-						setDisplayTime(formatTime(timeRef.current));
+						setDisplayTime(formatTime(WorkoutTimer.current));
 					}
 				}
 
@@ -95,7 +98,7 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 		return () => {
 			subscription.remove();
 		};
-	}, [isRunning, startTimeStamp]);
+	}, [isRunning, WorkoutStartTime.current]);
 
 	// Handle timer logic
 	useEffect(() => {
@@ -105,7 +108,7 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 			intervalRef.current = null;
 		}
 
-		if (isRunning || startTimeStamp) {
+		if (isRunning || WorkoutStartTime.current) {
 			// Store current timestamp when starting
 			lastTickRef.current = Date.now();
 
@@ -113,27 +116,27 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 			intervalRef.current = setInterval(() => {
 				const now = Date.now();
 
-				if (startTimeStamp) {
-					// If using startTimeStamp, calculate based on the original start time
-					const startTime = startTimeStamp.toMillis
-						? startTimeStamp.toMillis()
-						: startTimeStamp;
+				if (WorkoutStartTime.current) {
+					// If using WorkoutStartTime.current, calculate based on the original start time
+					const startTime = WorkoutStartTime.current.toMillis
+						? WorkoutStartTime.current.toMillis()
+						: WorkoutStartTime.current;
 					const totalElapsedSeconds = Math.floor(
 						(now - startTime) / 1000
 					);
-					timeRef.current = totalElapsedSeconds;
+					WorkoutTimer.current = totalElapsedSeconds;
 				} else {
 					// Otherwise, increment based on the elapsed time since last tick
 					const elapsed = Math.floor(
 						(now - lastTickRef.current) / 1000
 					);
 					if (elapsed >= 1) {
-						timeRef.current += elapsed;
+						WorkoutTimer.current += elapsed;
 						lastTickRef.current = now;
 					}
 				}
 
-				setDisplayTime(formatTime(timeRef.current));
+				setDisplayTime(formatTime(WorkoutTimer.current));
 			}, 1000);
 		}
 
@@ -143,7 +146,7 @@ const WorkoutTimer = ({ visible, timeRef, startTimeStamp }) => {
 				intervalRef.current = null;
 			}
 		};
-	}, [isRunning, startTimeStamp]);
+	}, [isRunning, WorkoutStartTime.current]);
 
 	return <Text style={styles.timeText}>{displayTime}</Text>;
 };

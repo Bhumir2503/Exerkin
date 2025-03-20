@@ -2,13 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 const AddFirstExerciseCard = () => {
 	const { themeStyle } = useTheme();
+	const { workoutExercises } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+	const hasExercises = workoutExercises.length > 0;
+
 	return (
-		<View style={styles.container}>
+		<View style={{...styles.container, display: hasExercises ? "none" : "flex"}}>
 			<View style={styles.content}>
 				<View style={styles.IconContainer}>
 					<Ionicons

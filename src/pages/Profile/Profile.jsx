@@ -4,8 +4,6 @@ import {
 	StyleSheet,
 	Text,
 	TouchableOpacity,
-	ScrollView,
-	Dimensions,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,8 +20,7 @@ import WorkoutHistory from "../../components/Profile/WorkoutHistory";
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { username } = useUser();
-	const { workoutHistory, clearWorkoutHistory } = useWorkout();
-	const [selectedWorkout, setSelectedWorkout] = useState(null);
+	const { workoutHistory } = useWorkout();
 	const [stats, setStats] = useState([
 		{ label: "Workouts", value: 0 },
 		{ label: "Streak", value: 0 },

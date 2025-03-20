@@ -12,12 +12,14 @@ import {
 	Pressable,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const MAX_CHARACTERS = 256;
 
-const WorkoutNotes = ({ workoutNotesRef }) => {
-	const [workoutNotes, setWorkoutNotes] = useState("");
+const WorkoutNotes = () => {
+	const { WorkoutNote } = useWorkout();
+	const [workoutNotes, setWorkoutNotes] = useState(WorkoutNote.current);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tempNotes, setTempNotes] = useState("");
 	const { themeStyle } = useTheme();
@@ -36,7 +38,7 @@ const WorkoutNotes = ({ workoutNotesRef }) => {
 
 	const saveNotes = () => {
 		setWorkoutNotes(tempNotes);
-		workoutNotesRef.current = tempNotes;
+		WorkoutNote.current = tempNotes;
 		setModalVisible(false);
 	};
 

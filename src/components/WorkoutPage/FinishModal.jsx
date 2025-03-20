@@ -3,35 +3,52 @@ import {
 	View,
 	Pressable,
 	TouchableWithoutFeedback,
+	TouchableOpacity,
 	StyleSheet,
 	Text,
 } from "react-native";
+import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
-const FinishModal = ({ visible, setVisible, setFinished, type }) => {
+const FinishModal = ({ setMainModalVisible }) => {
 	const { themeStyle } = useTheme();
+	const { workoutCompleted } = useWorkout();
+
 	const styles = createStyles(themeStyle);
+
+	const [visible, setVisible] = useState(false);
+
 	const closeModal = () => {
 		setVisible(false);
 	};
 
-    const handleLogIt = () => {
-        setFinished(true);
-        closeModal();
-    }
+	const handleLogIt = () => {
+		workoutCompleted();
+		setMainModalVisible(false);
+	};
 
 	return (
-		<Modal
-			visible={visible}
-			animationType="fade"
-			transparent={true}
-			statusBarTranslucent={true}
-		>
-			<View style={styles.modalOverlay}>
-				<TouchableWithoutFeedback onPress={closeModal}>
-					<View style={styles.backgroundOverlay} />
-				</TouchableWithoutFeedback>
-				{type === "workout" && (
+		<>
+			<TouchableOpacity onPress={() => setVisible(true)}>
+				<Ionicons
+					name="checkmark-sharp"
+					size={32}
+					color={themeStyle.primary}
+				/>
+			</TouchableOpacity>
+			<Modal
+				visible={visible}
+				animationType="fade"
+				transparent={true}
+				statusBarTranslucent={true}
+			>
+				<View style={styles.modalOverlay}>
+					<TouchableWithoutFeedback onPress={closeModal}>
+						<View style={styles.backgroundOverlay} />
+					</TouchableWithoutFeedback>
+
 					<View style={styles.modalContainer}>
 						<View style={styles.modalContent}>
 							<Text style={styles.modalTitle}>
@@ -57,35 +74,9 @@ const FinishModal = ({ visible, setVisible, setFinished, type }) => {
 							</Pressable>
 						</View>
 					</View>
-				)}
-				{type === "template" && (
-					<View style={styles.modalContainer}>
-						<View style={styles.modalContent}>
-							<Text style={styles.modalTitle}>
-								Save Template?
-							</Text>
-							<Text style={styles.modalText}>
-								Save this template for future use.
-							</Text>
-						</View>
-						<View style={styles.buttonView}>
-							<Pressable
-								style={styles.closeButton}
-								onPress={closeModal}
-							>
-								<Text style={styles.closeText}>Close</Text>
-							</Pressable>
-							<Pressable
-								style={styles.submit}
-								onPress={handleLogIt}
-							>
-								<Text style={styles.submitText}>Save</Text>
-							</Pressable>
-						</View>
-					</View>
-				)}
-			</View>
-		</Modal>
+				</View>
+			</Modal>
+		</>
 	);
 };
 
