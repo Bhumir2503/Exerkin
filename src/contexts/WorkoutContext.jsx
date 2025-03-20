@@ -83,6 +83,10 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutId.current = uuid.v4();
 	};
 
+	const setWorkoutData = (data) => {
+		setWorkoutExercises(data);
+	};
+
 	const workoutCompleted = () => {
 		// loop through activeExercise to check for empty sets and remove them
 		const WorkoutExerciseFiltered = workoutExercises.map((exercise) => {
@@ -237,6 +241,7 @@ export const WorkoutProvider = ({ children }) => {
 				addSetToExercise,
 				updateSetInExercise,
 				removeSetFromExercise,
+				setWorkoutData,
 
 				workoutExercises,
 				setWorkoutExercises,

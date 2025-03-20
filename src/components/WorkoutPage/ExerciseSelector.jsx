@@ -411,6 +411,7 @@ const ExerciseSelector = () => {
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		button: {
+			margin: "auto",
 			backgroundColor: themeStyle.primary,
 			padding: 12,
 			borderRadius: 8,
