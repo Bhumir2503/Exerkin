@@ -25,8 +25,16 @@ const FinishModal = ({ setMainModalVisible }) => {
 	};
 
 	const handleLogIt = () => {
-		workoutCompleted();
+		// First, close all modals
+		closeModal();
+		setTimeout(() => {
 		setMainModalVisible(false);
+		}, 500); // 500ms should be enough for the modal animations to complete
+		// Then execute workoutCompleted with a slight delay
+		// This ensures the modals are closed before any state changes from workoutCompleted
+		setTimeout(() => {
+			workoutCompleted();
+		}, 500); // 500ms should be enough for the modal animations to complete
 	};
 
 	return (
