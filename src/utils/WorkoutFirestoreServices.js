@@ -24,8 +24,7 @@ export const addWorkoutToFirestore = async (workout) => {
     }
 }
 
-export const deleteWorkoutFromFirestore = async (workoutId) => {
-    const time = firestore.Timestamp.now();
+export const deleteWorkoutFromFirestore = async (workoutId, time) => {
     const deletedWorkoutRef = deletedWorkoutsCollection.doc(workoutId);
     try {
         await workoutsCollection.doc(workoutId).delete();

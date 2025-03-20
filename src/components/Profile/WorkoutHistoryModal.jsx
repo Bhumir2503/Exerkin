@@ -7,6 +7,7 @@ import {
 	Text,
 	Pressable,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
@@ -14,13 +15,26 @@ import {
 	formatTimeStamptoTimeString,
 	formatTimeToText,
 } from "../../utils/TimeFormat";
+import { useWorkout } from "../../contexts/WorkoutContext";
 
 const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 	const { themeStyle } = useTheme();
+	const { removeWorkoutFromHistory } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
+	};
+
+	const handleDelete = () => {
+		closeModal();
+		removeWorkoutFromHistory(selectedWorkout.id);
+	};
+
+	const handleEdit = () => {
+		// Add edit functionality here
+		console.log("Edit workout:", selectedWorkout.id);
+		// You would typically navigate to an edit screen or open another modal
 	};
 
 	return (
@@ -48,16 +62,38 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 									flexDirection: "row",
 									alignItems: "center",
 									justifyContent: "space-between",
+									marginBottom: 15,
 								}}
 							>
 								<Text style={styles.title}>
 									{selectedWorkout.name}
 								</Text>
-								<Text style={styles.text}>
-									{formatTimeStamptoDateString(
-										selectedWorkout.startedAt
-									)}
-								</Text>
+								<View style={styles.actionButtons}>
+									<Pressable
+										style={styles.iconButton}
+										onPress={handleEdit}
+									>
+										<Ionicons
+											name="create-outline"
+											size={24}
+											color={
+												themeStyle.textColor || "#000"
+											}
+										/>
+									</Pressable>
+									<Pressable
+										style={styles.iconButton}
+										onPress={handleDelete}
+									>
+										<Ionicons
+											name="trash-outline"
+											size={24}
+											color={
+												themeStyle.textColor || "#000"
+											}
+										/>
+									</Pressable>
+								</View>
 							</View>
 							<View
 								style={{
@@ -135,9 +171,7 @@ const ExerciseCard = ({ exercise }) => {
 
 	// Function to render set information based on exercise type
 	const renderSetInfo = (set) => {
-		if (
-			exercise.type === "weightlifting"
-		) {
+		if (exercise.type === "weightlifting") {
 			return `${set.weight || 0} lbs × ${set.reps || 0} reps`;
 		} else if (exercise.type === "bodyweight") {
 			return `${set.reps || 0} reps`;
@@ -217,7 +251,6 @@ const createStyles = (themeStyle) =>
 		title: {
 			fontSize: 18,
 			fontWeight: "bold",
-			marginBottom: 15,
 			color: themeStyle.primary || "#000",
 		},
 		text: {
@@ -265,6 +298,14 @@ const createStyles = (themeStyle) =>
 			fontSize: 16,
 			color: "#fff",
 			fontWeight: "bold",
+		},
+		actionButtons: {
+			flexDirection: "row",
+			alignItems: "center",
+		},
+		iconButton: {
+			padding: 5,
+			marginLeft: 10,
 		},
 	});
 
