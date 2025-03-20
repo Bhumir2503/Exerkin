@@ -68,7 +68,7 @@ export const WorkoutProvider = ({ children }) => {
 		const getWorkoutHistory = async () => {
 			console.log("Getting workout history");
 			const history = await getWorkoutHistoryCache();
-			if (history.length === 0) {
+			if (history.workout.length === 0) {
 				console.log("No workout history found");
 				return;
 			} else {
@@ -77,20 +77,7 @@ export const WorkoutProvider = ({ children }) => {
 			}
 		};
 
-		const getWorkoutTemplate = async () => {
-			console.log("Getting workout template");
-			const template = await getWorkoutTemplateCache();
-			if (template.length === 0) {
-				console.log("No workout template found");
-				return;
-			} else {
-				console.log("Workout template found");
-				setWorkoutTemplate(template);
-			}
-		};
-
 		getWorkoutHistory();
-		getWorkoutTemplate();
 	}, []);
 
 	const workoutStarted = () => {
@@ -141,6 +128,7 @@ export const WorkoutProvider = ({ children }) => {
 			exercises: WorkoutExerciseChecked,
 			startedAt: WorkoutStartTime.current,
 			completedAt: WorkoutFinishTime,
+			updatedAt: WorkoutFinishTime,
 			duration: formatTime(WorkoutTimer.current),
 			notes: WorkoutNote.current,
 		};

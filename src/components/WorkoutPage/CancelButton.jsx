@@ -7,8 +7,8 @@ import {
 	TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useState, useEffect } from "react";
 import { useWorkout } from "../../contexts/WorkoutContext";
+import { useState, useEffect } from "react";
 
 const CancelButton = ({ setMainModalVisible }) => {
 	const { themeStyle } = useTheme();
@@ -28,8 +28,8 @@ const CancelButton = ({ setMainModalVisible }) => {
 
 	useEffect(() => {
 		if (cancel) {
-			setMainModalVisible(false);
 			workoutCancelled();
+			setMainModalVisible(false);
 			setCancel(false);
 		}
 	}, [cancel]);
@@ -60,6 +60,7 @@ const CancelButton = ({ setMainModalVisible }) => {
 								exercises data will be lost.
 							</Text>
 						</View>
+
 						<View style={styles.buttonView}>
 							<Pressable
 								style={styles.closeButton}
