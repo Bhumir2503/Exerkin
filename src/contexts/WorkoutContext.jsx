@@ -9,17 +9,14 @@ import React, {
 import {
 	addWorkoutToHistoryCache,
 	getWorkoutHistoryCache,
+	removeWorkoutFromHistoryCache,
 	resetWorkoutHistoryCache,
 } from "../cache/workoutHistoryCache";
-import {
-	addWorkoutToTemplateCache,
-	getWorkoutTemplateCache,
-	resetWorkoutTemplateCache,
-} from "../cache/templateCache";
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 import {
 	addWorkoutToFirestore,
+	deleteWorkoutFromFirestore,
 	batchDeleteWorkoutFromFirestore,
 } from "../utils/WorkoutFirestoreServices";
 import { useUser } from "./UserContext";
@@ -211,6 +208,16 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
+	const removeWorkoutFromHistory = (workoutId) => {
+		const time = firestore.Timestamp.now();
+		removeWorkoutFromHistoryCache(workoutId, time);
+		deleteWorkoutFromFirestore(workoutId, time);
+		const newWorkoutHistory = workoutHistory.filter(
+			(workout) => workout.id !== workoutId
+		);
+		setWorkoutHistory(newWorkoutHistory);
+	};
+
 	// Clear workout history
 	const clearWorkoutHistory = () => {
 		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
@@ -244,6 +251,7 @@ export const WorkoutProvider = ({ children }) => {
 				addExerciseToWorkout,
 				removeExerciseFromWorkout,
 
+				removeWorkoutFromHistory,
 				clearWorkoutHistory,
 			}}
 		>
