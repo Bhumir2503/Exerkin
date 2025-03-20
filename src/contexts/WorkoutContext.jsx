@@ -68,6 +68,7 @@ export const WorkoutProvider = ({ children }) => {
 		const getWorkoutHistory = async () => {
 			console.log("Getting workout history");
 			const history = await getWorkoutHistoryCache();
+			console.log(history);
 			if (history.workout.length === 0) {
 				console.log("No workout history found");
 				return;
@@ -76,7 +77,6 @@ export const WorkoutProvider = ({ children }) => {
 				setWorkoutHistory(history.workout);
 			}
 		};
-
 		getWorkoutHistory();
 	}, []);
 

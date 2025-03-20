@@ -52,13 +52,13 @@ export const addWorkoutToHistoryCache = async (workout) => {
         // If the workoutHistory is empty, create a new one
         if (workoutHistory.length === 0) {
             await setWorkoutHistoryCache({
-                date: firestore.Timestamp.now(),
+                lastSynced: workout.completedAt,
                 workout: [workout],
             });
             return;
         }
         // If the workoutHistory is not empty, add the workout to the existing history
-        workoutHistory.date = firestore.Timestamp.now();
+        workoutHistory.lastSynced = workout.completedAt;
         workoutHistory.workout.push(workout);
         console.log(workoutHistory);
         await setWorkoutHistoryCache(workoutHistory);
