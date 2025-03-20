@@ -5,7 +5,6 @@ import React, {
 	useContext,
 	useEffect,
 	useRef,
-	useMemo,
 } from "react";
 import {
 	addWorkoutToHistoryCache,
@@ -26,30 +25,43 @@ import {
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
 
-// Create separate contexts for state, functions, and refs
-const WorkoutStateContext = createContext();
-const WorkoutFunctionsContext = createContext();
-const WorkoutRefsContext = createContext();
-
-// Legacy context for backward compatibility
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
+	// Workout scheme
+	// {
+	// 	id: 1,
+	// 	name: "Bench Press",
+	// 	sets: [
+	// 		{ reps: 10, weight: 100 },
+	// 		{ reps: 8, weight: 110 },
+	// 		{ reps: 6, weight: 120 },
+	// 	],
+	// 	rest: 60,
+	// 	notes: "Felt good",
+	// 	order: 1,
+	// 	completed: false,
+	// 	createdAt: "2023-10-01T12:00:00Z",
+	// 	updatedAt: "2023-10-01T12:00:00Z",
+	//  exercise: excercise object
+	//  date: "2023-10-01T12:00:00Z",
+	//  time: "00:00:00",
+	// }
+
 	const { user } = useUser();
 
-	// REF SECTION
 	//Workout Section States
 	const ModalType = useRef("WorkoutModal");
+
+	//  Workout History, Workout Exercises, Workout Notes, Workout Title, Workout Start Time, Workout Date
 	const WorkoutId = useRef(null);
+	const [workoutHistory, setWorkoutHistory] = useState([]);
+	const [workoutExercises, setWorkoutExercises] = useState([]);
 	const WorkoutExerciseRef = useRef([]);
 	const WorkoutTitle = useRef("");
 	const WorkoutNote = useRef("");
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
-
-	// STATE SECTION
-	const [workoutHistory, setWorkoutHistory] = useState([]);
-	const [workoutExercises, setWorkoutExercises] = useState([]);
 
 	// retrieve workout history from cache
 	useEffect(() => {
@@ -68,7 +80,6 @@ export const WorkoutProvider = ({ children }) => {
 		getWorkoutHistory();
 	}, []);
 
-	// FUNCTIONS SECTION
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
 		WorkoutStartTime.current = firestore.Timestamp.now();
@@ -208,72 +219,37 @@ export const WorkoutProvider = ({ children }) => {
 		resetWorkoutHistoryCache();
 	};
 
-	// Memoize the context values to prevent unnecessary re-renders
-	const stateValue = useMemo(
-		() => ({
-			workoutExercises,
-			setWorkoutExercises,
-			workoutHistory,
-			setWorkoutHistory,
-		}),
-		[workoutExercises, workoutHistory]
-	);
-
-	const functionsValue = useMemo(
-		() => ({
-			workoutStarted,
-			workoutCompleted,
-			workoutCancelled,
-			addSetToExercise,
-			updateSetInExercise,
-			removeSetFromExercise,
-			addExerciseToWorkout,
-			removeExerciseFromWorkout,
-			clearWorkoutHistory,
-		}),
-		[workoutExercises, workoutHistory] // Dependencies needed for functions that use state
-	);
-
-	const refsValue = useMemo(
-		() => ({
-			ModalType,
-			WorkoutId,
-			WorkoutExerciseRef,
-			WorkoutNote,
-			WorkoutTitle,
-			WorkoutStartTime,
-			WorkoutTimer,
-		}),
-		[] // Refs don't need dependencies as they don't change
-	);
-
-	// Create a complete context value for backward compatibility
-	const legacyContextValue = useMemo(
-		() => ({
-			...stateValue,
-			...functionsValue,
-			...refsValue,
-		}),
-		[stateValue, functionsValue, refsValue]
-	);
-
 	return (
-		<WorkoutRefsContext.Provider value={refsValue}>
-			<WorkoutFunctionsContext.Provider value={functionsValue}>
-				<WorkoutStateContext.Provider value={stateValue}>
-					<WorkoutContext.Provider value={legacyContextValue}>
-						{children}
-					</WorkoutContext.Provider>
-				</WorkoutStateContext.Provider>
-			</WorkoutFunctionsContext.Provider>
-		</WorkoutRefsContext.Provider>
+		<WorkoutContext.Provider
+			value={{
+				ModalType,
+
+				workoutStarted,
+				workoutCompleted,
+				workoutCancelled,
+				addSetToExercise,
+				updateSetInExercise,
+				removeSetFromExercise,
+
+				workoutExercises,
+				setWorkoutExercises,
+				workoutHistory,
+				setWorkoutHistory,
+				WorkoutExerciseRef,
+				WorkoutId,
+				WorkoutNote,
+				WorkoutTitle,
+				WorkoutStartTime,
+				WorkoutTimer,
+				addExerciseToWorkout,
+				removeExerciseFromWorkout,
+
+				clearWorkoutHistory,
+			}}
+		>
+			{children}
+		</WorkoutContext.Provider>
 	);
 };
 
-// New hooks for accessing specific contexts
-export const useWorkoutState = () => useContext(WorkoutStateContext);
-export const useWorkoutFunctions = () => useContext(WorkoutFunctionsContext);
-export const useWorkoutRefs = () => useContext(WorkoutRefsContext);
-
-// Legacy hook for backward compatibility
 export const useWorkout = () => useContext(WorkoutContext);
