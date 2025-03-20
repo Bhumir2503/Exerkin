@@ -211,7 +211,7 @@ const themes = {
 };
 
 export const ThemeProvider = ({ children }) => {
-	const [theme, setTheme] = useState("lavenderMist"); // Default theme
+	const [theme, setTheme] = useState("midnightPurple"); // Default theme
 
 	useEffect(() => {
 		const getTheme = async () => {

@@ -6,7 +6,7 @@ import {
 	updateUserCache,
 } from "../cache/userCache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { checkUserSetup } from "../utils/UserFirestoreService";
+import { hasCompleteProfile } from "../utils/FirestoreUserServices";
 
 const UserContext = createContext();
 
@@ -17,7 +17,7 @@ export const UserProvider = ({ children }) => {
 	const [bio, setBio] = useState("");
 	const [isNewUser, setIsNewUser] = useState(false);
 	const [setupComplete, setSetupComplete] = useState(false);
-	const [oneTry, setOneTry] = useState(true);
+	const [processing, setProcessing] = useState(false);
 
 	// Listen for auth state changes
 	useEffect(() => {
@@ -30,7 +30,7 @@ export const UserProvider = ({ children }) => {
 	// It will also be called when the app starts and the auth state is loaded
 	async function onAuthStateChanged(authUser) {
 		console.log(
-			"Auth state changed:",
+			"(UserContext) - Auth state changed:",
 			authUser ? "User logged in" : "User logged out"
 		);
 
@@ -42,7 +42,6 @@ export const UserProvider = ({ children }) => {
 			setIsNewUser(false);
 			setSetupComplete(false);
 			await AsyncStorage.clear();
-
 			if (init) {
 				setInit(false);
 			}
@@ -68,72 +67,37 @@ export const UserProvider = ({ children }) => {
 				(lastSignInTime - creationTime) / 1000 < 10;
 
 			if (isRecentlyCreated) {
-				console.log("Detected likely new user by creation time");
+				console.log("(UserContext) - Detected likely new user by creation time");
 				setIsNewUser(true);
 			}
 		}
 
 		// Now we always check user setup when auth state changes with a user
 		try {
-			console.log("Checking user setup status...");
-			const [setupComplete, userData] = await checkUserSetup(authUser);
-
+			console.log("(UserContext) - Checking user setup status... 1 read to firestore");
+			const [setupComplete, userData] = await hasCompleteProfile(authUser);
 			if (setupComplete) {
 				console.log(
-					"User setup is complete, username:",
+					"(UserContext) - User setup is complete, username:",
 					userData.username
 				);
 				setUsername(userData.username);
 				setBio(userData.bio || "");
 
 				// Update local cache
-				updateUserCache({
-					uid: userData.uid,
-					username: userData.username,
-					bio: userData.bio || "",
-					height: userData.height || "",
-					weight: userData.weight || "",
-					age: userData.age || "",
-					createdAt: userData.createdAt,
-					updatedAt: userData.updatedAt,
-					followers: userData.followers,
-					following: userData.following,
-					postCount: userData.postCount,
-				});
+				updateUserCache(userData);
 
 				setSetupComplete(true);
 				setIsNewUser(false);
-			} else {
-				// Error occurred in fetching user data so check cache before proceeding as new user
-				if (userData === "error") {
-					//check cache
-					console.log("Error fetching user data, checking cache");
-					const cachedUser = await getUserCache();
-					if (cachedUser && cachedUser.username) {
-						console.log(
-							"Found user in cache:",
-							cachedUser.username
-						);
-						setUsername(cachedUser.username);
-						setBio(cachedUser.bio || "");
-						setSetupComplete(true);
-						setIsNewUser(false);
-					} else {
-						console.log("No cache found, treating as new user");
-						setIsNewUser(true);
-						setSetupComplete(false);
-					}
-				} else {
-					// User hasn't completed setup
-					console.log(
-						"User setup is incomplete, treating as new user"
-					);
-					setIsNewUser(true);
-					setSetupComplete(false);
-				}
+			} else{
+				console.log("(UserContext) - User setup is incomplete");
+				setSetupComplete(false);
+				setIsNewUser(true);
 			}
 		} catch (error) {
-			console.error("Error during user setup check:", error);
+			// errors include network errors, permission errors, etc.
+
+			console.error("(UserContext) - Error during user setup check:", error);
 			// In case of error, try using cache
 			try {
 				const cachedUser = await getUserCache();
@@ -148,7 +112,7 @@ export const UserProvider = ({ children }) => {
 					setSetupComplete(false);
 				}
 			} catch (cacheError) {
-				console.error("Cache error:", cacheError);
+				console.error("(UserContext) - Cache error:", cacheError);
 				setIsNewUser(true);
 				setSetupComplete(false);
 			}
@@ -165,6 +129,7 @@ export const UserProvider = ({ children }) => {
 			await auth().signOut();
 
 			// Clear local state
+			setUser(null);
 			setUsername("");
 			setBio("");
 			setIsNewUser(false);
@@ -173,23 +138,16 @@ export const UserProvider = ({ children }) => {
 			// Remove user data from cache
 			await AsyncStorage.clear();
 
-			console.log("User signed out successfully!");
+			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {
-			console.error("Error signing out:", error);
-
-			// If the main sign out failed, try a simpler approach
-			try {
-				await auth().signOut();
-				await AsyncStorage.clear();
-			} catch (fallbackError) {
-				console.error("Fallback logout also failed:", fallbackError);
+			console.error("(UserContext) - Error signing out:", error);
 				// At this point, we should inform the user that logout failed
 				Alert.alert(
 					"Logout Failed",
 					"Please try again later or restart the app.",
 					[{ text: "OK" }]
 				);
-			}
+			
 		}
 	}
 

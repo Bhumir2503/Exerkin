@@ -41,26 +41,8 @@ export const updateUserCache = async (value) => {
 		return true;
 	} catch (e) {
 		console.log(e);
-		return false;
+		throw e;
 	}
 };
 
-export const updateUsernameCache = async (value) => {
-	return await updateUserCache({ username: value });
-};
 
-export const updateBioCache = async (value) => {
-	return await updateUserCache({ bio: value });
-};
-
-export const updateHeightCache = async (value) => {
-	return await updateUserCache({ height: value });
-};
-
-export const updateWeightCache = async (value) => {
-	return await updateUserCache({ weight: value });
-};
-
-export const updateAgeCache = async (value) => {
-	return await updateUserCache({ age: value });
-};

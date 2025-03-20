@@ -1,12 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { Platform, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WorkoutProvider } from "./src/contexts/WorkoutContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
+import { NetworkProvider } from "./src/contexts/NetworkContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
@@ -40,6 +41,7 @@ export const midnightPurpleTheme = {
 };
 
 export default function App() {
+	const [init, setInit] = useState(true);
 	if (Platform.OS === "android") {
 		NavigationBar.setVisibilityAsync("hidden");
 		NavigationBar.setBackgroundColorAsync(
@@ -57,21 +59,24 @@ export default function App() {
 		}
 	}, []);
 
+
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
-			<ThemeProvider>
-				<SafeAreaProvider>
-					<MenuProvider>
-						<GestureHandlerRootView style={{ flex: 1 }}>
-							<UserProvider>
-								<WorkoutProvider>
-									<AppContent />
-								</WorkoutProvider>
-							</UserProvider>
-						</GestureHandlerRootView>
-					</MenuProvider>
-				</SafeAreaProvider>
-			</ThemeProvider>
+			<NetworkProvider>
+				<ThemeProvider>
+					<SafeAreaProvider>
+						<MenuProvider>
+							<GestureHandlerRootView style={{ flex: 1 }}>
+								<UserProvider>
+									<WorkoutProvider>
+										<AppContent />
+									</WorkoutProvider>
+								</UserProvider>
+							</GestureHandlerRootView>
+						</MenuProvider>
+					</SafeAreaProvider>
+				</ThemeProvider>
+			</NetworkProvider>
 		</View>
 	);
 }
@@ -88,16 +93,6 @@ function AppContent() {
 		"peachCream",
 		"skyBlossom",
 	];
-
-	// For debugging - helps track authentication state changes
-	useEffect(() => {
-		console.log("Auth state in AppContent updated:", {
-			user: user ? "Logged in" : "Not logged in",
-			init,
-			isNewUser,
-			setupComplete,
-		});
-	}, [user, init, isNewUser, setupComplete]);
 
 	// Show splash screen if we're initializing or if splash animation isn't finished
 	if (init || !splashFinished) {
