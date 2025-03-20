@@ -8,15 +8,16 @@ import {
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useState} from "react";
+import { useState, memo} from "react";
 
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
 
-const WorkoutDashboard = ({ onStartWorkout,}) => {
+const WorkoutDashboard = memo(({ onStartWorkout,}) => {
 	const { themeStyle } = useTheme();
 	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
+	console.log("Workout Dashboard Rendered");
 
 	const startButtonPressed = () => {
 		workoutStarted();
@@ -59,7 +60,7 @@ const WorkoutDashboard = ({ onStartWorkout,}) => {
 			{WorkoutId && <ActiveWorkoutBar onPress={onStartWorkout} />}
 		</View>
 	);
-};
+});
 
 const StartWorkoutButton = ({ title, onPress }) => {
 	const { themeStyle } = useTheme();
