@@ -59,6 +59,11 @@ export const retrieveWorkoutHistory = async (userId) => {
 			workouts: [],
 		};
 	}
+	console.log(workoutHistory.lastSynced);
+	workoutHistory.lastSynced = firestore.Timestamp.fromDate(
+		new Date(workoutHistory.lastSynced.seconds * 1000)
+	);
+	console.log(workoutHistory.lastSynced);
 
 	try {
 		// Get new workouts from Firestore
