@@ -72,6 +72,9 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
 
+
+
+
 	// retrieve workout history from cache
 	useEffect(() => {
 		if (!init) {
@@ -91,6 +94,9 @@ export const WorkoutProvider = ({ children }) => {
 		resyncWorkouts();
 	}, [init, user]);
 
+	const setWorkoutData = (data) => {
+		setWorkoutExercises(data);
+	};
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
@@ -274,6 +280,7 @@ export const WorkoutProvider = ({ children }) => {
 				addSetToExercise,
 				updateSetInExercise,
 				removeSetFromExercise,
+				setWorkoutData,
 
 				workoutExercises,
 				setWorkoutExercises,

@@ -71,6 +71,7 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 							ref={scrollViewRef}
 							nestedScrollEnabled={true}
 							scrollEnabled={true}
+							activationDistance={1}
 							data={[
 									<ExerciseForm setScrollEnabled={setScrollEnabled} />,
 									<AddFirstExerciseCard />,
