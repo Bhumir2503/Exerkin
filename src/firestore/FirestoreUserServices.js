@@ -1,16 +1,14 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
-import { updateUser } from "../cache/userCache";
 
 // Collection references
 const usersCollection = firestore().collection("users");
 const usernamesCollection = firestore().collection("usernames");
 
-/**
- * Create or update a user profile in Firestore
- * @param {string} uid - User ID
- * @param {object} userData - User data to save
- */
+// Save user profile to Firestore
+// parameter: uid (string), userData (object)
+// sets user document with the provided data in the users collection 
+// return: true
 export const saveUserProfile = async (uid, userData) => {
 	try {
 		const userDocRef = usersCollection.doc(uid || auth().currentUser.uid);
@@ -24,39 +22,15 @@ export const saveUserProfile = async (uid, userData) => {
 				uid: uid || auth().currentUser.uid,
 			});
 		}
-
-		// Update local cache
-		await updateUser(userData);
-
-		return true;
 	} catch (error) {
 		console.error("Error saving user profile:", error);
 		throw error;
 	}
 };
 
-/**
- * Check if a username is already taken
- * @param {string} username - Username to check
- * @returns {Promise<boolean>} - True if username is available
- */
-export const isUsernameAvailable = async (username) => {
-	try {
-		const usernameDoc = await usernamesCollection
-			.doc(username.toLowerCase())
-			.get();
-		return !usernameDoc.exists;
-	} catch (error) {
-		console.error("Error checking username availability:", error);
-		throw error;
-	}
-};
-
-/**
- * Get a user's profile from Firestore
- * @param {string} uid - User ID (optional, defaults to current user)
- * @returns {Promise<object>} - User profile data
- */
+// Get user profile from Firestore
+// parameter: uid (string)
+// return: user document data or null
 export const getUserProfile = async (uid) => {
 	try {
 		const userDoc = await usersCollection
@@ -74,29 +48,40 @@ export const getUserProfile = async (uid) => {
 	}
 };
 
-/**
- * Check if the current user has a complete profile
- * @returns {Promise<boolean>} - True if user has a profile with username
- */
-export const hasCompleteProfile = async () => {
+// Check if username is available
+// parameter: username (string)
+// return: boolean
+export const isUsernameAvailable = async (username) => {
 	try {
-		if (!auth().currentUser) {
-			return false;
-		}
-
-		const profile = await getUserProfile();
-		return !!profile && !!profile.username;
+		const usernameDoc = await usernamesCollection
+			.doc(username.toLowerCase())
+			.get();
+		return !usernameDoc.exists;
 	} catch (error) {
-		console.error("Error checking profile status:", error);
-		return false;
+		console.error("Error checking username availability:", error);
+		throw error;
 	}
 };
 
-/**
- * Update specific fields of a user's profile
- * @param {Object} fields - Fields to update
- * @returns {Promise<boolean>} - Success status
- */
+// checks to see if the user has a complete profile
+// return: boolean, and object
+export const hasCompleteProfile = async () => {
+	if (!auth().currentUser) {
+		return false;
+	}
+
+	try {
+		const userDocData = await getUserProfile();
+		return [!!userDocData, userDocData];
+	} catch (error) {
+		console.error("Error checking user setup:", error);
+		return [false, "error"];
+	}
+};
+
+// Update user profile
+// parameter: fields (object)
+// return: true
 export const updateProfile = async (fields) => {
 	try {
 		if (!auth().currentUser) {

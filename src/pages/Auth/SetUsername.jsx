@@ -10,12 +10,14 @@ import {
 	Platform,
 	ScrollView,
 	StatusBar,
-	Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 import firestore from "@react-native-firebase/firestore";
-import { updateUsernameCache } from "../../cache/userCache";
+
+import { saveUserProfile, isUsernameAvailable } from "../../firestore/FirestoreUserServices";
+
+import { updateUserCache } from "../../cache/userCache";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SetUsername() {
@@ -81,64 +83,60 @@ export default function SetUsername() {
 			// and let the user proceed with the app
 			try {
 				// Try to check if username is taken
-				const usernameCheck = await firestore()
-					.collection("usernames")
-					.doc(username.toLowerCase())
-					.get();
+				const usernameCheck = await isUsernameAvailable(username);
 
-				if (usernameCheck.exists) {
+				if (!usernameCheck) {
 					setError("Username is already taken");
 					setLoading(false);
 					setStep(1);
 					return;
 				}
 
-				// Try to create user document in Firestore
-				await firestore()
-					.collection("users")
-					.doc(user.uid)
-					.set({
-						username: username,
-						email: user.email || "",
-						uid: user.uid,
-						createdAt: firestore.FieldValue.serverTimestamp(),
-						updatedAt: firestore.FieldValue.serverTimestamp(),
-						bio: bio || "",
-						height: height || "",
-						weight: weight || "",
-						age: age || "",
-						followers: 0,
-						following: 0,
-						postCount: 0,
-					});
+				// data structure for user profile
+				const userData = {
+					username: username,
+					email: user.email || "",
+					uid: user.uid,
+					createdAt: firestore.FieldValue.serverTimestamp(),
+					updatedAt: firestore.FieldValue.serverTimestamp(),
+					bio: bio || "",
+					height: height || "",
+					weight: weight || "",
+					age: age || "",
+					followers: 0,
+					following: 0,
+					postCount: 0,
+				}
 
-				// Try to reserve the username
-				await firestore()
-					.collection("usernames")
-					.doc(username.toLowerCase())
-					.set({
-						uid: user.uid,
-					});
+				// Save the user profile to Firestore
+				await saveUserProfile(user.uid, userData);
+				
+				updateUserCache(userData);
+
+				
 			} catch (firestoreError) {
-				console.log(
-					"Firestore operations failed, proceeding with local storage only:",
-					firestoreError.message
-				);
-				// We'll continue with local storage even if Firestore fails
+				console.log("Error saving user profile:", firestoreError);
+				setError("Failed to save username. Please try again.");
+				setLoading(false);
+				setStep(1);
+				return;
 			}
+			
+			console.log("User setup complete!");
+			// Save the username to local cache
 
-			// Always update the local cache, even if Firestore operations fail
-			await updateUsernameCache(username);
 
 			// Update the context
 			setContextUsername(username);
 
 			// Complete setup
 			onSetupComplete();
+
 		} catch (error) {
-			console.error("Error saving user data:", error);
+			console.log("Error saving user data:", error);
 			setError("Failed to save username. Please try again.");
 			setLoading(false);
+			setStep(1);
 		}
 	};
 

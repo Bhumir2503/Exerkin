@@ -20,6 +20,11 @@ export default function Settings({ navigation }) {
 	const { clearWorkoutHistory, clearTemplates } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+	const handleLogout = () => {
+		clearWorkoutHistory();
+		onLogout();
+	}
+
 
 	return (
 		<SafeAreaView style={styles.container}>

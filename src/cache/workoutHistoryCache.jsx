@@ -45,21 +45,20 @@ export const resetWorkoutHistoryCache = async () => {
 	}
 };
 
-export const addWorkoutToHistoryCache = async (workout) => {
+export const addWorkoutToHistoryCache = async (workout, time) => {
 	try {
 		const workoutHistory = await getWorkoutHistoryCache();
 		// If the workoutHistory is empty, create a new one
 		if (workoutHistory.length === 0) {
 			await setWorkoutHistoryCache({
-				lastSynced: workout.completedAt,
-				workout: [workout],
+				lastSynced: time,
+				workouts: [workout],
 			});
 			return;
 		}
 		// If the workoutHistory is not empty, add the workout to the existing history
 		workoutHistory.lastSynced = workout.completedAt;
-		workoutHistory.workout.push(workout);
-		console.log(workoutHistory);
+		workoutHistory.workouts.push(workout);
 		await setWorkoutHistoryCache(workoutHistory);
 	} catch (e) {
 		console.log(e);
@@ -69,12 +68,12 @@ export const addWorkoutToHistoryCache = async (workout) => {
 export const removeWorkoutFromHistoryCache = async (workoutId, deleteTime) => {
 	try {
 		const workoutHistory = await getWorkoutHistoryCache();
-		const newWorkoutHistory = workoutHistory.workout.filter(
+		const newWorkoutHistory = workoutHistory.workouts.filter(
 			(workout) => workout.id !== workoutId
 		);
         const updatededHistory = workoutHistory;    
         updatededHistory.lastSynced = deleteTime;
-        updatededHistory.workout = newWorkoutHistory;
+        updatededHistory.workouts = newWorkoutHistory;
 		await setWorkoutHistoryCache(updatededHistory);
 	} catch (e) {
 		console.log(e);
