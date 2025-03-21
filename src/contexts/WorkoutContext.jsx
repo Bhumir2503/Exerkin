@@ -274,7 +274,6 @@ export const WorkoutProvider = ({ children }) => {
 				addSetToExercise,
 				updateSetInExercise,
 				removeSetFromExercise,
-				setWorkoutData,
 
 				workoutExercises,
 				setWorkoutExercises,
