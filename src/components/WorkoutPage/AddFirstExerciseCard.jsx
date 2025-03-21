@@ -39,6 +39,7 @@ const AddFirstExerciseCard = () => {
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		container: {
+			margin: "auto",
 			width: "90%",
 			backgroundColor:
 				themeStyle.cardBackground ||

@@ -98,6 +98,7 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutId.current = uuid.v4();
 	};
 
+
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
 		await resyncWorkouts();
@@ -273,6 +274,7 @@ export const WorkoutProvider = ({ children }) => {
 				addSetToExercise,
 				updateSetInExercise,
 				removeSetFromExercise,
+				setWorkoutData,
 
 				workoutExercises,
 				setWorkoutExercises,

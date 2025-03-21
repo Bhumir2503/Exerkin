@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useSharedValue } from "react";
 import {
 	View,
 	Text,
@@ -8,65 +8,103 @@ import {
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import Reanimated, { useAnimatedStyle } from "react-native-reanimated";
+import Reanimated, { useAnimatedStyle, configureReanimatedLogger, ReanimatedLogLevel} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
+import DraggableFlatList from "react-native-draggable-flatlist";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const ExerciseForm = () => {
+// setScrollEnabled can lock and unlock the scrolling in workout modal
+const ExerciseForm = ({setScrollEnabled}) => {
 	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
-	
-	const { workoutExercises } = useWorkout();
+
+	// Don't tell Bhumir about this please :)
+	configureReanimatedLogger({
+		level: ReanimatedLogLevel.warn,
+		strict: false, // turn off the warnings
+	});
+	const { workoutExercises, setWorkoutData } = useWorkout();
 
 	// If there are no exercises, return nothing
 	if (!workoutExercises || workoutExercises.length === 0) {
 		return null;
 	}
 
-	// Return a fragment containing all exercise components
+	// DraggableFlatList uses this to draw each exercise form
+	const renderExercise = ({item, drag, isActive}) => {
+		if (isActive) {
+			setScrollEnabled(false);
+		}
+
+		return <Exercise exercise={item} drag={drag} />
+	};
+
+	const onDragEndEvent = ({data}) => {
+		setScrollEnabled(true);
+		setWorkoutData(data);
+	};
+
+	//return (<>{workoutExercises.map((exercise, index) => {return <Exercise exercise={exercise} key={index.toString()} /> })}</>);
+	
 	return (
-		<>
-			{workoutExercises.map((exercise) => {
-				switch (exercise.type) {
-					case "bodyweight":
-						return (
-							<BodyWeightExercises
-								key={exercise.id}
-								exercise={exercise}
-							/>
-						);
-					case "weightlifting":
-						return (
-							<WeightLiftingExercises
-								key={exercise.id}
-								exercise={exercise}
-							/>
-						);
-					case "assisted-weight":
-						return (
-							<AssistedWeightExercises
-								key={exercise.id}
-								exercise={exercise}
-							/>
-						);
-					case "cardio-distance":
-						return (
-							<CardioDistanceExercises
-								key={exercise.id}
-								exercise={exercise}
-							/>
-						);
-					case "cardio-time":
-						return (
-							<CardioTimeExercises
-								key={exercise.id}
-								exercise={exercise}
-							/>
-						);
-					default:
-						return <View key={exercise.id}></View>;
-				}
-			})}
-		</>
+		<GestureHandlerRootView>
+			<DraggableFlatList
+				data={workoutExercises}
+				renderItem={renderExercise}
+				keyExtractor={(item, index) => index.toString()}
+				onDragEnd={onDragEndEvent}
+
+				autoscrollThreshold={200} // Adjust this value as needed
+				autoscrollSpeed={200}     // Adjust this value as needed
+			/>
+		</GestureHandlerRootView>
 	);
+};
+
+const Exercise = ({exercise, drag}) => {
+	switch (exercise.type) {
+		case "bodyweight":
+			return (
+				<BodyWeightExercises
+					key={exercise.id}
+					exercise={exercise}
+					drag={drag}
+				/>
+			);
+		case "weightlifting":
+			return (
+				<WeightLiftingExercises
+					key={exercise.id}
+					exercise={exercise}
+					drag={drag}
+				/>
+			);
+		case "assisted-weight":
+			return (
+				<AssistedWeightExercises
+					key={exercise.id}
+					exercise={exercise}
+					drag={drag}
+				/>
+			);
+		case "cardio-distance":
+			return (
+				<CardioDistanceExercises
+					key={exercise.id}
+					exercise={exercise}
+					drag={drag}
+				/>
+			);
+		case "cardio-time":
+			return (
+				<CardioTimeExercises
+					key={exercise.id}
+					exercise={exercise}
+					drag={drag}
+				/>
+			);
+		default:
+			return <View key={exercise.id}></View>;
+	};
 };
 
 const Header = ({ repetitionType, metrics }) => {
@@ -207,7 +245,7 @@ const UserInputSection = ({
 	);
 };
 
-const BodyWeightExercises = ({ exercise }) => {
+const BodyWeightExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -229,7 +267,7 @@ const BodyWeightExercises = ({ exercise }) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -247,11 +285,11 @@ const BodyWeightExercises = ({ exercise }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</View>
+		</TouchableOpacity>
 	);
 };
 
-const WeightLiftingExercises = ({ exercise }) => {
+const WeightLiftingExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -284,7 +322,7 @@ const WeightLiftingExercises = ({ exercise }) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -302,11 +340,11 @@ const WeightLiftingExercises = ({ exercise }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</View>
+		</TouchableOpacity>
 	);
 };
 
-const AssistedWeightExercises = ({ exercise }) => {
+const AssistedWeightExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -339,7 +377,7 @@ const AssistedWeightExercises = ({ exercise }) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["-lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -357,11 +395,11 @@ const AssistedWeightExercises = ({ exercise }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</View>
+		</TouchableOpacity>
 	);
 };
 
-const CardioDistanceExercises = ({ exercise }) => {
+const CardioDistanceExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -445,7 +483,7 @@ const CardioDistanceExercises = ({ exercise }) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Round"} metrics={["time", "miles"]} />
 			{exercise.sets.map((set, index) => (
@@ -467,11 +505,11 @@ const CardioDistanceExercises = ({ exercise }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</View>
+		</TouchableOpacity>
 	);
 };
 
-const CardioTimeExercises = ({ exercise }) => {
+const CardioTimeExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
@@ -544,7 +582,7 @@ const CardioTimeExercises = ({ exercise }) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Round"} metrics={["time"]} />
 			{exercise.sets.map((set, index) => (
@@ -566,7 +604,7 @@ const CardioTimeExercises = ({ exercise }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</View>
+		</TouchableOpacity>
 	);
 };
 
@@ -574,6 +612,7 @@ const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
 			backgroundColor: themeStyle.card,
+			margin: "auto",
 			padding: "3%",
 			width: "90%",
 			marginBottom: "5%",

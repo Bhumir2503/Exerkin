@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
 	Modal,
 	View,
@@ -8,6 +8,7 @@ import {
 	SafeAreaView,
 	KeyboardAvoidingView,
 	ScrollView,
+	FlatList,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
@@ -25,6 +26,17 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 	console.log("Workout Modal Rendered");
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+
+	const scrollViewRef = useRef(null);
+  	const scrollEnabledRef = useRef(true); // Ref to store scrollEnabled state
+
+	// Function to update scrollEnabled without re-rendering
+	const setScrollEnabled = (enabled) => {
+		scrollEnabledRef.current = enabled;
+		if (scrollViewRef.current) {
+			scrollViewRef.current.setNativeProps({ scrollEnabled: enabled });
+		}
+	};
 
 	return (
 		<Modal
@@ -53,26 +65,25 @@ const WorkoutModal = ({ visible, setModalVisible }) => {
 							</View>
 						</View>
 
-						<ScrollView
-							contentContainerStyle={styles.scrollView}
-							style={[{ width: "100%" }]}
-							keyboardShouldPersistTaps="handled"
-							bounces={false}
-						>
-							{/* Display exercises */}
+						{/* We use a flatList because DraggableFlatList does not like ScrollView */}
+						{/* Display Exercises */}
+						<FlatList
+							ref={scrollViewRef}
+							nestedScrollEnabled={true}
+							scrollEnabled={true}
+							data={[
+									<ExerciseForm setScrollEnabled={setScrollEnabled} />,
+									<AddFirstExerciseCard />,
+									<ExerciseSelector />,
+									<CancelButton
+										setMainModalVisible={setModalVisible}
+									/>,
+								]}
+								
+							renderItem={({item}) => item}
+							keyExtractor={(item, index) => index}
+						/>
 
-							<ExerciseForm />
-
-							{/* Show help card only when there are no exercises */}
-							<AddFirstExerciseCard />
-
-							{/* Always show the exercise selector */}
-							<ExerciseSelector />
-
-							<CancelButton
-								setMainModalVisible={setModalVisible}
-							/>
-						</ScrollView>
 					</View>
 				</KeyboardAvoidingView>
 			</SafeAreaView>
