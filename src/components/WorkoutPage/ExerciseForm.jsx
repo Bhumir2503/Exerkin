@@ -10,7 +10,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import Reanimated, { useAnimatedStyle, configureReanimatedLogger, ReanimatedLogLevel} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import DraggableFlatList from "react-native-draggable-flatlist";
+import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // setScrollEnabled can lock and unlock the scrolling in workout modal
@@ -35,7 +35,7 @@ const ExerciseForm = ({setScrollEnabled}) => {
 			setScrollEnabled(false);
 		}
 
-		return <Exercise exercise={item} drag={drag} />
+		return (<ScaleDecorator><Exercise exercise={item} drag={drag} /></ ScaleDecorator>);
 	};
 
 	const onDragEndEvent = ({data}) => {
@@ -322,7 +322,7 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity onLongPress={drag} style={styles.container}>
+		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
