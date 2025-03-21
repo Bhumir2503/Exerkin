@@ -12,19 +12,31 @@ import {
 	removeWorkoutFromHistoryCache,
 	resetWorkoutHistoryCache,
 } from "../cache/workoutHistoryCache";
+
+import {
+	getWorkoutInResyncCache,
+	addWorkoutToResyncCache,
+	resetWorkoutResyncCache,
+} from "../cache/ResyncCache";
+
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
+
 import {
 	addWorkoutToFirestore,
 	deleteWorkoutFromFirestore,
 	batchDeleteWorkoutFromFirestore,
-} from "../utils/WorkoutFirestoreServices";
+} from "../firestore/FirestoreWorkoutServices";
+
+import { resyncWorkouts, retrieveWorkoutHistory } from "../utils/WorkoutFunctions";
+
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
 
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
+	const [init, setInit] = useState(false);
 	// Workout scheme
 	// {
 	// 	id: 1,
@@ -62,20 +74,23 @@ export const WorkoutProvider = ({ children }) => {
 
 	// retrieve workout history from cache
 	useEffect(() => {
-		const getWorkoutHistory = async () => {
-			console.log("Getting workout history");
-			const history = await getWorkoutHistoryCache();
-			console.log(history);
-			if (history.workout.length === 0) {
-				console.log("No workout history found");
-				return;
-			} else {
-				console.log("Workout history found");
-				setWorkoutHistory(history.workout);
-			}
-		};
-		getWorkoutHistory();
-	}, []);
+		if (!init) {
+			setInit(true);
+			return;
+		}
+
+		if(!user) return;
+
+		const retrievedWorkout = async () => {
+			const workoutRetrieved = await retrieveWorkoutHistory(user.uid);
+			setWorkoutHistory(workoutRetrieved.workouts);
+		}
+
+		// getWorkoutHistory();
+		retrievedWorkout();
+		resyncWorkouts();
+	}, [init, user]);
+
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
@@ -83,8 +98,12 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutId.current = uuid.v4();
 	};
 
-	const workoutCompleted = () => {
+	const workoutCompleted = async () => {
+		// check if there is resync workout cache
+		await resyncWorkouts();
+
 		// loop through activeExercise to check for empty sets and remove them
+		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
 		const WorkoutExerciseFiltered = workoutExercises.map((exercise) => {
 			const sets = exercise.sets.filter(
 				(set) =>
@@ -101,23 +120,27 @@ export const WorkoutProvider = ({ children }) => {
 			return { ...exercise, sets };
 		});
 
-		// loops through activeExercise to check for empty exercises and remove them
+		// TODO: remove this filter and add a check in the UI to prevent adding exercises without sets
 		const WorkoutExerciseChecked = WorkoutExerciseFiltered.filter(
 			(exercise) => exercise.sets.length > 0
 		);
 
-		// if no exercises are added, return
+		// TODO: add a check in the UI to prevent adding empty exercises
 		if (WorkoutExerciseChecked.length === 0) {
 			console.log("No exercises added");
 			workoutCancelled();
 			return;
 		}
 
-		const WorkoutFinishTime = firestore.Timestamp.now();
+		// Set the workout title if it is empty
 		if (WorkoutTitle.current === "") {
 			WorkoutTitle.current = "Untitled Workout";
 		}
 
+		// Set the workout finish time
+		const WorkoutFinishTime = firestore.Timestamp.now();
+
+		// Create workout object
 		const workout = {
 			userId: user.uid,
 			name: WorkoutTitle.current,
@@ -126,16 +149,29 @@ export const WorkoutProvider = ({ children }) => {
 			startedAt: WorkoutStartTime.current,
 			completedAt: WorkoutFinishTime,
 			updatedAt: WorkoutFinishTime,
+			uploadedAt: WorkoutFinishTime,
 			duration: formatTime(WorkoutTimer.current),
 			notes: WorkoutNote.current,
 		};
 
+		// Add workout to workout history
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
-		// Add workout to firestore
-		addWorkoutToFirestore(workout);
-		// Cache the workout
-		addWorkoutToHistoryCache(workout);
 
+		// Cache the workout
+		addWorkoutToHistoryCache(workout, WorkoutFinishTime);
+
+		//Try to add to firestore. If it fails, catch the error and add it to ResyncWorkoutCache
+		try {
+			// Add workout to firestore, returns nothing if successful
+			await addWorkoutToFirestore(workout);
+		} catch (error) {
+			// Log the error and add the workout to the resync cache
+			console.error(
+				"(WorkoutContext) - Error adding workout to firestore: ",
+				error
+			);
+			await addWorkoutToResyncCache(workout);
+		}
 		// Reset useStates
 		workoutCancelled();
 	};

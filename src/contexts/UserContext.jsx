@@ -6,7 +6,7 @@ import {
 	updateUserCache,
 } from "../cache/userCache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { hasCompleteProfile } from "../utils/FirestoreUserServices";
+import { hasCompleteProfile } from "../firestore/FirestoreUserServices";
 
 const UserContext = createContext();
 
@@ -17,7 +17,6 @@ export const UserProvider = ({ children }) => {
 	const [bio, setBio] = useState("");
 	const [isNewUser, setIsNewUser] = useState(false);
 	const [setupComplete, setSetupComplete] = useState(false);
-	const [processing, setProcessing] = useState(false);
 
 	// Listen for auth state changes
 	useEffect(() => {

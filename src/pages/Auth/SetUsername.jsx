@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 import firestore from "@react-native-firebase/firestore";
 
-import { saveUserProfile, isUsernameAvailable } from "../../utils/FirestoreUserServices";
+import { saveUserProfile, isUsernameAvailable } from "../../firestore/FirestoreUserServices";
 
 import { updateUserCache } from "../../cache/userCache";
 import { Ionicons } from "@expo/vector-icons";

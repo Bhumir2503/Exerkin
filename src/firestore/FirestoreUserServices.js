@@ -41,8 +41,6 @@ export const getUserProfile = async (uid) => {
 			return null;
 		}
 
-		console.log("User data:", userDoc.data());
-
 		return userDoc.data();
 	} catch (error) {
 		console.error("Error getting user profile:", error);
