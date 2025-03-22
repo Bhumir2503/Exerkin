@@ -28,7 +28,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 
 	const handleDelete = () => {
 		closeModal();
-		removeWorkoutFromHistory(selectedWorkout.id);
+		removeWorkoutFromHistory(selectedWorkout);
 	};
 
 	const handleEdit = () => {

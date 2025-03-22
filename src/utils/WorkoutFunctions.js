@@ -1,51 +1,249 @@
 import firestore from "@react-native-firebase/firestore";
-import { getWorkoutHistoryCache, setWorkoutHistoryCache } from "../cache/workoutHistoryCache";
-import { resetWorkoutResyncCache, addWorkoutToResyncCache, getWorkoutInResyncCache } from "../cache/ResyncCache";
+import {
+	getWorkoutHistoryCache,
+	setWorkoutHistoryCache,
+	addWorkoutToHistoryCache,
+	removeWorkoutFromHistoryCache,
+} from "../cache/workoutHistoryCache";
+import {
+	getSyncCache,
+	setWorkoutSyncCache,
+	cacheWorkoutAddition,
+	cacheWorkoutDeletion,
+	cacheWorkoutDeletionAdd,
+	checkStorageCapacity
+} from "../cache/syncCache";
 import {
 	addWorkoutToFirestore,
 	getWorkoutsFromFirestore,
+	getDeletedWorkoutsFromFirestore,
+	deleteWorkoutFromWorkoutCollection,
+	addDeletedWorkoutToDeletedWorkoutsCollection,
 } from "../firestore/FirestoreWorkoutServices";
 
-
-
 // Function to sync local completed workout that failed with firestore
-// Mainly used when the user is offline and the workout is completed
-// The workout is stored in the local cache and then synced with firestore when the user is online
+// Handles all sync operations: added, updated, and deleted workouts
 export const resyncWorkouts = async () => {
-    console.log("(WorkoutFunctions) - Syncing workouts");
-    const resync = await getWorkoutInResyncCache();
-    await resetWorkoutResyncCache();
-    if (resync.length === 0) {
-        console.log("(WorkoutFunctions) - No workouts to sync");
-        return;
-    }
-    console.log("(WorkoutFunctions) - Syncing workouts");
-    resync.forEach(async (workout) => {
-        //reset the firestore timestamp to the workout.completedate timestamp seconds and nanoseconds
-        workout.completedAt = firestore.Timestamp.fromDate(
-            new Date(workout.completedAt.seconds * 1000)
-        );
-        workout.updatedAt = firestore.Timestamp.fromDate(
-            new Date(workout.updatedAt.seconds * 1000)
-        );
-        workout.startedAt = firestore.Timestamp.fromDate(
-            new Date(workout.startedAt.seconds * 1000)
-        );
-        workout.uploadedAt = firestore.Timestamp.now();
-        try {
-            await addWorkoutToFirestore(workout);
-        } catch (error) {
-            console.error(
-                "(WorkoutFunctions) - Error adding workout to firestore: ",
-                error
-            );
-            await addWorkoutToResyncCache(workout);
-        }
-    });
-}
+	try {
+		// Get the current sync cache
+		const resync = await getSyncCache();
 
+		if (
+			resync.added.length === 0 &&
+			resync.updated.length === 0 &&
+			resync.deleted.length === 0 &&
+			resync.deleteAdd.length === 0
+		) {
+			console.log("(WorkoutFunctions) - No workouts to sync");
+			return;
+		}
+
+		console.log("(WorkoutFunctions) - Syncing workouts:");
+		console.log("  - Added: ", resync.added.length);
+		console.log("  - Updated: ", resync.updated.length);
+		console.log("  - Deleted: ", resync.deleted.length);
+		console.log("  - DeleteAdd: ", resync.deleteAdd.length);
+
+		// Track successful and failed operations
+		const successfulAdds = [];
+		const failedAdds = [];
+		const successfulUpdates = [];
+		const failedUpdates = [];
+		const successfulDeletes = [];
+		const failedDeletes = [];
+		const successfulDeleteAdds = [];
+		const failedDeleteAdds = [];
+
+		// Process added workouts
+		for (const workout of resync.added) {
+			try {
+				// Ensure timestamps are properly formatted
+				const formattedWorkout = formatWorkoutTimestamps(workout);
+
+				// Upload to Firestore
+				await addWorkoutToFirestore(formattedWorkout);
+				successfulAdds.push(workout);
+				console.log("Successfully uploaded workout: ", workout.id);
+			} catch (error) {
+				failedAdds.push(workout);
+				console.error("Error adding workout to firestore: ", error);
+			}
+		}
+
+		// Process updated workouts
+		for (const workout of resync.updated) {
+			try {
+				// Ensure timestamps are properly formatted
+				const formattedWorkout = formatWorkoutTimestamps(workout);
+
+				// Update in Firestore
+				await updateWorkoutInFirestore(formattedWorkout);
+				successfulUpdates.push(workout);
+				console.log("Successfully updated workout: ", workout.id);
+			} catch (error) {
+				failedUpdates.push(workout);
+				console.error("Error updating workout in firestore: ", error);
+			}
+		}
+
+		// Process deleted workouts
+		for (const workout of resync.deleted) {
+			workout.deletedAt = convertToFirestoreTimestamp(workout.deletedAt);
+			try {
+				// Delete from Firestore
+				console.log(workout.id);
+				await deleteWorkoutFromWorkoutCollection(workout.id);
+				successfulDeletes.push(workout);
+				console.log("Successfully deleted workout: ", workout.id);
+			} catch (error) {
+				failedDeletes.push(workout);
+				console.error("Error deleting workout from firestore: ", error);
+			}
+		}
+
+		// Process deleteAdd workouts
+		for (const workout of resync.deleteAdd) {
+			workout.deletedAt = convertToFirestoreTimestamp(workout.deletedAt);
+			try {
+				// Add to deletedWorkouts collection
+				await addDeletedWorkoutToDeletedWorkoutsCollection(
+					workout,
+					firestore.Timestamp.now()
+				);
+				successfulDeleteAdds.push(workout);
+				console.log(
+					"Successfully added workout to deletedWorkouts: ",
+					workout.id
+				);
+			} catch (error) {
+				failedDeleteAdds.push(workout);
+				console.error(
+					"Error adding workout to deletedWorkouts collection: ",
+					error
+				);
+			}
+		}
+
+		// Update the sync cache to only contain the failed operations
+		const updatedSyncCache = {
+			added: failedAdds,
+			updated: failedUpdates,
+			deleted: failedDeletes,
+			deleteAdd: failedDeleteAdds,
+		};
+
+		// Save the updated sync cache
+		await setWorkoutSyncCache(updatedSyncCache);
+
+		console.log(
+			`Sync complete: ${
+				successfulAdds.length +
+				successfulUpdates.length +
+				successfulDeletes.length +
+				successfulDeleteAdds.length
+			} successful, ${
+				failedAdds.length +
+				failedUpdates.length +
+				failedDeletes.length +
+				failedDeleteAdds.length
+			} failed`
+		);
+
+		// Return the results
+		return {
+			successful: {
+				added: successfulAdds,
+				updated: successfulUpdates,
+				deleted: successfulDeletes,
+				deletedAdd: successfulDeleteAdds,
+			},
+			failed: {
+				added: failedAdds,
+				updated: failedUpdates,
+				deleted: failedDeletes,
+				deleteAdd: failedDeleteAdds,
+			},
+		};
+	} catch (error) {
+		console.error("Error during resync process:", error);
+		return {
+			successful: { added: [], updated: [], deleted: [], deleteAdd: [] },
+			failed: {
+				added: resync.added || [],
+				updated: resync.updated || [],
+				deleted: resync.deleted || [],
+				deleteAdd: resync.deleteAdd || [],
+			},
+		};
+	}
+};
+
+// Helper function to ensure workout timestamps are proper Firestore timestamps
+const formatWorkoutTimestamps = (workout) => {
+	// Create a copy of the workout to avoid modifying the original
+	const formattedWorkout = { ...workout };
+
+	// Format timestamps if they exist
+	if (formattedWorkout.completedAt) {
+		formattedWorkout.completedAt = convertToFirestoreTimestamp(
+			formattedWorkout.completedAt
+		);
+	}
+
+	if (formattedWorkout.updatedAt) {
+		formattedWorkout.updatedAt = convertToFirestoreTimestamp(
+			formattedWorkout.updatedAt
+		);
+	}
+
+	if (formattedWorkout.startedAt) {
+		formattedWorkout.startedAt = convertToFirestoreTimestamp(
+			formattedWorkout.startedAt
+		);
+	}
+
+	// Always set uploadedAt to current time for syncing
+	formattedWorkout.uploadedAt = firestore.Timestamp.now();
+
+	return formattedWorkout;
+};
+
+// Helper function to convert any timestamp-like object to a proper Firestore timestamp
+const convertToFirestoreTimestamp = (timestamp) => {
+	// If it's already a Firestore timestamp, return it
+	if (timestamp && typeof timestamp.toDate === "function") {
+		return timestamp;
+	}
+
+	// If it has seconds property (serialized Firestore timestamp)
+	if (timestamp && timestamp.seconds) {
+		return firestore.Timestamp.fromDate(new Date(timestamp.seconds * 1000));
+	}
+
+	// If it's a Date object
+	if (timestamp instanceof Date) {
+		return firestore.Timestamp.fromDate(timestamp);
+	}
+
+	// If it's a number (milliseconds since epoch)
+	if (typeof timestamp === "number") {
+		return firestore.Timestamp.fromDate(new Date(timestamp));
+	}
+
+	// If it's a string (ISO date string)
+	if (typeof timestamp === "string") {
+		return firestore.Timestamp.fromDate(new Date(timestamp));
+	}
+
+	// Default: return current timestamp
+	return firestore.Timestamp.now();
+};
 
 export const retrieveWorkoutHistory = async (userId) => {
+	console.log("checking async storage capacity");
+	const storageCapacity = await checkStorageCapacity();
+	console.log("storage capacity", storageCapacity);
+
 	console.log("(WorkoutFunctions) - Retrieving workout history");
 	let workoutHistory = await getWorkoutHistoryCache();
 
@@ -59,15 +257,23 @@ export const retrieveWorkoutHistory = async (userId) => {
 			workouts: [],
 		};
 	}
-	console.log(workoutHistory.lastSynced);
-	workoutHistory.lastSynced = firestore.Timestamp.fromDate(
-		new Date(workoutHistory.lastSynced.seconds * 1000)
+
+	workoutHistory.lastSynced = convertToFirestoreTimestamp(
+		workoutHistory.lastSynced
 	);
-	console.log(workoutHistory.lastSynced);
 
 	try {
+		// Try to resync any pending changes to firestore
+		await resyncWorkouts();
+
 		// Get new workouts from Firestore
 		const newWorkouts = await getWorkoutsFromFirestore(
+			userId,
+			workoutHistory.lastSynced
+		);
+
+		// Get deleted workouts from Firestore
+		const deletedWorkouts = await getDeletedWorkoutsFromFirestore(
 			userId,
 			workoutHistory.lastSynced
 		);
@@ -76,10 +282,17 @@ export const retrieveWorkoutHistory = async (userId) => {
 			"(WorkoutFunctions) - New workouts retrieved: ",
 			newWorkouts?.length || 0
 		);
+		console.log(
+			"(WorkoutFunctions) - Deleted workouts retrieved: ",
+			deletedWorkouts?.length || 0
+		);
 
-		if (newWorkouts && newWorkouts.length > 0) {
-			// Merge new workouts with existing ones
-			// Using a Map to ensure we don't have duplicates based on workout ID
+		// Process updates if we have new or deleted workouts
+		if (
+			(newWorkouts && newWorkouts.length > 0) ||
+			(deletedWorkouts && deletedWorkouts.length > 0)
+		) {
+			// Create a map of all existing workouts for easier manipulation
 			const workoutMap = new Map();
 
 			// Add existing workouts to the map
@@ -87,10 +300,19 @@ export const retrieveWorkoutHistory = async (userId) => {
 				workoutMap.set(workout.id, workout);
 			});
 
-			// Add or update with new workouts
-			newWorkouts.forEach((workout) => {
-				workoutMap.set(workout.id, workout);
-			});
+			// Add new workouts to the map (overwriting any existing ones with the same ID)
+			if (newWorkouts && newWorkouts.length > 0) {
+				newWorkouts.forEach((workout) => {
+					workoutMap.set(workout.id, workout);
+				});
+			}
+
+			// Remove deleted workouts from the map
+			if (deletedWorkouts && deletedWorkouts.length > 0) {
+				deletedWorkouts.forEach((deletedWorkout) => {
+					workoutMap.delete(deletedWorkout.id);
+				});
+			}
 
 			// Convert map back to array
 			const mergedWorkouts = Array.from(workoutMap.values());
@@ -114,5 +336,55 @@ export const retrieveWorkoutHistory = async (userId) => {
 			error
 		);
 		return workoutHistory; // Return existing data in case of error
+	}
+};
+
+export const addWorkoutToHistory = async (workout) => {
+	console.log("(WorkoutFunctions) - Adding workout to history");
+
+	// Add workout to workoutHistoryCache
+	await addWorkoutToHistoryCache(workout, workout.uploadedAt);
+
+	// Try to add to firestore. If it fails, catch the error and add it to syncCache
+	try {
+		await addWorkoutToFirestore(workout);
+	} catch (error) {
+		console.error(
+			"(WorkoutFunctions) - Error adding workout to firestore: ",
+			error
+		);
+		await cacheWorkoutAddition(workout);
+	}
+};
+
+export const deleteWorkoutFromHistory = async (workout) => {
+	console.log("(WorkoutFunctions) - Deleting workout from history");
+
+	// Delete workout from workoutHistoryCache
+	await removeWorkoutFromHistoryCache(workout.id, workout.deletedAt);
+
+	// Try to delete from firestore. If it fails, catch the error and add it to syncCache
+	try {
+		await deleteWorkoutFromWorkoutCollection(workout.id);
+	} catch (error) {
+		console.error(
+			"(WorkoutFunctions) - Error deleting workout from firestore: ",
+			error
+		);
+		await cacheWorkoutDeletion(workout);
+	}
+
+	// Add workout to deletedWorkouts collection
+	try {
+		await addDeletedWorkoutToDeletedWorkoutsCollection(
+			workout,
+			workout.uploadedAt
+		);
+	} catch (error) {
+		console.error(
+			"(WorkoutFunctions) - Error adding workout to deletedWorkouts collection: ",
+			error
+		);
+		await cacheWorkoutDeletionAdd(workout);
 	}
 };
