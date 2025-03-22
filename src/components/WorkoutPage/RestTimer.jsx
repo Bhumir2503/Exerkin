@@ -174,6 +174,7 @@ const RestTimer = () => {
 								isPlaying={isPlaying}
 								duration={duration}
 								colors={[themeStyle.primary]}
+								trailColor={`${themeStyle.primary}20`}
 								onComplete={handleComplete}
 								onUpdate={(remainingTime) => {
 									// No need to update remainingTime here as it's updated by the hidden timer
