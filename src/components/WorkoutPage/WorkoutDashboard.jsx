@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, memo} from "react";
 
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
+import TemplateSection from "./TemplateSection";
 
 
 const WorkoutDashboard = memo(({ onStartWorkout,}) => {
@@ -54,6 +55,7 @@ const WorkoutDashboard = memo(({ onStartWorkout,}) => {
 					<DailyGoal goalName="100 Sit-Ups" />
 					<DailyGoal goalName="100 Squats" />
 				</View>
+				<TemplateSection />
 			</ScrollView>
 
 			{WorkoutId && <ActiveWorkoutBar onPress={onStartWorkout} />}
