@@ -23,7 +23,6 @@ import AddFirstExerciseCard from "./AddFirstExerciseCard";
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
 const WorkoutModal = ({ visible, setModalVisible }) => {
-	console.log("Workout Modal Rendered");
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 

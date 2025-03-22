@@ -17,7 +17,6 @@ const WorkoutDashboard = memo(({ onStartWorkout,}) => {
 	const { themeStyle } = useTheme();
 	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
-	console.log("Workout Dashboard Rendered");
 
 	const startButtonPressed = () => {
 		workoutStarted();
