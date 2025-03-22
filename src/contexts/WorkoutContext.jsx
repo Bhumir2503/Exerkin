@@ -7,28 +7,23 @@ import React, {
 	useRef,
 } from "react";
 import {
-	addWorkoutToHistoryCache,
-	getWorkoutHistoryCache,
-	removeWorkoutFromHistoryCache,
 	resetWorkoutHistoryCache,
 } from "../cache/workoutHistoryCache";
 
-import {
-	getWorkoutInResyncCache,
-	addWorkoutToResyncCache,
-	resetWorkoutResyncCache,
-} from "../cache/ResyncCache";
 
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 
 import {
-	addWorkoutToFirestore,
-	deleteWorkoutFromFirestore,
 	batchDeleteWorkoutFromFirestore,
 } from "../firestore/FirestoreWorkoutServices";
 
-import { resyncWorkouts, retrieveWorkoutHistory } from "../utils/WorkoutFunctions";
+import {
+	resyncWorkouts,
+	retrieveWorkoutHistory,
+	addWorkoutToHistory,
+	deleteWorkoutFromHistory,
+} from "../utils/WorkoutFunctions";
 
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
@@ -37,26 +32,6 @@ const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
 	const [init, setInit] = useState(false);
-	// Workout scheme
-	// {
-	// 	id: 1,
-	// 	name: "Bench Press",
-	// 	sets: [
-	// 		{ reps: 10, weight: 100 },
-	// 		{ reps: 8, weight: 110 },
-	// 		{ reps: 6, weight: 120 },
-	// 	],
-	// 	rest: 60,
-	// 	notes: "Felt good",
-	// 	order: 1,
-	// 	completed: false,
-	// 	createdAt: "2023-10-01T12:00:00Z",
-	// 	updatedAt: "2023-10-01T12:00:00Z",
-	//  exercise: excercise object
-	//  date: "2023-10-01T12:00:00Z",
-	//  time: "00:00:00",
-	// }
-
 	const { user } = useUser();
 
 	//Workout Section States
@@ -72,9 +47,6 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
 
-
-
-
 	// retrieve workout history from cache
 	useEffect(() => {
 		if (!init) {
@@ -82,16 +54,15 @@ export const WorkoutProvider = ({ children }) => {
 			return;
 		}
 
-		if(!user) return;
+		if (!user) return;
 
 		const retrievedWorkout = async () => {
 			const workoutRetrieved = await retrieveWorkoutHistory(user.uid);
 			setWorkoutHistory(workoutRetrieved.workouts);
-		}
+		};
 
 		// getWorkoutHistory();
 		retrievedWorkout();
-		resyncWorkouts();
 	}, [init, user]);
 
 	const setWorkoutData = (data) => {
@@ -103,7 +74,6 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutStartTime.current = firestore.Timestamp.now();
 		WorkoutId.current = uuid.v4();
 	};
-
 
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
@@ -164,21 +134,9 @@ export const WorkoutProvider = ({ children }) => {
 		// Add workout to workout history
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
-		// Cache the workout
-		addWorkoutToHistoryCache(workout, WorkoutFinishTime);
+		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
+		addWorkoutToHistory(workout)
 
-		//Try to add to firestore. If it fails, catch the error and add it to ResyncWorkoutCache
-		try {
-			// Add workout to firestore, returns nothing if successful
-			await addWorkoutToFirestore(workout);
-		} catch (error) {
-			// Log the error and add the workout to the resync cache
-			console.error(
-				"(WorkoutContext) - Error adding workout to firestore: ",
-				error
-			);
-			await addWorkoutToResyncCache(workout);
-		}
 		// Reset useStates
 		workoutCancelled();
 	};
@@ -251,14 +209,15 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
-	const removeWorkoutFromHistory = (workoutId) => {
-		const time = firestore.Timestamp.now();
-		removeWorkoutFromHistoryCache(workoutId, time);
-		deleteWorkoutFromFirestore(workoutId, time);
+	const removeWorkoutFromHistory = (workout) => {
+		
 		const newWorkoutHistory = workoutHistory.filter(
-			(workout) => workout.id !== workoutId
+			(workoutcheck) => workoutcheck.id !== workout.id
 		);
 		setWorkoutHistory(newWorkoutHistory);
+
+		workout.deletedAt = firestore.Timestamp.now();
+		deleteWorkoutFromHistory(workout);
 	};
 
 	// Clear workout history

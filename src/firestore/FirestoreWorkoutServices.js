@@ -8,11 +8,6 @@ const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
 
 export const getWorkoutsFromFirestore = async (userId, lastSynced) => {
 	try {
-		console.log(
-			"(FirestoreWorkoutServices) - Getting workouts since:",
-			lastSynced
-		);
-
 		// Ensure lastSynced is a valid Firestore timestamp
 		const syncTimestamp =
 			lastSynced || firestore.Timestamp.fromDate(new Date(0));
@@ -50,32 +45,72 @@ export const getWorkoutsFromFirestore = async (userId, lastSynced) => {
 	}
 };
 
+export const getDeletedWorkoutsFromFirestore = async (userId, lastSynced) => {
+	try {
+		const snapshot = await deletedWorkoutsCollection
+			.where("userId", "==", userId)
+			.where("uploadedAt", ">", lastSynced)
+			.get();
+
+		console.log(
+			"(FirestoreWorkoutServices) - Retrieved deleted documents count:",
+			snapshot.size
+		);
+
+		if (snapshot.empty) {
+			console.log(
+				"(FirestoreWorkoutServices) - No matching deleted documents found"
+			);
+			return [];
+		}
+
+		const deletedWorkouts = snapshot.docs.map((doc) => ({
+			...doc.data(),
+			id: doc.id,
+		}));
+
+		return deletedWorkouts;
+	} catch (error) {
+		console.error(
+			"(FirestoreWorkoutServices) - Error getting deleted documents:",
+			error
+		);
+		return [];
+	}
+}
+
 export const addWorkoutToFirestore = async (workout) => {
 	try {
+
 		await workoutsCollection.doc(workout.id).set(workout);
 	} catch (error) {
 		throw error;
 	}
 };
 
-export const deleteWorkoutFromFirestore = async (workoutId, time) => {
-	const deletedWorkoutRef = deletedWorkoutsCollection.doc(workoutId);
+export const deleteWorkoutFromWorkoutCollection = async (workoutId) => {
 	try {
+
 		await workoutsCollection.doc(workoutId).delete();
 	} catch (error) {
-		console.error("Error removing document: ", error);
+		console.error(error);
+		throw error;
 	}
+}
 
+export const addDeletedWorkoutToDeletedWorkoutsCollection = async (workout, uploadTime) => {
 	try {
-		await deletedWorkoutRef.set({
-			id: workoutId,
-			userId: auth().currentUser.uid,
-			deletedAt: time,
+		await deletedWorkoutsCollection.doc(workout.id).set({
+			id: workout.id,
+			userId: workout.userId,
+			deletedAt: workout.deletedAt,
+			uploadedAt: firestore.Timestamp.now(),
 		});
 	} catch (error) {
-		console.error("Error adding document to deletedWorkout: ", error);
-	}
-};
+		console.error(error);
+		throw error;
+	}	
+}
 
 //delete from workouts collection and add to deletedWorkouts collection
 export const batchDeleteWorkoutFromFirestore = async (workoutIds) => {
