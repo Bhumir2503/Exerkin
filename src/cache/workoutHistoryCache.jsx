@@ -80,6 +80,22 @@ export const removeWorkoutFromHistoryCache = async (workoutId, deleteTime) => {
 	}
 };
 
+export const updateWorkoutInHistoryCache = async (workout) => {
+	try {
+		const workoutHistory = await getWorkoutHistoryCache();
+		const newWorkoutHistory = workoutHistory.workouts.map((w) =>
+			w.id === workout.id ? workout : w
+		);
+		// set the lasySync
+		const updatededHistory = workoutHistory;
+		updatededHistory.lastSynced = workout.updatedAt;
+		updatededHistory.workouts = newWorkoutHistory;
+		await setWorkoutHistoryCache(updateWorkoutInHistoryCache);
+	} catch (e) {
+		console.log(e);
+	}
+}
+
 export const clearWorkoutHistoryCache = async () => {
 	try {
 		await AsyncStorage.removeItem(key);

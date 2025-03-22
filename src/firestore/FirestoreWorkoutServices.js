@@ -79,6 +79,40 @@ export const getDeletedWorkoutsFromFirestore = async (userId, lastSynced) => {
 	}
 }
 
+export const getUpdatedWorkoutsFromFirestore = async (userId, lastSynced) => {
+	try {
+		const snapshot = await workoutsCollection
+			.where("userId", "==", userId)
+			.where("updatedAt", ">", lastSynced)
+			.get();
+
+		console.log(
+			"(FirestoreWorkoutServices) - Retrieved updated documents count:",
+			snapshot.size
+		);
+
+		if (snapshot.empty) {
+			console.log(
+				"(FirestoreWorkoutServices) - No matching updated documents found"
+			);
+			return [];
+		}
+
+		const updatedWorkouts = snapshot.docs.map((doc) => ({
+			...doc.data(),
+			id: doc.id,
+		}));
+
+		return updatedWorkouts;
+	} catch (error) {
+		console.error(
+			"(FirestoreWorkoutServices) - Error getting updated documents:",
+			error
+		);
+		return [];
+	}
+}
+
 export const addWorkoutToFirestore = async (workout) => {
 	try {
 
@@ -111,6 +145,14 @@ export const addDeletedWorkoutToDeletedWorkoutsCollection = async (workout, uplo
 		throw error;
 	}	
 }
+
+export const updateWorkoutInFirestore = async (workout) => {
+	try {
+		await workoutsCollection.doc(workout.id).set(workout);
+	} catch (error) {
+		throw error;
+	}
+};
 
 //delete from workouts collection and add to deletedWorkouts collection
 export const batchDeleteWorkoutFromFirestore = async (workoutIds) => {

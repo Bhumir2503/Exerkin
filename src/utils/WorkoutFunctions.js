@@ -4,6 +4,7 @@ import {
 	setWorkoutHistoryCache,
 	addWorkoutToHistoryCache,
 	removeWorkoutFromHistoryCache,
+	updateWorkoutInHistoryCache,
 } from "../cache/workoutHistoryCache";
 import {
 	getSyncCache,
@@ -11,7 +12,8 @@ import {
 	cacheWorkoutAddition,
 	cacheWorkoutDeletion,
 	cacheWorkoutDeletionAdd,
-	checkStorageCapacity
+	cacheWorkoutUpdate,
+	checkStorageCapacity,
 } from "../cache/syncCache";
 import {
 	addWorkoutToFirestore,
@@ -19,6 +21,7 @@ import {
 	getDeletedWorkoutsFromFirestore,
 	deleteWorkoutFromWorkoutCollection,
 	addDeletedWorkoutToDeletedWorkoutsCollection,
+	updateWorkoutInFirestore,
 } from "../firestore/FirestoreWorkoutServices";
 
 // Function to sync local completed workout that failed with firestore
@@ -386,5 +389,23 @@ export const deleteWorkoutFromHistory = async (workout) => {
 			error
 		);
 		await cacheWorkoutDeletionAdd(workout);
+	}
+};
+
+export const updateWorkoutInHistory = async (workout) => {
+	console.log("(WorkoutFunctions) - Updating workout in history");
+
+	// Update workout in workoutHistoryCache
+	await updateWorkoutInHistoryCache(workout);
+
+	try {
+		console.log("(WorkoutFunctions) - Updating workout in firestore");
+		await updateWorkoutInFirestore(workout);
+	} catch (error) {
+		console.error(
+			"(WorkoutFunctions) - Error updating workout in firestore: ",
+			error
+		);
+		await cacheWorkoutUpdate(workout);
 	}
 };
