@@ -6,7 +6,6 @@ import {
 	TouchableOpacity,
 	ScrollView,
 	Dimensions,
-	Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,6 +24,23 @@ export default function Stats({ navigation }) {
 	const [timeRange, setTimeRange] = useState("all"); // "week", "month", "3months", "all"
 	const [viewMode, setViewMode] = useState("best"); // "best", "progress", "activity", "body"
 	const [activeTab, setActiveTab] = useState("overview"); // "overview", "lifts", "trends", "body"
+
+	// Helper function to safely convert timestamp to date
+	const safeToDate = (timestamp) => {
+		if (!timestamp) return new Date();
+		if (timestamp instanceof Date) return timestamp;
+		if (timestamp.toDate && typeof timestamp.toDate === "function") {
+			return timestamp.toDate();
+		}
+		if (timestamp.seconds && timestamp.nanoseconds) {
+			// Handle Firestore timestamp object manually
+			return new Date(
+				timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+			);
+		}
+		// If it's a number or string that can be parsed as a date
+		return new Date(timestamp);
+	};
 
 	// Popular exercise categories to track
 	const popularExercises = [
@@ -95,18 +111,16 @@ export default function Stats({ navigation }) {
 
 		// Sort workouts by date (newest first)
 		const sortedWorkouts = [...workoutHistory].sort(
-			(a, b) => b.completedAt.toDate() - a.completedAt.toDate()
+			(a, b) => safeToDate(b.completedAt) - safeToDate(a.completedAt)
 		);
 
 		let streak = 1;
-		let currentDate = new Date(sortedWorkouts[0].completedAt.toDate());
+		let currentDate = safeToDate(sortedWorkouts[0].completedAt);
 		currentDate.setHours(0, 0, 0, 0); // Reset time to start of day
 
 		// Check for consecutive days
 		for (let i = 1; i < sortedWorkouts.length; i++) {
-			const workoutDate = new Date(
-				sortedWorkouts[i].completedAt.toDate()
-			);
+			const workoutDate = safeToDate(sortedWorkouts[i].completedAt);
 			workoutDate.setHours(0, 0, 0, 0);
 
 			// Calculate difference in days
@@ -137,7 +151,7 @@ export default function Stats({ navigation }) {
 		const dayCounter = [0, 0, 0, 0, 0, 0, 0]; // Sun-Sat (0-6)
 
 		workoutHistory.forEach((workout) => {
-			const workoutDate = workout.completedAt.toDate();
+			const workoutDate = safeToDate(workout.completedAt);
 			const dayOfWeek = workoutDate.getDay(); // 0 = Sunday, 6 = Saturday
 			dayCounter[dayOfWeek]++;
 		});
@@ -233,11 +247,13 @@ export default function Stats({ navigation }) {
 
 		// Count exercises by body part
 		workoutHistory.forEach((workout) => {
-			workout.exercises.forEach((exercise) => {
-				const bodyPart = bodyPartMap[exercise.name] || "Other";
-				bodyPartFrequency[bodyPart] =
-					(bodyPartFrequency[bodyPart] || 0) + 1;
-			});
+			if (workout.exercises && Array.isArray(workout.exercises)) {
+				workout.exercises.forEach((exercise) => {
+					const bodyPart = bodyPartMap[exercise.name] || "Other";
+					bodyPartFrequency[bodyPart] =
+						(bodyPartFrequency[bodyPart] || 0) + 1;
+				});
+			}
 		});
 
 		// Convert to format for pie chart
@@ -287,7 +303,7 @@ export default function Stats({ navigation }) {
 		const monthlyWorkouts = {};
 
 		workoutHistory.forEach((workout) => {
-			const date = workout.completedAt.toDate();
+			const date = safeToDate(workout.completedAt);
 			const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
 
 			if (!monthlyWorkouts[monthKey]) {
@@ -363,13 +379,15 @@ export default function Stats({ navigation }) {
 
 		workoutHistory.forEach((workout) => {
 			// Check if workout is from last week
-			const workoutDate = workout.completedAt.toDate();
+			const workoutDate = safeToDate(workout.completedAt);
 			if (workoutDate >= oneWeekAgo) {
 				workoutsLastWeek++;
 			}
 
 			// Parse duration (assuming format like "1:30:45")
-			const durationParts = workout.duration.split(":").map(Number);
+			const durationParts = workout.duration?.split(":").map(Number) || [
+				0, 0,
+			];
 			let durationInSeconds = 0;
 			if (durationParts.length === 3) {
 				durationInSeconds =
@@ -383,24 +401,28 @@ export default function Stats({ navigation }) {
 			totalDuration += durationInSeconds;
 			longestDuration = Math.max(longestDuration, durationInSeconds);
 
-			workout.exercises.forEach((exercise) => {
-				// Track exercise frequency
-				exerciseFrequency[exercise.name] =
-					(exerciseFrequency[exercise.name] || 0) + 1;
+			if (workout.exercises && Array.isArray(workout.exercises)) {
+				workout.exercises.forEach((exercise) => {
+					// Track exercise frequency
+					exerciseFrequency[exercise.name] =
+						(exerciseFrequency[exercise.name] || 0) + 1;
 
-				totalSets += exercise.sets.length;
+					if (exercise.sets && Array.isArray(exercise.sets)) {
+						totalSets += exercise.sets.length;
 
-				exercise.sets.forEach((set) => {
-					// Calculate volume (weight * reps)
-					if (set.weight && set.reps) {
-						const weight = Number(set.weight);
-						const reps = Number(set.reps);
-						totalVolume += weight * reps;
-						totalReps += reps;
-						totalWeight += weight;
+						exercise.sets.forEach((set) => {
+							// Calculate volume (weight * reps)
+							if (set.weight && set.reps) {
+								const weight = Number(set.weight);
+								const reps = Number(set.reps);
+								totalVolume += weight * reps;
+								totalReps += reps;
+								totalWeight += weight;
+							}
+						});
 					}
 				});
-			});
+			}
 		});
 
 		// Find most frequent exercise
@@ -415,7 +437,8 @@ export default function Stats({ navigation }) {
 		});
 
 		// Calculate average workout duration
-		const avgDurationInSeconds = Math.round(totalDuration / totalWorkouts);
+		const avgDurationInSeconds =
+			totalWorkouts > 0 ? Math.round(totalDuration / totalWorkouts) : 0;
 		const avgHours = Math.floor(avgDurationInSeconds / 3600);
 		const avgMinutes = Math.floor((avgDurationInSeconds % 3600) / 60);
 		const avgSeconds = avgDurationInSeconds % 60;
@@ -487,7 +510,7 @@ export default function Stats({ navigation }) {
 		}
 
 		return workouts.filter((workout) => {
-			const workoutDate = workout.completedAt.toDate();
+			const workoutDate = safeToDate(workout.completedAt);
 			return workoutDate >= cutoffDate;
 		});
 	};
@@ -498,15 +521,17 @@ export default function Stats({ navigation }) {
 		let filteredExercises = [];
 
 		filteredWorkouts.forEach((workout) => {
-			workout.exercises.forEach((exercise) => {
-				if (exercise.name === targetName) {
-					// Add workout date for progress tracking
-					filteredExercises.push({
-						...exercise,
-						date: workout.completedAt.toDate(),
-					});
-				}
-			});
+			if (workout.exercises && Array.isArray(workout.exercises)) {
+				workout.exercises.forEach((exercise) => {
+					if (exercise.name === targetName) {
+						// Add workout date for progress tracking
+						filteredExercises.push({
+							...exercise,
+							date: safeToDate(workout.completedAt),
+						});
+					}
+				});
+			}
 		});
 
 		return filteredExercises;
@@ -1419,7 +1444,6 @@ export default function Stats({ navigation }) {
 					/>
 				</TouchableOpacity>
 				<Text style={styles.title}>Stats & Analytics</Text>
-				
 			</View>
 
 			{/* Tab Navigation */}
