@@ -5,10 +5,13 @@ import Settings from "../pages/Profile/Settings";
 import Stats from "../pages/Profile/Stats";
 import EditTheme from "../pages/Profile/EditTheme";
 import EditProfile from "../pages/Profile/EditProfile";
+import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
+
 export default function ProfileNavigator() {
 	const { themeStyle } = useTheme();
+
 	return (
 		<Stack.Navigator
 			screenOptions={{
@@ -19,11 +22,31 @@ export default function ProfileNavigator() {
 				},
 				headerTintColor: themeStyle.textColor,
 				headerShown: false,
+				gestureEnabled: true,
+				cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 			}}
 		>
 			<Stack.Screen name="ProfileStart" component={Profile} />
-			<Stack.Screen name="Settings" component={Settings} />
-			<Stack.Screen name="Stats" component={Stats} />
+
+			<Stack.Screen
+				name="Settings"
+				component={Settings}
+				options={{
+					cardStyleInterpolator:
+						CardStyleInterpolators.forHorizontalIOS, 
+					gestureDirection: "horizontal",
+				}}
+			/>
+
+			<Stack.Screen
+				name="Stats"
+				component={Stats}
+				options={{
+					cardStyleInterpolator:
+						CardStyleInterpolators.forHorizontalIOS,
+				}}
+			/>
+
 			<Stack.Screen name="EditTheme" component={EditTheme} />
 			<Stack.Screen name="EditProfile" component={EditProfile} />
 		</Stack.Navigator>

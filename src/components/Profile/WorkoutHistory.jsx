@@ -148,13 +148,9 @@ const createStyles = (themeStyle) =>
 		workoutCard: {
 			backgroundColor: themeStyle.card,
 			padding: 20,
-			borderRadius: 10,
+			borderRadius: 8,
 			marginBottom: 20,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 4,
-			elevation: 3,
+
 		},
 		workoutTitle: {
 			fontSize: 18,
@@ -182,7 +178,7 @@ const createStyles = (themeStyle) =>
 			width: "80%",
 			height: "75%",
 			backgroundColor: "white",
-			borderRadius: 10,
+			borderRadius: 8,
 			padding: 20,
 
 			justifyContent: "space-between",

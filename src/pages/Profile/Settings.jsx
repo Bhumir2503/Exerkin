@@ -5,170 +5,230 @@ import {
 	Text,
 	ScrollView,
 	TouchableOpacity,
-	Alert,
+	Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import auth from "@react-native-firebase/auth";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
+const CARD_PADDING = 16;
+
 export default function Settings({ navigation }) {
 	const { themeStyle } = useTheme();
-	const { onLogout } = useUser();
+	const { user, onLogout, username } = useUser();
 	const { clearWorkoutHistory, clearTemplates } = useWorkout();
 	const styles = createStyles(themeStyle);
 
-	const handleLogout = () => {
-		clearWorkoutHistory();
-		onLogout();
-	}
-
+	// Get the first letter of the username for the avatar
+	const getInitial = () => {
+		if (username && username.length > 0) {
+			return username.charAt(0).toUpperCase();
+		}
+		return "U"; // Default if no name is available
+	};
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<ScrollView>
-				<View
-					style={{
-						flexDirection: "row",
-						alignItems: "center",
-						alignContent: "center",
-						marginBottom: 15,
-					}}
+			<View style={styles.header}>
+				<TouchableOpacity
+					style={styles.backButton}
+					onPress={() => navigation.goBack()}
 				>
 					<Ionicons
 						name="chevron-back-outline"
 						size={24}
 						color={themeStyle.textColor}
-						style={{ marginLeft: 10, marginTop: 2 }}
-						onPress={() => navigation.goBack()}
 					/>
-					<Text style={styles.title}>Settings</Text>
-				</View>
-				<View style={{ marginBottom: 20 }}>
-					<Text style={styles.subTitle}>Your Account</Text>
-					<View>
-						<ButtonSelector
-							name="Account"
-							location=""
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
-						<ButtonSelector
-							name="Edit Profile"
-							location="EditProfile"
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
+				</TouchableOpacity>
+				<Text style={styles.headerTitle}>Settings</Text>
+			</View>
+
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				contentContainerStyle={styles.scrollContent}
+			>
+				{/* Profile Section */}
+				<View style={styles.profileSection}>
+					<View style={styles.avatarContainer}>
+						<Text style={styles.avatarText}>{getInitial()}</Text>
 					</View>
+					<Text style={styles.profileName}>{username || "User"}</Text>
+					<Text style={styles.profileEmail}>
+						{user?.email || "email@example.com"}
+					</Text>
 				</View>
-				<View style={{ marginBottom: 20 }}>
-					<Text style={styles.subTitle}>Preference</Text>
-					<View>
-						<ButtonSelector
-							name="Edit Theme"
-							location="EditTheme"
-							navigation={navigation}
-							themeStyle={themeStyle}
+
+				{/* Settings Categories */}
+				<SettingsCategory
+					title="Your Account"
+					themeStyle={themeStyle}
+					items={[
+						{
+							name: "Account",
+							icon: "person-outline",
+							location: "",
+						},
+						{
+							name: "Edit Profile",
+							icon: "create-outline",
+							location: "EditProfile",
+						},
+					]}
+					navigation={navigation}
+				/>
+
+				<SettingsCategory
+					title="Preferences"
+					themeStyle={themeStyle}
+					items={[
+						{
+							name: "Edit Theme",
+							icon: "color-palette-outline",
+							location: "EditTheme",
+						},
+						{
+							name: "Notification Settings",
+							icon: "notifications-outline",
+							location: "",
+						},
+						{
+							name: "Privacy Settings",
+							icon: "shield-outline",
+							location: "",
+						},
+					]}
+					navigation={navigation}
+				/>
+
+				<SettingsCategory
+					title="General"
+					themeStyle={themeStyle}
+					items={[
+						{
+							name: "Terms of Service",
+							icon: "document-text-outline",
+							location: "",
+						},
+						{
+							name: "Privacy Policy",
+							icon: "lock-closed-outline",
+							location: "",
+						},
+					]}
+					navigation={navigation}
+				/>
+
+				<SettingsCategory
+					title="Developer Tools"
+					themeStyle={themeStyle}
+					items={[
+						{
+							name: "Clear Workout History",
+							icon: "trash-outline",
+							onPress: clearWorkoutHistory,
+							dangerAction: true,
+						},
+						{
+							name: "Clear Templates",
+							icon: "trash-outline",
+							onPress: clearTemplates,
+							dangerAction: true,
+						},
+					]}
+					navigation={navigation}
+				/>
+
+				{/* Logout Section */}
+				<View style={styles.logoutSection}>
+					<TouchableOpacity
+						style={styles.logoutButton}
+						onPress={onLogout}
+					>
+						<Ionicons
+							name="log-out-outline"
+							size={22}
+							color="#fff"
+							style={styles.logoutIcon}
 						/>
-						<ButtonSelector
-							name="Notification Settings"
-							location=""
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
-						<ButtonSelector
-							name="Privacy Settings"
-							location=""
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
-					</View>
-				</View>
-				<View style={{ marginBottom: 20 }}>
-					<Text style={styles.subTitle}>General</Text>
-					<View>
-						<ButtonSelector
-							name="Terms of Service"
-							location=""
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
-						<ButtonSelector
-							name="Privacy Policy"
-							location=""
-							navigation={navigation}
-							themeStyle={themeStyle}
-						/>
-					</View>
-				</View>
-				<View style={{ marginBottom: 20 }}>
-					<Text style={styles.subTitle}>Developer Tools</Text>
-					<View>
-						<DevToolButton
-							name="Clear Workout History"
-							onPress={clearWorkoutHistory}
-							themeStyle={themeStyle}
-							iconName="trash-outline"
-							dangerAction={true}
-						/>
-						<DevToolButton
-							name="Clear Templates"
-							onPress={clearTemplates}
-							themeStyle={themeStyle}
-							iconName="trash-outline"
-							dangerAction={true}
-						/>
-					</View>
+						<Text style={styles.logoutText}>Log Out</Text>
+					</TouchableOpacity>
 				</View>
 			</ScrollView>
-			<Text style={styles.logout} onPress={onLogout}>
-				Log Out
-			</Text>
 		</SafeAreaView>
 	);
 }
 
-function ButtonSelector({ navigation, themeStyle, name, location }) {
+function SettingsCategory({ title, items, navigation, themeStyle }) {
 	const styles = createStyles(themeStyle);
+
 	return (
-		<TouchableOpacity
-			onPress={() => navigation.navigate(location)}
-			style={{
-				flexDirection: "row",
-				justifyContent: "space-between",
-				alignItems: "center",
-				paddingHorizontal: 10,
-				marginLeft: 20,
-			}}
-		>
-			<Text style={styles.category}>{name}</Text>
-			<Ionicons
-				name="chevron-forward-outline"
-				size={24}
-				color={themeStyle.textColor}
-			/>
-		</TouchableOpacity>
+		<View style={styles.categoryContainer}>
+			<Text style={styles.categoryTitle}>{title}</Text>
+			<View style={styles.cardContainer}>
+				{items.map((item, index) => (
+					<SettingsItem
+						key={index}
+						item={item}
+						navigation={navigation}
+						themeStyle={themeStyle}
+						isLast={index === items.length - 1}
+					/>
+				))}
+			</View>
+		</View>
 	);
 }
 
-function DevToolButton({ themeStyle, name, onPress, iconName, dangerAction }) {
+function SettingsItem({ item, navigation, themeStyle, isLast }) {
 	const styles = createStyles(themeStyle);
+
+	const handlePress = () => {
+		if (item.onPress) {
+			item.onPress();
+		} else if (item.location) {
+			navigation.navigate(item.location);
+		}
+	};
+
 	return (
 		<TouchableOpacity
-			onPress={onPress}
-			style={{
-				flexDirection: "row",
-				justifyContent: "space-between",
-				alignItems: "center",
-				paddingHorizontal: 10,
-				marginLeft: 20,
-			}}
+			onPress={handlePress}
+			style={[
+				styles.settingsItem,
+				isLast ? null : styles.settingsItemBorder,
+			]}
 		>
-			<Text style={[styles.category, dangerAction && styles.dangerText]}>
-				{name}
-			</Text>
+			<View style={styles.settingsItemContent}>
+				<View style={styles.settingsItemLeft}>
+					<Ionicons
+						name={item.icon}
+						size={22}
+						color={
+							item.dangerAction
+								? themeStyle.error
+								: themeStyle.primary
+						}
+						style={styles.settingsItemIcon}
+					/>
+					<Text
+						style={[
+							styles.settingsItemText,
+							item.dangerAction && styles.dangerText,
+						]}
+					>
+						{item.name}
+					</Text>
+				</View>
+				{!item.onPress && (
+					<Ionicons
+						name="chevron-forward-outline"
+						size={20}
+						color={themeStyle.textColorSecondary}
+					/>
+				)}
+			</View>
 		</TouchableOpacity>
 	);
 }
@@ -179,32 +239,113 @@ const createStyles = (themeStyle) =>
 			flex: 1,
 			backgroundColor: themeStyle.backgroundColor,
 		},
-		title: {
+		header: {
+			flexDirection: "row",
+			alignItems: "center",
+			paddingHorizontal: 16,
+			paddingVertical: 12,
+		},
+		backButton: {
+			padding: 4,
+		},
+		headerTitle: {
 			fontSize: 24,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
-			marginLeft: 5,
+			marginLeft: 12,
 		},
-		subTitle: {
+		scrollContent: {
+		},
+		profileSection: {
+			alignItems: "center",
+			paddingVertical: 24,
+		},
+		avatarContainer: {
+			width: 80,
+			height: 80,
+			borderRadius: 40,
+			backgroundColor: themeStyle.primary,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 12,
+		},
+		avatarText: {
+			fontSize: 32,
+			fontWeight: "600",
+			color: "#FFFFFF",
+		},
+		profileName: {
+			fontSize: 18,
+			fontWeight: "600",
+			color: themeStyle.textColor,
+			marginBottom: 4,
+		},
+		profileEmail: {
 			fontSize: 14,
-			fontWeight: "bold",
-			marginBottom: 10,
-			marginLeft: 20,
 			color: themeStyle.textColorSecondary,
 		},
-		category: {
+		categoryContainer: {
+			marginTop: 16,
+			paddingHorizontal: 16,
+			marginBottom: 8,
+		},
+		categoryTitle: {
+			fontSize: 16,
+			fontWeight: "600",
+			color: themeStyle.primary,
+			marginBottom: 8,
+			marginLeft: 4,
+		},
+		cardContainer: {
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+		},
+		settingsItem: {
+			paddingVertical: 14,
+			paddingHorizontal: CARD_PADDING,
+		},
+		settingsItemBorder: {
+			borderBottomWidth: 1,
+			borderBottomColor: themeStyle.borderColor,
+		},
+		settingsItemContent: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+		},
+		settingsItemLeft: {
+			flexDirection: "row",
+			alignItems: "center",
+		},
+		settingsItemIcon: {
+			marginRight: 12,
+		},
+		settingsItemText: {
 			fontSize: 16,
 			color: themeStyle.textColor,
-			padding: 10,
 		},
 		dangerText: {
 			color: themeStyle.error,
 		},
-		logout: {
-			fontWeight: "bold",
-			fontSize: 18,
-			color: "#FF0000",
-			textAlign: "center",
-			padding: 20,
+		logoutSection: {
+			marginTop: 24,
+			paddingHorizontal: 16,
+			marginBottom: 24,
+		},
+		logoutButton: {
+			backgroundColor: themeStyle.error,
+			borderRadius: 8,
+			paddingVertical: 14,
+			flexDirection: "row",
+			justifyContent: "center",
+			alignItems: "center",
+		},
+		logoutIcon: {
+			marginRight: 8,
+		},
+		logoutText: {
+			color: "#FFFFFF",
+			fontWeight: "600",
+			fontSize: 16,
 		},
 	});

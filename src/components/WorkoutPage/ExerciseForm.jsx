@@ -154,7 +154,6 @@ function DeleteIcon(progress, drag) {
 					height: "90%",
 					borderRadius: 5,
 					marginVertical: 5,
-					elevation: 5,
 				},
 				styleAnimation,
 			]}
@@ -616,12 +615,8 @@ const createStyles = (themeStyle) =>
 			padding: "3%",
 			width: "90%",
 			marginBottom: "5%",
-			borderRadius: 7,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.25,
-			shadowRadius: 3.84,
-			elevation: 5,
+			borderRadius: 8,
+
 		},
 		workoutName: {
 			color: themeStyle.primary,
@@ -653,7 +648,7 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.inputBackground,
 			width: "100%",
 			padding: "2%",
-			borderRadius: 5,
+			borderRadius: 6,
 			marginTop: "5%",
 			alignItems: "center",
 		},
@@ -671,7 +666,7 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.inputBackground,
 			padding: 5,
 			paddingHorizontal: 10,
-			borderRadius: 5,
+			borderRadius: 6,
 			marginLeft: 7,
 		},
 		inputFieldAlert: {

@@ -12,7 +12,12 @@ const AddFirstExerciseCard = () => {
 	const hasExercises = workoutExercises.length > 0;
 
 	return (
-		<View style={{...styles.container, display: hasExercises ? "none" : "flex"}}>
+		<View
+			style={{
+				...styles.container,
+				display: hasExercises ? "none" : "flex",
+			}}
+		>
 			<View style={styles.content}>
 				<View style={styles.IconContainer}>
 					<Ionicons
@@ -41,23 +46,11 @@ const createStyles = (themeStyle) => {
 		container: {
 			margin: "auto",
 			width: "90%",
-			backgroundColor:
-				themeStyle.cardBackground ||
-				themeStyle.card ||
-				themeStyle.backgroundSecondary ||
-				"#2A2A2A",
-			borderRadius: 12,
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
 			padding: 16,
 			marginVertical: 15,
 			alignItems: "center",
-			shadowColor: "#000",
-			shadowOffset: {
-				width: 0,
-				height: 2,
-			},
-			shadowOpacity: 0.15,
-			shadowRadius: 3,
-			elevation: 3,
 		},
 		content: {
 			alignItems: "center",

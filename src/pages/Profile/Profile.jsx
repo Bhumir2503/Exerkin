@@ -58,7 +58,7 @@ export default function Profile({ navigation }) {
 								color={themeStyle.textColor}
 							/>
 						</TouchableOpacity>
-						<Text style={styles.appTitle}>Home</Text>
+						<Text style={styles.appTitle}>Exerkin</Text>
 						<TouchableOpacity
 							style={styles.iconButton}
 							onPress={() => navigation.navigate("Settings")}
@@ -155,7 +155,7 @@ const createStyles = (themeStyle) =>
 			alignItems: "center",
 		},
 		appTitle: {
-			fontSize: 20,
+			fontSize: 24,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
 		},
@@ -209,7 +209,7 @@ const createStyles = (themeStyle) =>
 			marginTop: 20,
 			marginHorizontal: 20,
 			backgroundColor: themeStyle.backgroundColor,
-			borderRadius: 15,
+			borderRadius: 12,
 		},
 		statItem: {
 			alignItems: "center",
@@ -237,15 +237,10 @@ const createStyles = (themeStyle) =>
 		},
 		emptyStateCard: {
 			backgroundColor: themeStyle.card,
-			borderRadius: 15,
+			borderRadius: 8,
 			padding: 25,
 			alignItems: "center",
 			justifyContent: "center",
-			elevation: 2,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 3,
 		},
 		emptyStateIconContainer: {
 			backgroundColor: `${themeStyle.primary}20`, // 20% opacity of primary color
@@ -268,16 +263,5 @@ const createStyles = (themeStyle) =>
 			textAlign: "center",
 			marginBottom: 20,
 			lineHeight: 22,
-		},
-		startWorkoutButton: {
-			backgroundColor: themeStyle.primary,
-			paddingVertical: 12,
-			paddingHorizontal: 20,
-			borderRadius: 8,
-		},
-		startWorkoutButtonText: {
-			color: "#fff",
-			fontWeight: "bold",
-			fontSize: 16,
 		},
 	});

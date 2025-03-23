@@ -266,63 +266,6 @@ function ColorChoice() {
 					fontSize: 18,
 					fontWeight: "bold",
 					color: themeStyle.textColor,
-					marginBottom: 5,
-				}}
-			>
-				Dark Themes
-			</Text>
-			<View
-				style={{
-					flexDirection: "row",
-					flexWrap: "wrap",
-					justifyContent: "flex-start",
-				}}
-			>
-				<ColorBox
-					color="#7f2af0"
-					themeName="midnightPurple"
-					label="Midnight Purple"
-				/>
-				<ColorBox
-					color="#c17c41"
-					themeName="moodyEspresso"
-					label="Moody Espresso"
-				/>
-				<ColorBox
-					color="#ff8906"
-					themeName="sunsetBlaze"
-					label="Sunset Blaze"
-				/>
-			</View>
-			<View
-				style={{
-					flexDirection: "row",
-					flexWrap: "wrap",
-					justifyContent: "flex-start",
-				}}
-			>
-				<ColorBox
-					color="#3e92cc"
-					themeName="oceanDepth"
-					label="Ocean Depth"
-				/>
-				<ColorBox
-					color="#4d9078"
-					themeName="forestNight"
-					label="Forest Night"
-				/>
-				<ColorBox
-					color="#d100d1"
-					themeName="cyberMagenta"
-					label="Cyber Magenta"
-				/>
-			</View>
-
-			<Text
-				style={{
-					fontSize: 18,
-					fontWeight: "bold",
-					color: themeStyle.textColor,
 					marginTop: 15,
 					marginBottom: 5,
 				}}
@@ -376,6 +319,62 @@ function ColorChoice() {
 					label="Rose Petal"
 				/>
 			</View>
+			<Text
+				style={{
+					fontSize: 18,
+					fontWeight: "bold",
+					color: themeStyle.textColor,
+					marginBottom: 5,
+				}}
+			>
+				Dark Themes
+			</Text>
+			<View
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
+				}}
+			>
+				<ColorBox
+					color="#7f2af0"
+					themeName="midnightPurple"
+					label="Midnight Purple"
+				/>
+				<ColorBox
+					color="#c17c41"
+					themeName="moodyEspresso"
+					label="Moody Espresso"
+				/>
+				<ColorBox
+					color="#ff8906"
+					themeName="sunsetBlaze"
+					label="Sunset Blaze"
+				/>
+			</View>
+			<View
+				style={{
+					flexDirection: "row",
+					flexWrap: "wrap",
+					justifyContent: "flex-start",
+				}}
+			>
+				<ColorBox
+					color="#3e92cc"
+					themeName="oceanDepth"
+					label="Ocean Depth"
+				/>
+				<ColorBox
+					color="#4d9078"
+					themeName="forestNight"
+					label="Forest Night"
+				/>
+				<ColorBox
+					color="#d100d1"
+					themeName="cyberMagenta"
+					label="Cyber Magenta"
+				/>
+			</View>
 		</View>
 	);
 }
@@ -383,11 +382,10 @@ function ColorChoice() {
 function ColorBox({ color, themeName, label }) {
 	const { changeTheme, theme, themeStyle } = useTheme();
 
-
 	const onPressButton = () => {
 		changeTheme(themeName);
 		setThemeCache(themeName);
-	}
+	};
 
 	return (
 		<TouchableOpacity
@@ -407,6 +405,8 @@ function ColorBox({ color, themeName, label }) {
 					borderRadius: 8,
 					borderWidth: themeName === theme ? 3 : 0,
 					borderColor: themeStyle.textColor,
+					justifyContent: "center",
+					alignItems: "center",
 				}}
 			></View>
 			<Text

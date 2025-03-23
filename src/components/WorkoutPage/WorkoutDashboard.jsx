@@ -46,7 +46,7 @@ const WorkoutDashboard = memo(({ onStartWorkout,}) => {
 					style={{
 						backgroundColor: themeStyle.card,
 						padding: 10,
-						borderRadius: 10,
+						borderRadius: 8,
 					}}
 				>
 					<Text style={styles.DailyGoalTitle}>Daily Challenge</Text>
@@ -120,7 +120,7 @@ const createStyles = (theme) => {
 		button: {
 			backgroundColor: theme.primary,
 			padding: 10,
-			borderRadius: 5,
+			borderRadius: 8,
 			flexDirection: "row",
 			justifyContent: "center",
 			alignItems: "center",
@@ -143,60 +143,6 @@ const createStyles = (theme) => {
 			fontSize: 16,
 			marginBottom: 10,
 			marginLeft: 10,
-		},
-		TemplateTitle: {
-			color: theme.textColor,
-			fontSize: 24,
-			fontWeight: "bold",
-			marginBottom: 10,
-		},
-		templatesContainer: {
-			marginTop: 10,
-			marginBottom: 20,
-		},
-		templatesList: {
-			justifyContent: "space-between",
-		},
-		templateItem: {
-			height: 120,
-			backgroundColor: theme.card,
-			borderRadius: 10,
-			justifyContent: "center",
-			alignItems: "center",
-			margin: 5,
-			padding: 10,
-			borderWidth: 1,
-			borderColor: theme.textColorSecondary,
-		},
-		templateItemText: {
-			color: theme.textColor,
-			fontSize: 18,
-			fontWeight: "bold",
-			marginBottom: 5,
-			textAlign: "center",
-		},
-		templateItemSubtext: {
-			color: theme.textColorSecondary,
-			fontSize: 14,
-		},
-		emptyContainer: {
-			backgroundColor: theme.card,
-			borderRadius: 10,
-			padding: 20,
-			marginTop: 10,
-			alignItems: "center",
-			justifyContent: "center",
-			height: 120,
-		},
-		emptyText: {
-			color: theme.textColor,
-			fontSize: 16,
-			fontWeight: "bold",
-		},
-		emptySubtext: {
-			color: theme.textColorSecondary,
-			fontSize: 14,
-			marginTop: 5,
 		},
 		activeWorkoutBarContainer: {
 			position: "absolute",

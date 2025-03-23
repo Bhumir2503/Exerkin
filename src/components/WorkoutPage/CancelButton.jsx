@@ -122,7 +122,7 @@ const createStyles = (themeStyle) => {
 			backgroundColor: themeStyle.backgroundColor,
 			width: "90%",
 			maxHeight: "80%",
-			borderRadius: 10,
+			borderRadius: 8,
 			padding: 0,
 			overflow: "hidden",
 			zIndex: 1,
@@ -155,7 +155,7 @@ const createStyles = (themeStyle) => {
 			padding: 10,
 			paddingHorizontal: 20,
 			margin: 10,
-			borderRadius: 5,
+			borderRadius: 6,
 		},
 		closeText: {
 			color: themeStyle.textColor,
@@ -167,7 +167,7 @@ const createStyles = (themeStyle) => {
 			padding: 10,
 			paddingHorizontal: 20,
 			margin: 10,
-			borderRadius: 5,
+			borderRadius: 6,
 		},
 		cancelButtonText: {
 			color: "white",
