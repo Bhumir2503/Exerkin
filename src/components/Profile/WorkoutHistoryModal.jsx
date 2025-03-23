@@ -235,7 +235,7 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.backgroundColor,
 			width: "90%",
 			maxHeight: "80%",
-			borderRadius: 10,
+			borderRadius: 8,
 			padding: 0,
 			overflow: "hidden",
 			zIndex: 1,
@@ -264,7 +264,7 @@ const createStyles = (themeStyle) =>
 		exerciseCard: {
 			backgroundColor: themeStyle.card,
 			padding: 15,
-			borderRadius: 10,
+			borderRadius: 6,
 			marginBottom: 15,
 		},
 		exerciseTitle: {

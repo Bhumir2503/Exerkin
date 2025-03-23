@@ -14,6 +14,7 @@ const themes = {
 		cardAlt: "#2d2d3a", // Alternative card background for variety
 		inputBackground: "#1e1e24", // Text input field background
 		inputBorder: "#383844", // Text input border
+		borderColor: "#383844", // Added border color
 		accent: "#e53170",
 		success: "#72B01D",
 		error: "#F87060",
@@ -31,6 +32,7 @@ const themes = {
 		cardAlt: "#4a352c", // Alternate card color
 		inputBackground: "#362218", // Text input field background
 		inputBorder: "#503c30", // Text input border
+		borderColor: "#503c30", // Added border color
 		accent: "#ff9e6d",
 		success: "#58B368",
 		error: "#E05D5D",
@@ -48,6 +50,7 @@ const themes = {
 		cardAlt: "#322f40", // Alternate card color
 		inputBackground: "#1c1b26", // Text input field background
 		inputBorder: "#3c3a4a", // Text input border
+		borderColor: "#3c3a4a", // Added border color
 		accent: "#e53170",
 		success: "#4CAF50",
 		error: "#FF5252",
@@ -65,6 +68,7 @@ const themes = {
 		cardAlt: "#1d4354", // Alternate card color
 		inputBackground: "#102a33", // Text input field background
 		inputBorder: "#265566", // Text input border
+		borderColor: "#265566", // Added border color
 		accent: "#1fc3aa",
 		success: "#4CAF50",
 		error: "#FF5252",
@@ -82,6 +86,7 @@ const themes = {
 		cardAlt: "#324747", // Alternate card color
 		inputBackground: "#223131", // Text input field background
 		inputBorder: "#3e5151", // Text input border
+		borderColor: "#3e5151", // Added border color
 		accent: "#f98948",
 		success: "#8BC34A",
 		error: "#FF5722",
@@ -99,6 +104,7 @@ const themes = {
 		cardAlt: "#350d4e", // Alternate card color
 		inputBackground: "#220033", // Text input field background
 		inputBorder: "#440066", // Text input border
+		borderColor: "#440066", // Added border color
 		accent: "#00ffe0",
 		success: "#00E676",
 		error: "#FF1744",
@@ -117,6 +123,7 @@ const themes = {
 		cardAlt: "#f3f3ff",
 		inputBackground: "#d0d0f3", // Darker lavender input background
 		inputBorder: "#b8b8e6", // Darker border
+		borderColor: "#b8b8e6", // Added border color
 		accent: "#e45858",
 		success: "#4BB543",
 		error: "#FF3B30",
@@ -134,6 +141,7 @@ const themes = {
 		cardAlt: "#feeadc",
 		inputBackground: "#f5d6bc", // Darker peachy input background
 		inputBorder: "#edbea2", // Darker border
+		borderColor: "#edbea2", // Added border color
 		accent: "#e78a61",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -151,6 +159,7 @@ const themes = {
 		cardAlt: "#f0f0f0",
 		inputBackground: "#e0e0e0", // Darker gray input background
 		inputBorder: "#c8c8c8", // Darker border
+		borderColor: "#c8c8c8", // Added border color
 		accent: "#ff6b6b",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -168,6 +177,7 @@ const themes = {
 		cardAlt: "#e6f0ff",
 		inputBackground: "#c4deff", // Darker blue input background
 		inputBorder: "#a0c8ff", // Darker border
+		borderColor: "#a0c8ff", // Added border color
 		accent: "#ef4565",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -185,6 +195,7 @@ const themes = {
 		cardAlt: "#e3faef",
 		inputBackground: "#b5e8d4", // Darker mint input background
 		inputBorder: "#91d6bc", // Darker border
+		borderColor: "#91d6bc", // Added border color
 		accent: "#ff8552",
 		success: "#4CAF50",
 		error: "#F44336",
@@ -202,6 +213,7 @@ const themes = {
 		cardAlt: "#ffe4eb",
 		inputBackground: "#ffc3d6", // Darker pink input background
 		inputBorder: "#ffaac4", // Darker border
+		borderColor: "#ffaac4", // Added border color
 		accent: "#ff8e3c",
 		success: "#4CAF50",
 		error: "#F44336",

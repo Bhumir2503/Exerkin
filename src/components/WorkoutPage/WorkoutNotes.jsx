@@ -136,7 +136,7 @@ const createStyles = (themeStyle) =>
 			alignItems: "center",
 			justifyContent: "center",
 			backgroundColor: themeStyle.primary,
-			borderRadius: 12,
+			borderRadius:8,
 			padding: 10,
 			paddingHorizontal: 15,
 			marginRight: 10,
@@ -159,7 +159,7 @@ const createStyles = (themeStyle) =>
 			marginTop: "35%",
 			width: "90%",
 			backgroundColor: themeStyle.backgroundColor,
-			borderRadius: 15,
+			borderRadius: 8,
 			overflow: "hidden",
 		},
 		modalHeader: {

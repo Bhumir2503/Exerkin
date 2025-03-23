@@ -37,15 +37,10 @@ const createStyles = (themeStyle) => {
 		},
 		emptyStateCard: {
 			backgroundColor: themeStyle.card,
-			borderRadius: 15,
+			borderRadius: 8,
 			padding: 25,
 			alignItems: "center",
 			justifyContent: "center",
-			elevation: 2,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 3,
 		},
 		emptyStateIconContainer: {
 			backgroundColor: `${themeStyle.primary}20`, // 20% opacity of primary color

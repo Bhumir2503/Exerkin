@@ -46,7 +46,7 @@ const createStyles = (theme) => {
 		container: {
 			flexDirection: "row",
 			backgroundColor: theme.card,
-			borderRadius: 10,
+			borderRadius: 8,
 			padding: 10,
 			marginHorizontal: 10,
 			marginVertical: 5,

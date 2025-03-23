@@ -5,13 +5,17 @@ import {
 	Text,
 	TouchableOpacity,
 	ScrollView,
+	Dimensions,
+	Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import { LineChart } from "react-native-chart-kit";
-import { Dimensions } from "react-native";
+import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
+
+const { width } = Dimensions.get("window");
+const SCREEN_WIDTH = width;
 
 export default function Stats({ navigation }) {
 	const { workoutHistory } = useWorkout();
@@ -19,7 +23,8 @@ export default function Stats({ navigation }) {
 	const styles = createStyles(themeStyle);
 	const [filterType, setFilterType] = useState("1RM"); // "1RM", "Reps", "Volume"
 	const [timeRange, setTimeRange] = useState("all"); // "week", "month", "3months", "all"
-	const [viewMode, setViewMode] = useState("best"); // "best", "progress"
+	const [viewMode, setViewMode] = useState("best"); // "best", "progress", "activity", "body"
+	const [activeTab, setActiveTab] = useState("overview"); // "overview", "lifts", "trends", "body"
 
 	// Popular exercise categories to track
 	const popularExercises = [
@@ -45,11 +50,288 @@ export default function Stats({ navigation }) {
 		totalVolume: 0,
 		avgDuration: "0:00",
 		mostFrequentExercise: "-",
+		// Added statistics
+		totalSets: 0,
+		totalReps: 0,
+		weightLifted: 0,
+		longestWorkout: "0:00",
+		workoutStreak: 0,
+		workoutsPerWeek: 0,
+		bodyPartFocus: {},
+		progressRate: 0,
+		bestDay: "N/A",
+	});
+
+	// Weekly activity data for heatmap
+	const [weeklyActivity, setWeeklyActivity] = useState([
+		{ day: "Mon", count: 0 },
+		{ day: "Tue", count: 0 },
+		{ day: "Wed", count: 0 },
+		{ day: "Thu", count: 0 },
+		{ day: "Fri", count: 0 },
+		{ day: "Sat", count: 0 },
+		{ day: "Sun", count: 0 },
+	]);
+
+	// Body part distribution data
+	const [bodyPartData, setBodyPartData] = useState([]);
+
+	// Monthly workout data
+	const [monthlyData, setMonthlyData] = useState({
+		labels: [],
+		datasets: [{ data: [] }],
 	});
 
 	useEffect(() => {
 		calculateStatsSummary();
+		calculateWeeklyActivity();
+		calculateBodyPartDistribution();
+		calculateMonthlyProgress();
 	}, [workoutHistory]);
+
+	// Calculate workout streak
+	const calculateWorkoutStreak = () => {
+		if (!workoutHistory || workoutHistory.length === 0) return 0;
+
+		// Sort workouts by date (newest first)
+		const sortedWorkouts = [...workoutHistory].sort(
+			(a, b) => b.completedAt.toDate() - a.completedAt.toDate()
+		);
+
+		let streak = 1;
+		let currentDate = new Date(sortedWorkouts[0].completedAt.toDate());
+		currentDate.setHours(0, 0, 0, 0); // Reset time to start of day
+
+		// Check for consecutive days
+		for (let i = 1; i < sortedWorkouts.length; i++) {
+			const workoutDate = new Date(
+				sortedWorkouts[i].completedAt.toDate()
+			);
+			workoutDate.setHours(0, 0, 0, 0);
+
+			// Calculate difference in days
+			const diffDays = Math.round(
+				(currentDate - workoutDate) / (1000 * 60 * 60 * 24)
+			);
+
+			if (diffDays === 1) {
+				// Consecutive day
+				streak++;
+				currentDate = workoutDate;
+			} else if (diffDays === 0) {
+				// Same day, continue checking
+				continue;
+			} else {
+				// Streak broken
+				break;
+			}
+		}
+
+		return streak;
+	};
+
+	// Calculate weekly activity heatmap
+	const calculateWeeklyActivity = () => {
+		if (!workoutHistory || workoutHistory.length === 0) return;
+
+		const dayCounter = [0, 0, 0, 0, 0, 0, 0]; // Sun-Sat (0-6)
+
+		workoutHistory.forEach((workout) => {
+			const workoutDate = workout.completedAt.toDate();
+			const dayOfWeek = workoutDate.getDay(); // 0 = Sunday, 6 = Saturday
+			dayCounter[dayOfWeek]++;
+		});
+
+		// Rearrange to Mon-Sun order
+		const monToSun = [
+			{ day: "Mon", count: dayCounter[1] },
+			{ day: "Tue", count: dayCounter[2] },
+			{ day: "Wed", count: dayCounter[3] },
+			{ day: "Thu", count: dayCounter[4] },
+			{ day: "Fri", count: dayCounter[5] },
+			{ day: "Sat", count: dayCounter[6] },
+			{ day: "Sun", count: dayCounter[0] },
+		];
+
+		setWeeklyActivity(monToSun);
+
+		// Find best day
+		let maxCount = 0;
+		let bestDayIndex = -1;
+
+		dayCounter.forEach((count, index) => {
+			if (count > maxCount) {
+				maxCount = count;
+				bestDayIndex = index;
+			}
+		});
+
+		const dayNames = [
+			"Sunday",
+			"Monday",
+			"Tuesday",
+			"Wednesday",
+			"Thursday",
+			"Friday",
+			"Saturday",
+		];
+		return bestDayIndex >= 0 ? dayNames[bestDayIndex] : "N/A";
+	};
+
+	// Calculate body part distribution
+	const calculateBodyPartDistribution = () => {
+		if (!workoutHistory || workoutHistory.length === 0) return;
+
+		const bodyPartMap = {
+			"Barbell Bench Press": "Chest",
+			"Dumbbell Bench Press": "Chest",
+			"Incline Bench Press": "Chest",
+			"Push Up": "Chest",
+			"Dumbbell Fly": "Chest",
+
+			"Barbell Deadlift": "Back",
+			"Pull Up": "Back",
+			"Lat Pulldown": "Back",
+			"Seated Row": "Back",
+			"Bent Over Row": "Back",
+
+			"Smith Machine Squat": "Legs",
+			"Barbell Squat": "Legs",
+			"Leg Press": "Legs",
+			"Leg Extension": "Legs",
+			"Leg Curl": "Legs",
+			"Calf Raise": "Legs",
+
+			"Barbell Shoulder Press": "Shoulders",
+			"Dumbbell Shoulder Press": "Shoulders",
+			"Lateral Raise": "Shoulders",
+			"Front Raise": "Shoulders",
+			"Face Pull": "Shoulders",
+
+			"Bicep Curl": "Arms",
+			"Hammer Curl": "Arms",
+			"Tricep Extension": "Arms",
+			"Tricep Pushdown": "Arms",
+			"Skull Crusher": "Arms",
+
+			"Sit Up": "Core",
+			Crunch: "Core",
+			Plank: "Core",
+			"Russian Twist": "Core",
+			"Leg Raise": "Core",
+		};
+
+		const bodyPartFrequency = {
+			Chest: 0,
+			Back: 0,
+			Legs: 0,
+			Shoulders: 0,
+			Arms: 0,
+			Core: 0,
+			Other: 0,
+		};
+
+		// Count exercises by body part
+		workoutHistory.forEach((workout) => {
+			workout.exercises.forEach((exercise) => {
+				const bodyPart = bodyPartMap[exercise.name] || "Other";
+				bodyPartFrequency[bodyPart] =
+					(bodyPartFrequency[bodyPart] || 0) + 1;
+			});
+		});
+
+		// Convert to format for pie chart
+		const pieData = Object.entries(bodyPartFrequency)
+			.filter(([_, count]) => count > 0)
+			.map(([name, count], index) => {
+				const colors = [
+					"#FF6384", // Red
+					"#36A2EB", // Blue
+					"#FFCE56", // Yellow
+					"#4BC0C0", // Teal
+					"#9966FF", // Purple
+					"#FF9F40", // Orange
+					"#C9CBCF", // Grey
+				];
+
+				return {
+					name,
+					count,
+					color: colors[index % colors.length],
+					legendFontColor: themeStyle.textColor,
+					legendFontSize: 12,
+				};
+			});
+
+		setBodyPartData(pieData);
+
+		// Find most frequent body part
+		let maxFreq = 0;
+		let maxBodyPart = "Other";
+
+		Object.entries(bodyPartFrequency).forEach(([part, freq]) => {
+			if (freq > maxFreq) {
+				maxFreq = freq;
+				maxBodyPart = part;
+			}
+		});
+
+		return maxBodyPart;
+	};
+
+	// Calculate monthly workout data
+	const calculateMonthlyProgress = () => {
+		if (!workoutHistory || workoutHistory.length < 2) return;
+
+		// Group workouts by month
+		const monthlyWorkouts = {};
+
+		workoutHistory.forEach((workout) => {
+			const date = workout.completedAt.toDate();
+			const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+
+			if (!monthlyWorkouts[monthKey]) {
+				monthlyWorkouts[monthKey] = [];
+			}
+
+			monthlyWorkouts[monthKey].push(workout);
+		});
+
+		// Sort months chronologically
+		const sortedMonths = Object.keys(monthlyWorkouts).sort();
+
+		// Only keep up to last 6 months
+		const recentMonths = sortedMonths.slice(-6);
+
+		// Format labels and calculate data
+		const monthNames = [
+			"Jan",
+			"Feb",
+			"Mar",
+			"Apr",
+			"May",
+			"Jun",
+			"Jul",
+			"Aug",
+			"Sep",
+			"Oct",
+			"Nov",
+			"Dec",
+		];
+		const labels = recentMonths.map((monthKey) => {
+			const [year, month] = monthKey.split("-");
+			return `${monthNames[parseInt(month) - 1]}`;
+		});
+
+		const data = recentMonths.map(
+			(monthKey) => monthlyWorkouts[monthKey].length
+		);
+
+		setMonthlyData({
+			labels,
+			datasets: [{ data }],
+		});
+	};
 
 	const calculateStatsSummary = () => {
 		if (!workoutHistory || workoutHistory.length === 0) {
@@ -59,12 +341,33 @@ export default function Stats({ navigation }) {
 		// Calculate total workouts
 		const totalWorkouts = workoutHistory.length;
 
-		// Calculate total volume
+		// Calculate total volume, sets, reps, and weight lifted
 		let totalVolume = 0;
+		let totalSets = 0;
+		let totalReps = 0;
+		let totalWeight = 0;
 		let exerciseFrequency = {};
 		let totalDuration = 0;
+		let longestDuration = 0;
+
+		// Calculate workouts per week
+		const now = new Date();
+		const oneWeekAgo = new Date(now);
+		oneWeekAgo.setDate(now.getDate() - 7);
+
+		let workoutsLastWeek = 0;
+
+		// Placeholder for progress rate calculation
+		let avgProgress = 0;
+		let progressPoints = 0;
 
 		workoutHistory.forEach((workout) => {
+			// Check if workout is from last week
+			const workoutDate = workout.completedAt.toDate();
+			if (workoutDate >= oneWeekAgo) {
+				workoutsLastWeek++;
+			}
+
 			// Parse duration (assuming format like "1:30:45")
 			const durationParts = workout.duration.split(":").map(Number);
 			let durationInSeconds = 0;
@@ -76,17 +379,25 @@ export default function Stats({ navigation }) {
 			} else if (durationParts.length === 2) {
 				durationInSeconds = durationParts[0] * 60 + durationParts[1];
 			}
+
 			totalDuration += durationInSeconds;
+			longestDuration = Math.max(longestDuration, durationInSeconds);
 
 			workout.exercises.forEach((exercise) => {
 				// Track exercise frequency
 				exerciseFrequency[exercise.name] =
 					(exerciseFrequency[exercise.name] || 0) + 1;
 
+				totalSets += exercise.sets.length;
+
 				exercise.sets.forEach((set) => {
 					// Calculate volume (weight * reps)
 					if (set.weight && set.reps) {
-						totalVolume += Number(set.weight) * Number(set.reps);
+						const weight = Number(set.weight);
+						const reps = Number(set.reps);
+						totalVolume += weight * reps;
+						totalReps += reps;
+						totalWeight += weight;
 					}
 				});
 			});
@@ -105,22 +416,57 @@ export default function Stats({ navigation }) {
 
 		// Calculate average workout duration
 		const avgDurationInSeconds = Math.round(totalDuration / totalWorkouts);
-		const hours = Math.floor(avgDurationInSeconds / 3600);
-		const minutes = Math.floor((avgDurationInSeconds % 3600) / 60);
-		const seconds = avgDurationInSeconds % 60;
+		const avgHours = Math.floor(avgDurationInSeconds / 3600);
+		const avgMinutes = Math.floor((avgDurationInSeconds % 3600) / 60);
+		const avgSeconds = avgDurationInSeconds % 60;
 
 		const avgDuration =
-			hours > 0
-				? `${hours}:${minutes.toString().padStart(2, "0")}:${seconds
+			avgHours > 0
+				? `${avgHours}:${avgMinutes
+						.toString()
+						.padStart(2, "0")}:${avgSeconds
 						.toString()
 						.padStart(2, "0")}`
-				: `${minutes}:${seconds.toString().padStart(2, "0")}`;
+				: `${avgMinutes}:${avgSeconds.toString().padStart(2, "0")}`;
+
+		// Format longest workout duration
+		const longHours = Math.floor(longestDuration / 3600);
+		const longMinutes = Math.floor((longestDuration % 3600) / 60);
+		const longSeconds = longestDuration % 60;
+
+		const longestWorkout =
+			longHours > 0
+				? `${longHours}:${longMinutes
+						.toString()
+						.padStart(2, "0")}:${longSeconds
+						.toString()
+						.padStart(2, "0")}`
+				: `${longMinutes}:${longSeconds.toString().padStart(2, "0")}`;
+
+		// Calculate workout streak
+		const workoutStreak = calculateWorkoutStreak();
+
+		// Get best workout day
+		const bestDay = calculateWeeklyActivity();
+
+		// Get most focused body part
+		const bodyPartFocus = calculateBodyPartDistribution();
 
 		setStatsSummary({
 			totalWorkouts,
 			totalVolume: Math.round(totalVolume),
 			avgDuration,
 			mostFrequentExercise,
+			totalSets,
+			totalReps,
+			weightLifted: Math.round(totalWeight),
+			longestWorkout,
+			workoutStreak,
+			workoutsPerWeek: workoutsLastWeek,
+			bodyPartFocus,
+			progressRate:
+				avgProgress > 0 ? `+${avgProgress.toFixed(1)}%` : "N/A",
+			bestDay,
 		});
 	};
 
@@ -367,7 +713,15 @@ export default function Stats({ navigation }) {
 	};
 
 	const toggleViewMode = () => {
-		setViewMode(viewMode === "best" ? "progress" : "best");
+		if (viewMode === "best") {
+			setViewMode("progress");
+		} else if (viewMode === "progress") {
+			setViewMode("activity");
+		} else if (viewMode === "activity") {
+			setViewMode("body");
+		} else {
+			setViewMode("best");
+		}
 	};
 
 	const displayTimeRange = () => {
@@ -383,21 +737,21 @@ export default function Stats({ navigation }) {
 		}
 	};
 
-	return (
-		<SafeAreaView style={styles.container}>
-			<View style={styles.topBar}>
-				<TouchableOpacity onPress={() => navigation.goBack()}>
-					<Ionicons
-						name="chevron-back"
-						size={35}
-						color={themeStyle.textColor}
-					/>
-				</TouchableOpacity>
-				<Text style={styles.title}>Stats</Text>
-				<View style={{ width: 35 }} />
-			</View>
+	const renderTabIndicator = (tabName) => {
+		const isActive = activeTab === tabName;
+		return (
+			<View
+				style={[
+					styles.tabIndicator,
+					isActive && styles.activeTabIndicator,
+				]}
+			/>
+		);
+	};
 
-			<ScrollView style={styles.scrollContainer}>
+	const renderOverviewTab = () => {
+		return (
+			<View style={styles.tabContent}>
 				{/* Stats Summary */}
 				<View style={styles.summaryContainer}>
 					<Text style={styles.sectionTitle}>Summary</Text>
@@ -406,7 +760,7 @@ export default function Stats({ navigation }) {
 							<Ionicons
 								name="calendar-outline"
 								size={24}
-								color={themeStyle.primary}
+								color={themeStyle.textColor}
 								style={styles.summaryIcon}
 							/>
 							<Text style={styles.summaryValue}>
@@ -418,7 +772,7 @@ export default function Stats({ navigation }) {
 							<Ionicons
 								name="barbell-outline"
 								size={24}
-								color={themeStyle.primary}
+								color={themeStyle.textColor}
 								style={styles.summaryIcon}
 							/>
 							<Text style={styles.summaryValue}>
@@ -432,7 +786,7 @@ export default function Stats({ navigation }) {
 							<Ionicons
 								name="time-outline"
 								size={24}
-								color={themeStyle.primary}
+								color={themeStyle.textColor}
 								style={styles.summaryIcon}
 							/>
 							<Text style={styles.summaryValue}>
@@ -444,25 +798,184 @@ export default function Stats({ navigation }) {
 						</View>
 						<View style={styles.summaryItem}>
 							<Ionicons
-								name="star-outline"
+								name="trophy-outline"
 								size={24}
-								color={themeStyle.primary}
+								color={themeStyle.textColor}
 								style={styles.summaryIcon}
 							/>
-							<Text
-								style={[styles.summaryValue, { fontSize: 16 }]}
-								numberOfLines={1}
-								ellipsizeMode="tail"
-							>
-								{statsSummary.mostFrequentExercise}
+							<Text style={styles.summaryValue}>
+								{statsSummary.workoutStreak}
 							</Text>
 							<Text style={styles.summaryLabel}>
-								Favorite Exercise
+								Current Streak
 							</Text>
 						</View>
 					</View>
 				</View>
 
+				{/* Additional Stats */}
+				<View style={styles.additionalStatsContainer}>
+					<Text style={styles.sectionTitle}>Detailed Stats</Text>
+					<View style={styles.detailedStatsBox}>
+						<View style={styles.statRow}>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>Total Sets</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.totalSets.toLocaleString()}
+								</Text>
+							</View>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>Total Reps</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.totalReps.toLocaleString()}
+								</Text>
+							</View>
+						</View>
+						<View style={styles.statRow}>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>
+									Weight Lifted
+								</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.weightLifted.toLocaleString()}{" "}
+									lbs
+								</Text>
+							</View>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>
+									Longest Workout
+								</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.longestWorkout}
+								</Text>
+							</View>
+						</View>
+						<View style={styles.statRow}>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>
+									Workouts/Week
+								</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.workoutsPerWeek}
+								</Text>
+							</View>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>
+									Most Active Day
+								</Text>
+								<Text style={styles.statValue}>
+									{statsSummary.bestDay}
+								</Text>
+							</View>
+						</View>
+						<View style={styles.statRow}>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>
+									Favorite Exercise
+								</Text>
+								<Text
+									style={styles.statValue}
+									numberOfLines={1}
+									ellipsizeMode="tail"
+								>
+									{statsSummary.mostFrequentExercise}
+								</Text>
+							</View>
+							<View style={styles.statItem}>
+								<Text style={styles.statLabel}>Body Focus</Text>
+								<Text style={styles.statValue}>
+									{typeof statsSummary.bodyPartFocus ===
+									"string"
+										? statsSummary.bodyPartFocus
+										: Object.keys(
+												statsSummary.bodyPartFocus
+										  )[0] || "N/A"}
+								</Text>
+							</View>
+						</View>
+					</View>
+				</View>
+
+				{/* Monthly Activity */}
+				{monthlyData.labels.length > 1 && (
+					<View style={styles.chartContainer}>
+						<Text style={styles.sectionTitle}>
+							Monthly Activity
+						</Text>
+						<View style={styles.chartBox}>
+							<BarChart
+								data={monthlyData}
+								width={SCREEN_WIDTH - 40}
+								height={200}
+								yAxisSuffix=""
+								chartConfig={{
+									backgroundColor: themeStyle.card,
+									backgroundGradientFrom: themeStyle.card,
+									backgroundGradientTo: themeStyle.card,
+									decimalPlaces: 0,
+									color: (opacity = 1) =>
+										`rgba(${themeStyle.primary
+											.replace("#", "")
+											.match(/.{2}/g)
+											.map((x) => parseInt(x, 16))
+											.join(", ")}, ${opacity})`,
+									labelColor: (opacity = 1) =>
+										`rgba(${themeStyle.textColor
+											.replace("#", "")
+											.match(/.{2}/g)
+											.map((x) => parseInt(x, 16))
+											.join(", ")}, ${opacity})`,
+									style: {
+										borderRadius: 16,
+									},
+									barPercentage: 0.7,
+								}}
+								style={{
+									marginVertical: 8,
+									borderRadius: 16,
+								}}
+							/>
+						</View>
+					</View>
+				)}
+
+				{/* Weekly Activity Heatmap */}
+				<View style={styles.weeklyContainer}>
+					<Text style={styles.sectionTitle}>Weekly Activity</Text>
+					<View style={styles.weeklyHeatmap}>
+						{weeklyActivity.map((day, index) => (
+							<View key={index} style={styles.dayColumn}>
+								<View
+									style={[
+										styles.activityIndicator,
+										{
+											backgroundColor:
+												day.count === 0
+													? `${themeStyle.primary}20` // Very light tint
+													: day.count === 1
+													? `${themeStyle.primary}50` // Medium tint
+													: day.count >= 2
+													? themeStyle.primary // Full color
+													: `${themeStyle.primary}20`,
+										},
+									]}
+								>
+									<Text style={styles.activityCount}>
+										{day.count > 0 ? day.count : ""}
+									</Text>
+								</View>
+								<Text style={styles.dayLabel}>{day.day}</Text>
+							</View>
+						))}
+					</View>
+				</View>
+			</View>
+		);
+	};
+
+	const renderLiftsTab = () => {
+		return (
+			<View style={styles.tabContent}>
 				{/* Best Lifts */}
 				<View style={styles.bestLiftsContainer}>
 					<View style={styles.headerRow}>
@@ -493,7 +1006,7 @@ export default function Stats({ navigation }) {
 								<Ionicons
 									name="swap-horizontal"
 									size={16}
-									color={themeStyle.primary}
+									color={themeStyle.textColorSecondary}
 								/>
 							</TouchableOpacity>
 						</View>
@@ -516,7 +1029,7 @@ export default function Stats({ navigation }) {
 							<Ionicons
 								name="chevron-down"
 								size={14}
-								color={themeStyle.primary}
+								color={themeStyle.textColorSecondary}
 							/>
 						</TouchableOpacity>
 
@@ -536,7 +1049,7 @@ export default function Stats({ navigation }) {
 							<Ionicons
 								name="chevron-down"
 								size={14}
-								color={themeStyle.primary}
+								color={themeStyle.textColorSecondary}
 							/>
 						</TouchableOpacity>
 					</View>
@@ -679,6 +1192,343 @@ export default function Stats({ navigation }) {
 						</View>
 					)}
 				</View>
+			</View>
+		);
+	};
+
+	const renderTrendsTab = () => {
+		return (
+			<View style={styles.tabContent}>
+				{/* Monthly workouts */}
+				{monthlyData.labels.length > 1 && (
+					<View style={styles.chartContainer}>
+						<Text style={styles.sectionTitle}>
+							Workout Frequency
+						</Text>
+						<View style={styles.chartBox}>
+							<BarChart
+								data={monthlyData}
+								width={SCREEN_WIDTH - 40}
+								height={200}
+								yAxisSuffix=""
+								chartConfig={{
+									backgroundColor: themeStyle.card,
+									backgroundGradientFrom: themeStyle.card,
+									backgroundGradientTo: themeStyle.card,
+									decimalPlaces: 0,
+									color: (opacity = 1) =>
+										`rgba(${themeStyle.primary
+											.replace("#", "")
+											.match(/.{2}/g)
+											.map((x) => parseInt(x, 16))
+											.join(", ")}, ${opacity})`,
+									labelColor: (opacity = 1) =>
+										`rgba(${themeStyle.textColor
+											.replace("#", "")
+											.match(/.{2}/g)
+											.map((x) => parseInt(x, 16))
+											.join(", ")}, ${opacity})`,
+									style: {
+										borderRadius: 16,
+									},
+									barPercentage: 0.7,
+								}}
+								style={{
+									marginVertical: 8,
+									borderRadius: 16,
+								}}
+								fromZero
+							/>
+							<Text style={styles.chartLabel}>
+								Monthly Workout Count
+							</Text>
+						</View>
+					</View>
+				)}
+
+				{/* Workout Duration Trend */}
+				<View style={styles.chartContainer}>
+					<Text style={styles.sectionTitle}>Workout Duration</Text>
+					<View style={styles.chartBox}>
+						<View style={styles.trendRow}>
+							<View style={styles.trendItem}>
+								<Text style={styles.trendLabel}>Longest</Text>
+								<Text style={styles.trendValue}>
+									{statsSummary.longestWorkout}
+								</Text>
+							</View>
+							<View style={styles.trendItem}>
+								<Text style={styles.trendLabel}>Average</Text>
+								<Text style={styles.trendValue}>
+									{statsSummary.avgDuration}
+								</Text>
+							</View>
+						</View>
+					</View>
+				</View>
+
+				{/* Weekly Activity Heatmap */}
+				<View style={styles.weeklyContainer}>
+					<Text style={styles.sectionTitle}>
+						Weekly Activity Pattern
+					</Text>
+					<View style={styles.weeklyHeatmap}>
+						{weeklyActivity.map((day, index) => (
+							<View key={index} style={styles.dayColumn}>
+								<View
+									style={[
+										styles.activityIndicator,
+										{
+											backgroundColor:
+												day.count === 0
+													? `${themeStyle.primary}20`
+													: day.count === 1
+													? `${themeStyle.primary}50`
+													: day.count >= 2
+													? themeStyle.primary
+													: `${themeStyle.primary}20`,
+										},
+									]}
+								>
+									<Text style={styles.activityCount}>
+										{day.count > 0 ? day.count : ""}
+									</Text>
+								</View>
+								<Text style={styles.dayLabel}>{day.day}</Text>
+							</View>
+						))}
+					</View>
+					<Text style={styles.chartLabel}>
+						Most active day: {statsSummary.bestDay}
+					</Text>
+				</View>
+
+				{/* Workout Consistency */}
+				<View style={styles.chartContainer}>
+					<Text style={styles.sectionTitle}>Consistency</Text>
+					<View style={styles.chartBox}>
+						<View style={styles.trendRow}>
+							<View style={styles.trendItem}>
+								<Text style={styles.trendLabel}>
+									Current Streak
+								</Text>
+								<Text style={styles.trendValue}>
+									{statsSummary.workoutStreak} days
+								</Text>
+							</View>
+							<View style={styles.trendItem}>
+								<Text style={styles.trendLabel}>
+									Weekly Average
+								</Text>
+								<Text style={styles.trendValue}>
+									{statsSummary.workoutsPerWeek} workouts
+								</Text>
+							</View>
+						</View>
+					</View>
+				</View>
+			</View>
+		);
+	};
+
+	const renderBodyFocusTab = () => {
+		return (
+			<View style={styles.tabContent}>
+				{/* Body Part Distribution */}
+				<View style={styles.chartContainer}>
+					<Text style={styles.sectionTitle}>
+						Body Focus Distribution
+					</Text>
+					{bodyPartData.length > 0 ? (
+						<View style={styles.chartBox}>
+							<PieChart
+								data={bodyPartData}
+								width={SCREEN_WIDTH - 40}
+								height={220}
+								chartConfig={{
+									color: (opacity = 1) =>
+										`rgba(${themeStyle.textColor
+											.replace("#", "")
+											.match(/.{2}/g)
+											.map((x) => parseInt(x, 16))
+											.join(", ")}, ${opacity})`,
+								}}
+								accessor="count"
+								backgroundColor="transparent"
+								paddingLeft="15"
+								center={[5, 0]}
+								absolute
+							/>
+						</View>
+					) : (
+						<View style={styles.noDataContainer}>
+							<Text style={styles.noDataText}>
+								Not enough data to show body focus distribution
+							</Text>
+						</View>
+					)}
+				</View>
+
+				{/* Major Muscle Group Stats */}
+				<View style={styles.chartContainer}>
+					<Text style={styles.sectionTitle}>Muscle Group Focus</Text>
+					<View style={styles.muscleGroupsContainer}>
+						{Object.entries(bodyPartData).length > 0 ? (
+							Object.entries(bodyPartData).map(
+								([_, item], index) => (
+									<View
+										key={index}
+										style={styles.muscleGroupItem}
+									>
+										<View
+											style={[
+												styles.muscleGroupIndicator,
+												{ backgroundColor: item.color },
+											]}
+										/>
+										<Text style={styles.muscleGroupName}>
+											{item.name}
+										</Text>
+										<Text style={styles.muscleGroupCount}>
+											{item.count} exercises
+										</Text>
+									</View>
+								)
+							)
+						) : (
+							<View style={styles.noDataContainer}>
+								<Text style={styles.noDataText}>
+									Not enough data to show muscle group focus
+								</Text>
+							</View>
+						)}
+					</View>
+				</View>
+			</View>
+		);
+	};
+
+	return (
+		<SafeAreaView style={styles.container}>
+			<View style={styles.topBar}>
+				<TouchableOpacity onPress={() => navigation.goBack()}>
+					<Ionicons
+						name="chevron-back"
+						size={24}
+						color={themeStyle.textColor}
+					/>
+				</TouchableOpacity>
+				<Text style={styles.title}>Stats & Analytics</Text>
+				
+			</View>
+
+			{/* Tab Navigation */}
+			<View style={styles.tabBar}>
+				<TouchableOpacity
+					style={styles.tab}
+					onPress={() => setActiveTab("overview")}
+				>
+					<Ionicons
+						name="stats-chart"
+						size={20}
+						color={
+							activeTab === "overview"
+								? themeStyle.primary
+								: themeStyle.textColorSecondary
+						}
+					/>
+					<Text
+						style={[
+							styles.tabText,
+							activeTab === "overview" && styles.activeTabText,
+						]}
+					>
+						Overview
+					</Text>
+					{renderTabIndicator("overview")}
+				</TouchableOpacity>
+
+				<TouchableOpacity
+					style={styles.tab}
+					onPress={() => setActiveTab("lifts")}
+				>
+					<Ionicons
+						name="barbell"
+						size={20}
+						color={
+							activeTab === "lifts"
+								? themeStyle.primary
+								: themeStyle.textColorSecondary
+						}
+					/>
+					<Text
+						style={[
+							styles.tabText,
+							activeTab === "lifts" && styles.activeTabText,
+						]}
+					>
+						Lifts
+					</Text>
+					{renderTabIndicator("lifts")}
+				</TouchableOpacity>
+
+				<TouchableOpacity
+					style={styles.tab}
+					onPress={() => setActiveTab("trends")}
+				>
+					<Ionicons
+						name="trending-up"
+						size={20}
+						color={
+							activeTab === "trends"
+								? themeStyle.primary
+								: themeStyle.textColorSecondary
+						}
+					/>
+					<Text
+						style={[
+							styles.tabText,
+							activeTab === "trends" && styles.activeTabText,
+						]}
+					>
+						Trends
+					</Text>
+					{renderTabIndicator("trends")}
+				</TouchableOpacity>
+
+				<TouchableOpacity
+					style={styles.tab}
+					onPress={() => setActiveTab("body")}
+				>
+					<Ionicons
+						name="body"
+						size={20}
+						color={
+							activeTab === "body"
+								? themeStyle.primary
+								: themeStyle.textColorSecondary
+						}
+					/>
+					<Text
+						style={[
+							styles.tabText,
+							activeTab === "body" && styles.activeTabText,
+						]}
+					>
+						Body
+					</Text>
+					{renderTabIndicator("body")}
+				</TouchableOpacity>
+			</View>
+
+			<ScrollView
+				style={styles.scrollContainer}
+				showsVerticalScrollIndicator={false}
+			>
+				{activeTab === "overview" && renderOverviewTab()}
+				{activeTab === "lifts" && renderLiftsTab()}
+				{activeTab === "trends" && renderTrendsTab()}
+				{activeTab === "body" && renderBodyFocusTab()}
 			</ScrollView>
 		</SafeAreaView>
 	);
@@ -697,27 +1547,60 @@ const createStyles = (themeStyle) =>
 		topBar: {
 			flexDirection: "row",
 			alignItems: "center",
-			justifyContent: "space-between",
-			paddingHorizontal: 20,
-			marginTop: 10,
-			marginBottom: 10,
+			paddingHorizontal: 16,
+			paddingVertical: 12,
 		},
 		title: {
-			fontSize: 28,
+			fontSize: 22,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
+			marginLeft: 10,
+			textAlign: "center",
+		},
+		tabBar: {
+			flexDirection: "row",
+			justifyContent: "space-around",
+			borderBottomWidth: 1,
+			borderBottomColor: themeStyle.borderColor,
+			paddingBottom: 0,
+		},
+		tab: {
+			alignItems: "center",
+			paddingVertical: 12,
+			paddingHorizontal: 16,
+			position: "relative",
+		},
+		tabText: {
+			fontSize: 12,
+			color: themeStyle.textColorSecondary,
+			marginTop: 4,
+		},
+		activeTabText: {
+			color: themeStyle.primary,
+			fontWeight: "600",
+		},
+		tabIndicator: {
+			position: "absolute",
+			bottom: 0,
+			left: 8,
+			right: 8,
+			height: 3,
+			borderTopLeftRadius: 3,
+			borderTopRightRadius: 3,
+			backgroundColor: "transparent",
+		},
+		activeTabIndicator: {
+			backgroundColor: themeStyle.primary,
+		},
+		tabContent: {
+			paddingBottom: 30,
 		},
 		summaryContainer: {
 			marginHorizontal: 20,
 			marginTop: 15,
 			padding: 20,
 			backgroundColor: themeStyle.card,
-			borderRadius: 16,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 4,
-			elevation: 3,
+			borderRadius: 8,
 		},
 		summaryGrid: {
 			flexDirection: "row",
@@ -730,13 +1613,8 @@ const createStyles = (themeStyle) =>
 			marginBottom: 15,
 			padding: 15,
 			backgroundColor: `${themeStyle.primary}15`, // Very light tint of primary color
-			borderRadius: 12,
+			borderRadius: 6,
 			alignItems: "center",
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 1 },
-			shadowOpacity: 0.05,
-			shadowRadius: 2,
-			elevation: 1,
 		},
 		summaryIcon: {
 			marginBottom: 10,
@@ -744,22 +1622,49 @@ const createStyles = (themeStyle) =>
 		summaryValue: {
 			fontSize: 24,
 			fontWeight: "bold",
-			color: themeStyle.primary,
+			color: themeStyle.textColor,
 			marginBottom: 8,
 			letterSpacing: 0.5,
 		},
 		summaryLabel: {
 			fontSize: 13,
-			color: themeStyle.textColorSecondary || themeStyle.textColor,
+			color: themeStyle.textColorSecondary,
 			fontWeight: "500",
 			letterSpacing: 0.3,
 		},
 		sectionTitle: {
-			fontSize: 22,
+			fontSize: 18,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
-			marginBottom: 8,
-			letterSpacing: 0.5,
+			marginBottom: 12,
+			letterSpacing: 0.3,
+		},
+		additionalStatsContainer: {
+			marginHorizontal: 20,
+			marginTop: 20,
+		},
+		detailedStatsBox: {
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 15,
+		},
+		statRow: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			marginBottom: 16,
+		},
+		statItem: {
+			width: "48%",
+		},
+		statLabel: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+			marginBottom: 4,
+		},
+		statValue: {
+			fontSize: 17,
+			fontWeight: "600",
+			color: themeStyle.textColor,
 		},
 		bestLiftsContainer: {
 			marginHorizontal: 20,
@@ -769,13 +1674,8 @@ const createStyles = (themeStyle) =>
 		bestLiftsBox: {
 			padding: 20,
 			backgroundColor: themeStyle.card,
-			borderRadius: 16,
+			borderRadius: 8,
 			marginTop: 15,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 4,
-			elevation: 3,
 		},
 		headerRow: {
 			flexDirection: "row",
@@ -790,21 +1690,16 @@ const createStyles = (themeStyle) =>
 		filterChip: {
 			flexDirection: "row",
 			alignItems: "center",
-			backgroundColor: `${themeStyle.primary}20`, // Light tint of primary color
+			backgroundColor: themeStyle.card,
 			paddingHorizontal: 14,
 			paddingVertical: 8,
-			borderRadius: 24,
+			borderRadius: 6,
 			marginRight: 10,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 1 },
-			shadowOpacity: 0.05,
-			shadowRadius: 1,
-			elevation: 1,
 			borderWidth: 1,
-			borderColor: `${themeStyle.primary}30`,
+			borderColor: themeStyle.borderColor,
 		},
 		filterChipText: {
-			color: themeStyle.primary,
+			color: themeStyle.textColorSecondary,
 			fontSize: 14,
 			marginRight: 5,
 			fontWeight: "600",
@@ -817,20 +1712,15 @@ const createStyles = (themeStyle) =>
 		filterButton: {
 			flexDirection: "row",
 			alignItems: "center",
-			backgroundColor: `${themeStyle.primary}20`,
+			backgroundColor: themeStyle.card,
 			paddingHorizontal: 12,
 			paddingVertical: 7,
-			borderRadius: 12,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 1 },
-			shadowOpacity: 0.05,
-			shadowRadius: 1,
-			elevation: 1,
+			borderRadius: 6,
 			borderWidth: 1,
-			borderColor: `${themeStyle.primary}30`,
+			borderColor: themeStyle.borderColor,
 		},
 		filterButtonText: {
-			color: themeStyle.primary,
+			color: themeStyle.textColorSecondary,
 			fontSize: 14,
 			marginRight: 5,
 			fontWeight: "600",
@@ -841,8 +1731,6 @@ const createStyles = (themeStyle) =>
 			justifyContent: "space-between",
 			alignItems: "center",
 			paddingVertical: 14,
-			borderBottomWidth: 1,
-			borderBottomColor: `${themeStyle.primary}15`, // primary color with 15% opacity
 			marginHorizontal: 2,
 		},
 		exerciseNameContainer: {
@@ -870,13 +1758,13 @@ const createStyles = (themeStyle) =>
 		liftValue: {
 			fontSize: 17,
 			fontWeight: "bold",
-			color: themeStyle.accent || themeStyle.primary,
+			color: themeStyle.primary,
 			letterSpacing: 0.3,
 		},
 		liftNameEstimated: {
 			fontSize: 17,
 			fontStyle: "italic",
-			color: themeStyle.textColorSecondary || themeStyle.textColor,
+			color: themeStyle.textColorSecondary,
 			letterSpacing: 0.3,
 		},
 		progressContainer: {
@@ -886,12 +1774,7 @@ const createStyles = (themeStyle) =>
 			marginBottom: 24,
 			padding: 20,
 			backgroundColor: themeStyle.card,
-			borderRadius: 16,
-			shadowColor: "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 4,
-			elevation: 3,
+			borderRadius: 8,
 		},
 		progressTitle: {
 			fontSize: 18,
@@ -901,18 +1784,113 @@ const createStyles = (themeStyle) =>
 			letterSpacing: 0.3,
 			paddingLeft: 4,
 		},
+		chartContainer: {
+			marginHorizontal: 20,
+			marginTop: 20,
+		},
+		chartBox: {
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 15,
+			alignItems: "center",
+		},
+		chartLabel: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+			textAlign: "center",
+			marginTop: 5,
+		},
+		weeklyContainer: {
+			marginHorizontal: 20,
+			marginTop: 20,
+		},
+		weeklyHeatmap: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 15,
+			marginBottom: 5,
+		},
+		dayColumn: {
+			alignItems: "center",
+		},
+		activityIndicator: {
+			width: 36,
+			height: 36,
+			borderRadius: 6,
+			justifyContent: "center",
+			alignItems: "center",
+			marginBottom: 8,
+		},
+		activityCount: {
+			color: "#FFFFFF",
+			fontSize: 14,
+			fontWeight: "bold",
+		},
+		dayLabel: {
+			fontSize: 12,
+			color: themeStyle.textColorSecondary,
+		},
+		trendRow: {
+			flexDirection: "row",
+			justifyContent: "space-around",
+			width: "100%",
+			padding: 10,
+		},
+		trendItem: {
+			alignItems: "center",
+		},
+		trendLabel: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+			marginBottom: 6,
+		},
+		trendValue: {
+			fontSize: 20,
+			fontWeight: "bold",
+			color: themeStyle.primary,
+		},
+		muscleGroupsContainer: {
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 15,
+		},
+		muscleGroupItem: {
+			flexDirection: "row",
+			alignItems: "center",
+			paddingVertical: 10,
+			borderBottomWidth: 1,
+			borderBottomColor: themeStyle.borderColor,
+		},
+		muscleGroupIndicator: {
+			width: 16,
+			height: 16,
+			borderRadius: 6,
+			marginRight: 10,
+		},
+		muscleGroupName: {
+			fontSize: 16,
+			color: themeStyle.textColor,
+			flex: 1,
+		},
+		muscleGroupCount: {
+			fontSize: 15,
+			color: themeStyle.textColorSecondary,
+			fontWeight: "500",
+		},
 		noDataContainer: {
 			height: 180,
 			justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: `${themeStyle.primary}10`, // Very light tint of primary color
-			borderRadius: 12,
+			borderRadius: 6,
 			borderWidth: 1,
 			borderColor: `${themeStyle.primary}20`,
 			marginVertical: 8,
 		},
 		noDataText: {
-			color: themeStyle.textColorSecondary || themeStyle.textColor,
+			color: themeStyle.textColorSecondary,
 			fontStyle: "italic",
 			fontSize: 15,
 			letterSpacing: 0.3,

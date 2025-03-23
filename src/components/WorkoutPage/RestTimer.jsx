@@ -305,7 +305,7 @@ const createStyles = (themeStyle) => {
 			alignItems: "center",
 			justifyContent: "center",
 			backgroundColor: themeStyle.primary,
-			borderRadius: 12,
+			borderRadius: 8,
 			padding: 10,
 			paddingHorizontal: 15,
 		},
@@ -329,7 +329,7 @@ const createStyles = (themeStyle) => {
 		modalView: {
 			width: "90%",
 			backgroundColor: themeStyle.backgroundColor,
-			borderRadius: 20,
+			borderRadius: 8,
 			padding: 15,
 			alignItems: "center",
 			shadowColor: "#000",
@@ -386,7 +386,7 @@ const createStyles = (themeStyle) => {
 		},
 		durationButton: {
 			backgroundColor: themeStyle.card || "#2A2A2A",
-			borderRadius: 12,
+			borderRadius: 6,
 			paddingVertical: 10,
 			paddingHorizontal: 15,
 			margin: 5,
@@ -435,7 +435,7 @@ const createStyles = (themeStyle) => {
 		},
 		controlButton: {
 			padding: 12,
-			borderRadius: 10,
+			borderRadius: 6,
 			minWidth: 90,
 			alignItems: "center",
 			margin: 5,
