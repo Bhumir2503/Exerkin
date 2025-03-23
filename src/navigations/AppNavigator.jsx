@@ -18,7 +18,7 @@ export default function AppNavigator() {
 
 	const hideTab = state?.routes?.some((route) =>
 		route?.state?.routes?.some(
-			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile" || subRoute.name === "Stats" 
+			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile" || subRoute.name === "Stats" || subRoute.name === "TermsOfService" || subRoute.name === "PrivacyPolicy"
 		)
 	);
 

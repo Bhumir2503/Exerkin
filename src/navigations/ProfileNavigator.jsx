@@ -5,6 +5,8 @@ import Settings from "../pages/Profile/Settings";
 import Stats from "../pages/Profile/Stats";
 import EditTheme from "../pages/Profile/EditTheme";
 import EditProfile from "../pages/Profile/EditProfile";
+import TermsOfService from "../components/Profile/TermsOfService";
+import PrivacyPolicy from "../components/Profile/PrivacyPolicy";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -49,6 +51,8 @@ export default function ProfileNavigator() {
 
 			<Stack.Screen name="EditTheme" component={EditTheme} />
 			<Stack.Screen name="EditProfile" component={EditProfile} />
+			<Stack.Screen name="TermsOfService" component={TermsOfService} />
+			<Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 		</Stack.Navigator>
 	);
 }

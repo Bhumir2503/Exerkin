@@ -109,12 +109,12 @@ export default function Settings({ navigation }) {
 						{
 							name: "Terms of Service",
 							icon: "document-text-outline",
-							location: "",
+							location: "TermsOfService",
 						},
 						{
 							name: "Privacy Policy",
 							icon: "lock-closed-outline",
-							location: "",
+							location: "PrivacyPolicy",
 						},
 					]}
 					navigation={navigation}
@@ -254,8 +254,7 @@ const createStyles = (themeStyle) =>
 			color: themeStyle.textColor,
 			marginLeft: 12,
 		},
-		scrollContent: {
-		},
+		scrollContent: {},
 		profileSection: {
 			alignItems: "center",
 			paddingVertical: 24,
