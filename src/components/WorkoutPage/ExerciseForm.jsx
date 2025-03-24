@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useSharedValue } from "react";
+import React, { useRef, useEffect, useSharedValue, useState } from "react";
 import {
 	View,
 	Text,
@@ -178,6 +178,8 @@ const UserInputSection = ({
 	lengths,
 	values,
 	exerciseId,
+	isFinished,		//used to maintain state of completed checkbox
+	onToggle,		//used to toggle completed checkbox
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -238,6 +240,16 @@ const UserInputSection = ({
 						}
 					/>
 				))}
+
+				{/* Checkbox Button */}
+                <TouchableOpacity onPress={onToggle} style={{ marginLeft: 10, flexDirection: "row", alignItems: "center" }}>
+                    <Ionicons
+                        name="checkbox-outline"
+                        size={22}
+                        color={isFinished ? "green" : "gray"}
+                    />
+                </TouchableOpacity>
+
 			</View>
 		</View>
 		// </ReanimatedSwipeable>
@@ -248,10 +260,22 @@ const BodyWeightExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const [finishedSet, setFinishedSet] = useState({})
 
 	const addSet = () => {
 		// Add a new set with null values for reps
 		addSetToExercise(exercise.id, { reps: null });
+		setFinishedSet((prev) => ({
+			...prev,
+			[exercise.sets.length]: false,
+		}));
+	};
+
+	const toggleSetFinished = (index) => {
+		setFinishedSet((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}))
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -279,6 +303,8 @@ const BodyWeightExercises = ({ exercise, drag }) => {
 					lengths={[3]}
 					values={[set.reps]}
 					exerciseId={exercise.id}
+					isFinished = {!!finishedSet[index]}
+					onToggle = {() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -292,10 +318,22 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const [finishedSet, setFinishedSet] = useState({})
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
+		setFinishedSet((prev) => ({
+			...prev,
+			[exercise.sets.length]: false,
+		}));
+	};
+
+	const toggleSetFinished = (index) => {
+		setFinishedSet((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}))
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -334,6 +372,8 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					exerciseId={exercise.id}
+					isFinished = {!!finishedSet[index]}
+					onToggle = {() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -347,10 +387,22 @@ const AssistedWeightExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const [finishedSet, setFinishedSet] = useState({})
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
+		setFinishedSet((prev) => ({
+			...prev,
+			[exercise.sets.length] : false,
+		}));
+	};
+
+	const toggleSetFinished = (index) => {
+		setFinishedSet((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}))
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -389,6 +441,8 @@ const AssistedWeightExercises = ({ exercise, drag }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					exerciseId={exercise.id}
+					isFinished={!!finishedSet[index]}
+					onToggle={() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -402,10 +456,22 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const [finishedSet, setFinishedSet] = useState({})
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
 		addSetToExercise(exercise.id, { time: null, distance: null });
+		setFinishedSet((prev) => ({
+			...prev,
+			[exercise.sets.length] : false,
+		}));
+	};
+
+	const toggleSetFinished = (index) => {
+		setFinishedSet((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}))
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -499,6 +565,8 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 						index === exercise.sets.length - 1
 					}
 					exerciseId={exercise.id}
+					isFinished={!!finishedSet[index]}
+					onToggle={() => toggleSetFinished[index]}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
@@ -512,10 +580,22 @@ const CardioTimeExercises = ({ exercise, drag }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
+	const [finishedSet, setFinishedSet] = useState({})
 
 	const addSet = () => {
 		// Add a new set with null values for time
 		addSetToExercise(exercise.id, { time: null });
+		setFinishedSet((prev) => ({
+			...prev,
+			[exercise.sets.length] : false,
+		}));
+	};
+
+	const toggleSetFinished = (index) => {
+		setFinishedSet((prev) => ({
+			...prev,
+			[index]: !prev[index],
+		}))
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -598,6 +678,8 @@ const CardioTimeExercises = ({ exercise, drag }) => {
 						index === exercise.sets.length - 1
 					}
 					exerciseId={exercise.id}
+					isFinished={!!finishedSet[index]}
+					onToggle={() => toggleSetFinished[index]}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
