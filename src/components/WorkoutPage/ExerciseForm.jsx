@@ -43,7 +43,7 @@ const ExerciseForm = ({setScrollEnabled}) => {
 		setWorkoutData(data);
 	};
 
-	//return (<>{workoutExercises.map((exercise, index) => {return <Exercise exercise={exercise} key={index.toString()} /> })}</>);
+	return (<>{workoutExercises.map((exercise, index) => {return <Exercise exercise={exercise} key={index.toString()} /> })}</>);
 	
 	return (
 		<GestureHandlerRootView>
@@ -566,7 +566,7 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 					}
 					exerciseId={exercise.id}
 					isFinished={!!finishedSet[index]}
-					onToggle={() => toggleSetFinished[index]}
+					onToggle={() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
