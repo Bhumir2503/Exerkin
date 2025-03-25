@@ -130,6 +130,7 @@ const Header = ({ repetitionType, metrics }) => {
 						{metric}
 					</Text>
 				))}
+				<View style={{ width: 50 }} />
 			</View>
 		</View>
 	);
@@ -242,11 +243,11 @@ const UserInputSection = ({
 				))}
 
 				{/* Checkbox Button */}
-                <TouchableOpacity onPress={onToggle} style={{ marginLeft: 10, flexDirection: "row", alignItems: "center" }}>
+                <TouchableOpacity onPress={onToggle} style={{ flexDirection: "row", alignItems: "center", width: 50, justifyContent: "center" }}>
                     <Ionicons
                         name="checkbox-outline"
                         size={22}
-                        color={isFinished ? "green" : "gray"}
+                        color={isFinished ? themeStyle.success : themeStyle.textColorSecondary}
                     />
                 </TouchableOpacity>
 
