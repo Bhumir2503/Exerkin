@@ -2,11 +2,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
 import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Profile/Settings";
-import Stats from "../pages/Stats/Stats";
 import EditTheme from "../pages/Profile/EditTheme";
 import EditProfile from "../pages/Profile/EditProfile";
 import TermsOfService from "../components/Profile/TermsOfService";
 import PrivacyPolicy from "../components/Profile/PrivacyPolicy";
+
+import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -39,13 +40,12 @@ export default function ProfileNavigator() {
 					gestureDirection: "horizontal",
 				}}
 			/>
-
 			<Stack.Screen
-				name="Stats"
-				component={Stats}
+				name="WorkoutModal"
+				component={WorkoutModal}
 				options={{
 					cardStyleInterpolator:
-						CardStyleInterpolators.forHorizontalIOS,
+						CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
 				}}
 			/>
 

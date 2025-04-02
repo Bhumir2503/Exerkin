@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
+import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 
 const { width } = Dimensions.get("window");
 const SCREEN_WIDTH = width;
@@ -1434,120 +1435,118 @@ export default function Stats({ navigation }) {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<View style={styles.topBar}>
-				<Text style={styles.title}>Stats & Analytics</Text>
-			</View>
-
-			{/* Tab Navigation */}
-			<View style={styles.tabBar}>
-				<TouchableOpacity
-					style={styles.tab}
-					onPress={() => setActiveTab("overview")}
-				>
-					<Ionicons
-						name="stats-chart"
-						size={20}
-						color={
-							activeTab === "overview"
-								? themeStyle.primary
-								: themeStyle.textColorSecondary
-						}
-					/>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "overview" && styles.activeTabText,
-						]}
+		<View style={{ flex: 1, backgroundColor: themeStyle.backgroundColor }}>
+			<SafeAreaView style={styles.container}>
+				<View style={styles.topBar}>
+					<Text style={styles.title}>Stats & Analytics</Text>
+				</View>
+				{/* Tab Navigation */}
+				<View style={styles.tabBar}>
+					<TouchableOpacity
+						style={styles.tab}
+						onPress={() => setActiveTab("overview")}
 					>
-						Overview
-					</Text>
-					{renderTabIndicator("overview")}
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					style={styles.tab}
-					onPress={() => setActiveTab("lifts")}
-				>
-					<Ionicons
-						name="barbell"
-						size={20}
-						color={
-							activeTab === "lifts"
-								? themeStyle.primary
-								: themeStyle.textColorSecondary
-						}
-					/>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "lifts" && styles.activeTabText,
-						]}
+						<Ionicons
+							name="stats-chart"
+							size={20}
+							color={
+								activeTab === "overview"
+									? themeStyle.primary
+									: themeStyle.textColorSecondary
+							}
+						/>
+						<Text
+							style={[
+								styles.tabText,
+								activeTab === "overview" && styles.activeTabText,
+							]}
+						>
+							Overview
+						</Text>
+						{renderTabIndicator("overview")}
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.tab}
+						onPress={() => setActiveTab("lifts")}
 					>
-						Lifts
-					</Text>
-					{renderTabIndicator("lifts")}
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					style={styles.tab}
-					onPress={() => setActiveTab("trends")}
-				>
-					<Ionicons
-						name="trending-up"
-						size={20}
-						color={
-							activeTab === "trends"
-								? themeStyle.primary
-								: themeStyle.textColorSecondary
-						}
-					/>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "trends" && styles.activeTabText,
-						]}
+						<Ionicons
+							name="barbell"
+							size={20}
+							color={
+								activeTab === "lifts"
+									? themeStyle.primary
+									: themeStyle.textColorSecondary
+							}
+						/>
+						<Text
+							style={[
+								styles.tabText,
+								activeTab === "lifts" && styles.activeTabText,
+							]}
+						>
+							Lifts
+						</Text>
+						{renderTabIndicator("lifts")}
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.tab}
+						onPress={() => setActiveTab("trends")}
 					>
-						Trends
-					</Text>
-					{renderTabIndicator("trends")}
-				</TouchableOpacity>
-
-				<TouchableOpacity
-					style={styles.tab}
-					onPress={() => setActiveTab("body")}
-				>
-					<Ionicons
-						name="body"
-						size={20}
-						color={
-							activeTab === "body"
-								? themeStyle.primary
-								: themeStyle.textColorSecondary
-						}
-					/>
-					<Text
-						style={[
-							styles.tabText,
-							activeTab === "body" && styles.activeTabText,
-						]}
+						<Ionicons
+							name="trending-up"
+							size={20}
+							color={
+								activeTab === "trends"
+									? themeStyle.primary
+									: themeStyle.textColorSecondary
+							}
+						/>
+						<Text
+							style={[
+								styles.tabText,
+								activeTab === "trends" && styles.activeTabText,
+							]}
+						>
+							Trends
+						</Text>
+						{renderTabIndicator("trends")}
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={styles.tab}
+						onPress={() => setActiveTab("body")}
 					>
-						Body
-					</Text>
-					{renderTabIndicator("body")}
-				</TouchableOpacity>
-			</View>
-
-			<ScrollView
-				style={styles.scrollContainer}
-				showsVerticalScrollIndicator={false}
-			>
-				{activeTab === "overview" && renderOverviewTab()}
-				{activeTab === "lifts" && renderLiftsTab()}
-				{activeTab === "trends" && renderTrendsTab()}
-				{activeTab === "body" && renderBodyFocusTab()}
-			</ScrollView>
-		</SafeAreaView>
+						<Ionicons
+							name="body"
+							size={20}
+							color={
+								activeTab === "body"
+									? themeStyle.primary
+									: themeStyle.textColorSecondary
+							}
+						/>
+						<Text
+							style={[
+								styles.tabText,
+								activeTab === "body" && styles.activeTabText,
+							]}
+						>
+							Body
+						</Text>
+						{renderTabIndicator("body")}
+					</TouchableOpacity>
+				</View>
+				<ScrollView
+					style={styles.scrollContainer}
+					showsVerticalScrollIndicator={false}
+				>
+					{activeTab === "overview" && renderOverviewTab()}
+					{activeTab === "lifts" && renderLiftsTab()}
+					{activeTab === "trends" && renderTrendsTab()}
+					{activeTab === "body" && renderBodyFocusTab()}
+				</ScrollView>
+			</SafeAreaView>
+				<ActiveWorkoutBar onPress={() => navigation.navigate("WorkoutModal")} />
+		</View>
 	);
 }
 

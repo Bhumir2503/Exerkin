@@ -14,7 +14,7 @@ import ActiveWorkoutBar from "./ActiveWorkoutBar";
 import TemplateSection from "./TemplateSection";
 
 
-const WorkoutDashboard = memo(({ onStartWorkout,}) => {
+const WorkoutDashboard = memo(({onStartWorkout}) => {
 	const { themeStyle } = useTheme();
 	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
@@ -58,7 +58,6 @@ const WorkoutDashboard = memo(({ onStartWorkout,}) => {
 				<TemplateSection />
 			</ScrollView>
 
-			{WorkoutId && <ActiveWorkoutBar onPress={onStartWorkout} />}
 		</View>
 	);
 });
