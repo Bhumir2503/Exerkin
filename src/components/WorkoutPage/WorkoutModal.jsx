@@ -22,72 +22,53 @@ import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
-const WorkoutModal = ({ visible, setModalVisible }) => {
+const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	const scrollViewRef = useRef(null);
-  	const scrollEnabledRef = useRef(true); // Ref to store scrollEnabled state
-
-	// Function to update scrollEnabled without re-rendering
-	const setScrollEnabled = (enabled) => {
-		scrollEnabledRef.current = enabled;
-		if (scrollViewRef.current) {
-			scrollViewRef.current.setNativeProps({ scrollEnabled: enabled });
-		}
-	};
 
 	return (
-		<Modal
-			presentationStyle="fullScreen"
-			animationType="slide"
-			visible={visible}
-			statusBarTranslucent={true}
+		<SafeAreaView
+			style={styles.modal}
+			edges={["top", "right", "left", "bottom"]}
 		>
-			<SafeAreaView
-				style={styles.modal}
-				edges={["top", "right", "left", "bottom"]}
+			<WorkoutHeaderButtons navigation={navigation} />
+
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.modalContent}
+				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 			>
-				<WorkoutHeaderButtons setMainModalVisible={setModalVisible} />
-
-				<KeyboardAvoidingView
-					behavior={Platform.OS === "ios" ? "padding" : "height"}
-					style={styles.modalContent}
-					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-				>
-					<View>
-						<View style={styles.timerStyle}>
-							<WorkoutTimer visible={visible} />
-							<View style={{ flexDirection: "row" }}>
-								<WorkoutNotes />
-								<RestTimer />
-							</View>
+				<View>
+					<View style={styles.timerStyle}>
+						<WorkoutTimer visible={visible} />
+						<View style={{ flexDirection: "row" }}>
+							<WorkoutNotes />
+							<RestTimer />
 						</View>
-
-						{/* We use a flatList because DraggableFlatList does not like ScrollView */}
-						{/* Display Exercises */}
-						<FlatList
-							ref={scrollViewRef}
-							nestedScrollEnabled={true}
-							scrollEnabled={true}
-							activationDistance={1}
-							data={[
-									<ExerciseForm setScrollEnabled={setScrollEnabled} />,
-									<AddFirstExerciseCard />,
-									<ExerciseSelector />,
-									<CancelButton
-										setMainModalVisible={setModalVisible}
-									/>,
-								]}
-								
-							renderItem={({item}) => item}
-							keyExtractor={(item, index) => index}
-						/>
-
 					</View>
-				</KeyboardAvoidingView>
-			</SafeAreaView>
-		</Modal>
+
+					<FlatList
+						ref={scrollViewRef}
+						nestedScrollEnabled={true}
+						scrollEnabled={true}
+						activationDistance={1}
+						data={[
+							<ExerciseForm />,
+							<AddFirstExerciseCard />,
+							<ExerciseSelector />,
+							<CancelButton
+								setMainModalVisible={setModalVisible}
+								navigation={navigation}
+							/>,
+						]}
+						renderItem={({ item }) => item}
+						keyExtractor={(item, index) => index}
+					/>
+				</View>
+			</KeyboardAvoidingView>
+		</SafeAreaView>
 	);
 };
 

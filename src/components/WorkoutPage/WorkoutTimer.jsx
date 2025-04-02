@@ -4,20 +4,29 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 export const formatTime = (seconds) => {
-	const hrs = Math.floor(seconds / 3600);
-	const mins = Math.floor((seconds % 3600) / 60);
-	const sec = seconds % 60;
-	let timeString = `${hrs.toString().padStart(2, "0")}:${mins
-		.toString()
-		.padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-	return timeString;
+	// Format as MM:SS if less than 1 hour
+	if (seconds < 3600) {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs
+			.toString()
+			.padStart(2, "0")}`;
+	} else {
+		// Format as HH:MM:SS if 1 hour or more
+		const hrs = Math.floor(seconds / 3600);
+		const mins = Math.floor((seconds % 3600) / 60);
+		const secs = seconds % 60;
+		return `${hrs.toString().padStart(2, "0")}:${mins
+			.toString()
+			.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	}
 };
 
-const WorkoutTimer = ({ visible }) => {
+const WorkoutTimer = () => {
 	const { WorkoutTimer, WorkoutStartTime } = useWorkout();
 
-	const [displayTime, setDisplayTime] = useState("00:00:00");
-	const [isRunning, setIsRunning] = useState(false);
+	const [displayTime, setDisplayTime] = useState("00:00");
+	const [isRunning, setIsRunning] = useState(true);
 
 	// Track timestamp for background calculation
 	const lastTickRef = useRef(Date.now());
@@ -42,20 +51,6 @@ const WorkoutTimer = ({ visible }) => {
 			setDisplayTime(formatTime(initialElapsedSeconds));
 		}
 	}, [WorkoutStartTime.current]);
-
-	// Use visible prop to toggle isRunning state of the timer
-	useEffect(() => {
-		if (visible) {
-			setIsRunning(true);
-		} else {
-			setIsRunning(false);
-			if (!WorkoutStartTime.current) {
-				// Only reset if not using a persistent WorkoutStartTime.current
-				WorkoutTimer.current = 0;
-				setDisplayTime(formatTime(0));
-			}
-		}
-	}, [visible, WorkoutStartTime.current]);
 
 	// Handle app state changes
 	useEffect(() => {
