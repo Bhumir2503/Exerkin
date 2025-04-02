@@ -5,8 +5,9 @@ import firestore from "@react-native-firebase/firestore";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
+import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 
-export default function Workout({navigation}) {
+export default function Workout({ navigation }) {
 	console.log("Workout Page Rendered");
 
 	const { themeStyle } = useTheme();
@@ -20,7 +21,10 @@ export default function Workout({navigation}) {
 
 	return (
 		<SafeAreaView style={styles.primaryContent}>
-			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()}  />
+			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()} />
+
+			{/* Active Workout Bar, if there is an active workout */}
+			<ActiveWorkoutBar onPress={()=> navigation.navigate("WorkoutModal")} />
 		</SafeAreaView>
 	);
 }

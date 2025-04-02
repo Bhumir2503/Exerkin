@@ -1,11 +1,12 @@
 import React from "react";
+import { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import WorkoutTimer from "./WorkoutTimer";
 
-const ActiveWorkoutBar = ({ onPress, visible }) => {
+const ActiveWorkoutBar = ({ onPress }) => {
 	const { themeStyle } = useTheme();
 	const {
 		workoutExercises,
@@ -15,7 +16,11 @@ const ActiveWorkoutBar = ({ onPress, visible }) => {
 	} = useWorkout();
 	const styles = createStyles(themeStyle);
 
-    if(!visible && !WorkoutStartTime.current) return null;
+	//rerender when title changes
+
+
+
+    if(!WorkoutStartTime.current) return null;
 
 
 	return (
@@ -35,7 +40,7 @@ const ActiveWorkoutBar = ({ onPress, visible }) => {
 				</Text>
 			</View>
 			<View style={styles.timerContainer}>
-				<WorkoutTimer timeRef={WorkoutTimerRef} visible={visible} startTimeStamp={WorkoutStartTime.current} />
+				<WorkoutTimer timeRef={WorkoutTimerRef} startTimeStamp={WorkoutStartTime.current} />
 			</View>
 		</Pressable>
 	);

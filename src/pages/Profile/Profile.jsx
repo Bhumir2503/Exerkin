@@ -11,6 +11,7 @@ import {
 	getWorkoutsThisWeek,
 } from "../../utils/WorkoutHistoryFuction";
 import WorkoutHistory from "../../components/Profile/WorkoutHistory";
+import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
@@ -116,6 +117,9 @@ export default function Profile({ navigation }) {
 					)}
 				</View>
 			</SafeAreaView>
+				<ActiveWorkoutBar
+					onPress={() => navigation.navigate("WorkoutModal")}
+				/>
 		</View>
 	);
 }
