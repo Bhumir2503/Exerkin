@@ -4,10 +4,12 @@ import { Platform } from "react-native";
 
 import ProfileNavigator from "./ProfileNavigator";
 import Friends from "../pages/Friends/Friends";
+import Stats from "../pages/Stats/Stats"; 
 
 import Workout from "../pages/Workout/Workout";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -36,6 +38,8 @@ export default function AppNavigator() {
 						iconName = focused ? "barbell" : "barbell-outline";
 					} else if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
+					} else if (route.name === "Stats") {
+						iconName = focused ? "stats-chart" : "stats-chart-outline";
 					}
 
 					// You can return any component that you like here!
@@ -59,6 +63,7 @@ export default function AppNavigator() {
 			})}
 		>
 			<Tab.Screen name="Home" component={ProfileNavigator} />
+			<Tab.Screen name="Stats" component={Stats} />
 			<Tab.Screen name="Workout" component={Workout} />
 			<Tab.Screen name="Profile" component={Friends} />
 		</Tab.Navigator>

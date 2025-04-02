@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-	View,
-	StyleSheet,
-	Text,
-	TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -48,16 +43,7 @@ export default function Profile({ navigation }) {
 				{/* Header */}
 				<View style={styles.header}>
 					<View style={styles.topBar}>
-						<TouchableOpacity
-							style={styles.iconButton}
-							onPress={() => navigation.navigate("Stats")}
-						>
-							<Ionicons
-								name="stats-chart"
-								size={24}
-								color={themeStyle.textColor}
-							/>
-						</TouchableOpacity>
+						<View style={styles.iconButton}></View>
 						<Text style={styles.appTitle}>Exerkin</Text>
 						<TouchableOpacity
 							style={styles.iconButton}
