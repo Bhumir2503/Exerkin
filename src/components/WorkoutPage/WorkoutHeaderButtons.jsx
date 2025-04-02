@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
+const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const {
 		workoutExercises,
@@ -29,7 +29,7 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 	};
 
 	const handleDownArrowPress = () => {
-		setMainModalVisible(false);
+		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
 
 
@@ -61,7 +61,7 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, onFinish }) => {
 				{/* Right section */}
 				<View style={styles.rightSection}>
 					{workoutExercises.length > 0 && (
-						<FinishModal setMainModalVisible={setMainModalVisible} />
+						<FinishModal setMainModalVisible={setMainModalVisible} navigation={navigation}/>
 					)}
 				</View>
 

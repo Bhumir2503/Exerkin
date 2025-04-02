@@ -1,20 +1,27 @@
-import React, { useRef, useEffect, useSharedValue, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
 	View,
 	Text,
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
+	Platform,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import Reanimated, { useAnimatedStyle, configureReanimatedLogger, ReanimatedLogLevel} from "react-native-reanimated";
+import Reanimated, {
+	useAnimatedStyle,
+	configureReanimatedLogger,
+	ReanimatedLogLevel,
+} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import DraggableFlatList, { ScaleDecorator } from "react-native-draggable-flatlist";
+import DraggableFlatList, {
+	ScaleDecorator,
+} from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // setScrollEnabled can lock and unlock the scrolling in workout modal
-const ExerciseForm = ({setScrollEnabled}) => {
+const ExerciseForm = () => {
 	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
 
 	// Don't tell Bhumir about this please :)
@@ -22,6 +29,8 @@ const ExerciseForm = ({setScrollEnabled}) => {
 		level: ReanimatedLogLevel.warn,
 		strict: false, // turn off the warnings
 	});
+
+	const { themeStyle } = useTheme();
 	const { workoutExercises, setWorkoutData } = useWorkout();
 
 	// If there are no exercises, return nothing
@@ -30,44 +39,69 @@ const ExerciseForm = ({setScrollEnabled}) => {
 	}
 
 	// DraggableFlatList uses this to draw each exercise form
-	const renderExercise = ({item, drag, isActive}) => {
-		if (isActive) {
-			setScrollEnabled(false);
-		}
-
-		return (<ScaleDecorator><Exercise exercise={item} drag={drag} /></ ScaleDecorator>);
+	const renderExercise = ({ item, drag, isActive }) => {
+		return (
+			<ScaleDecorator>
+				<TouchableOpacity
+					activeOpacity={1}
+					onLongPress={drag}
+					delayLongPress={150}
+					disabled={isActive}
+				>
+					<Exercise exercise={item} dragEnabled={true} />
+				</TouchableOpacity>
+			</ScaleDecorator>
+		);
 	};
 
-	const onDragEndEvent = ({data}) => {
-		setScrollEnabled(true);
+	const onDragEndEvent = ({ data }) => {
 		setWorkoutData(data);
 	};
 
-	return (<>{workoutExercises.map((exercise, index) => {return <Exercise exercise={exercise} key={index.toString()} /> })}</>);
-	
+	// Use platform-specific approach
+	if (Platform.OS === "ios") {
+		// For iOS, use DraggableFlatList with specific configurations
+		return (
+			<GestureHandlerRootView style={styles.gestureContainer}>
+				<DraggableFlatList
+					data={workoutExercises}
+					renderItem={renderExercise}
+					keyExtractor={(item, index) => item.id.toString()}
+					onDragEnd={onDragEndEvent}
+					scrollEnabled={true}
+					autoscrollThreshold={20}
+					autoscrollSpeed={150}
+					containerStyle={{ width: "100%" }}
+					activationDistance={10}
+				/>
+			</GestureHandlerRootView>
+		);
+	}
+
+	// Use the DraggableFlatList for Android
 	return (
-		<GestureHandlerRootView>
+		<GestureHandlerRootView style={styles.gestureContainer}>
 			<DraggableFlatList
 				data={workoutExercises}
 				renderItem={renderExercise}
-				keyExtractor={(item, index) => index.toString()}
+				keyExtractor={(item, index) => item.id.toString()}
 				onDragEnd={onDragEndEvent}
-
-				autoscrollThreshold={200} // Adjust this value as needed
-				autoscrollSpeed={200}     // Adjust this value as needed
+				scrollEnabled={true}
+				autoscrollThreshold={200}
+				autoscrollSpeed={200}
 			/>
 		</GestureHandlerRootView>
 	);
 };
 
-const Exercise = ({exercise, drag}) => {
+const Exercise = ({ exercise, dragEnabled }) => {
 	switch (exercise.type) {
 		case "bodyweight":
 			return (
 				<BodyWeightExercises
 					key={exercise.id}
 					exercise={exercise}
-					drag={drag}
+					dragEnabled={dragEnabled}
 				/>
 			);
 		case "weightlifting":
@@ -75,7 +109,7 @@ const Exercise = ({exercise, drag}) => {
 				<WeightLiftingExercises
 					key={exercise.id}
 					exercise={exercise}
-					drag={drag}
+					dragEnabled={dragEnabled}
 				/>
 			);
 		case "assisted-weight":
@@ -83,7 +117,7 @@ const Exercise = ({exercise, drag}) => {
 				<AssistedWeightExercises
 					key={exercise.id}
 					exercise={exercise}
-					drag={drag}
+					dragEnabled={dragEnabled}
 				/>
 			);
 		case "cardio-distance":
@@ -91,7 +125,7 @@ const Exercise = ({exercise, drag}) => {
 				<CardioDistanceExercises
 					key={exercise.id}
 					exercise={exercise}
-					drag={drag}
+					dragEnabled={dragEnabled}
 				/>
 			);
 		case "cardio-time":
@@ -99,12 +133,12 @@ const Exercise = ({exercise, drag}) => {
 				<CardioTimeExercises
 					key={exercise.id}
 					exercise={exercise}
-					drag={drag}
+					dragEnabled={dragEnabled}
 				/>
 			);
 		default:
 			return <View key={exercise.id}></View>;
-	};
+	}
 };
 
 const Header = ({ repetitionType, metrics }) => {
@@ -179,8 +213,8 @@ const UserInputSection = ({
 	lengths,
 	values,
 	exerciseId,
-	isFinished,		//used to maintain state of completed checkbox
-	onToggle,		//used to toggle completed checkbox
+	isFinished, //used to maintain state of completed checkbox
+	onToggle, //used to toggle completed checkbox
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -243,25 +277,36 @@ const UserInputSection = ({
 				))}
 
 				{/* Checkbox Button */}
-                <TouchableOpacity onPress={onToggle} style={{ flexDirection: "row", alignItems: "center", width: 50, justifyContent: "center" }}>
-                    <Ionicons
-                        name="checkbox-outline"
-                        size={22}
-                        color={isFinished ? themeStyle.success : themeStyle.textColorSecondary}
-                    />
-                </TouchableOpacity>
-
+				<TouchableOpacity
+					onPress={onToggle}
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						width: 50,
+						justifyContent: "center",
+					}}
+				>
+					<Ionicons
+						name="checkbox-outline"
+						size={22}
+						color={
+							isFinished
+								? themeStyle.success
+								: themeStyle.textColorSecondary
+						}
+					/>
+				</TouchableOpacity>
 			</View>
 		</View>
 		// </ReanimatedSwipeable>
 	);
 };
 
-const BodyWeightExercises = ({ exercise, drag }) => {
+const BodyWeightExercises = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const [finishedSet, setFinishedSet] = useState({})
+	const [finishedSet, setFinishedSet] = useState({});
 
 	const addSet = () => {
 		// Add a new set with null values for reps
@@ -276,7 +321,7 @@ const BodyWeightExercises = ({ exercise, drag }) => {
 		setFinishedSet((prev) => ({
 			...prev,
 			[index]: !prev[index],
-		}))
+		}));
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -291,7 +336,7 @@ const BodyWeightExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
+		<View style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -304,22 +349,22 @@ const BodyWeightExercises = ({ exercise, drag }) => {
 					lengths={[3]}
 					values={[set.reps]}
 					exerciseId={exercise.id}
-					isFinished = {!!finishedSet[index]}
-					onToggle = {() => toggleSetFinished(index)}
+					isFinished={!!finishedSet[index]}
+					onToggle={() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</TouchableOpacity>
+		</View>
 	);
 };
 
-const WeightLiftingExercises = ({ exercise, drag }) => {
+const WeightLiftingExercises = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const [finishedSet, setFinishedSet] = useState({})
+	const [finishedSet, setFinishedSet] = useState({});
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
@@ -334,7 +379,7 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 		setFinishedSet((prev) => ({
 			...prev,
 			[index]: !prev[index],
-		}))
+		}));
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -360,7 +405,7 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
+		<View style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -373,29 +418,29 @@ const WeightLiftingExercises = ({ exercise, drag }) => {
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
 					exerciseId={exercise.id}
-					isFinished = {!!finishedSet[index]}
-					onToggle = {() => toggleSetFinished(index)}
+					isFinished={!!finishedSet[index]}
+					onToggle={() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</TouchableOpacity>
+		</View>
 	);
 };
 
-const AssistedWeightExercises = ({ exercise, drag }) => {
+const AssistedWeightExercises = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const [finishedSet, setFinishedSet] = useState({})
+	const [finishedSet, setFinishedSet] = useState({});
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.id, { weight: null, reps: null });
 		setFinishedSet((prev) => ({
 			...prev,
-			[exercise.sets.length] : false,
+			[exercise.sets.length]: false,
 		}));
 	};
 
@@ -403,7 +448,7 @@ const AssistedWeightExercises = ({ exercise, drag }) => {
 		setFinishedSet((prev) => ({
 			...prev,
 			[index]: !prev[index],
-		}))
+		}));
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -429,7 +474,7 @@ const AssistedWeightExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
+		<View style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Set"} metrics={["-lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -449,22 +494,22 @@ const AssistedWeightExercises = ({ exercise, drag }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</TouchableOpacity>
+		</View>
 	);
 };
 
-const CardioDistanceExercises = ({ exercise, drag }) => {
+const CardioDistanceExercises = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const [finishedSet, setFinishedSet] = useState({})
+	const [finishedSet, setFinishedSet] = useState({});
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
 		addSetToExercise(exercise.id, { time: null, distance: null });
 		setFinishedSet((prev) => ({
 			...prev,
-			[exercise.sets.length] : false,
+			[exercise.sets.length]: false,
 		}));
 	};
 
@@ -472,7 +517,7 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 		setFinishedSet((prev) => ({
 			...prev,
 			[index]: !prev[index],
-		}))
+		}));
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -549,7 +594,7 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
+		<View style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Round"} metrics={["time", "miles"]} />
 			{exercise.sets.map((set, index) => (
@@ -573,22 +618,22 @@ const CardioDistanceExercises = ({ exercise, drag }) => {
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</TouchableOpacity>
+		</View>
 	);
 };
 
-const CardioTimeExercises = ({ exercise, drag }) => {
+const CardioTimeExercises = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise } = useWorkout();
-	const [finishedSet, setFinishedSet] = useState({})
+	const [finishedSet, setFinishedSet] = useState({});
 
 	const addSet = () => {
 		// Add a new set with null values for time
 		addSetToExercise(exercise.id, { time: null });
 		setFinishedSet((prev) => ({
 			...prev,
-			[exercise.sets.length] : false,
+			[exercise.sets.length]: false,
 		}));
 	};
 
@@ -596,7 +641,7 @@ const CardioTimeExercises = ({ exercise, drag }) => {
 		setFinishedSet((prev) => ({
 			...prev,
 			[index]: !prev[index],
-		}))
+		}));
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -662,7 +707,7 @@ const CardioTimeExercises = ({ exercise, drag }) => {
 	};
 
 	return (
-		<TouchableOpacity activeOpacity={1} onLongPress={drag} style={styles.container}>
+		<View style={styles.container}>
 			<Text style={styles.workoutName}>{exercise.name}</Text>
 			<Header repetitionType={"Round"} metrics={["time"]} />
 			{exercise.sets.map((set, index) => (
@@ -680,15 +725,22 @@ const CardioTimeExercises = ({ exercise, drag }) => {
 					}
 					exerciseId={exercise.id}
 					isFinished={!!finishedSet[index]}
-					onToggle={() => toggleSetFinished[index]}
+					onToggle={() => toggleSetFinished(index)}
 				/>
 			))}
 			<TouchableOpacity style={styles.setButton} onPress={addSet}>
 				<Text style={styles.setButtonText}>Add Set</Text>
 			</TouchableOpacity>
-		</TouchableOpacity>
+		</View>
 	);
 };
+
+const styles = StyleSheet.create({
+	gestureContainer: {
+		flex: 1,
+		width: "100%",
+	},
+});
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
@@ -699,7 +751,6 @@ const createStyles = (themeStyle) =>
 			width: "90%",
 			marginBottom: "5%",
 			borderRadius: 8,
-
 		},
 		workoutName: {
 			color: themeStyle.primary,

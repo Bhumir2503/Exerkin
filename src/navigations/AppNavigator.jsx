@@ -2,11 +2,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
-import ProfileNavigator from "./ProfileNavigator";
+import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
+import WorkoutNavigator from "./WorkoutNavigator";
 import Friends from "../pages/Friends/Friends";
 import Stats from "../pages/Stats/Stats"; 
 
-import Workout from "../pages/Workout/Workout";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 
@@ -20,7 +20,7 @@ export default function AppNavigator() {
 
 	const hideTab = state?.routes?.some((route) =>
 		route?.state?.routes?.some(
-			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile" || subRoute.name === "Stats" || subRoute.name === "TermsOfService" || subRoute.name === "PrivacyPolicy"
+			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile" || subRoute.name === "Stats" || subRoute.name === "TermsOfService" || subRoute.name === "PrivacyPolicy" || subRoute.name == "WorkoutModal"
 		)
 	);
 
@@ -64,7 +64,7 @@ export default function AppNavigator() {
 		>
 			<Tab.Screen name="Home" component={ProfileNavigator} />
 			<Tab.Screen name="Stats" component={Stats} />
-			<Tab.Screen name="Workout" component={Workout} />
+			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			<Tab.Screen name="Profile" component={Friends} />
 		</Tab.Navigator>
 	);

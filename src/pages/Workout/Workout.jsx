@@ -6,7 +6,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 
-export default function Workout() {
+export default function Workout({navigation}) {
 	console.log("Workout Page Rendered");
 
 	const { themeStyle } = useTheme();
@@ -15,16 +15,12 @@ export default function Workout() {
 	const styles = createStyles(themeStyle);
 
 	const WorkoutButtonPressed = () => {
-		setIsModalOpen(true);
+		navigation.navigate("WorkoutModal");
 	};
 
 	return (
 		<SafeAreaView style={styles.primaryContent}>
 			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()}  />
-			<WorkoutModal
-				visible={isModalOpen}
-				setModalVisible={setIsModalOpen}
-			/>
 		</SafeAreaView>
 	);
 }

@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const FinishModal = ({ setMainModalVisible }) => {
+const FinishModal = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const { workoutCompleted } = useWorkout();
 
@@ -25,16 +25,9 @@ const FinishModal = ({ setMainModalVisible }) => {
 	};
 
 	const handleLogIt = () => {
-		// First, close all modals
-		closeModal();
-		setTimeout(() => {
-		setMainModalVisible(false);
-		}, 500); // 500ms should be enough for the modal animations to complete
-		// Then execute workoutCompleted with a slight delay
-		// This ensures the modals are closed before any state changes from workoutCompleted
-		setTimeout(() => {
-			workoutCompleted();
-		}, 500); // 500ms should be enough for the modal animations to complete
+		navigation.goBack();
+		workoutCompleted();
+		setVisible(false);
 	};
 
 	return (

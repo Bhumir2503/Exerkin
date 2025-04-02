@@ -10,32 +10,23 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { useState, useEffect } from "react";
 
-const CancelButton = ({ setMainModalVisible }) => {
+const CancelButton = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const { workoutCancelled } = useWorkout();
 	const styles = createStyles(themeStyle);
 	const [visible, setVisible] = useState(false);
-	const [cancel, setCancel] = useState(false);
 
 	const closeModal = () => {
 		setVisible(false);
 	};
 
 	const handleCancel = () => {
-		setCancel(true);
-		closeModal();
+		workoutCancelled();
+		navigation.goBack();
+		setVisible(false);
 	};
 
-	useEffect(() => {
-		if (cancel) {
-			setMainModalVisible(false);
-			setCancel(false);
 
-			setTimeout(() => {
-				workoutCancelled();
-			}, 500);
-		}
-	}, [cancel]);
 
 	return (
 		<>
