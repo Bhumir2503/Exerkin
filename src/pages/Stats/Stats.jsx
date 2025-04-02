@@ -1436,13 +1436,6 @@ export default function Stats({ navigation }) {
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.topBar}>
-				<TouchableOpacity onPress={() => navigation.goBack()}>
-					<Ionicons
-						name="chevron-back"
-						size={24}
-						color={themeStyle.textColor}
-					/>
-				</TouchableOpacity>
 				<Text style={styles.title}>Stats & Analytics</Text>
 			</View>
 
@@ -1569,7 +1562,6 @@ const createStyles = (themeStyle) =>
 			width: "100%",
 		},
 		topBar: {
-			flexDirection: "row",
 			alignItems: "center",
 			paddingHorizontal: 16,
 			paddingVertical: 12,
@@ -1578,6 +1570,8 @@ const createStyles = (themeStyle) =>
 			fontSize: 22,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
+
+			textAlign: "center",
 			marginLeft: 10,
 			textAlign: "center",
 		},

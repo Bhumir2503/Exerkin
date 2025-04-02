@@ -2,7 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
 import Profile from "../pages/Profile/Profile";
 import Settings from "../pages/Profile/Settings";
-import Stats from "../pages/Profile/Stats";
+import Stats from "../pages/Stats/Stats";
 import EditTheme from "../pages/Profile/EditTheme";
 import EditProfile from "../pages/Profile/EditProfile";
 import TermsOfService from "../components/Profile/TermsOfService";
@@ -35,7 +35,7 @@ export default function ProfileNavigator() {
 				component={Settings}
 				options={{
 					cardStyleInterpolator:
-						CardStyleInterpolators.forHorizontalIOS, 
+						CardStyleInterpolators.forHorizontalIOS,
 					gestureDirection: "horizontal",
 				}}
 			/>
