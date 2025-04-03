@@ -114,6 +114,8 @@ export const WorkoutProvider = ({ children }) => {
 			WorkoutTitle.current = "Untitled Workout";
 		}
 
+		//format duration to 00:00:00 (hh:mm:ss) format for the workout duratio
+
 		// Set the workout finish time
 		const WorkoutFinishTime = firestore.Timestamp.now();
 
