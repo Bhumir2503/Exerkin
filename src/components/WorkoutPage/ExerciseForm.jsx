@@ -19,6 +19,7 @@ import DraggableFlatList, {
 	ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 // setScrollEnabled can lock and unlock the scrolling in workout modal
 const ExerciseForm = () => {
@@ -237,13 +238,13 @@ const UserInputSection = ({
 	}, [values]);
 
 	return (
-		// <ReanimatedSwipeable
-		// 	ref={swipeableRef}
-		// 	rightThreshold={120}
-		// 	onSwipeableOpen={handleRemoveSet}
-		// 	renderRightActions={DeleteIcon}
-		// 	overshootLeft={false}
-		// >
+		<ReanimatedSwipeable
+			ref={swipeableRef}
+			rightThreshold={120}
+			onSwipeableOpen={handleRemoveSet}
+			renderRightActions={DeleteIcon}
+			overshootLeft={false}
+		>
 		<View style={styles.setRows}>
 			<Text
 				style={{
@@ -298,7 +299,7 @@ const UserInputSection = ({
 				</TouchableOpacity>
 			</View>
 		</View>
-		// </ReanimatedSwipeable>
+		</ReanimatedSwipeable>
 	);
 };
 
