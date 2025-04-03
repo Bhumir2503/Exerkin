@@ -29,10 +29,22 @@ export const formatTimeStamptoTimeString = (timestamp) => {
 };
 
 // Function to format a string time to display in seconds or mins or hours
+
+// This function formats a time string in the format HH:MM:SS or MM:SS to a more readable format
 // Example: 1h 30m
 export const formatTimeToText = (time) => {
 	if (!time) return "0m";
-	const timeArray = time.split(":");
+
+	//change MM:SS to HH:MM:SS if needed for consistency in parsing
+	let formattedTime = time;
+
+	// Check if time is in MM:SS format (only has one colon)
+	if (time.split(":").length === 2) {
+		// Add 00 hours at the beginning
+		formattedTime = "00:" + time;
+	}
+
+	const timeArray = formattedTime.split(":");
 	const hours = parseInt(timeArray[0]);
 	const mins = parseInt(timeArray[1]);
 	const secs = parseInt(timeArray[2]);

@@ -14,14 +14,16 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 
 const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
-	const {
-		workoutExercises,
-		WorkoutTitle: WorkoutTitleRef,
-	} = useWorkout();
+	const { workoutExercises, WorkoutTitle: WorkoutTitleRef } = useWorkout();
 	const styles = createStyles(themeStyle);
 
+	// Use useEffect to update the local state when the ref changes
+	// This ensures our component reacts to external changes to the workout title
 	const [workoutTitle, setWorkoutTitle] = useState(WorkoutTitleRef.current);
 
+	useEffect(() => {
+		setWorkoutTitle(WorkoutTitleRef.current);
+	}, [WorkoutTitleRef.current]);
 
 	const handleTitleChange = (text) => {
 		setWorkoutTitle(text);
@@ -31,7 +33,6 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 	const handleDownArrowPress = () => {
 		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
-
 
 	return (
 		<>
@@ -55,16 +56,22 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={32}
 						placeholderTextColor={themeStyle.textColorSecondary}
+						cursorColor={themeStyle.primary} // Add primary color to cursor
+						autoCapitalize="none"
+						caretHidden={false}
+						showSoftInputOnFocus={true}
 					/>
 				</View>
 
 				{/* Right section */}
 				<View style={styles.rightSection}>
 					{workoutExercises.length > 0 && (
-						<FinishModal setMainModalVisible={setMainModalVisible} navigation={navigation}/>
+						<FinishModal
+							setMainModalVisible={setMainModalVisible}
+							navigation={navigation}
+						/>
 					)}
 				</View>
-
 			</View>
 		</>
 	);
