@@ -26,8 +26,6 @@ const CancelButton = ({ navigation }) => {
 		setVisible(false);
 	};
 
-
-
 	return (
 		<>
 			<Pressable onPress={() => setVisible(true)} style={styles.button}>
@@ -81,8 +79,8 @@ const CancelButton = ({ navigation }) => {
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		button: {
-
-			marginVertical: 5,
+			marginVertical: 10,
+			marginBottom: 50,
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",

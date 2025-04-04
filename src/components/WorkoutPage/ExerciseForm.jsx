@@ -15,19 +15,14 @@ import Reanimated, {
 	ReanimatedLogLevel,
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import {
-	NestableScrollContainer,
-	NestableDraggableFlatList,
+import DraggableFlatList, {
 	ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
-import ExerciseSelector from "./ExerciseSelector";
-import CancelButton from "./CancelButton";
-import AddFirstExerciseCard from "./AddFirstExerciseCard";
 
 // setScrollEnabled can lock and unlock the scrolling in workout modal
-const ExerciseForm = ({ setMainModalVisible, navigation }) => {
+const ExerciseForm = () => {
 	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
 
 	// Don't tell Bhumir about this please :)
@@ -39,27 +34,13 @@ const ExerciseForm = ({ setMainModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const { workoutExercises, setWorkoutData } = useWorkout();
 
+	// If there are no exercises, return nothing
+	if (!workoutExercises || workoutExercises.length === 0) {
+		return null;
+	}
 
-	// DraggableFlatList uses this to draw each exercise form or special item
-	const renderItem = ({ item, drag, isActive }) => {
-		// For special non-draggable items
-		if (item.type === "special") {
-			if (item.component === "selector") {
-				return <ExerciseSelector />;
-			} else if (item.component === "cancel") {
-				return (
-					<CancelButton
-						setMainModalVisible={setMainModalVisible}
-						navigation={navigation}
-					/>
-				);
-			} else if (item.component === "first-card") {
-				return <AddFirstExerciseCard />;
-			}
-			return null;
-		}
-
-		// For regular exercise items (draggable)
+	// DraggableFlatList uses this to draw each exercise form
+	const renderExercise = ({ item, drag, isActive }) => {
 		return (
 			<ScaleDecorator>
 				<TouchableOpacity
@@ -75,27 +56,42 @@ const ExerciseForm = ({ setMainModalVisible, navigation }) => {
 	};
 
 	const onDragEndEvent = ({ data }) => {
-		// Filter out the special items before updating workout data
-		const exercisesOnly = data.filter((item) => item.type !== "special");
-		setWorkoutData(exercisesOnly);
+		setWorkoutData(data);
 	};
+
+	// Use platform-specific approach
+	if (Platform.OS === "ios") {
+		// For iOS, use DraggableFlatList with specific configurations
+		return (
+			<GestureHandlerRootView style={styles.gestureContainer}>
+				<DraggableFlatList
+					data={workoutExercises}
+					renderItem={renderExercise}
+					keyExtractor={(item, index) => item.id.toString()}
+					onDragEnd={onDragEndEvent}
+					scrollEnabled={true}
+					autoscrollThreshold={20}
+					autoscrollSpeed={150}
+					containerStyle={{ width: "100%" }}
+					activationDistance={10}
+				/>
+			</GestureHandlerRootView>
+		);
+	}
 
 	// Use the DraggableFlatList for Android
 	return (
-		<NestableScrollContainer>
-			<NestableDraggableFlatList
+		<GestureHandlerRootView style={styles.gestureContainer}>
+			<DraggableFlatList
 				data={workoutExercises}
-				renderItem={renderItem}
-				keyExtractor={(item) => item.id.toString()}
+				renderItem={renderExercise}
+				keyExtractor={(item, index) => item.id.toString()}
 				onDragEnd={onDragEndEvent}
+				scrollEnabled={true}
+				autoscrollThreshold={200}
+				autoscrollSpeed={200}
 			/>
-			<AddFirstExerciseCard />
-			<ExerciseSelector />
-			<CancelButton
-				setMainModalVisible={setMainModalVisible}
-				navigation={navigation}
-			/>
-		</NestableScrollContainer>
+		</GestureHandlerRootView>
 	);
 };
 

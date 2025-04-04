@@ -7,9 +7,10 @@ import {
 	StatusBar,
 	SafeAreaView,
 	KeyboardAvoidingView,
+	ScrollView,
+	FlatList,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
@@ -25,19 +26,21 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-	return (
-		<GestureHandlerRootView style={{ flex: 1 }}>
-			<SafeAreaView
-				style={styles.modal}
-				edges={["top", "right", "left", "bottom"]}
-			>
-				<WorkoutHeaderButtons navigation={navigation} />
+	const scrollViewRef = useRef(null);
 
-				<KeyboardAvoidingView
-					behavior={Platform.OS === "ios" ? "padding" : "height"}
-					style={styles.modalContent}
-					keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-				>
+	return (
+		<SafeAreaView
+			style={styles.modal}
+			edges={["top", "right", "left", "bottom"]}
+		>
+			<WorkoutHeaderButtons navigation={navigation} />
+
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.modalContent}
+				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+			>
+				<View>
 					<View style={styles.timerStyle}>
 						<WorkoutTimer visible={visible} />
 						<View style={{ flexDirection: "row" }}>
@@ -46,11 +49,26 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 						</View>
 					</View>
 
-					{/* ExerciseForm already contains a draggable FlatList */}
-					<ExerciseForm navigation={navigation}/>
-				</KeyboardAvoidingView>
-			</SafeAreaView>
-		</GestureHandlerRootView>
+					<FlatList
+						ref={scrollViewRef}
+						nestedScrollEnabled={true}
+						scrollEnabled={true}
+						activationDistance={1}
+						data={[
+							<ExerciseForm />,
+							<AddFirstExerciseCard />,
+							<ExerciseSelector />,
+							<CancelButton
+								setMainModalVisible={setModalVisible}
+								navigation={navigation}
+							/>,
+						]}
+						renderItem={({ item }) => item}
+						keyExtractor={(item, index) => index}
+					/>
+				</View>
+			</KeyboardAvoidingView>
+		</SafeAreaView>
 	);
 };
 
@@ -62,9 +80,18 @@ const createStyles = (theme) => {
 			paddingTop:
 				Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
 		},
+		contentContainer: {
+			flex: 1,
+			// Manually apply padding if SafeAreaView still isn't working
+			// paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
+		},
 		modalContent: {
 			flex: 1,
 			width: "100%",
+		},
+		scrollView: {
+			width: "100%",
+			alignItems: "center",
 		},
 		timerStyle: {
 			paddingVertical: 15,
