@@ -119,8 +119,8 @@ const themes = {
 		secondary: "#d1d1e9",
 		textColor: "#2b2c34",
 		textColorSecondary: "#47484e",
-		card: "#f3f3ff",
-		cardAlt: "#f3f3ff",
+		card: "#f0f0ff", // Lighter card color
+		cardAlt: "#f0f0ff", // Lighter card color
 		inputBackground: "#d0d0f3", // Darker lavender input background
 		inputBorder: "#b8b8e6", // Darker border
 		borderColor: "#b8b8e6", // Added border color
@@ -137,8 +137,8 @@ const themes = {
 		secondary: "#8bd3dd",
 		textColor: "#001858",
 		textColorSecondary: "#172c66",
-		card: "#feeadc",
-		cardAlt: "#feeadc",
+		card: "#fce5d0", // Lighter card color
+		cardAlt: "#fce5d0", // Lighter card color
 		inputBackground: "#f5d6bc", // Darker peachy input background
 		inputBorder: "#edbea2", // Darker border
 		borderColor: "#edbea2", // Added border color
@@ -155,8 +155,8 @@ const themes = {
 		secondary: "#e5f4e3",
 		textColor: "#272343",
 		textColorSecondary: "#2d334a",
-		card: "#f0f0f0",
-		cardAlt: "#f0f0f0",
+		card: "#f0f0f0", // Lighter card color
+		cardAlt: "#f0f0f0", // Lighter card color
 		inputBackground: "#e0e0e0", // Darker gray input background
 		inputBorder: "#c8c8c8", // Darker border
 		borderColor: "#c8c8c8", // Added border color
@@ -173,8 +173,8 @@ const themes = {
 		secondary: "#c4e0ff",
 		textColor: "#1e293b",
 		textColorSecondary: "#475569",
-		card: "#e6f0ff",
-		cardAlt: "#e6f0ff",
+		card: "#e5f0fd", // Lighter card color
+		cardAlt: "#e5f0fd", // Lighter card color
 		inputBackground: "#c4deff", // Darker blue input background
 		inputBorder: "#a0c8ff", // Darker border
 		borderColor: "#a0c8ff", // Added border color
@@ -191,8 +191,8 @@ const themes = {
 		secondary: "#c3f0e4",
 		textColor: "#194350",
 		textColorSecondary: "#2d5f5d",
-		card: "#e3faef",
-		cardAlt: "#e3faef",
+		card: "#e0f5eb", // Lighter card color
+		cardAlt: "#e0f5eb", // Lighter card color
 		inputBackground: "#b5e8d4", // Darker mint input background
 		inputBorder: "#91d6bc", // Darker border
 		borderColor: "#91d6bc", // Added border color
@@ -209,8 +209,8 @@ const themes = {
 		secondary: "#f8d1e0",
 		textColor: "#33272a",
 		textColorSecondary: "#594a4e",
-		card: "#ffe4eb",
-		cardAlt: "#ffe4eb",
+		card: "#ffe4eb", // Lighter card color
+		cardAlt: "#ffe4eb", // Lighter card color
 		inputBackground: "#ffc3d6", // Darker pink input background
 		inputBorder: "#ffaac4", // Darker border
 		borderColor: "#ffaac4", // Added border color

@@ -65,9 +65,7 @@ export const WorkoutProvider = ({ children }) => {
 		retrievedWorkout();
 	}, [init, user]);
 
-	const setWorkoutData = (data) => {
-		setWorkoutExercises(data);
-	};
+
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
@@ -241,7 +239,6 @@ export const WorkoutProvider = ({ children }) => {
 				addSetToExercise,
 				updateSetInExercise,
 				removeSetFromExercise,
-				setWorkoutData,
 
 				workoutExercises,
 				setWorkoutExercises,

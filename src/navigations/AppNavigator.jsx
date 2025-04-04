@@ -10,7 +10,6 @@ import StatsNavigator from "./StatsNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 
-
 const Tab = createBottomTabNavigator();
 
 export default function AppNavigator() {
@@ -20,7 +19,13 @@ export default function AppNavigator() {
 
 	const hideTab = state?.routes?.some((route) =>
 		route?.state?.routes?.some(
-			(subRoute) => subRoute.name === "Settings" || subRoute.name === "EditTheme" || subRoute.name === "EditProfile"  || subRoute.name === "TermsOfService" || subRoute.name === "PrivacyPolicy" || subRoute.name == "WorkoutModal"
+			(subRoute) =>
+				subRoute.name === "Settings" ||
+				subRoute.name === "EditTheme" ||
+				subRoute.name === "EditProfile" ||
+				subRoute.name === "TermsOfService" ||
+				subRoute.name === "PrivacyPolicy" ||
+				subRoute.name == "WorkoutModal"
 		)
 	);
 
@@ -34,12 +39,14 @@ export default function AppNavigator() {
 						iconName = focused ? "home" : "home-outline";
 					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
-					} else if (route.name === "Workout") {
+					} else if (route.name === "WorkoutNav") {
 						iconName = focused ? "barbell" : "barbell-outline";
 					} else if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
-					} else if (route.name === "Stats") {
-						iconName = focused ? "stats-chart" : "stats-chart-outline";
+					} else if (route.name === "StatsNav") {
+						iconName = focused
+							? "stats-chart"
+							: "stats-chart-outline";
 					}
 
 					// You can return any component that you like here!
@@ -63,8 +70,8 @@ export default function AppNavigator() {
 			})}
 		>
 			<Tab.Screen name="Home" component={ProfileNavigator} />
-			<Tab.Screen name="Stats" component={StatsNavigator} />
-			<Tab.Screen name="Workout" component={WorkoutNavigator} />
+			<Tab.Screen name="StatsNav" component={StatsNavigator} />
+			<Tab.Screen name="WorkoutNav" component={WorkoutNavigator} />
 			<Tab.Screen name="Profile" component={Friends} />
 		</Tab.Navigator>
 	);

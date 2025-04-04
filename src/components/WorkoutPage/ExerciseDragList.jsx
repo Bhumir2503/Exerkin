@@ -1,7 +1,7 @@
 import React from "react";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
-import { StyleSheet, View, Pressable } from "react-native";
+import { StyleSheet, View, Pressable, Platform } from "react-native";
 import ReorderableList, {
 	reorderItems,
 	useReorderableDrag,
@@ -78,7 +78,7 @@ const createStyles = (theme) => {
 	return StyleSheet.create({
 		container: {
 			backgroundColor: theme.background,
-            maxHeight: "78%",
+            maxHeight: Platform.OS === "ios" ? "80%" : "78%",
 		},
 	});
 };
