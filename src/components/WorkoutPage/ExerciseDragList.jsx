@@ -77,8 +77,8 @@ const Card = ({ id, name, sets, type }) => {
 const createStyles = (theme) => {
 	return StyleSheet.create({
 		container: {
-			backgroundColor: theme.background,
-            maxHeight: Platform.OS === "ios" ? "80%" : "78%",
+			flex:1,
+            maxHeight: Platform.OS === "ios" ? "100%" : "78%",
 		},
 	});
 };

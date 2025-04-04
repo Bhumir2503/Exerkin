@@ -6,7 +6,6 @@ import {
 	StatusBar,
 	SafeAreaView,
 	KeyboardAvoidingView,
-
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
@@ -35,7 +34,7 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 				style={styles.modalContent}
 				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 			>
-				<View>
+				<View style={{ flex: 1, }}>
 					<View style={styles.timerStyle}>
 						<WorkoutTimer visible={visible} />
 						<View style={{ flexDirection: "row" }}>
@@ -46,12 +45,12 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 
 					<ExerciseDragList />
 					<AddFirstExerciseCard />
-					<View style={styles.bottomFixed}>
-						<ExerciseSelector />
-						<CancelButton navigation={navigation} />
-					</View>
 				</View>
 			</KeyboardAvoidingView>
+			<View style={styles.bottomFixed}>
+				<ExerciseSelector />
+				<CancelButton navigation={navigation} />
+			</View>
 		</SafeAreaView>
 	);
 };

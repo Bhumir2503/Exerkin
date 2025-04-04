@@ -25,7 +25,7 @@ export default function WorkoutNavigator() {
 				cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
 			}}
 		>
-			<Stack.Screen name="Workout" component={Workout} />
+			<Stack.Screen name="WorkoutHome" component={Workout} />
 			<Stack.Screen name="WorkoutModal" component={WorkoutModal} />
 		</Stack.Navigator>
 	);

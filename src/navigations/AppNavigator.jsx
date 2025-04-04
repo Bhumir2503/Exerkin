@@ -39,11 +39,11 @@ export default function AppNavigator() {
 						iconName = focused ? "home" : "home-outline";
 					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
-					} else if (route.name === "WorkoutNav") {
+					} else if (route.name === "Workout") {
 						iconName = focused ? "barbell" : "barbell-outline";
 					} else if (route.name === "Profile") {
 						iconName = focused ? "person" : "person-outline";
-					} else if (route.name === "StatsNav") {
+					} else if (route.name === "Stat") {
 						iconName = focused
 							? "stats-chart"
 							: "stats-chart-outline";
@@ -70,8 +70,8 @@ export default function AppNavigator() {
 			})}
 		>
 			<Tab.Screen name="Home" component={ProfileNavigator} />
-			<Tab.Screen name="StatsNav" component={StatsNavigator} />
-			<Tab.Screen name="WorkoutNav" component={WorkoutNavigator} />
+			<Tab.Screen name="Stat" component={StatsNavigator} />
+			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			<Tab.Screen name="Profile" component={Friends} />
 		</Tab.Navigator>
 	);
