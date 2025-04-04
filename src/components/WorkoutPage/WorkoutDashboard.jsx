@@ -11,7 +11,7 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, memo} from "react";
 
-import TemplateSection from "./TemplateSection";
+import TemplateSection from "../BlueprintPage/TemplateSection";
 
 
 const WorkoutDashboard = memo(({onStartWorkout}) => {
