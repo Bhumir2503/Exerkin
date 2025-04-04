@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import {
 	View,
 	Text,
@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { setThemeCache } from "../../cache/themeCache";
 
 export default function EditTheme({ navigation }) {
-	const { theme, themeStyle, changeTheme } = useTheme();
+	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	return (
@@ -257,7 +257,7 @@ function PreviewChoice() {
 }
 
 function ColorChoice() {
-	const { theme, themeStyle, changeTheme } = useTheme();
+	const { themeStyle } = useTheme();
 
 	return (
 		<View style={{ marginTop: 25, marginHorizontal: 20 }}>

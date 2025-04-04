@@ -1,4 +1,4 @@
-import { Text, View, Pressable, TextInput, StyleSheet } from "react-native";
+import { Text, View, TextInput, StyleSheet } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 
 const UserInputSection = ({

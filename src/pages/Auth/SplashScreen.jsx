@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import { Text, StyleSheet, Animated, Easing } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 // Define the theme object that will be used consistently throughout the app

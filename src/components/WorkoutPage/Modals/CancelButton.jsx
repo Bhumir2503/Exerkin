@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkout } from "../../../contexts/WorkoutContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const CancelButton = ({ navigation }) => {
 	const { themeStyle } = useTheme();

@@ -6,7 +6,6 @@ import {
 	Dimensions,
 	Image,
 	Platform,
-	TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -16,8 +15,6 @@ import GoogleAuthButton from "../../components/SignInButtons/GoogleAuthButton";
 import AppleAuthButton from "../../components/SignInButtons/AppleAuthButton";
 
 export default function Onboarding() {
-	const { width, height } = Dimensions.get("window");
-	const navigation = useNavigation();
 
 	return (
 		<SafeAreaView style={styles.container}>

@@ -1,10 +1,8 @@
 import React from "react";
 import {
 	StyleSheet,
-	TouchableOpacity,
 	View,
 	TextInput,
-	Modal,
 } from "react-native";
 import FinishModal from "./Modals/FinishModal";
 import { useState, useEffect } from "react";

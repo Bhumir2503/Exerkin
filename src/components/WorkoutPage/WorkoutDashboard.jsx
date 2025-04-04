@@ -11,7 +11,6 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, memo} from "react";
 
-import ActiveWorkoutBar from "./ActiveWorkoutBar";
 import TemplateSection from "./TemplateSection";
 
 

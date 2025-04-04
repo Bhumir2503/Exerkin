@@ -1,9 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, SafeAreaView, Modal } from "react-native";
-import firestore from "@react-native-firebase/firestore";
+import React, { useState, } from "react";
+import { View, StyleSheet, } from "react-native";
 
 import { useTheme } from "../../contexts/ThemeContext";
-import WorkoutModal from "../../components/WorkoutPage/WorkoutModal";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
 import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 

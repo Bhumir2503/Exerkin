@@ -8,10 +8,8 @@ import {
 	Modal,
 	TextInput,
 	ActivityIndicator,
-	Pressable,
 	KeyboardAvoidingView,
 	Platform,
-	ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";

@@ -10,7 +10,6 @@ import {
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useUser } from "../../contexts/UserContext";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function GoogleAuthButton() {
 	const { setIsNewUser } = useUser();

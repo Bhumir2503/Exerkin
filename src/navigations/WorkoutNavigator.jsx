@@ -1,8 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
-import Profile from "../pages/Profile/Profile";
-import Settings from "../pages/Profile/Settings";
-import Stats from "../pages/Stats/Stats";
 
 import Workout from "../pages/Workout/Workout";
 import WorkoutModal from "../components/WorkoutPage/WorkoutModal";

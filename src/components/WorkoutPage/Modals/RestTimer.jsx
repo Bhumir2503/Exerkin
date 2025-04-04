@@ -5,8 +5,6 @@ import {
 	TouchableOpacity,
 	View,
 	Modal,
-	Pressable,
-	FlatList,
 } from "react-native";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { Ionicons } from "@expo/vector-icons";

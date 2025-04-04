@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";

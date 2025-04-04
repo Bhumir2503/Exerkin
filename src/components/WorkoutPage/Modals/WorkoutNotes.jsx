@@ -7,9 +7,6 @@ import {
 	Modal,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
-	Keyboard,
-	KeyboardAvoidingView,
-	Pressable,
 } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkout } from "../../../contexts/WorkoutContext";
