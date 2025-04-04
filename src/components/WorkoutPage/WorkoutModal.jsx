@@ -16,19 +16,14 @@ import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
 import WorkoutNotes from "./WorkoutNotes";
 import RestTimer from "./RestTimer";
-import ExerciseForm from "./ExerciseForm";
+import ExerciseDragList from "./ExerciseDragList";
 import ExerciseSelector from "./ExerciseSelector";
 import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
-import ActiveWorkoutBar from "./ActiveWorkoutBar";
-
-import MyDraggableList from "./Exercises/draggable";
 
 const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-
-	const scrollViewRef = useRef(null);
 
 	return (
 		<SafeAreaView
@@ -51,24 +46,12 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 						</View>
 					</View>
 
-					<FlatList
-						ref={scrollViewRef}
-						nestedScrollEnabled={true}
-						scrollEnabled={true}
-						activationDistance={1}
-						data={[
-							<ExerciseForm />,
-							<AddFirstExerciseCard />,
-							<ExerciseSelector />,
-							<CancelButton
-								setMainModalVisible={setModalVisible}
-								navigation={navigation}
-							/>,
-						]}
-						renderItem={({ item }) => item}
-						keyExtractor={(item, index) => index}
-					/>
-					{/* <MyDraggableList /> */}
+						<ExerciseDragList />
+							<AddFirstExerciseCard />
+						<View style={styles.bottomFixed}>
+							<ExerciseSelector />
+							<CancelButton navigation={navigation}/>
+						</View>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
@@ -103,6 +86,14 @@ const createStyles = (theme) => {
 			alignItems: "center",
 			justifyContent: "space-between",
 		},
+		// bottomFixed: {
+		// 	position: "absolute",
+		// 	bottom: 0,
+		// 	width: "100%",
+		// 	paddingBottom: 20,
+		// 	paddingHorizontal: 20,
+		// 	backgroundColor: theme.backgroundColor,
+		// },
 	});
 };
 

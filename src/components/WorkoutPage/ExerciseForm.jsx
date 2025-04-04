@@ -5,104 +5,52 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	Platform,
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
-import Reanimated, {
-	useAnimatedStyle,
-	configureReanimatedLogger,
-	ReanimatedLogLevel,
-} from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import DraggableFlatList, {
-	ScaleDecorator,
-} from "react-native-draggable-flatlist";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import ReanimatedSwipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import { ReorderableList } from "react-native-reorderable-list";
 
-// setScrollEnabled can lock and unlock the scrolling in workout modal
-const ExerciseForm = () => {
-	// !TODO: Fix this so that the whole exercise form doesn't re-render when a set is added or when a value is changed
+export const ExerciseForm = () => {
 
-	// Don't tell Bhumir about this please :)
-	configureReanimatedLogger({
-		level: ReanimatedLogLevel.warn,
-		strict: false, // turn off the warnings
-	});
-
-	const { themeStyle } = useTheme();
 	const { workoutExercises, setWorkoutData } = useWorkout();
 
-	// If there are no exercises, return nothing
-	if (!workoutExercises || workoutExercises.length === 0) {
-		return null;
-	}
-
-	// DraggableFlatList uses this to draw each exercise form
-	const renderExercise = ({ item, drag, isActive }) => {
+	// Check if workoutExercises is empty
+	const isEmpty = workoutExercises.length === 0;
+	if (isEmpty) {
 		return (
-			<ScaleDecorator>
-				<TouchableOpacity
-					activeOpacity={1}
-					onLongPress={drag}
-					delayLongPress={150}
-					disabled={isActive}
-				>
-					<Exercise exercise={item} dragEnabled={true} />
-				</TouchableOpacity>
-			</ScaleDecorator>
-		);
-	};
-
-	const onDragEndEvent = ({ data }) => {
-		setWorkoutData(data);
-	};
-
-	// Use platform-specific approach
-	if (Platform.OS === "ios") {
-		// For iOS, use DraggableFlatList with specific configurations
-		return (
-			<GestureHandlerRootView style={styles.gestureContainer}>
-				<DraggableFlatList
-					data={workoutExercises}
-					renderItem={renderExercise}
-					keyExtractor={(item, index) => item.id.toString()}
-					onDragEnd={onDragEndEvent}
-					scrollEnabled={true}
-					autoscrollThreshold={20}
-					autoscrollSpeed={150}
-					containerStyle={{ width: "100%" }}
-					activationDistance={10}
-				/>
-			</GestureHandlerRootView>
+			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+				</View>
 		);
 	}
+	// renderItem function for ReorderableList
+	const renderExerciseItem = ({ item }) => {
+		console.log("ExerciseForm renderItem", item);
+		return <Exercise exercise={item}/>;
+	};
 
-	// Use the DraggableFlatList for Android
+	const handleReorder = (reorderedList) => {
+		setWorkoutData(reorderedList);
+	};
+
 	return (
-		<GestureHandlerRootView style={styles.gestureContainer}>
-			<DraggableFlatList
+
+			<ReorderableList
 				data={workoutExercises}
-				renderItem={renderExercise}
-				keyExtractor={(item, index) => item.id.toString()}
-				onDragEnd={onDragEndEvent}
-				scrollEnabled={true}
-				autoscrollThreshold={200}
-				autoscrollSpeed={200}
+				renderItem={renderExerciseItem}
+				keyExtractor={(item) => item.id.toString()}
+				onReorder={handleReorder}
 			/>
-		</GestureHandlerRootView>
 	);
 };
 
-const Exercise = ({ exercise, dragEnabled }) => {
+const Exercise = ({ exercise }) => {
 	switch (exercise.type) {
 		case "bodyweight":
 			return (
 				<BodyWeightExercises
 					key={exercise.id}
 					exercise={exercise}
-					dragEnabled={dragEnabled}
 				/>
 			);
 		case "weightlifting":
@@ -110,7 +58,6 @@ const Exercise = ({ exercise, dragEnabled }) => {
 				<WeightLiftingExercises
 					key={exercise.id}
 					exercise={exercise}
-					dragEnabled={dragEnabled}
 				/>
 			);
 		case "assisted-weight":
@@ -118,7 +65,6 @@ const Exercise = ({ exercise, dragEnabled }) => {
 				<AssistedWeightExercises
 					key={exercise.id}
 					exercise={exercise}
-					dragEnabled={dragEnabled}
 				/>
 			);
 		case "cardio-distance":
@@ -126,7 +72,6 @@ const Exercise = ({ exercise, dragEnabled }) => {
 				<CardioDistanceExercises
 					key={exercise.id}
 					exercise={exercise}
-					dragEnabled={dragEnabled}
 				/>
 			);
 		case "cardio-time":
@@ -134,7 +79,6 @@ const Exercise = ({ exercise, dragEnabled }) => {
 				<CardioTimeExercises
 					key={exercise.id}
 					exercise={exercise}
-					dragEnabled={dragEnabled}
 				/>
 			);
 		default:
@@ -171,40 +115,6 @@ const Header = ({ repetitionType, metrics }) => {
 	);
 };
 
-//this is what renders the item that comes from the right when sliding.
-function DeleteIcon(progress, drag) {
-	const { themeStyle } = useTheme();
-	const styleAnimation = useAnimatedStyle(() => {
-		return {
-			width: Math.max(drag.value * -1, 80), //so that the red box extends dynamically
-			opacity: progress.value,
-		};
-	});
-	return (
-		<Reanimated.View
-			style={[
-				{
-					backgroundColor: themeStyle.error,
-					justifyContent: "center",
-					alignItems: "center",
-					height: "90%",
-					borderRadius: 5,
-					marginVertical: 5,
-				},
-				styleAnimation,
-			]}
-		>
-			<View style={{ alignItems: "center", justifyContent: "center" }}>
-				<Ionicons name="trash" size={20} color="white" />
-				<Text
-					style={{ color: "white", fontWeight: "bold", fontSize: 10 }}
-				>
-					Delete Set
-				</Text>
-			</View>
-		</Reanimated.View>
-	);
-}
 
 const UserInputSection = ({
 	index,
@@ -219,32 +129,9 @@ const UserInputSection = ({
 }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { removeSetFromExercise } = useWorkout();
-	const swipeableRef = useRef(null);
 
-	//This function makes the set
-	const handleRemoveSet = () => {
-		// if(swipeableRef.current){
-		// 	swipeableRef.current.close();
-		// }
-		removeSetFromExercise(exerciseId, index);
-	};
-
-	//this is to make sure the set that moves up gets set to a closed swipe state, previously was slightly open
-	useEffect(() => {
-		if (swipeableRef.current) {
-			swipeableRef.current.close();
-		}
-	}, [values]);
 
 	return (
-		<ReanimatedSwipeable
-			ref={swipeableRef}
-			rightThreshold={120}
-			onSwipeableOpen={handleRemoveSet}
-			renderRightActions={DeleteIcon}
-			overshootLeft={false}
-		>
 			<View style={styles.setRows}>
 				<Text
 					style={{
@@ -299,7 +186,6 @@ const UserInputSection = ({
 					</TouchableOpacity>
 				</View>
 			</View>
-		</ReanimatedSwipeable>
 	);
 };
 
@@ -736,13 +622,6 @@ const CardioTimeExercises = ({ exercise, dragEnabled }) => {
 	);
 };
 
-const styles = StyleSheet.create({
-	gestureContainer: {
-		flex: 1,
-		width: "100%",
-	},
-});
-
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
@@ -808,6 +687,4 @@ const createStyles = (themeStyle) =>
 			borderColor: themeStyle.error,
 			borderWidth: 2,
 		},
-	});
-
-export default ExerciseForm;
+});
