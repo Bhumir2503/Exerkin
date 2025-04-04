@@ -6,8 +6,8 @@ import {
 	Modal,
 	TouchableWithoutFeedback,
 } from "react-native";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 import { useState, useEffect } from "react";
 
 const CancelButton = ({ navigation }) => {

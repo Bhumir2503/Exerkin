@@ -7,19 +7,18 @@ import {
 	StatusBar,
 	SafeAreaView,
 	KeyboardAvoidingView,
-	ScrollView,
-	FlatList,
+
 } from "react-native";
 import { useTheme } from "../../contexts/ThemeContext";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
 import WorkoutTimer from "./WorkoutTimer";
-import WorkoutNotes from "./WorkoutNotes";
-import RestTimer from "./RestTimer";
+import WorkoutNotes from "./Modals/WorkoutNotes";
+import RestTimer from "./Modals/RestTimer";
 import ExerciseDragList from "./ExerciseDragList";
-import ExerciseSelector from "./ExerciseSelector";
-import CancelButton from "./CancelButton";
-import AddFirstExerciseCard from "./AddFirstExerciseCard";
+import ExerciseSelector from "./Modals/ExerciseSelector";
+import CancelButton from "./Modals/CancelButton";
+import AddFirstExerciseCard from "./ExerciseCard/AddFirstExerciseCard";
 
 const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
@@ -46,12 +45,12 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 						</View>
 					</View>
 
-						<ExerciseDragList />
-							<AddFirstExerciseCard />
-						<View style={styles.bottomFixed}>
-							<ExerciseSelector />
-							<CancelButton navigation={navigation}/>
-						</View>
+					<ExerciseDragList />
+					<AddFirstExerciseCard />
+					<View style={styles.bottomFixed}>
+						<ExerciseSelector />
+						<CancelButton navigation={navigation} />
+					</View>
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>

@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 
 const AddFirstExerciseCard = () => {
 	const { themeStyle } = useTheme();
@@ -21,21 +21,18 @@ const AddFirstExerciseCard = () => {
 			<View style={styles.content}>
 				<View style={styles.IconContainer}>
 					<Ionicons
-						name="barbell"
+						name="barbell-outline"
 						size={40}
 						color={themeStyle.primary}
 					/>
 				</View>
-				<View style={styles.textContainer}>
-					<Text style={styles.title}>
-						Get Started With Your Workout
-					</Text>
-					<Text style={styles.description}>
-						Click the button below to select your first exercise.
-						You can add multiple sets for each exercise and track
-						your progress.
-					</Text>
-				</View>
+
+				<Text style={styles.title}>Get Started With Your Workout</Text>
+				<Text style={styles.description}>
+					Click the button below to select your first exercise. You
+					can add multiple sets for each exercise and track your
+					progress.
+				</Text>
 			</View>
 		</View>
 	);

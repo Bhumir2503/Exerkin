@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 
 const FinishModal = ({ navigation }) => {
 	const { themeStyle } = useTheme();

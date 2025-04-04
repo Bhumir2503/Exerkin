@@ -11,8 +11,8 @@ import {
 	KeyboardAvoidingView,
 	Pressable,
 } from "react-native";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const MAX_CHARACTERS = 256;

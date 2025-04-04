@@ -10,13 +10,13 @@ import {
 	FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 import {
 	exercises,
 	exerciseCategories,
 	getExercisesByCategory,
-} from "../../utils/ExerciseData";
+} from "../../../utils/ExerciseData";
 
 const ExerciseSelector = () => {
 	const { themeStyle } = useTheme();

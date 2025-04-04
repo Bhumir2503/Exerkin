@@ -10,8 +10,8 @@ import {
 } from "react-native";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 
 const RestTimer = () => {
 	const { themeStyle } = useTheme();

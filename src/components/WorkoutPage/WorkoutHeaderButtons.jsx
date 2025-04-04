@@ -6,7 +6,7 @@ import {
 	TextInput,
 	Modal,
 } from "react-native";
-import FinishModal from "./FinishModal";
+import FinishModal from "./Modals/FinishModal";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
