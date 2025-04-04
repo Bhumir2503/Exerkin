@@ -81,8 +81,8 @@ const CancelButton = ({ navigation }) => {
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		button: {
-			marginVertical: 10,
-			marginBottom: 50,
+
+			marginVertical: 5,
 			padding: 12,
 			borderRadius: 8,
 			flexDirection: "row",
