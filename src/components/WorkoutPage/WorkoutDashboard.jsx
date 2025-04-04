@@ -5,6 +5,7 @@ import {
 	TouchableOpacity,
 	ScrollView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,7 +26,7 @@ const WorkoutDashboard = memo(({onStartWorkout}) => {
 	};
 
 	return (
-		<View style={styles.container}>
+		<SafeAreaView style={styles.container}>
 			<Text style={styles.title}>Get Started</Text>
 			<Text style={styles.description}>Ready to start your workout?</Text>
 			<StartWorkoutButton
@@ -58,7 +59,7 @@ const WorkoutDashboard = memo(({onStartWorkout}) => {
 				<TemplateSection />
 			</ScrollView>
 
-		</View>
+		</SafeAreaView>
 	);
 });
 

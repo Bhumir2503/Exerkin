@@ -22,6 +22,8 @@ import CancelButton from "./CancelButton";
 import AddFirstExerciseCard from "./AddFirstExerciseCard";
 import ActiveWorkoutBar from "./ActiveWorkoutBar";
 
+import MyDraggableList from "./Exercises/draggable";
+
 const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -66,6 +68,7 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 						renderItem={({ item }) => item}
 						keyExtractor={(item, index) => index}
 					/>
+					{/* <MyDraggableList /> */}
 				</View>
 			</KeyboardAvoidingView>
 		</SafeAreaView>

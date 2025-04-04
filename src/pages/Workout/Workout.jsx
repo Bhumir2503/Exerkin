@@ -20,12 +20,12 @@ export default function Workout({ navigation }) {
 	};
 
 	return (
-		<SafeAreaView style={styles.primaryContent}>
+		<View style={styles.primaryContent}>
 			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()} />
 
 			{/* Active Workout Bar, if there is an active workout */}
 			<ActiveWorkoutBar onPress={()=> navigation.navigate("WorkoutModal")} />
-		</SafeAreaView>
+		</View>
 	);
 }
 
