@@ -111,8 +111,36 @@ export const getUpdatedTemplateFromFirestore = async (userId, lastSynced) => {
 
 export const addTemplateToFirestore = async (template) => {
 	try {
+		console.log(
+			"(FirestoreTemplateServices) - Adding template to Firestore:",
+			template
+		);
 		await templateCollection.doc(template.id).set(template);
+	} catch (error) {
+		console.log("(FirestoreTemplateServices) - Error adding template:", error);
+		throw error;
+		
+	}
+};
+
+export const addDeletedTemplateToFirestore = async (template) => {
+	try {
+		await deletedTemplateCollection.doc(template.id).set({
+			templateId: template.id,
+			userId: template.userId,
+			deletedAt: template.deletedAt,
+			uploadedAt: firestore.Timestamp.now(),
+		});
 	} catch (error) {
 		throw error;
 	}
-};
+}
+
+export const deleteTemplateFromFirestore = async (templateId) => {
+	try {
+		await templateCollection.doc(templateId).delete();
+	} catch (error) {
+		throw error;
+	}
+}
+

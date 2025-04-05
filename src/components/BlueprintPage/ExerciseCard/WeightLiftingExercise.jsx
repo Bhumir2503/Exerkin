@@ -12,7 +12,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null });
+		addSetToTemplateExercise(exercise.id, { weight: null, reps: null });
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -20,7 +20,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.id, index, {
 			...exercise.sets[index],
 			weight: number !== "" ? number : null,
 		});
@@ -31,7 +31,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.id, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
