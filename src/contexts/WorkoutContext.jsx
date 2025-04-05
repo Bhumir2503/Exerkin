@@ -1,4 +1,3 @@
-// contexts/WorkoutContext.jsx
 import React, {
 	createContext,
 	useState,
@@ -36,7 +35,7 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutId = useRef(null);
 	const [workoutHistory, setWorkoutHistory] = useState([]);
 	const [workoutExercises, setWorkoutExercises] = useState([]);
-	const WorkoutExerciseRef = useRef([]);
+
 	const WorkoutTitle = useRef("");
 	const WorkoutNote = useRef("");
 	const WorkoutStartTime = useRef(null);
@@ -236,7 +235,6 @@ export const WorkoutProvider = ({ children }) => {
 				setWorkoutExercises,
 				workoutHistory,
 				setWorkoutHistory,
-				WorkoutExerciseRef,
 				WorkoutId,
 				WorkoutNote,
 				WorkoutTitle,
