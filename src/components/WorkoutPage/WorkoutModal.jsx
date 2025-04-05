@@ -33,7 +33,7 @@ const WorkoutModal = ({ visible, setModalVisible, navigation }) => {
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={styles.modalContent}
-				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+				keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
 			>
 				<View style={{ flex: 1, }}>
 					<View style={styles.timerStyle}>

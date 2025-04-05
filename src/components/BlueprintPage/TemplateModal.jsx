@@ -28,7 +28,8 @@ const TemplateModal = ({ navigation }) => {
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={styles.modalContent}
-				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+				keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
+				
 			>
 				<View style={{ flex: 1 }}>
 					<View
@@ -62,6 +63,7 @@ const createStyles = (theme) => {
 		modalContent: {
 			flex: 1,
 			width: "100%",
+			backgroundColor: "transparent",
 		},
 		bottomFixed: {
 			marginBottom: Platform.OS === "ios" ? 0 : 15,
