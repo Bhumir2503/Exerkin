@@ -53,11 +53,11 @@ const FinishButton = ({ navigation }) => {
 					<View style={styles.modalContainer}>
 						<View style={styles.modalContent}>
 							<Text style={styles.modalTitle}>
-								Log Workout as Complete?
+								Create Template?
 							</Text>
 							<Text style={styles.modalText}>
-								Log this workout and view your progress in your
-								training history.
+								Save this template to your library and use it
+								to create workouts.
 							</Text>
 						</View>
 						<View style={styles.buttonView}>
@@ -71,7 +71,7 @@ const FinishButton = ({ navigation }) => {
 								style={styles.submit}
 								onPress={handleLogIt}
 							>
-								<Text style={styles.submitText}>Log It!</Text>
+								<Text style={styles.submitText}>Create It!</Text>
 							</Pressable>
 						</View>
 					</View>

@@ -51,6 +51,48 @@ export const TemplateProvider = ({ children }) => {
         TemplateStartTime.current = null;
     }
 
+    const addExerciseToTemplate = (exercise) => {
+        setTemplateExercises((prevExercises) => [...prevExercises, exercise]);
+    }
+
+    const addSetToTemplateExercise = (exerciseId, set) => {
+        setTemplateExercises((prevExercises) =>
+            prevExercises.map((exercise) =>
+                exercise.id === exerciseId
+                    ? { ...exercise, sets: [...exercise.sets, set] }
+                    : exercise
+            )
+        );
+    };
+
+    const updateSetInTemplateExercise = (exerciseId, index, set) => {
+        setTemplateExercises((prevExercises) =>
+            prevExercises.map((exercise) =>
+                exercise.id === exerciseId
+                    ? {
+                        ...exercise,
+                        sets: exercise.sets.map((s, i) =>
+                            i === index ? { ...s, ...set } : s
+                        ),
+                    }
+                    : exercise
+            )
+        );
+    }
+
+    const removeSetFromTemplateExercise = (exerciseId, index) => {
+        setTemplateExercises((prevExercises) =>
+            prevExercises.map((exercise) =>
+                exercise.id === exerciseId
+                    ? {
+                        ...exercise,
+                        sets: exercise.sets.filter((_, i) => i !== index),
+                    }
+                    : exercise
+            )
+        );
+    }
+
 
 
 	return (
@@ -68,6 +110,10 @@ export const TemplateProvider = ({ children }) => {
                 templateStarted,
                 saveTemplate,
                 cancelTemplate,
+                addExerciseToTemplate,
+                addSetToTemplateExercise,
+                updateSetInTemplateExercise,
+                removeSetFromTemplateExercise,
 			}}
 		>
 			{children}

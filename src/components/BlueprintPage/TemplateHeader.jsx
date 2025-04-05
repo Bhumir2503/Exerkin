@@ -47,7 +47,7 @@ const TemplateHeader = ({ navigation }) => {
 					<TextInput
 						style={styles.titleInput}
 						value={templateTitle}
-						placeholder={"Untitled BluePrint"}
+						placeholder={"Untitled Blueprint"}
 						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={32}
 						placeholderTextColor={themeStyle.textColorSecondary}

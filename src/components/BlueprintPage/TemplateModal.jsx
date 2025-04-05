@@ -3,13 +3,16 @@ import {
 	View,
 	Platform,
 	StyleSheet,
-	StatusBar,
-	SafeAreaView,
 	KeyboardAvoidingView,
-	Text,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import TemplateHeader from "./TemplateHeader";
+import TemplateNotes from "./Modals/TemplateNotes";
+import TemplateExerciseDragList from "./TemplateExerciseDragList";
+import AddFirstExerciseCard from "./ExerciseCard/AddFirstExerciseCard";
+import ExerciseSelector from "./Modals/ExerciseSelector";
+import CancelButton from "./Modals/CancelButton";
 
 const TemplateModal = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -28,20 +31,40 @@ const TemplateModal = ({ navigation }) => {
 				keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
 			>
 				<View style={{ flex: 1 }}>
-					{/* Add your template content here */}
-					<Text>Template Content Goes Here</Text>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "flex-end",
+							paddingVertical: 15,
+							paddingHorizontal: 20,
+						}}
+					>
+						<TemplateNotes />
+					</View>
+					<TemplateExerciseDragList />
+					<AddFirstExerciseCard />
 				</View>
 			</KeyboardAvoidingView>
+			<View style={styles.bottomFixed}>
+				<ExerciseSelector />
+				<CancelButton navigation={navigation} />
+			</View>
 		</SafeAreaView>
 	);
-}
+};
 
 const createStyles = (theme) => {
 	return StyleSheet.create({
 		modal: {
 			flex: 1,
 			backgroundColor: theme.backgroundColor,
-			paddingTop: StatusBar.currentHeight,
+		},
+		modalContent: {
+			flex: 1,
+			width: "100%",
+		},
+		bottomFixed: {
+			marginBottom: Platform.OS === "ios" ? 0 : 15,
 		},
 	});
 };

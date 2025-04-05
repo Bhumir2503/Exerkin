@@ -5,7 +5,7 @@ import {
 	Text,
 	StyleSheet,
 	Modal,
-	TouchableOpacity,
+	Pressable,
 	TouchableWithoutFeedback,
 } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const MAX_CHARACTERS = 256;
 
-const WorkoutNotes = () => {
+const TemplateNotes = () => {
     const { TemplateNote } = useTemplate();
 	const [workoutNotes, setWorkoutNotes] = useState(TemplateNote.current);
 	const [modalVisible, setModalVisible] = useState(false);
@@ -35,7 +35,7 @@ const WorkoutNotes = () => {
 
 	const saveNotes = () => {
 		setWorkoutNotes(tempNotes);
-		WorkoutNote.current = tempNotes;
+		TemplateNote.current = tempNotes;
 		setModalVisible(false);
 	};
 
@@ -47,12 +47,12 @@ const WorkoutNotes = () => {
 	return (
 		<>
 			{/* Notes Button */}
-			<TouchableOpacity
+			<Pressable
 				style={styles.noteButton}
 				onPress={() => setModalVisible(true)}
 			>
 				<Ionicons name="pencil" size={20} color={"#fff"} />
-			</TouchableOpacity>
+			</Pressable>
 
 			{/* Notes Modal */}
 			<Modal
@@ -69,8 +69,8 @@ const WorkoutNotes = () => {
 
 					<View style={styles.modalView}>
 						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>Workout Notes</Text>
-							<TouchableOpacity
+							<Text style={styles.modalTitle}>Notes</Text>
+							<Pressable
 								onPress={cancelNotes}
 								style={styles.closeButton}
 							>
@@ -79,13 +79,13 @@ const WorkoutNotes = () => {
 									size={24}
 									color={themeStyle.textColor}
 								/>
-							</TouchableOpacity>
+							</Pressable>
 						</View>
 
 						<View style={styles.inputContainer}>
 							<TextInput
 								style={styles.textInput}
-								placeholder="Add workout notes..."
+								placeholder="Add notes..."
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
@@ -102,22 +102,14 @@ const WorkoutNotes = () => {
 						</View>
 
 						<View style={styles.buttonContainer}>
-							{/* <TouchableOpacity
-									style={[styles.button, styles.cancelButton]}
-									onPress={cancelNotes}
-								>
-									<Text style={styles.cancelButtonText}>
-										Cancel
-									</Text>
-								</TouchableOpacity> */}
-							<TouchableOpacity
+							<Pressable
 								style={[styles.button, styles.saveButton]}
 								onPress={saveNotes}
 							>
 								<Text style={styles.saveButtonText}>
 									Save Notes
 								</Text>
-							</TouchableOpacity>
+							</Pressable>
 						</View>
 					</View>
 				</View>
@@ -221,4 +213,4 @@ const createStyles = (themeStyle) =>
 		},
 	});
 
-export default WorkoutNotes;
+export default TemplateNotes;
