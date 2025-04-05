@@ -1,5 +1,12 @@
-import { Text, View, TextInput, StyleSheet } from "react-native";
+import {
+	Text,
+	View,
+	TextInput,
+	StyleSheet,
+	TouchableOpacity,
+} from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 import { Swipeable } from "react-native-gesture-handler";
 
 const UserInputSection = ({
@@ -10,20 +17,44 @@ const UserInputSection = ({
 	lengths,
 	values,
 }) => {
+	const { removeSetFromExercise } = useWorkout();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	const handleDelete = (index) => {
+		removeSetFromExercise(index); // Call the function to remove the set from the exercise
+	};
+
 	// Render swipe right actions - this is what appears when the user swipes
-	const renderRightActions = () => {
+	const renderRightActions = (progress, dragX) => {
 		return (
-			<View style={styles.swipeableActions}>
-				<Text style={styles.swipeActionText}>Options</Text>
-			</View>
+			<TouchableOpacity
+				style={styles.deleteAction}
+				onPress={() => handleDelete(index)}
+			>
+				<Text style={styles.deleteActionText}>Delete</Text>
+			</TouchableOpacity>
 		);
 	};
 
+	// Reference to the swipeable component
+	let swipeableRef = null;
+
 	return (
-		<Swipeable renderRightActions={renderRightActions}>
+		<Swipeable
+			ref={(ref) => {
+				swipeableRef = ref;
+			}}
+			renderRightActions={renderRightActions}
+			rightThreshold={100} // Adjust this value to set the threshold
+			onSwipeableRightOpen={() => handleDelete(index)}
+			onSwipeableOpen={(direction) => {
+				if (direction === "right") {
+					// Auto-close the swipeable after deletion
+					if (swipeableRef) swipeableRef.close();
+				}
+			}}
+		>
 			<View style={styles.setRows}>
 				<Text
 					style={{
@@ -68,8 +99,9 @@ const createStyles = (themeStyle) => {
 			justifyContent: "space-between",
 			alignItems: "center",
 			width: "100%",
-			marginTop: 10,
-			paddingVertical: 8,
+			marginTop: 7,
+			marginBottom: 7, // Add some space below each row for better touchability
+			backgroundColor: themeStyle.card, // Ensure the background matches the card style
 		},
 		setButton: {
 			backgroundColor: themeStyle.inputBackground,
@@ -100,14 +132,17 @@ const createStyles = (themeStyle) => {
 			borderColor: themeStyle.error,
 			borderWidth: 2,
 		},
-		swipeableActions: {
-			backgroundColor: themeStyle.accent || "#3498db",
+		deleteAction: {
+			backgroundColor: themeStyle.error || "#e74c3c",
 			justifyContent: "center",
-			alignItems: "flex-start",
+			alignItems: "center",
 			width: 100,
-			paddingLeft: 15,
+			marginTop: 7, // Align with the swipeable row
+			marginBottom: 7, // Ensure it aligns with the row for better touchability
+			borderTopRightRadius: 6, // Match the border radius of the input fields
+			borderBottomRightRadius: 6, // Match the border radius of the input fields
 		},
-		swipeActionText: {
+		deleteActionText: {
 			color: "#fff",
 			fontWeight: "600",
 			fontSize: 16,

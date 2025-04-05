@@ -194,18 +194,18 @@ export const WorkoutProvider = ({ children }) => {
 
 	// Remove set from exercise in active workout
 	// setIndex is the index of the set in the exercise.sets array
-	const removeSetFromExercise = (exerciseId, setIndex) => {
+	const removeSetFromExercise = ( setIndex) => {
 		setWorkoutExercises((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
-					? {
-							...exercise,
-							sets: exercise.sets.filter(
-								(_, index) => index !== setIndex
-							),
-					  }
-					: exercise
-			)
+			prevExercises.map((exercise) => {
+				// Check if the exercise has sets to remove from
+				if (exercise.sets && exercise.sets.length > 0) {
+					return {
+						...exercise,
+						sets: exercise.sets.filter((_, index) => index !== setIndex),
+					};
+				}
+				return exercise; // return the exercise if no sets to remove
+			})
 		);
 	};
 
