@@ -40,7 +40,7 @@ const TemplateSection = ({ navigation }) => {
 						style={styles.createButton}
 						onPress={() => startTemplateButton()}
 					>
-						<Text style={styles.buttonText}>Create Template</Text>
+						<Text style={styles.buttonText}>Create Blueprint</Text>
 					</Pressable>
 				</View>
 			</View>
