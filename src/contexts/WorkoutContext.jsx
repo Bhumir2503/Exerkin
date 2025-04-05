@@ -6,17 +6,12 @@ import React, {
 	useEffect,
 	useRef,
 } from "react";
-import {
-	resetWorkoutHistoryCache,
-} from "../cache/workoutHistoryCache";
-
+import { resetWorkoutHistoryCache } from "../cache/workoutHistoryCache";
 
 import uuid from "react-native-uuid";
 import firestore from "@react-native-firebase/firestore";
 
-import {
-	batchDeleteWorkoutFromFirestore,
-} from "../firestore/FirestoreWorkoutServices";
+import { batchDeleteWorkoutFromFirestore } from "../firestore/FirestoreWorkoutServices";
 
 import {
 	resyncWorkouts,
@@ -64,8 +59,6 @@ export const WorkoutProvider = ({ children }) => {
 		// getWorkoutHistory();
 		retrievedWorkout();
 	}, [init, user]);
-
-
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
@@ -135,7 +128,7 @@ export const WorkoutProvider = ({ children }) => {
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
 		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
-		addWorkoutToHistory(workout)
+		addWorkoutToHistory(workout);
 
 		// Reset useStates
 		workoutCancelled();
@@ -194,23 +187,22 @@ export const WorkoutProvider = ({ children }) => {
 
 	// Remove set from exercise in active workout
 	// setIndex is the index of the set in the exercise.sets array
-	const removeSetFromExercise = ( setIndex) => {
+	const removeSetFromExercise = (exerciseId, setIndex) => {
 		setWorkoutExercises((prevExercises) =>
-			prevExercises.map((exercise) => {
-				// Check if the exercise has sets to remove from
-				if (exercise.sets && exercise.sets.length > 0) {
-					return {
-						...exercise,
-						sets: exercise.sets.filter((_, index) => index !== setIndex),
-					};
-				}
-				return exercise; // return the exercise if no sets to remove
-			})
+			prevExercises.map((exercise) =>
+				exercise.id === exerciseId
+					? {
+							...exercise,
+							sets: exercise.sets.filter(
+								(_, index) => index !== setIndex
+							),
+					  }
+					: exercise
+			)
 		);
 	};
 
 	const removeWorkoutFromHistory = (workout) => {
-		
 		const newWorkoutHistory = workoutHistory.filter(
 			(workoutcheck) => workoutcheck.id !== workout.id
 		);

@@ -10,6 +10,7 @@ import { useWorkout } from "../../../contexts/WorkoutContext";
 import { Swipeable } from "react-native-gesture-handler";
 
 const UserInputSection = ({
+	id,
 	index,
 	inputTypes,
 	placeholders,
@@ -22,7 +23,7 @@ const UserInputSection = ({
 	const styles = createStyles(themeStyle);
 
 	const handleDelete = (index) => {
-		removeSetFromExercise(index); // Call the function to remove the set from the exercise
+		removeSetFromExercise(id, index); // Call the function to remove the set from the exercise
 	};
 
 	// Render swipe right actions - this is what appears when the user swipes
@@ -30,7 +31,7 @@ const UserInputSection = ({
 		return (
 			<TouchableOpacity
 				style={styles.deleteAction}
-				onPress={() => handleDelete(index)}
+				onPress={() => handleDelete(id, index)}
 			>
 				<Text style={styles.deleteActionText}>Delete</Text>
 			</TouchableOpacity>

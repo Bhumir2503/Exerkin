@@ -43,6 +43,7 @@ const AssistedWeightExercise = ({ exercise }) => {
             {exercise.sets.map((set, index) => (
                 <UserInputSection
                     key={index}
+                    id={exercise.id}
                     index={index}
                     inputTypes={["decimal", "numeric"]}
                     placeholders={["135", "12"]}

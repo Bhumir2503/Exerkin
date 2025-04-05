@@ -96,6 +96,7 @@ const { themeStyle } = useTheme();
             {exercise.sets.map((set, index) => (
                 <UserInputSection
                     key={index}
+                    id={exercise.id}
                     index={index}
                     inputTypes={["numeric", "decimal"]}
                     placeholders={["30:00", "1.5"]}

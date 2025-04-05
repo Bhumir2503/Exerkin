@@ -84,6 +84,7 @@ const CardioTimeExercise = ({ exercise }) => {
                 {exercise.sets.map((set, index) => (
                     <UserInputSection
                         key={index}
+                        id={exercise.id}
                         index={index}
                         inputTypes={["numeric"]}
                         placeholders={["10:00"]}
