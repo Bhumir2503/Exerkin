@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkout } from "../../../contexts/WorkoutContext";
 import { Swipeable } from "react-native-gesture-handler";
@@ -33,7 +34,12 @@ const UserInputSection = ({
 				style={styles.deleteAction}
 				onPress={() => handleDelete(id, index)}
 			>
-				<Text style={styles.deleteActionText}>Delete</Text>
+				<Ionicons
+					name="trash"
+					size={40}
+					color="#fff"
+					style={styles.deleteActionText}
+				/>
 			</TouchableOpacity>
 		);
 	};
