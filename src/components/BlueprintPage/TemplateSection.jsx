@@ -29,7 +29,7 @@ const TemplateSection = ({ navigation }) => {
 					</View>
 
 					<Text style={styles.emptyStateTitle}>
-						Add Your First Template
+						Add Your First Blueprint
 					</Text>
 
 					<Text style={styles.emptyStateDescription}>
@@ -118,7 +118,7 @@ const createStyles = (themeStyle) => {
 		},
 		addButton: {
 			padding: 8,
-			borderRadius: 20,
+			borderRadius: 8,
 			backgroundColor: `${themeStyle.primary}15`,
 		},
 		emptyStateCard: {
