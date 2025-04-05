@@ -13,7 +13,7 @@ import { useUser } from "./UserContext";
 
 const TemplateContext = createContext();
 
-export const WorkoutProvider = ({ children }) => {
+export const TemplateProvider = ({ children }) => {
 	const [init, setInit] = useState(false);
 	const { user } = useUser();
 
@@ -39,7 +39,7 @@ export const WorkoutProvider = ({ children }) => {
         // add to stored template
 
         //add to cache and firestore
-        
+
         //reset the useStates
         cancelTemplate(); 
     }
@@ -64,6 +64,10 @@ export const WorkoutProvider = ({ children }) => {
                 TemplateTitle,
                 TemplateNote,
                 TemplateStartTime,
+
+                templateStarted,
+                saveTemplate,
+                cancelTemplate,
 			}}
 		>
 			{children}
@@ -71,4 +75,4 @@ export const WorkoutProvider = ({ children }) => {
 	);
 };
 
-export const useTempalte = () => useContext(TemplateContext);
+export const useTemplate = () => useContext(TemplateContext);

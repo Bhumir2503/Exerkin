@@ -1,15 +1,15 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 
-const TemplateSection = () => {
+const TemplateSection = ({navigation}) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	return (
 		<View>
 			<Text style={styles.title}>Blueprints: </Text>
-			<View style={styles.emptyStateCard}>
+			<Pressable style={styles.emptyStateCard} onPress={() => navigation.navigate("TemplateModal")}>
 				<View style={styles.emptyStateIconContainer}>
 					<Ionicons
 						name="construct-outline"
@@ -21,7 +21,7 @@ const TemplateSection = () => {
 				<Text style={styles.emptyStateDescription}>
                     We are working on bringing "Blueprints" to you soon. Stay tuned!
 				</Text>
-			</View>
+			</Pressable>
 		</View>
 	);
 };

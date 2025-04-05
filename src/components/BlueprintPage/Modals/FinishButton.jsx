@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTemplate } from "../../../contexts/TemplateContext";
 
-const FinishModal = ({ navigation }) => {
+const FinishButton = ({ navigation }) => {
     const { saveTemplate } = useTemplate();
 	const { themeStyle } = useTheme();
 
@@ -155,4 +155,4 @@ const createStyles = (themeStyle) => {
 	});
 };
 
-export default FinishModal;
+export default FinishButton;

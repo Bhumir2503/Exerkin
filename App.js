@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { WorkoutProvider } from "./src/contexts/WorkoutContext";
+import { TemplateProvider } from "./src/contexts/TemplateContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { NetworkProvider } from "./src/contexts/NetworkContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
@@ -59,7 +60,6 @@ export default function App() {
 		}
 	}, []);
 
-
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
 			<NetworkProvider>
@@ -68,9 +68,11 @@ export default function App() {
 						<MenuProvider>
 							<GestureHandlerRootView style={{ flex: 1 }}>
 								<UserProvider>
-									<WorkoutProvider>
-										<AppContent />
-									</WorkoutProvider>
+									<TemplateProvider>
+										<WorkoutProvider>
+											<AppContent />
+										</WorkoutProvider>
+									</TemplateProvider>
 								</UserProvider>
 							</GestureHandlerRootView>
 						</MenuProvider>
@@ -136,7 +138,7 @@ function AppContent() {
 	// User is logged in and has completed setup
 	return (
 		<NavigationContainer>
-			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"}/>
+			<StatusBar style={lightTheme.includes(theme) ? "dark" : "light"} />
 			<AppNavigator />
 		</NavigationContainer>
 	);
