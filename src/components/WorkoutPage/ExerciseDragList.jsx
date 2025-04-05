@@ -78,7 +78,7 @@ const createStyles = (theme) => {
 	return StyleSheet.create({
 		container: {
 			flex:1,
-            maxHeight: Platform.OS === "ios" ? "100%" : "78%",
+
 		},
 	});
 };

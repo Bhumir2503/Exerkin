@@ -83,14 +83,9 @@ const createStyles = (theme) => {
 			alignItems: "center",
 			justifyContent: "space-between",
 		},
-		// bottomFixed: {
-		// 	position: "absolute",
-		// 	bottom: 0,
-		// 	width: "100%",
-		// 	paddingBottom: 20,
-		// 	paddingHorizontal: 20,
-		// 	backgroundColor: theme.backgroundColor,
-		// },
+		bottomFixed: {
+			marginBottom: Platform.OS === "ios" ? 0 : 15,
+		},
 	});
 };
 
