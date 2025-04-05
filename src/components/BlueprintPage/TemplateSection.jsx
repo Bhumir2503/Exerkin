@@ -61,7 +61,6 @@ const TemplateSection = ({ navigation }) => {
 
 			<View style={styles.templatesContainer}>
 				{storedTemplate.map((template) => (
-					console.log(template),
 					<Pressable
 						key={template.id}
 						style={styles.templateCard}
