@@ -25,7 +25,8 @@ export default function AppNavigator() {
 				subRoute.name === "EditProfile" ||
 				subRoute.name === "TermsOfService" ||
 				subRoute.name === "PrivacyPolicy" ||
-				subRoute.name == "WorkoutModal"
+				subRoute.name == "WorkoutModal" ||
+				subRoute.name == "TemplateModal" 
 		)
 	);
 

@@ -1,5 +1,5 @@
-import React, { useState, } from "react";
-import { View, StyleSheet, } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet } from "react-native";
 
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutDashboard from "../../components/WorkoutPage/WorkoutDashboard";
@@ -19,10 +19,15 @@ export default function Workout({ navigation }) {
 
 	return (
 		<View style={styles.primaryContent}>
-			<WorkoutDashboard onStartWorkout={() => WorkoutButtonPressed()} />
+			<WorkoutDashboard
+				onStartWorkout={() => WorkoutButtonPressed()}
+				navigation={navigation}
+			/>
 
 			{/* Active Workout Bar, if there is an active workout */}
-			<ActiveWorkoutBar onPress={()=> navigation.navigate("WorkoutModal")} />
+			<ActiveWorkoutBar
+				onPress={() => navigation.navigate("WorkoutModal")}
+			/>
 		</View>
 	);
 }

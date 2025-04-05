@@ -14,7 +14,7 @@ import { useState, memo} from "react";
 import TemplateSection from "../BlueprintPage/TemplateSection";
 
 
-const WorkoutDashboard = memo(({onStartWorkout}) => {
+const WorkoutDashboard = memo(({navigation, onStartWorkout}) => {
 	const { themeStyle } = useTheme();
 	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
@@ -55,7 +55,7 @@ const WorkoutDashboard = memo(({onStartWorkout}) => {
 					<DailyGoal goalName="100 Sit-Ups" />
 					<DailyGoal goalName="100 Squats" />
 				</View>
-				<TemplateSection />
+				<TemplateSection navigation={navigation}/>
 			</ScrollView>
 
 		</SafeAreaView>

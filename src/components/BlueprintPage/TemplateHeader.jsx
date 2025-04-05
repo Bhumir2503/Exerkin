@@ -1,31 +1,28 @@
 import React from "react";
-import {
-	StyleSheet,
-	View,
-	TextInput,
-} from "react-native";
-import FinishModal from "./Modals/FinishModal";
+import { StyleSheet, View, TextInput } from "react-native";
+import FinishButton from "./Modals/FinishButton";
 import { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useTemplate } from "../../contexts/TemplateContext";
 
-const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
+const TemplateHeader = ({ navigation }) => {
 	const { themeStyle } = useTheme();
-	const { workoutExercises, WorkoutTitle: WorkoutTitleRef } = useWorkout();
-	const styles = createStyles(themeStyle);
+	const { templateExercises, TemplateTitle: TemplateTitleRef } =
+		useTemplate();
 
-	// Use useEffect to update the local state when the ref changes
-	// This ensures our component reacts to external changes to the workout title
-	const [workoutTitle, setWorkoutTitle] = useState(WorkoutTitleRef.current);
+	const styles = createStyles(themeStyle);
+	const [templateTitle, setTemplateTitle] = useState(
+		TemplateTitleRef.current
+	);
 
 	useEffect(() => {
-		setWorkoutTitle(WorkoutTitleRef.current);
-	}, [WorkoutTitleRef.current]);
+		setTemplateTitle(TemplateTitleRef.current);
+	}, [TemplateTitleRef.current]);
 
 	const handleTitleChange = (text) => {
-		setWorkoutTitle(text);
-		WorkoutTitleRef.current = text;
+		setTemplateTitle(text);
+		TemplateTitleRef.current = text;
 	};
 
 	const handleDownArrowPress = () => {
@@ -49,8 +46,8 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 				<View style={styles.centerSection}>
 					<TextInput
 						style={styles.titleInput}
-						value={workoutTitle}
-						placeholder={"Untitled Workout"}
+						value={templateTitle}
+						placeholder={"Untitled Blueprint"}
 						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={32}
 						placeholderTextColor={themeStyle.textColorSecondary}
@@ -63,11 +60,8 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 
 				{/* Right section */}
 				<View style={styles.rightSection}>
-					{workoutExercises.length > 0 && (
-						<FinishModal
-							setMainModalVisible={setMainModalVisible}
-							navigation={navigation}
-						/>
+					{templateExercises.length > 0 && (
+						<FinishButton navigation={navigation} />
 					)}
 				</View>
 			</View>
@@ -109,4 +103,4 @@ const createStyles = (themeStyle) => {
 	});
 };
 
-export default WorkoutHeaderButtons;
+export default TemplateHeader;

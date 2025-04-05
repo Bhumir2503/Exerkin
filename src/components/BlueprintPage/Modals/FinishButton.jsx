@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTemplate } from "../../../contexts/TemplateContext";
 
-const FinishModal = ({ navigation }) => {
+const FinishButton = ({ navigation }) => {
     const { saveTemplate } = useTemplate();
 	const { themeStyle } = useTheme();
 
@@ -53,11 +53,11 @@ const FinishModal = ({ navigation }) => {
 					<View style={styles.modalContainer}>
 						<View style={styles.modalContent}>
 							<Text style={styles.modalTitle}>
-								Log Workout as Complete?
+								Create Template?
 							</Text>
 							<Text style={styles.modalText}>
-								Log this workout and view your progress in your
-								training history.
+								Save this template to your library and use it
+								to create workouts.
 							</Text>
 						</View>
 						<View style={styles.buttonView}>
@@ -71,7 +71,7 @@ const FinishModal = ({ navigation }) => {
 								style={styles.submit}
 								onPress={handleLogIt}
 							>
-								<Text style={styles.submitText}>Log It!</Text>
+								<Text style={styles.submitText}>Create It!</Text>
 							</Pressable>
 						</View>
 					</View>
@@ -155,4 +155,4 @@ const createStyles = (themeStyle) => {
 	});
 };
 
-export default FinishModal;
+export default FinishButton;

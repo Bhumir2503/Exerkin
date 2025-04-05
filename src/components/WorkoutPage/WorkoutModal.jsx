@@ -4,9 +4,10 @@ import {
 	Platform,
 	StyleSheet,
 	StatusBar,
-	SafeAreaView,
+	
 	KeyboardAvoidingView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 
 import WorkoutHeaderButtons from "./WorkoutHeaderButtons";
@@ -60,8 +61,6 @@ const createStyles = (theme) => {
 		modal: {
 			flex: 1,
 			backgroundColor: theme.backgroundColor,
-			paddingTop:
-				Platform.OS === "android" ? StatusBar.currentHeight || 0 : 0,
 		},
 		contentContainer: {
 			flex: 1,

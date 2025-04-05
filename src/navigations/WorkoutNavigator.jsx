@@ -3,6 +3,7 @@ import { useTheme } from "../contexts/ThemeContext";
 
 import Workout from "../pages/Workout/Workout";
 import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
+import TemplateModal from "../components/BlueprintPage/TemplateModal";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -27,6 +28,7 @@ export default function WorkoutNavigator() {
 		>
 			<Stack.Screen name="WorkoutHome" component={Workout} />
 			<Stack.Screen name="WorkoutModal" component={WorkoutModal} />
+			<Stack.Screen name="TemplateModal" component={TemplateModal} />
 		</Stack.Navigator>
 	);
 }

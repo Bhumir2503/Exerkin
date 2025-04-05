@@ -29,7 +29,7 @@ const CancelButton = ({ navigation }) => {
     return (
         <>
             <Pressable onPress={() => setVisible(true)} style={styles.button}>
-                <Text style={styles.buttonText}>Cancel Workout</Text>
+                <Text style={styles.buttonText}>Cancel New Blueprint</Text>
             </Pressable>
 
             <Modal

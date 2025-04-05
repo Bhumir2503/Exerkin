@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import firestore from "@react-native-firebase/firestore";
 
 const key = "workoutTempalte";
+const key2 = "Sync"
 
-export const getWorkoutTemplateCache = async () => {
+export const getTemplateCache = async () => {
     try {
         const jsonValue = await AsyncStorage.getItem(key);
         return jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -13,19 +13,16 @@ export const getWorkoutTemplateCache = async () => {
     }
 }
 
-export const setWorkoutTemplateCache = async (workoutTemplate) => {
+export const setTemplateCache = async (template) => {
     try {
-        const jsonValue = JSON.stringify(workoutTemplate);
-        await AsyncStorage
-            .setItem(key, jsonValue);
-    }
-    catch (e) {
+        const jsonValue = JSON.stringify(template);
+        await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
         console.log(e);
     }
 }
 
-
-export const resetWorkoutTemplateCache = async () => {
+export const resetTemplateCache = async () => {
     try {
         await AsyncStorage.removeItem(key);
     } catch (e) {
@@ -33,18 +30,54 @@ export const resetWorkoutTemplateCache = async () => {
     }
 }
 
-export const addWorkoutToTemplateCache = async (workout) => {
+export const addTemplateToCache = async (template, time) => {
     try {
-        const workoutTemplate = await getWorkoutTemplateCache();
-        // If the template is empty, create a new one
-        if (workoutTemplate.length === 0) {
-            await setWorkoutTemplateCache([workout]);
+        const templateCache = await getTemplateCache();
+        // If the templateCache is empty, create a new one
+        if (templateCache.length === 0) {
+            await setTemplateCache({
+                lastSynced: time,
+                templates: [template],
+            });
             return;
         }
-        // If the template is not empty, add the workout to the existing history
-        await setWorkoutTemplateCache([...workoutTemplate, workout]);
+        // If the templateCache is not empty, add the template to the existing cache
+        templateCache.lastSynced = template.completedAt;
+        templateCache.templates.push(template);
+        await setTemplateCache(templateCache);
     } catch (e) {
         console.log(e);
     }
 }
 
+export const removeTemplateFromCache = async (templateId, deleteTime) => {
+    try {
+        const templateCache = await getTemplateCache();
+        // If the templateCache is not empty, remove the template from the existing cache
+        const updatedTemplateCache = templateCache.templates.filter(
+            (template) => template.id !== templateId
+        );
+        const updatedCache = templateCache;
+        updatedCache.lastSynced = deleteTime;
+        updatedCache.templates = updatedTemplateCache;
+        await setTemplateCache(updatedCache);
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const updateTemplateInCache = async (template) => {
+    try {
+        const templateCache = await getTemplateCache();
+        const updatedTemplateCache = templateCache.templates.map((temp) => 
+            temp.id === template.id ? template : temp
+        );
+
+        const updatedCache = templateCache;
+        updatedCache.templates = updatedTemplateCache;
+        updatedCache.lastSynced = template.updatedAt;
+        await setTemplateCache(updatedCache);
+    } catch (e) {
+        console.log(e);
+    }
+}
