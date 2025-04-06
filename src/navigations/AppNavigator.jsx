@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
 import WorkoutNavigator from "./WorkoutNavigator";
 import Friends from "../pages/Friends/Friends";
+import Measurement from "../pages/Measure/Measurement";
 import StatsNavigator from "./StatsNavigator";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -42,8 +43,8 @@ export default function AppNavigator() {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
 						iconName = focused ? "barbell" : "barbell-outline";
-					} else if (route.name === "Profile") {
-						iconName = focused ? "person" : "person-outline";
+					} else if (route.name === "Measure") {
+						iconName = focused ? "scale" : "scale-outline";
 					} else if (route.name === "Stat") {
 						iconName = focused
 							? "stats-chart"
@@ -73,7 +74,7 @@ export default function AppNavigator() {
 			<Tab.Screen name="Home" component={ProfileNavigator} />
 			<Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
-			<Tab.Screen name="Profile" component={Friends} />
+			<Tab.Screen name="Measure" component={Measurement} />
 		</Tab.Navigator>
 	);
 }

@@ -3,8 +3,7 @@ import auth from "@react-native-firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { hasCompleteProfile } from "../services/firestore/firestoreUserServices";
 
-
-import { getRealm } from "../services/database/realmConfig";
+import { useRealm } from "./RealmProvider";
 import { getRealmUser, setRealmUser } from "../services/database/realmUserFunctions";
 
 const UserContext = createContext();
@@ -16,6 +15,9 @@ export const UserProvider = ({ children }) => {
 	const [bio, setBio] = useState("");
 	const [isNewUser, setIsNewUser] = useState(false);
 	const [setupComplete, setSetupComplete] = useState(false);
+	
+
+	const realm = useRealm();
 
 	// Listen for auth state changes
 	useEffect(() => {
@@ -32,6 +34,8 @@ export const UserProvider = ({ children }) => {
 			authUser ? "User logged in" : "User logged out"
 		);
 
+
+
 		// Reset states when user signs out
 		if (!authUser) {
 			setUser(null);
@@ -40,7 +44,7 @@ export const UserProvider = ({ children }) => {
 			setIsNewUser(false);
 			setSetupComplete(false);
 
-			if (init) {
+			if(init) {
 				setInit(false);
 			}
 			return;
@@ -67,7 +71,7 @@ export const UserProvider = ({ children }) => {
 				setBio(userData.bio || "");
 
 		
-				await setRealmUser(authUser.uid, {
+				await setRealmUser(realm, authUser.uid, {
 					uid: authUser.uid,
 					username: userData.username,
 					bio: userData.bio || "",
@@ -95,7 +99,7 @@ export const UserProvider = ({ children }) => {
 
 			// 🔁 Fallback: try loading user from Realm instead of cache
 			try {
-				const cachedUser = await getRealmUser(authUser.uid);
+				const cachedUser = await getRealmUser(realm, authUser.uid);
 				if (cachedUser && cachedUser.username) {
 					setUsername(cachedUser.username);
 					setBio(cachedUser.bio || "");
@@ -130,7 +134,6 @@ export const UserProvider = ({ children }) => {
 			setSetupComplete(false);
 
 			// Clear user data from Realm
-			const realm = await getRealm();
 			realm.write(() => {
 				realm.deleteAll();
 			});

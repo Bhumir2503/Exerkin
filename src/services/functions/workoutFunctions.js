@@ -22,13 +22,10 @@ import {
 	getLastWorkoutSyncTime,
 	updateLastWorkoutSyncTime,
 } from "../database/realmWorkoutFunctions";
-import { getRealm } from "../database/realmConfig";
 
-
-export const syncPendingWorkoutsToFirestore = async (userId) => {
+export const syncPendingWorkoutsToFirestore = async (realm, userId) => {
 	try {
-		const realm = await getRealm();
-		const pendingWorkouts = await getPendingRealmWorkouts(userId);
+		const pendingWorkouts = await getPendingRealmWorkouts(realm, userId);
 
 		if (pendingWorkouts.length === 0) return;
 
@@ -51,20 +48,15 @@ export const syncPendingWorkoutsToFirestore = async (userId) => {
 				}
 			});
 		});
-
-		realm.close();
 	} catch (error) {
 		console.error("(Sync) Error syncing pending workouts:", error);
 	}
 };
 
-export const syncWorkoutsFromFirestore = async (userId) => {
+export const syncWorkoutsFromFirestore = async (realm, userId) => {
 	try {
-		const realm = await getRealm();
 		const lastSynced = getLastWorkoutSyncTime(realm);
         const effectiveLastSynced = lastSynced.getTime() === new Date(0).getTime() ? new Date() : lastSynced;
-
-        console.log(lastSynced, effectiveLastSynced);
 
 		const [newWorkouts, deletedWorkouts] = await Promise.all([
 			fetchNewWorkouts(userId, lastSynced),
@@ -82,38 +74,37 @@ export const syncWorkoutsFromFirestore = async (userId) => {
 			updateLastWorkoutSyncTime(realm);
 		});
 
-		realm.close();
 	} catch (error) {
 		console.error("(Sync) Error syncing from Firestore:", error);
 	}
 };
 
-export const getWorkouts = async (userId) => {
+export const getWorkouts = async (realm, userId) => {
     try {
-        const workouts = await getRealmWorkouts(userId);
+        const workouts = await getRealmWorkouts(realm, userId);
         return workouts;
     } catch (error) {
         console.error("(WorkoutFunctions) - Error getting workouts:", error);
     }
 }
 
-export const addWorkout = async (userId, workoutData) => {
+export const addWorkout = async (realm, userId, workoutData) => {
 	try {
 		await uploadWorkout(userId, workoutData);
-		await setRealmWorkout(userId, workoutData, "uploaded");
+		await setRealmWorkout(realm, userId, workoutData, "uploaded");
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error);
-		await setRealmWorkout(userId, workoutData, "pending");
+		await setRealmWorkout(realm, userId, workoutData, "pending");
 	}
 };
 
-export const deleteWorkout = async (userId, workoutId) => {
+export const deleteWorkout = async (realm, userId, workoutId) => {
 	try {
 		await removeWorkoutFromFirestore(workoutId);
 		await markWorkoutAsDeleted({ id: workoutId, userId: userId });
-		await removeRealmWorkout(userId, workoutId, "deleted");
+		await removeRealmWorkout(realm, userId, workoutId, "deleted");
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error deleting workout:", error);
-		await removeRealmWorkout(userId, workoutId, "pending");
+		await removeRealmWorkout(realm, userId, workoutId, "pending");
 	}
 };

@@ -16,7 +16,7 @@ import {
 	exercises,
 	exerciseCategories,
 	getExercisesByCategory,
-} from "../../../utils/ExerciseData";
+} from "../../../services/constants/exerciseLibrary";
 
 const ExerciseSelector = () => {
 	const { themeStyle } = useTheme();

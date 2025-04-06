@@ -1,18 +1,5 @@
-import Realm from "realm";
-import { SyncStatusSchema } from "../schemas/syncStatusSchema";
 
-const realmConfig = {
-	schema: [SyncStatusSchema],
-	schemaVersion: 1,
-};
-
-export const getRealmSyncStatus = async () => {
-	const realm = await Realm.open(realmConfig);
-	return realm;
-};
-
-export const getLastSynced = async (type) => {
-    const realm = await getRealmSyncStatus();
+export const getLastSynced = async (realm, type) => {
     const syncStatus = realm.objectForPrimaryKey("SyncStatus", type);
     if (syncStatus) {
         return syncStatus.lastSynced;
@@ -21,8 +8,7 @@ export const getLastSynced = async (type) => {
     }
 }
 
-export const updateLastSynced = async (type, lastSynced) => {
-    const realm = await getRealmSyncStatus();
+export const updateLastSynced = async (realm, type, lastSynced) => {
     realm.write(() => {
         const syncStatus = realm.objectForPrimaryKey("SyncStatus", type);
         if (syncStatus) {
@@ -36,8 +22,7 @@ export const updateLastSynced = async (type, lastSynced) => {
     });
 }
 
-export const clearSyncStatus = async () => {
-    const realm = await getRealmSyncStatus();
+export const clearSyncStatus = async (realm) => {
     realm.write(() => {
         realm.deleteAll();
     });
