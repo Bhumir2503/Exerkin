@@ -59,3 +59,22 @@ export const formatTimeToText = (time) => {
 		return `${secs}s`;
 	}
 };
+
+export const formatDurationToText = (duration) => {
+	// Format as MM:SS if less than 1 hour
+	if (seconds < 3600) {
+		const mins = Math.floor(seconds / 60);
+		const secs = seconds % 60;
+		return `${mins.toString().padStart(2, "0")}:${secs
+			.toString()
+			.padStart(2, "0")}`;
+	} else {
+		// Format as HH:MM:SS if 1 hour or more
+		const hrs = Math.floor(seconds / 3600);
+		const mins = Math.floor((seconds % 3600) / 60);
+		const secs = seconds % 60;
+		return `${hrs.toString().padStart(2, "0")}:${mins
+			.toString()
+			.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+	}
+}

@@ -19,7 +19,7 @@ import {
 	saveUserProfile,
 	isUsernameAvailable,
 } from "../../services/firestore/firestoreUserServices";
-
+import { useRealm } from "../../contexts/RealmProvider"; // Ensure you have the realm instance initialized
 import { setRealmUser } from "../../services/database/realmUserFunctions";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +30,7 @@ export default function SetUsername() {
 		setUsername: setContextUsername,
 		onSetupComplete,
 	} = useUser();
+	const realm = useRealm(); // Get the realm instance from the context
 	const [username, setUsername] = useState("");
 	const [bio, setBio] = useState("");
 	const [height, setHeight] = useState("");
@@ -114,7 +115,7 @@ export default function SetUsername() {
 				};
 
 				// Save the user profile to Realm
-				await setRealmUser(user.uid, {
+				await setRealmUser(realm, user.uid, {
 					uid: user.uid,
 					username: username,
 					bio: bio || "",

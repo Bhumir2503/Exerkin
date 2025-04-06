@@ -45,6 +45,7 @@ export const midnightPurpleTheme = {
 
 export default function App() {
 	const [init, setInit] = useState(true);
+	console.log("App.js: Starting app..."); // For debugging purposes
 	if (Platform.OS === "android") {
 		NavigationBar.setVisibilityAsync("hidden");
 		NavigationBar.setBackgroundColorAsync(
@@ -63,9 +64,7 @@ export default function App() {
 		setInit(false);
 	}, []);
 
-	if(init) {
-		return null; // Show a loading screen or splash screen here
-	}
+
 
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
