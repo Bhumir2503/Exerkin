@@ -20,6 +20,8 @@ import {
 	isUsernameAvailable,
 } from "../../services/firestore/firestoreUserServices";
 
+import { setRealmUser } from "../../services/database/realmUserFunctions";
+
 import { updateUserCache } from "../../cache/userCache";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -100,8 +102,8 @@ export default function SetUsername() {
 					username: username,
 					email: user.email || "",
 					uid: user.uid,
-					createdAt: firestore.FieldValue.serverTimestamp(),
-					updatedAt: firestore.FieldValue.serverTimestamp(),
+					createdAt: firestore.Timestamp.now(),
+					updatedAt: firestore.Timestamp.now(),
 					bio: bio || "",
 					height: height || "",
 					weight: weight || "",
@@ -111,8 +113,22 @@ export default function SetUsername() {
 					postCount: 0,
 				};
 
+				// Save the user profile to Realm
+				await setRealmUser(user.uid, {
+					uid: user.uid,
+					username: username,
+					bio: bio || "",
+					email: user.email || "",
+					createdAt: userData.createdAt.toDate(),
+					updatedAt: userData.updatedAt.toDate(),
+					age: age || "",
+					height: height || "",
+					weight: weight || "",
+					setupComplete: true,
+				});
 				// Save the user profile to Firestore
 				await saveUserProfile(user.uid, userData);
+
 
 				updateUserCache(userData);
 			} catch (firestoreError) {

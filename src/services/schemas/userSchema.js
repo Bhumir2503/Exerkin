@@ -1,5 +1,5 @@
-export const UserProfileSchema = {
-	name: "UserProfile",
+export const UserSchema = {
+	name: "User",
 	primaryKey: "uid",
 	properties: {
 		uid: "string",
