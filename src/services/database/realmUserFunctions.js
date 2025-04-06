@@ -1,16 +1,12 @@
 import Realm from "realm";
 import { UserSchema } from "../schemas/userSchema";
+import { getRealm } from "./realmConfig";
 
 const realmConfig = {
     schema: [UserSchema],
     schemaVersion: 1,
 }
 
-export const getRealm = async () => {
-    const realm = await Realm.open(realmConfig);
-    console.log(Realm.defaultPath);
-    return realm;
-}
 
 export const getRealmUser = async (userId) => {
     const realm = await getRealm();

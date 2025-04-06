@@ -19,6 +19,8 @@ import {
 	deleteWorkoutFromHistory,
 } from "../utils/WorkoutFunctions";
 
+import { addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
+
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
 
@@ -61,7 +63,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
-		WorkoutStartTime.current = firestore.Timestamp.now();
+		WorkoutStartTime.current = new Date();
 		WorkoutId.current = uuid.v4();
 	};
 
@@ -107,7 +109,7 @@ export const WorkoutProvider = ({ children }) => {
 		//format duration to 00:00:00 (hh:mm:ss) format for the workout duratio
 
 		// Set the workout finish time
-		const WorkoutFinishTime = firestore.Timestamp.now();
+		const WorkoutFinishTime = new Date();
 
 		// Create workout object
 		const workout = {
@@ -127,7 +129,7 @@ export const WorkoutProvider = ({ children }) => {
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
 		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
-		addWorkoutToHistory(workout);
+		addWorkout(workout.userId, workout);
 
 		// Reset useStates
 		workoutCancelled();
@@ -206,9 +208,7 @@ export const WorkoutProvider = ({ children }) => {
 			(workoutcheck) => workoutcheck.id !== workout.id
 		);
 		setWorkoutHistory(newWorkoutHistory);
-
-		workout.deletedAt = firestore.Timestamp.now();
-		deleteWorkoutFromHistory(workout);
+		deleteWorkout(workout.userId, workout.id);
 	};
 
 	// Clear workout history

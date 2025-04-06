@@ -24,6 +24,15 @@ import {
 	updateWorkoutInFirestore,
 } from "../firestore/FirestoreWorkoutServices";
 
+import {
+	fetchNewWorkouts,
+	fetchDeletedWorkouts,
+	uploadWorkout,
+	uploadWorkoutUpdate,
+	removeWorkoutFromFirestore,
+	markWorkoutAsDeleted,
+} from "../services/firestore/firestoreWorkoutServices";
+
 // Function to sync local completed workout that failed with firestore
 // Handles all sync operations: added, updated, and deleted workouts
 export const resyncWorkouts = async () => {

@@ -6,6 +6,8 @@ import { hasCompleteProfile } from "../services/firestore/firestoreUserServices"
 
 import { getRealmUser, setRealmUser, removeRealmUser } from "../services/database/realmUserFunctions";
 
+import { getRealm } from "../services/database/realmConfig";
+
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -129,7 +131,10 @@ export const UserProvider = ({ children }) => {
 			setSetupComplete(false);
 
 			// Clear user data from Realm
-			await removeRealmUser(user.uid);
+			const realm = await getRealm();
+			realm.write(() => {
+				realm.deleteAll();
+			});
 
 			// Remove user data from cache
 			await AsyncStorage.clear();
