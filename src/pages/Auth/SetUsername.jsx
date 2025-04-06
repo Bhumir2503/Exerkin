@@ -22,7 +22,6 @@ import {
 
 import { setRealmUser } from "../../services/database/realmUserFunctions";
 
-import { updateUserCache } from "../../cache/userCache";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SetUsername() {
@@ -108,6 +107,7 @@ export default function SetUsername() {
 					height: height || "",
 					weight: weight || "",
 					age: age || "",
+
 					followers: 0,
 					following: 0,
 					postCount: 0,
@@ -128,9 +128,6 @@ export default function SetUsername() {
 				});
 				// Save the user profile to Firestore
 				await saveUserProfile(user.uid, userData);
-
-
-				updateUserCache(userData);
 			} catch (firestoreError) {
 				console.log("Error saving user profile:", firestoreError);
 				setError("Failed to save username. Please try again.");

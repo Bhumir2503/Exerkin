@@ -1,12 +1,11 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
-import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { hasCompleteProfile } from "../services/firestore/firestoreUserServices";
 
-import { getRealmUser, setRealmUser, removeRealmUser } from "../services/database/realmUserFunctions";
 
 import { getRealm } from "../services/database/realmConfig";
+import { getRealmUser, setRealmUser } from "../services/database/realmUserFunctions";
 
 const UserContext = createContext();
 
@@ -143,11 +142,6 @@ export const UserProvider = ({ children }) => {
 		} catch (error) {
 			console.error("(UserContext) - Error signing out:", error);
 			// At this point, we should inform the user that logout failed
-			Alert.alert(
-				"Logout Failed",
-				"Please try again later or restart the app.",
-				[{ text: "OK" }]
-			);
 		}
 	}
 

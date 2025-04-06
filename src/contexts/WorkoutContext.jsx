@@ -5,12 +5,8 @@ import React, {
 	useEffect,
 	useRef,
 } from "react";
-import { resetWorkoutHistoryCache } from "../cache/workoutHistoryCache";
 
 import uuid from "react-native-uuid";
-import firestore from "@react-native-firebase/firestore";
-
-import { batchDeleteWorkoutFromFirestore } from "../firestore/FirestoreWorkoutServices";
 
 import { syncPendingWorkoutsToFirestore, syncWorkoutsFromFirestore, getWorkouts, addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
 
@@ -204,13 +200,7 @@ export const WorkoutProvider = ({ children }) => {
 		deleteWorkout(workout.userId, workout.id);
 	};
 
-	// Clear workout history
-	const clearWorkoutHistory = () => {
-		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
-		setWorkoutHistory([]);
-		batchDeleteWorkoutFromFirestore(deleteWorkoutId);
-		resetWorkoutHistoryCache();
-	};
+
 
 	return (
 		<WorkoutContext.Provider
@@ -237,7 +227,6 @@ export const WorkoutProvider = ({ children }) => {
 				removeExerciseFromWorkout,
 
 				removeWorkoutFromHistory,
-				clearWorkoutHistory,
 			}}
 		>
 			{children}
