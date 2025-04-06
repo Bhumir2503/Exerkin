@@ -60,7 +60,7 @@ export const formatTimeToText = (time) => {
 	}
 };
 
-export const formatDurationToText = (duration) => {
+export const formatDurationToText = (seconds) => {
 	// Format as MM:SS if less than 1 hour
 	if (seconds < 3600) {
 		const mins = Math.floor(seconds / 60);
