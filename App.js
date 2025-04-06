@@ -58,7 +58,12 @@ export default function App() {
 
 			return () => clearInterval(intervalId); // Cleanup on unmount
 		}
+		setInit(false);
 	}, []);
+
+	if(init) {
+		return null; // Show a loading screen or splash screen here
+	}
 
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>

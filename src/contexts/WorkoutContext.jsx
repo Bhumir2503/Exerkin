@@ -5,19 +5,10 @@ import React, {
 	useEffect,
 	useRef,
 } from "react";
-import { resetWorkoutHistoryCache } from "../cache/workoutHistoryCache";
 
 import uuid from "react-native-uuid";
-import firestore from "@react-native-firebase/firestore";
 
-import { batchDeleteWorkoutFromFirestore } from "../firestore/FirestoreWorkoutServices";
-
-import {
-	resyncWorkouts,
-	retrieveWorkoutHistory,
-	addWorkoutToHistory,
-	deleteWorkoutFromHistory,
-} from "../utils/WorkoutFunctions";
+import { syncPendingWorkoutsToFirestore, syncWorkoutsFromFirestore, getWorkouts, addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
@@ -51,8 +42,8 @@ export const WorkoutProvider = ({ children }) => {
 		if (!user) return;
 
 		const retrievedWorkout = async () => {
-			const workoutRetrieved = await retrieveWorkoutHistory(user.uid);
-			setWorkoutHistory(workoutRetrieved.workouts);
+			await syncWorkoutsFromFirestore(user.uid);
+			setWorkoutHistory(await getWorkouts(user.uid));
 		};
 
 		// getWorkoutHistory();
@@ -61,13 +52,13 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
-		WorkoutStartTime.current = firestore.Timestamp.now();
+		WorkoutStartTime.current = new Date();
 		WorkoutId.current = uuid.v4();
 	};
 
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
-		await resyncWorkouts();
+		await syncPendingWorkoutsToFirestore();
 
 		// loop through activeExercise to check for empty sets and remove them
 		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
@@ -107,7 +98,7 @@ export const WorkoutProvider = ({ children }) => {
 		//format duration to 00:00:00 (hh:mm:ss) format for the workout duratio
 
 		// Set the workout finish time
-		const WorkoutFinishTime = firestore.Timestamp.now();
+		const WorkoutFinishTime = new Date();
 
 		// Create workout object
 		const workout = {
@@ -127,7 +118,7 @@ export const WorkoutProvider = ({ children }) => {
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
 		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
-		addWorkoutToHistory(workout);
+		addWorkout(workout.userId, workout);
 
 		// Reset useStates
 		workoutCancelled();
@@ -206,18 +197,10 @@ export const WorkoutProvider = ({ children }) => {
 			(workoutcheck) => workoutcheck.id !== workout.id
 		);
 		setWorkoutHistory(newWorkoutHistory);
-
-		workout.deletedAt = firestore.Timestamp.now();
-		deleteWorkoutFromHistory(workout);
+		deleteWorkout(workout.userId, workout.id);
 	};
 
-	// Clear workout history
-	const clearWorkoutHistory = () => {
-		const deleteWorkoutId = workoutHistory.map((workout) => workout.id);
-		setWorkoutHistory([]);
-		batchDeleteWorkoutFromFirestore(deleteWorkoutId);
-		resetWorkoutHistoryCache();
-	};
+
 
 	return (
 		<WorkoutContext.Provider
@@ -244,7 +227,6 @@ export const WorkoutProvider = ({ children }) => {
 				removeExerciseFromWorkout,
 
 				removeWorkoutFromHistory,
-				clearWorkoutHistory,
 			}}
 		>
 			{children}

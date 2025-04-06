@@ -15,9 +15,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 import firestore from "@react-native-firebase/firestore";
 
-import { saveUserProfile, isUsernameAvailable } from "../../firestore/FirestoreUserServices";
+import {
+	saveUserProfile,
+	isUsernameAvailable,
+} from "../../services/firestore/firestoreUserServices";
 
-import { updateUserCache } from "../../cache/userCache";
+import { setRealmUser } from "../../services/database/realmUserFunctions";
+
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SetUsername() {
@@ -97,23 +101,33 @@ export default function SetUsername() {
 					username: username,
 					email: user.email || "",
 					uid: user.uid,
-					createdAt: firestore.FieldValue.serverTimestamp(),
-					updatedAt: firestore.FieldValue.serverTimestamp(),
+					createdAt: firestore.Timestamp.now(),
+					updatedAt: firestore.Timestamp.now(),
 					bio: bio || "",
 					height: height || "",
 					weight: weight || "",
 					age: age || "",
+
 					followers: 0,
 					following: 0,
 					postCount: 0,
-				}
+				};
 
+				// Save the user profile to Realm
+				await setRealmUser(user.uid, {
+					uid: user.uid,
+					username: username,
+					bio: bio || "",
+					email: user.email || "",
+					createdAt: userData.createdAt.toDate(),
+					updatedAt: userData.updatedAt.toDate(),
+					age: age || "",
+					height: height || "",
+					weight: weight || "",
+					setupComplete: true,
+				});
 				// Save the user profile to Firestore
 				await saveUserProfile(user.uid, userData);
-				
-				updateUserCache(userData);
-
-				
 			} catch (firestoreError) {
 				console.log("Error saving user profile:", firestoreError);
 				setError("Failed to save username. Please try again.");
@@ -121,17 +135,15 @@ export default function SetUsername() {
 				setStep(1);
 				return;
 			}
-			
+
 			console.log("User setup complete!");
 			// Save the username to local cache
-
 
 			// Update the context
 			setContextUsername(username);
 
 			// Complete setup
 			onSetupComplete();
-
 		} catch (error) {
 			console.log("Error saving user data:", error);
 			setError("Failed to save username. Please try again.");
@@ -489,7 +501,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 	multilineInput: {
-
 		padding: 8,
 	},
 	errorText: {

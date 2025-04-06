@@ -8,8 +8,6 @@ import React, {
 import firestore from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
-import { addTemplate } from "../utils/TemplateFuntions";
-
 
 import { useUser } from "./UserContext";
 
@@ -34,38 +32,6 @@ export const TemplateProvider = ({ children }) => {
     }
 
     const saveTemplate = async () => {
-        // check if there is something to sync to firestore 
-
-        // create the tempalate exercise object
-        if(templateExercises.length === 0) {
-            console.log("(TemplateContext) - No exercises to save");
-            return;
-        }
-
-        if(TemplateTitle.current === "") {
-            TemplateTitle.current = "Untitled Blueprint";
-        }
-        if(TemplateNote.current === "") {
-            TemplateNote.current = "No notes";
-        }
-
-        const template = {
-            id: TemplateId.current,
-            title: TemplateTitle.current,
-            note: TemplateNote.current,
-            exercises: templateExercises,
-            createdAt: firestore.Timestamp.now(),
-            updatedAt: firestore.Timestamp.now(),
-            uploadedAt: firestore.Timestamp.now(),
-            userId: user.uid,
-        }
-
-        // add to stored template
-        setStoredTemplate((prevTemplates) => [...prevTemplates, template]);
-        //add to cache and firestore
-        await addTemplate(template);
-
-        //reset the useStates
         cancelTemplate(); 
     }
 
