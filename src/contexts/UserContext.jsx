@@ -1,12 +1,9 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
-import {
-	getUserCache,
-	updateUserCache,
-} from "../cache/userCache";
+import { getUserCache, updateUserCache } from "../cache/userCache";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { hasCompleteProfile } from "../firestore/FirestoreUserServices";
+import { hasCompleteProfile } from "../services/firestore/firestoreUserServices";
 
 const UserContext = createContext();
 
@@ -50,31 +47,14 @@ export const UserProvider = ({ children }) => {
 		// User is signed in
 		setUser(authUser);
 
-		// Check if the user has additional metadata from sign-in
-		// This would only be available on fresh sign-ins, not app restarts
-		const currentUser = auth().currentUser;
-		if (currentUser && currentUser.metadata) {
-			// Detect if this is likely a new user by comparing creationTime with lastSignInTime
-			// This isn't perfect but helps when additionalUserInfo isn't available
-			const creationTime = new Date(currentUser.metadata.creationTime);
-			const lastSignInTime = new Date(
-				currentUser.metadata.lastSignInTime
-			);
-
-			// If account was created less than 10 seconds before last sign in, likely new user
-			const isRecentlyCreated =
-				(lastSignInTime - creationTime) / 1000 < 10;
-
-			if (isRecentlyCreated) {
-				console.log("(UserContext) - Detected likely new user by creation time");
-				setIsNewUser(true);
-			}
-		}
-
 		// Now we always check user setup when auth state changes with a user
 		try {
-			console.log("(UserContext) - Checking user setup status... 1 read to firestore");
-			const [setupComplete, userData] = await hasCompleteProfile(authUser);
+			console.log(
+				"(UserContext) - Checking user setup status... 1 read to firestore"
+			);
+			const [setupComplete, userData] = await hasCompleteProfile(
+				authUser
+			);
 			if (setupComplete) {
 				console.log(
 					"(UserContext) - User setup is complete, username:",
@@ -88,7 +68,7 @@ export const UserProvider = ({ children }) => {
 
 				setSetupComplete(true);
 				setIsNewUser(false);
-			} else{
+			} else {
 				console.log("(UserContext) - User setup is incomplete");
 				setSetupComplete(false);
 				setIsNewUser(true);
@@ -96,7 +76,10 @@ export const UserProvider = ({ children }) => {
 		} catch (error) {
 			// errors include network errors, permission errors, etc.
 
-			console.error("(UserContext) - Error during user setup check:", error);
+			console.error(
+				"(UserContext) - Error during user setup check:",
+				error
+			);
 			// In case of error, try using cache
 			try {
 				const cachedUser = await getUserCache();
@@ -140,13 +123,12 @@ export const UserProvider = ({ children }) => {
 			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {
 			console.error("(UserContext) - Error signing out:", error);
-				// At this point, we should inform the user that logout failed
-				Alert.alert(
-					"Logout Failed",
-					"Please try again later or restart the app.",
-					[{ text: "OK" }]
-				);
-			
+			// At this point, we should inform the user that logout failed
+			Alert.alert(
+				"Logout Failed",
+				"Please try again later or restart the app.",
+				[{ text: "OK" }]
+			);
 		}
 	}
 

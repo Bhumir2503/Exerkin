@@ -7,7 +7,7 @@ const usernamesCollection = firestore().collection("usernames");
 
 // Save user profile to Firestore
 // parameter: uid (string), userData (object)
-// sets user document with the provided data in the users collection 
+// sets user document with the provided data in the users collection
 // return: true
 export const saveUserProfile = async (uid, userData) => {
 	try {
@@ -48,6 +48,22 @@ export const getUserProfile = async (uid) => {
 	}
 };
 
+// checks to see if the user has a complete profile
+// return: boolean, and object
+export const hasCompleteProfile = async () => {
+    if (!auth().currentUser) {
+        return false;
+    }
+
+    try {
+        const userDocData = await getUserProfile();
+        return [!!userDocData, userDocData];
+    } catch (error) {
+        console.error("Error checking user setup:", error);
+        return [false, "error"];
+    }
+};
+
 // Check if username is available
 // parameter: username (string)
 // return: boolean
@@ -63,35 +79,3 @@ export const isUsernameAvailable = async (username) => {
 	}
 };
 
-// checks to see if the user has a complete profile
-// return: boolean, and object
-export const hasCompleteProfile = async () => {
-	if (!auth().currentUser) {
-		return false;
-	}
-
-	try {
-		const userDocData = await getUserProfile();
-		return [!!userDocData, userDocData];
-	} catch (error) {
-		console.error("Error checking user setup:", error);
-		return [false, "error"];
-	}
-};
-
-// Update user profile
-// parameter: fields (object)
-// return: true
-export const updateProfile = async (fields) => {
-	try {
-		if (!auth().currentUser) {
-			throw new Error("No authenticated user");
-		}
-
-		await saveUserProfile(auth().currentUser.uid, fields);
-		return true;
-	} catch (error) {
-		console.error("Error updating profile:", error);
-		throw error;
-	}
-};
