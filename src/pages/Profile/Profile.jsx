@@ -8,7 +8,7 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import {
 	workoutStreak,
 	getWorkoutsThisWeek,
-} from "../../utils/WorkoutHistoryFuction";
+} from "../../services/helpers/workoutHistoryHelpers";
 import WorkoutHistory from "../../components/Profile/WorkoutHistory";
 import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
 

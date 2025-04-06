@@ -9,7 +9,7 @@ import {
 import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutHistoryModal from "./WorkoutHistoryModal";
-import { formatTimeStamptoDateString } from "../../utils/TimeFormat";
+import { formatTimeStamptoDateString } from "../../services/helpers/timeFormatter";
 
 // Workout History Component
 // Displays a list of past workouts with details such as date, time, and notes.
@@ -75,7 +75,7 @@ const WorkoutHistory = () => {
 				showsVerticalScrollIndicator={false}
 				style={{ width: "100%" }}
 				data={[...workoutHistory].sort(
-					(a, b) => b.startedAt.seconds - a.startedAt.seconds
+					(a, b) => b.startedAt - a.startedAt
 				)}
 				renderItem={({ item }) => (
 					<TouchableWithoutFeedback

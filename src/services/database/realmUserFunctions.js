@@ -1,21 +1,10 @@
-import Realm from "realm";
-import { UserSchema } from "../schemas/userSchema";
-import { getRealm } from "./realmConfig";
 
-const realmConfig = {
-    schema: [UserSchema],
-    schemaVersion: 1,
-}
-
-
-export const getRealmUser = async (userId) => {
-    const realm = await getRealm();
+export const getRealmUser = async (realm, userId) => {
     const user = realm.objects("User").filtered("uid == $0", userId)[0];
     return user;
 }
 
-export const setRealmUser = async (userId, userData) => {
-    const realm = await getRealm();
+export const setRealmUser = async (realm, userId, userData) => {
     realm.write(() => {
         realm.create("User", {
             uid: userId,
@@ -24,8 +13,7 @@ export const setRealmUser = async (userId, userData) => {
     });
 }
 
-export const removeRealmUser = async (userId) => {
-    const realm = await getRealm();
+export const removeRealmUser = async (realm, userId) => {
     realm.write(() => {
         const user = realm.objects("User").filtered("uid == $0", userId)[0];
         if (user) {

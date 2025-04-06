@@ -8,7 +8,14 @@ import React, {
 
 import uuid from "react-native-uuid";
 
-import { syncPendingWorkoutsToFirestore, syncWorkoutsFromFirestore, getWorkouts, addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
+import { useRealm } from "./RealmProvider";
+import {
+	syncPendingWorkoutsToFirestore,
+	syncWorkoutsFromFirestore,
+	getWorkouts,
+	addWorkout,
+	deleteWorkout,
+} from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
@@ -18,6 +25,7 @@ const WorkoutContext = createContext();
 export const WorkoutProvider = ({ children }) => {
 	const [init, setInit] = useState(false);
 	const { user } = useUser();
+	const realm = useRealm();
 
 	//Workout Section States
 	const ModalType = useRef("WorkoutModal");
@@ -42,8 +50,8 @@ export const WorkoutProvider = ({ children }) => {
 		if (!user) return;
 
 		const retrievedWorkout = async () => {
-			await syncWorkoutsFromFirestore(user.uid);
-			setWorkoutHistory(await getWorkouts(user.uid));
+			await syncWorkoutsFromFirestore(realm, user.uid);
+			setWorkoutHistory(await getWorkouts(realm, user.uid));
 		};
 
 		// getWorkoutHistory();
@@ -58,7 +66,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
-		await syncPendingWorkoutsToFirestore();
+		await syncPendingWorkoutsToFirestore(realm);
 
 		// loop through activeExercise to check for empty sets and remove them
 		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
@@ -118,7 +126,7 @@ export const WorkoutProvider = ({ children }) => {
 		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
 
 		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
-		addWorkout(workout.userId, workout);
+		addWorkout(realm, workout.userId, workout);
 
 		// Reset useStates
 		workoutCancelled();
@@ -197,10 +205,8 @@ export const WorkoutProvider = ({ children }) => {
 			(workoutcheck) => workoutcheck.id !== workout.id
 		);
 		setWorkoutHistory(newWorkoutHistory);
-		deleteWorkout(workout.userId, workout.id);
+		deleteWorkout(realm, workout.userId, workout.id);
 	};
-
-
 
 	return (
 		<WorkoutContext.Provider

@@ -12,7 +12,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import {
 	formatTimeStamptoTimeString,
 	formatTimeToText,
-} from "../../utils/TimeFormat";
+} from "../../services/helpers/timeFormatter";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
 const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {

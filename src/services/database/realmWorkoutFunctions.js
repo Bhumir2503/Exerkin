@@ -1,19 +1,6 @@
-import Realm from "realm";
-import {
-	WorkoutSchema,
-	WorkoutExerciseSchema,
-	ExerciseSetSchema,
-} from "../schemas/workoutSchema";
-import { getRealm } from "./realmConfig";
 
-const realmConfig = {
-	schema: [WorkoutSchema, WorkoutExerciseSchema, ExerciseSetSchema],
-	schemaVersion: 1,
-};
-
-export const getRealmWorkouts = async (userId) => {
+export const getRealmWorkouts = async (realm, userId) => {
 	try {
-		const realm = await getRealm();
 		const workouts = realm
 			.objects("Workout")
 			.filtered("userId == $0", userId);
@@ -27,9 +14,8 @@ export const getRealmWorkouts = async (userId) => {
 	}
 };
 
-export const setRealmWorkout = async (userId, workoutData, syncStatus) => {
+export const setRealmWorkout = async (realm, userId, workoutData, syncStatus) => {
 	try {
-		const realm = await getRealm();
 		realm.write(() => {
 			realm.create(
 				"Workout",
@@ -49,8 +35,7 @@ export const setRealmWorkout = async (userId, workoutData, syncStatus) => {
 	}
 };
 
-export const batchSetRealmWorkout = async (userId, workoutData, syncStatus) => {
-	const realm = await getRealm();
+export const batchSetRealmWorkout = async (realm, userId, workoutData, syncStatus) => {
 	realm.write(() => {
 		workoutData.forEach((workout) => {
 			realm.create(
@@ -66,9 +51,7 @@ export const batchSetRealmWorkout = async (userId, workoutData, syncStatus) => {
 	});
 };
 
-export const removeRealmWorkout = async (userId, workoutId, syncStatus) => {
-	const realm = await getRealm();
-
+export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) => {
 	realm.write(() => {
 		const workout = realm
 			.objects("Workout")
@@ -97,8 +80,7 @@ export const removeRealmWorkout = async (userId, workoutId, syncStatus) => {
 		});
 	});
 };
-export const removeAllRealmWorkout = async (userId) => {
-	const realm = await getRealm();
+export const removeAllRealmWorkout = async (realm, userId) => {
 	realm.write(() => {
 		const workouts = realm
 			.objects("Workout")
@@ -111,13 +93,12 @@ export const removeAllRealmWorkout = async (userId) => {
 
 
 // Get all workouts for a user that are pending sync
-export const getPendingRealmWorkouts = async (userId) => {
-	const realm = await getRealm();
+export const getPendingRealmWorkouts = async (realm, userId) => {
 	const pendingWorkouts = realm
 		.objects("Workout")
 		.filtered('userId == $0 AND syncStatus != "synced"', userId);
 	return pendingWorkouts;
-}
+};
 
 // Mark workout as synced
 export const markWorkoutAsSynced = (realm, workoutId) => {
