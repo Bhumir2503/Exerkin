@@ -5,6 +5,7 @@ import {
 } from "./workoutSchema";
 import { DeletedWorkout } from "./deletedWorkoutSchema";
 import { UserSchema } from "./userSchema";
+import { SyncStatusSchema } from "./syncStatusSchema";
 
 export const realmSchemas = [
 	WorkoutSchema,
@@ -12,5 +13,6 @@ export const realmSchemas = [
 	ExerciseSetSchema,
 	DeletedWorkout,
 	UserSchema,
+	SyncStatusSchema,
 	// add more here if needed
 ];

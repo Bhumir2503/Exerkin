@@ -12,14 +12,7 @@ import firestore from "@react-native-firebase/firestore";
 
 import { batchDeleteWorkoutFromFirestore } from "../firestore/FirestoreWorkoutServices";
 
-import {
-	resyncWorkouts,
-	retrieveWorkoutHistory,
-	addWorkoutToHistory,
-	deleteWorkoutFromHistory,
-} from "../utils/WorkoutFunctions";
-
-import { addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
+import { syncPendingWorkoutsToFirestore, syncWorkoutsFromFirestore, getWorkouts, addWorkout, deleteWorkout } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
 import { formatTime } from "../components/WorkoutPage/WorkoutTimer";
@@ -53,8 +46,8 @@ export const WorkoutProvider = ({ children }) => {
 		if (!user) return;
 
 		const retrievedWorkout = async () => {
-			const workoutRetrieved = await retrieveWorkoutHistory(user.uid);
-			setWorkoutHistory(workoutRetrieved.workouts);
+			await syncWorkoutsFromFirestore(user.uid);
+			setWorkoutHistory(await getWorkouts(user.uid));
 		};
 
 		// getWorkoutHistory();
@@ -69,7 +62,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
-		await resyncWorkouts();
+		await syncPendingWorkoutsToFirestore();
 
 		// loop through activeExercise to check for empty sets and remove them
 		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
