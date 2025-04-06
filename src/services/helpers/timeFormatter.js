@@ -28,11 +28,32 @@ export const formatTimeStamptoTimeString = (timestamp) => {
 	return new Date(timestamp).toLocaleTimeString(undefined, options);
 };
 
-// Function to format a string time to display in seconds or mins or hours
+export const formatDateObjectToTime = (dateObject) => {
+	
+	if (!dateObject) return "No time";
+
+	// Ensure the dateObject is a valid Date instance
+	if (dateObject instanceof Date) {
+		const options = {
+			hour: "numeric",
+			minute: "2-digit",
+			hour12: true,
+		};
+		return dateObject.toLocaleTimeString(undefined, options);
+	} else if (typeof dateObject === "number") {
+		// Handle timestamp in milliseconds
+		return new Date(dateObject).toLocaleTimeString(undefined, {
+			hour: "numeric",
+			minute: "2-digit",
+			hour12: true,
+		});
+	}
+	return "Invalid date";
+}
 
 // This function formats a time string in the format HH:MM:SS or MM:SS to a more readable format
 // Example: 1h 30m
-export const formatTimeToText = (time) => {
+export const formatDurationTimeToText = (time) => {
 	if (!time) return "0m";
 
 	//change MM:SS to HH:MM:SS if needed for consistency in parsing
@@ -60,7 +81,7 @@ export const formatTimeToText = (time) => {
 	}
 };
 
-export const formatDurationToText = (seconds) => {
+export const formatDuration = (seconds) => {
 	// Format as MM:SS if less than 1 hour
 	if (seconds < 3600) {
 		const mins = Math.floor(seconds / 60);

@@ -18,7 +18,7 @@ import {
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
-import { formatDurationToText } from "../services/helpers/timeFormatter";
+import { formatDuration } from "../services/helpers/timeFormatter";
 
 const WorkoutContext = createContext();
 
@@ -118,7 +118,7 @@ export const WorkoutProvider = ({ children }) => {
 			completedAt: WorkoutFinishTime,
 			updatedAt: WorkoutFinishTime,
 			uploadedAt: WorkoutFinishTime,
-			duration: formatDurationToText(WorkoutTimer.current),
+			duration: formatDuration(WorkoutTimer.current),
 			notes: WorkoutNote.current,
 		};
 

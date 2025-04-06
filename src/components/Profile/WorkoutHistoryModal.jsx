@@ -10,8 +10,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
-	formatTimeStamptoTimeString,
-	formatTimeToText,
+
+	formatDateObjectToTime,
+	formatDurationTimeToText,
 } from "../../services/helpers/timeFormatter";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
@@ -102,14 +103,14 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 							>
 								<Text style={styles.text}>
 									{selectedWorkout.duration
-										? formatTimeToText(
+										? formatDurationTimeToText(
 												selectedWorkout.duration
 										  )
 										: "No duration"}
 								</Text>
 								<Text style={styles.text}>
 									{selectedWorkout.startedAt
-										? formatTimeStamptoTimeString(
+										? formatDateObjectToTime(
 												selectedWorkout.startedAt
 										  )
 										: ""}{" "}
@@ -118,7 +119,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 										? "-"
 										: ""}{" "}
 									{selectedWorkout.completedAt
-										? formatTimeStamptoTimeString(
+										? formatDateObjectToTime(
 												selectedWorkout.completedAt
 										  )
 										: ""}
