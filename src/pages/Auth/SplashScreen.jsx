@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, Animated, Easing } from "react-native";
+import { Text, StyleSheet, Animated, Easing, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 // Define the theme object that will be used consistently throughout the app
@@ -93,6 +93,7 @@ export default function SplashScreen({ onAnimationComplete }) {
 					},
 				]}
 			>
+				<Image source={require("../../../assets/logo.png")} style={{width: 250, height:250}} />
 				<Text style={styles.title}>Exerkin</Text>
 				<Text style={styles.subtitle}>Track, Share, Progress</Text>
 			</Animated.View>
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	title: {
+		marginTop: -40,
 		fontSize: 40,
 		fontWeight: "bold",
 		color: midnightPurpleTheme.primary,
