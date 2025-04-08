@@ -6,6 +6,8 @@ export const UserSchema = {
 		username: "string",
         email: "string",
 		bio: "string?",
+		gender: "string?",
+		unitSystem: "string?",
         createdAt: "date",
         updatedAt: "date",
 		setupComplete: "bool",

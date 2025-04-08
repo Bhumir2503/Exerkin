@@ -1,4 +1,4 @@
-export const UserSchema = {
+export const MeasurementSchema = {
 	name: "Measurements",
     primaryKey: "measurementId",
     properties: {

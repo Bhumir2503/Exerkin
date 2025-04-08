@@ -2,17 +2,17 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Realm from "realm";
 import { realmSchemas } from "../services/schemas/realmSchemas";
 import { ActivityIndicator, View } from "react-native";
-import { migrationVersion7 } from "../services/functions/migrationFunctions";
+import { migrationVersion8 } from "../services/functions/migrationFunctions";
 
 const RealmContext = createContext(null);
 
 const realmConfig = {
 	path: "default.realm",
 	schema: realmSchemas,
-	schemaVersion: 7,
+	schemaVersion: 8,
 	migration: (oldRealm, newRealm) => {
-		if (oldRealm.schemaVersion < 7) {
-			migrationVersion7(oldRealm, newRealm);
+		if (oldRealm.schemaVersion < 8) {
+			migrationVersion8(oldRealm, newRealm);
 		}
 	},
 

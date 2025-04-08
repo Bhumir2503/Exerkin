@@ -40,3 +40,20 @@ export const migrationVersion7 = (oldRealm, newRealm) => {
         }
 	}
 };
+
+export const migrationVersion8 = (oldRealm, newRealm) => {
+	migrationVersion7(oldRealm, newRealm);
+
+	if (oldRealm.schemaVersion < 8) {
+		const oldObjects = oldRealm.objects("User");
+		const newObjects = newRealm.objects("User");
+
+		for (let i = 0; i < oldObjects.length; i++) {
+			const oldObject = oldObjects[i];
+			const newObject = newObjects[i];
+
+			newObject.unitSystem = oldObject.unitSystem || "imperial"; // Default to imperial if not set
+			newObject.gender = oldObject.gender || "male"
+		}
+	}
+}
