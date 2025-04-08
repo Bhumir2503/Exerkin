@@ -15,6 +15,7 @@ import {
 	getWorkouts,
 	addWorkout,
 	deleteWorkout,
+	listenToWorkoutChanges
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";

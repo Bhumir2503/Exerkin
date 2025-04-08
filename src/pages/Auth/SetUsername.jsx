@@ -266,31 +266,17 @@ export default function SetUsername() {
 					username: username,
 					email: user.email || "",
 					userId: user.uid,
-					createdAt: firestore.Timestamp.now(),
-					updatedAt: firestore.Timestamp.now(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
 					bio: bio || "",
 					unitSystem: unitSystem,
 					gender: gender,
 				};
 
 				// Save the user profile to Realm
-				await setRealmUser(realm, user.uid, {
-					userId: user.uid,
-					username: username,
-					bio: bio || "",
-					email: user.email || "",
-					unitSystem: unitSystem,
-					gender: gender,
-					createdAt: userData.createdAt.toDate(),
-					updatedAt: userData.updatedAt.toDate(),
-					setupComplete: true,
-				});
+				await setRealmUser(realm, userData);
 				// Save the user profile to Firestore
 				await saveUserProfile(user.uid, userData);
-				await addMeasurement({
-					userId: user.uid,
-					measurementId: uuid.v4(),
-					...measurements})
 			} catch (firestoreError) {
 				console.log("Error saving user profile:", firestoreError);
 				setError("Failed to save username. Please try again.");

@@ -1,23 +1,31 @@
-import { getLastUserSyncTime, updateLastUserSyncTime } from "../database/realmUserFunctions";
+import {
+	getLastUserSyncTime,
+	updateLastUserSyncTime,
+} from "../database/realmUserFunctions";
 
-export const syncUserFromFirestore = async (realm, userId) => {
-	try {
-		const lastSyncTime = await getLastUserSyncTime(realm);
-		const updatedUser = await fetchUserData(userId, lastSyncTime);
+export const fetchUserFromFirestore = async (userId) => {};
 
-        realm.write(() => {
-            if (updatedUser.length > 0) {
-                console.log(
-                    "(Sync) User data updated successfully",
-                    updatedUser.username
-                );
-                setRealmUser(realm, userId, updatedUser);
-            }
-            updateLastUserSyncTime(realm);
-        });
+const listenToUserDocChanges = async (uid, userDocUnsubscribeRef) => {
+	if (!uid) return;
 
-        
-	} catch (error) {
-		console.error("(Sync) Error syncing user data:", error);
+	if (userDocUnsubscribeRef.current) {
+		userDocUnsubscribeRef.current();
+		userDocUnsubscribeRef.current = null;
 	}
+
+	const userDocRef = firestore().collection("users").doc(uid);
+	const unsubscribe = userDocRef.onSnapshot((doc) => {
+		if (doc.exists) {
+			const userData = doc.data();
+			console.log("(UserContext) - User doc updated:", userData);
+
+			setUsername(userData.username || "");
+			setBio(userData.bio || "");
+			setGender(userData.gender || "male");
+			setUnitSystem(userData.unitSystem || "imperial");
+			// Optionally sync to Realm here
+		}
+	});
+
+	userDocUnsubscribeRef.current = unsubscribe;
 };

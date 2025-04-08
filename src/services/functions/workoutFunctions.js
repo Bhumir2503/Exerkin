@@ -23,6 +23,64 @@ import {
 	updateLastWorkoutSyncTime,
 } from "../database/realmWorkoutFunctions";
 
+import firestore from "@react-native-firebase/firestore";
+let workoutListenerUnsubscribe = null;
+
+export const listenToWorkoutChanges = (userId, realm, setWorkoutHistory) => {
+	if (!userId) return;
+
+	if (workoutListenerUnsubscribe) {
+		workoutListenerUnsubscribe(); // remove previous listener
+	}
+
+	const query = firestore()
+		.collection("workouts")
+		.where("userId", "==", userId);
+
+	workoutListenerUnsubscribe = query.onSnapshot(async (snapshot) => {
+		try {
+			if (!snapshot.empty) {
+				const workouts = snapshot.docs.map((doc) => {
+					const data = doc.data();
+					return {
+						...data,
+						startedAt: data.startedAt.toDate(),
+						completedAt: data.completedAt.toDate(),
+						updatedAt: data.updatedAt.toDate(),
+						uploadedAt: data.uploadedAt.toDate(),
+					};
+				});
+
+				// Sync to Realm
+				realm.write(() => {
+					workouts.forEach((workout) => {
+						realm.create(
+							"Workout",
+							{
+								...workout,
+								syncStatus: "synced",
+							},
+							"modified"
+						);
+					});
+				});
+
+				// Update React state
+				setWorkoutHistory([...workouts]);
+			}
+		} catch (err) {
+			console.error("(WorkoutListener) - Error handling snapshot:", err);
+		}
+	});
+};
+
+export const unsubscribeWorkoutListener = () => {
+	if (workoutListenerUnsubscribe) {
+		workoutListenerUnsubscribe();
+		workoutListenerUnsubscribe = null;
+	}
+};
+
 export const syncPendingWorkoutsToFirestore = async (realm, userId) => {
 	try {
 		const pendingWorkouts = await getPendingRealmWorkouts(realm, userId);
