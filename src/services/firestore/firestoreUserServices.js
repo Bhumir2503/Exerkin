@@ -79,3 +79,28 @@ export const isUsernameAvailable = async (username) => {
 	}
 };
 
+
+export const fetchUserData = async (userId, lastSynced) => {
+	try {
+		const snapshot = await usersCollection
+			.where("userId", "==", userId)
+			.where("updatedAt", ">", lastSynced)
+			.get();
+
+		if (snapshot.empty) {
+			return [];
+		}
+
+		const userData = snapshot.docs.map((doc) => ({
+			...doc.data(),
+		}));
+
+		return userData;
+	} catch (error) {
+		console.error(
+			"(FirestoreUserServices) - Error fetching user data:",
+			error
+		);
+		return [];
+	}
+}

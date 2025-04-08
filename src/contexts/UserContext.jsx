@@ -59,6 +59,8 @@ export const UserProvider = ({ children }) => {
 				"(UserContext) - Checking user setup status... 1 read to firestore"
 			);
 
+			// !TODO: Check if there is user data that is not synced to Firebase
+
 			const [setupCompleteResult, userData] = await hasCompleteProfile(
 				authUser
 			);
