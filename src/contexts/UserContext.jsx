@@ -79,6 +79,8 @@ export const UserProvider = ({ children }) => {
 					username: userData.username,
 					bio: userData.bio || "",
 					email: userData.email,
+					gender: userData.gender || "male",
+					unitSystem: userData.unitSystem || "immperial",
 					createdAt: userData.createdAt.toDate(),
 					updatedAt: userData.updatedAt.toDate(),
 					setupComplete: true,

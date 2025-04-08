@@ -15,11 +15,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 import firestore from "@react-native-firebase/firestore";
-
+import uuid from "react-native-uuid";
 import {
 	saveUserProfile,
 	isUsernameAvailable,
 } from "../../services/firestore/firestoreUserServices";
+
+import { addMeasurement } from "../../services/firestore/firestoreMeasurementServices";
+
 import { useRealm } from "../../contexts/RealmProvider";
 import { setRealmUser } from "../../services/database/realmUserFunctions";
 
@@ -284,6 +287,10 @@ export default function SetUsername() {
 				});
 				// Save the user profile to Firestore
 				await saveUserProfile(user.uid, userData);
+				await addMeasurement({
+					userId: user.uid,
+					measurementId: uuid.v4(),
+					...measurements})
 			} catch (firestoreError) {
 				console.log("Error saving user profile:", firestoreError);
 				setError("Failed to save username. Please try again.");
