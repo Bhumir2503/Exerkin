@@ -1,8 +1,8 @@
 export const DeletedWorkout = {
 	name: "DeletedWorkout",
-	primaryKey: "id",
+	primaryKey: "deletedId",
 	properties: {
-		id: "string",
+		deletedId: "string",
 		userId: "string",
 		deletedAt: "date",
 		syncStatus: "string",

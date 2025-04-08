@@ -63,12 +63,11 @@ export const syncWorkoutsFromFirestore = async (realm, userId) => {
 
 			fetchDeletedWorkouts(userId, effectiveLastSynced),
 		]);
-
 		realm.write(() => {
 			if (newWorkouts.length > 0)
 				mergeWorkoutsToRealm(realm, newWorkouts);
 			if (deletedWorkouts.length > 0) {
-				const idsToDelete = deletedWorkouts.map((d) => d.id);
+				const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
 				removeWorkoutsFromRealm(realm, idsToDelete);
 			}
 			updateLastWorkoutSyncTime(realm);
@@ -101,7 +100,7 @@ export const addWorkout = async (realm, userId, workoutData) => {
 export const deleteWorkout = async (realm, userId, workoutId) => {
 	try {
 		await removeWorkoutFromFirestore(workoutId);
-		await markWorkoutAsDeleted({ id: workoutId, userId: userId });
+		await markWorkoutAsDeleted({ workoutId: workoutId, userId: userId });
 		await removeRealmWorkout(realm, userId, workoutId, "deleted");
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error deleting workout:", error);

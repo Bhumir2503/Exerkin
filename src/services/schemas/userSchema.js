@@ -1,16 +1,13 @@
 export const UserSchema = {
 	name: "User",
-	primaryKey: "uid",
+	primaryKey: "userId",
 	properties: {
-		uid: "string",
+		userId: "string",
 		username: "string",
-		bio: "string?",
         email: "string",
+		bio: "string?",
         createdAt: "date",
         updatedAt: "date",
-        age: "string?",
-        height: "string?",
-        weight: "string?",
 		setupComplete: "bool",
 	},
 };

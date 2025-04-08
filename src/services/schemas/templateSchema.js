@@ -19,9 +19,9 @@ export const TemplateExerciseSchema = {
 
 export const TemplateSchema = {
 	name: "Template",
-	primaryKey: "id",
+	primaryKey: "templateId",
 	properties: {
-		id: "string",
+		templateId: "string",
 		title: "string",
 		note: "string",
 		exercises: "TemplateExercise[]",

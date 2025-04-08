@@ -19,7 +19,7 @@ export const saveUserProfile = async (uid, userData) => {
 		// If username is included, reserve it in the usernames collection
 		if (userData.username) {
 			await usernamesCollection.doc(userData.username.toLowerCase()).set({
-				uid: uid || auth().currentUser.uid,
+				userId: uid || auth().currentUser.uid,
 			});
 		}
 	} catch (error) {

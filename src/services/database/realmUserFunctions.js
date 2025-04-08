@@ -7,7 +7,7 @@ export const getRealmUser = async (realm, userId) => {
 export const setRealmUser = async (realm, userId, userData) => {
     realm.write(() => {
         realm.create("User", {
-            uid: userId,
+            userId: userId,
             ...userData,
         }, "modified");
     });

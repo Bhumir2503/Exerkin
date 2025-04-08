@@ -55,7 +55,7 @@ export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) =
 	realm.write(() => {
 		const workout = realm
 			.objects("Workout")
-			.filtered("userId == $0 && id == $1", userId, workoutId)[0];
+			.filtered("userId == $0 && workoutId == $1", userId, workoutId)[0];
 
 		if (workout) {
 			// 🔁 Loop through each WorkoutExercise
@@ -74,7 +74,7 @@ export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) =
 		// 📝 Add to DeletedWorkout collection
 		realm.create("DeletedWorkout", {
 			userId: userId,
-			id: workoutId,
+			deletedId: workoutId,
 			deletedAt: new Date(),
 			syncStatus: syncStatus,
 		});

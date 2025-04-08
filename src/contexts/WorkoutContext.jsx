@@ -110,16 +110,16 @@ export const WorkoutProvider = ({ children }) => {
 
 		// Create workout object
 		const workout = {
+			workoutId: WorkoutId.current,
 			userId: user.uid,
 			name: WorkoutTitle.current,
-			id: WorkoutId.current,
+			notes: WorkoutNote.current,
 			exercises: WorkoutExerciseChecked,
 			startedAt: WorkoutStartTime.current,
 			completedAt: WorkoutFinishTime,
 			updatedAt: WorkoutFinishTime,
 			uploadedAt: WorkoutFinishTime,
 			duration: formatDuration(WorkoutTimer.current),
-			notes: WorkoutNote.current,
 		};
 
 		// Add workout to workout history
@@ -202,10 +202,10 @@ export const WorkoutProvider = ({ children }) => {
 
 	const removeWorkoutFromHistory = (workout) => {
 		const newWorkoutHistory = workoutHistory.filter(
-			(workoutcheck) => workoutcheck.id !== workout.id
+			(workoutcheck) => workoutcheck.workoutId !== workout.workoutId
 		);
 		setWorkoutHistory(newWorkoutHistory);
-		deleteWorkout(realm, workout.userId, workout.id);
+		deleteWorkout(realm, workout.userId, workout.workoutId);
 	};
 
 	return (

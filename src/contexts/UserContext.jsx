@@ -36,6 +36,7 @@ export const UserProvider = ({ children }) => {
 
 
 
+
 		// Reset states when user signs out
 		if (!authUser) {
 			setUser(null);
@@ -72,15 +73,12 @@ export const UserProvider = ({ children }) => {
 
 		
 				await setRealmUser(realm, authUser.uid, {
-					uid: authUser.uid,
+					userId: authUser.uid,
 					username: userData.username,
 					bio: userData.bio || "",
 					email: userData.email,
 					createdAt: userData.createdAt.toDate(),
 					updatedAt: userData.updatedAt.toDate(),
-					age: userData.age || "",
-					height: userData.height || "",
-					weight: userData.weight || "",
 					setupComplete: true,
 				});
 

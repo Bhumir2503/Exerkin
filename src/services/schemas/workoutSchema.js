@@ -19,9 +19,10 @@ export const WorkoutExerciseSchema = {
 
 export const WorkoutSchema = {
 	name: "Workout",
-	primaryKey: "id",
+	primaryKey: "workoutId",
 	properties: {
-		id: "string",
+		workoutId: "string",
+		userId: "string",
 		name: "string",
 		notes: "string",
 		exercises: "WorkoutExercise[]",
@@ -30,7 +31,6 @@ export const WorkoutSchema = {
 		updatedAt: "date",
 		uploadedAt: "date",
 		duration: "string",
-		userId: "string",
         syncStatus: "string", // "synced", "pending", "failed"
 	},
 };

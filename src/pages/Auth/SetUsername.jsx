@@ -101,30 +101,20 @@ export default function SetUsername() {
 				const userData = {
 					username: username,
 					email: user.email || "",
-					uid: user.uid,
+					userId: user.uid,
 					createdAt: firestore.Timestamp.now(),
 					updatedAt: firestore.Timestamp.now(),
-					bio: bio || "",
-					height: height || "",
-					weight: weight || "",
-					age: age || "",
-
-					followers: 0,
-					following: 0,
-					postCount: 0,
+					bio: bio || ""
 				};
 
 				// Save the user profile to Realm
 				await setRealmUser(realm, user.uid, {
-					uid: user.uid,
+					userId: user.uid,
 					username: username,
 					bio: bio || "",
 					email: user.email || "",
 					createdAt: userData.createdAt.toDate(),
 					updatedAt: userData.updatedAt.toDate(),
-					age: age || "",
-					height: height || "",
-					weight: weight || "",
 					setupComplete: true,
 				});
 				// Save the user profile to Firestore
