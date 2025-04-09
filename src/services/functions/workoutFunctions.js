@@ -3,7 +3,6 @@ import {
 	fetchNewWorkouts,
 	fetchDeletedWorkouts,
 	uploadWorkout,
-	uploadWorkoutUpdate,
 	removeWorkoutFromFirestore,
 	markWorkoutAsDeleted,
 } from "../firestore/firestoreWorkoutServices";
@@ -12,7 +11,6 @@ import {
 import {
 	getRealmWorkouts,
 	setRealmWorkout,
-	batchSetRealmWorkout,
 	removeRealmWorkout,
 	removeAllRealmWorkout,
 	getPendingRealmWorkouts,
@@ -24,65 +22,64 @@ import {
 } from "../database/realmWorkoutFunctions";
 
 import firestore from "@react-native-firebase/firestore";
-let workoutListenerUnsubscribe = null;
 
-export const listenToWorkoutChanges = (userId, realm, setWorkoutHistory) => {
-	if (!userId) return;
+const workoutsCollection = firestore().collection("workouts");
+const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
 
-	if (workoutListenerUnsubscribe) {
-		workoutListenerUnsubscribe(); // remove previous listener
-	}
-
-	const query = firestore()
-		.collection("workouts")
-		.where("userId", "==", userId);
-
-	workoutListenerUnsubscribe = query.onSnapshot(async (snapshot) => {
-		try {
-			if (!snapshot.empty) {
-				const workouts = snapshot.docs.map((doc) => {
-					const data = doc.data();
-					return {
-						...data,
-						startedAt: data.startedAt.toDate(),
-						completedAt: data.completedAt.toDate(),
-						updatedAt: data.updatedAt.toDate(),
-						uploadedAt: data.uploadedAt.toDate(),
-					};
-				});
-
-				// Sync to Realm
-				realm.write(() => {
-					workouts.forEach((workout) => {
-						realm.create(
-							"Workout",
-							{
-								...workout,
-								syncStatus: "synced",
-							},
-							"modified"
-						);
-					});
-				});
-
-				// Update React state
-				setWorkoutHistory([...workouts]);
+export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
+	const lastSynced = getLastWorkoutSyncTime(realm);
+	const unsubscribe = workoutsCollection
+		.where("userId", "==", userId)
+		.where("updatedAt", ">", lastSynced)
+		.onSnapshot((snapshot) => {
+			if (snapshot.empty) {
+				onUpdate();
+				return;
 			}
-		} catch (err) {
-			console.error("(WorkoutListener) - Error handling snapshot:", err);
-		}
-	});
-};
+			const newWorkouts = snapshot.docs.map((doc) => ({
+				...doc.data(),
+			}));
 
-export const unsubscribeWorkoutListener = () => {
-	if (workoutListenerUnsubscribe) {
-		workoutListenerUnsubscribe();
-		workoutListenerUnsubscribe = null;
-	}
-};
+			realm.write(() => {
+				mergeWorkoutsToRealm(realm, newWorkouts);
+				updateLastWorkoutSyncTime(realm);
+			});
+
+			// Call the onUpdate function to notify about the update
+			onUpdate();
+		});
+	return unsubscribe;
+}
+
+export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
+	const lastSynced = getLastWorkoutSyncTime(realm);
+	const effectiveLastSynced = lastSynced.getTime() === new Date(0).getTime() ? new Date() : lastSynced;
+	return unsubscribe = deletedWorkoutsCollection.where("userId", "==", userId)
+		.where("deletedAt", ">", effectiveLastSynced)
+		.onSnapshot((snapshot) => {
+			if (snapshot.empty) {
+				onUpdate();
+				return;
+			}
+
+			const deletedWorkouts = snapshot.docs.map((doc) => ({
+				...doc.data(),
+			}));
+
+			realm.write(() => {
+				const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
+				removeWorkoutsFromRealm(realm, idsToDelete);
+				updateLastWorkoutSyncTime(realm);
+			});
+
+			onUpdate();
+		});
+}
+
 
 export const syncPendingWorkoutsToFirestore = async (realm, userId) => {
 	try {
+
 		const pendingWorkouts = await getPendingRealmWorkouts(realm, userId);
 
 		if (pendingWorkouts.length === 0) return;
@@ -148,7 +145,7 @@ export const getWorkouts = async (realm, userId) => {
 export const addWorkout = async (realm, userId, workoutData) => {
 	try {
 		await uploadWorkout(userId, workoutData);
-		await setRealmWorkout(realm, userId, workoutData, "uploaded");
+		await setRealmWorkout(realm, userId, workoutData, "synced");
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error);
 		await setRealmWorkout(realm, userId, workoutData, "pending");

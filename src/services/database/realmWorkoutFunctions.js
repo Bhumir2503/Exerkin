@@ -39,27 +39,6 @@ export const setRealmWorkout = async (
 	}
 };
 
-export const batchSetRealmWorkout = async (
-	realm,
-	userId,
-	workoutData,
-	syncStatus
-) => {
-	realm.write(() => {
-		workoutData.forEach((workout) => {
-			realm.create(
-				"Workout",
-				{
-					userId: userId,
-					syncStatus: syncStatus,
-					...workout,
-				},
-				"modified"
-			);
-		});
-	});
-};
-
 export const removeRealmWorkout = async (
 	realm,
 	userId,
@@ -159,7 +138,7 @@ export const getLastWorkoutSyncTime = (realm) => {
 };
 
 // Update sync timestamp
-export const updateLastWorkoutSyncTime = (realm) => {
+export const updateLastWorkoutSyncTime =(realm) => {
 	realm.create(
 		"SyncStatus",
 		{

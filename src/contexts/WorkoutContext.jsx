@@ -15,17 +15,19 @@ import {
 	getWorkouts,
 	addWorkout,
 	deleteWorkout,
-	listenToWorkoutChanges
+	listenToWorkoutChanges,
+	listenToDeletedWorkoutChanges,
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
 import { formatDuration } from "../services/helpers/timeFormatter";
+import firestore, { onSnapshot, where } from "@react-native-firebase/firestore";
 
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
 	const [init, setInit] = useState(false);
-	const { user } = useUser();
+	const { user, userId } = useUser();
 	const realm = useRealm();
 
 	//Workout Section States
@@ -41,23 +43,57 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
 
-	// retrieve workout history from cache
 	useEffect(() => {
-		if (!init) {
-			setInit(true);
-			return;
-		}
-
 		if (!user) return;
 
-		const retrievedWorkout = async () => {
-			await syncWorkoutsFromFirestore(realm, user.uid);
-			setWorkoutHistory(await getWorkouts(realm, user.uid));
-		};
+		const unsubscribe = listenToWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(updatedWorkouts);
+			}
+		);
 
-		// getWorkoutHistory();
-		retrievedWorkout();
-	}, [init, user]);
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
+
+
+	useEffect(() => {
+		if (!user) return;
+
+		const unsubscribe = listenToDeletedWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(updatedWorkouts);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
+
+	// retrieve workout history from cache
+	// useEffect(() => {
+	// 	if (!init) {
+	// 		setInit(true);
+	// 		return;
+	// 	}
+
+	// 	if (!user) return;
+
+	// 	const retrievedWorkout = async () => {
+	// 		await syncWorkoutsFromFirestore(realm, user.uid);
+	// 		setWorkoutHistory(await getWorkouts(realm, user.uid));
+	// 	};
+
+	// 	// getWorkoutHistory();
+	// 	retrievedWorkout();
+	// }, [init, user]);
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
@@ -122,10 +158,6 @@ export const WorkoutProvider = ({ children }) => {
 			uploadedAt: WorkoutFinishTime,
 			duration: formatDuration(WorkoutTimer.current),
 		};
-
-		// Add workout to workout history
-		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
-
 		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
 		addWorkout(realm, workout.userId, workout);
 
