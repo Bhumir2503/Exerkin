@@ -1,3 +1,5 @@
+import uuid from "react-native-uuid";
+
 export const migrationVersion7 = (oldRealm, newRealm) => {
 	// Loop through all objects in the old realm
 
@@ -81,17 +83,16 @@ export const migrationVersion9 = (oldRealm, newRealm) => {
 	}
 }
 
-export const migrationVersion12 = (oldRealm, newRealm) => {
+export const migrationVersion13 = (oldRealm, newRealm) => {
 	migrationVersion9(oldRealm, newRealm);
 
 	if (oldRealm.schemaVersion < 12) {
 		const oldObjects = oldRealm.objects("WorkoutExercise");
 		const newObjects = newRealm.objects("WorkoutExercise");
 		for (let i = 0; i < oldObjects.length; i++) {
-			const oldObject = oldObjects[i];
 			const newObject = newObjects[i];
 
-			newObject.exerciseId = oldObject.id || i; // Copy the id to exerciseId
+			newObject.exerciseId = uuid.v4(); // Copy the id to exerciseId
 		}
 	}
 }

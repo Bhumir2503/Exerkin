@@ -2,17 +2,17 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Realm from "realm";
 import { realmSchemas } from "../services/schemas/realmSchemas";
 import { ActivityIndicator, View } from "react-native";
-import { migrationVersion12 } from "../services/functions/migrationFunctions";
+import { migrationVersion13 } from "../services/functions/migrationFunctions";
 
 const RealmContext = createContext(null);
 
 const realmConfig = {
 	path: "default.realm",
 	schema: realmSchemas,
-	schemaVersion: 12,
+	schemaVersion: 13,
 	migration: (oldRealm, newRealm) => {
-		if (oldRealm.schemaVersion < 12) {
-			migrationVersion12(oldRealm, newRealm);
+		if (oldRealm.schemaVersion < 13) {
+			migrationVersion13(oldRealm, newRealm);
 		}
 	},
 
@@ -32,6 +32,13 @@ export const RealmProvider = ({ children }) => {
 				}
 				setRealm(realmInstance);
 			} catch (error) {
+				// Handle any errors that occurred during opening the Realm
+
+				// TODO: Change this to a full migration 
+				//erase all data in the realm
+				Realm.deleteFile(realmConfig);
+
+				realmInstance = await Realm.open(realmConfig);
 				console.error("Error opening Realm:", error);
 			} finally {
 				setLoading(false); // ✅ done initializing
