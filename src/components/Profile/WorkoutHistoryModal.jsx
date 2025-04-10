@@ -76,7 +76,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 											name="create-outline"
 											size={24}
 											color={
-												themeStyle.textColor || "#000"
+												themeStyle.textColorSecondary || "#000"
 											}
 										/>
 									</Pressable>
@@ -88,7 +88,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 											name="trash-outline"
 											size={24}
 											color={
-												themeStyle.textColor || "#000"
+												themeStyle.error || "#000"
 											}
 										/>
 									</Pressable>
