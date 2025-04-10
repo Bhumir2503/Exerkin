@@ -21,7 +21,6 @@ export const fetchNewWorkouts = async (userId, lastSynced) => {
 
 		const workouts = snapshot.docs.map((doc) => ({
 			...doc.data(),
-			id: doc.id,
 		}));
 
 		return workouts;
@@ -52,7 +51,6 @@ export const fetchDeletedWorkouts = async (userId, lastSynced) => {
 
 		const deletedWorkouts = snapshot.docs.map((doc) => ({
 			...doc.data(),
-			id: doc.id,
 		}));
 
 		return deletedWorkouts;
@@ -67,7 +65,7 @@ export const fetchDeletedWorkouts = async (userId, lastSynced) => {
 
 export const uploadWorkout = async (userId, workout) => {
 	try {
-		await workoutsCollection.doc(workout.id).set({
+		await workoutsCollection.doc(workout.workoutId).set({
 			...workout,
 			userId: userId,
 			updatedAt: new Date(),
@@ -83,7 +81,7 @@ export const uploadWorkout = async (userId, workout) => {
 
 export const uploadWorkoutUpdate = async (workout) => {
 	try {
-		await workoutsCollection.doc(workout.id).set(
+		await workoutsCollection.doc(workout.workoutId).set(
 			{
 				...workout,
 				updatedAt: firestore.Timestamp.now(),
@@ -111,8 +109,8 @@ export const removeWorkoutFromFirestore = async (workoutId) => {
 
 export const markWorkoutAsDeleted = async (workout) => {
 	try {
-		await deletedWorkoutsCollection.doc(workout.id).set({
-			id: workout.id,
+		await deletedWorkoutsCollection.doc(workout.workoutId).set({
+			deletedId: workout.workoutId,
             userId: workout.userId,
             deletedAt: new Date(),
 		});

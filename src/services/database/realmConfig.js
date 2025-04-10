@@ -5,7 +5,10 @@ import { realmSchemas } from "../schemas/realmSchemas";
 const realmConfig = {
 	path: "default.realm", // keep consistent
 	schema: realmSchemas,
-	schemaVersion: 1,
+	schemaVersion: 2,
+	migration: (oldRealm, newRealm) => {
+	
+	}
 };
 
 export const getRealm = async () => {

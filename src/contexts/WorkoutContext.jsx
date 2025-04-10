@@ -11,19 +11,20 @@ import uuid from "react-native-uuid";
 import { useRealm } from "./RealmProvider";
 import {
 	syncPendingWorkoutsToFirestore,
-	syncWorkoutsFromFirestore,
 	getWorkouts,
 	addWorkout,
 	deleteWorkout,
+	listenToWorkoutChanges,
+	listenToDeletedWorkoutChanges,
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
-import { formatDuration } from "../services/helpers/timeFormatter";
+
+import { buildWorkoutObject } from "../services/helpers/workoutHelperFunctions";
 
 const WorkoutContext = createContext();
 
 export const WorkoutProvider = ({ children }) => {
-	const [init, setInit] = useState(false);
 	const { user } = useUser();
 	const realm = useRealm();
 
@@ -40,96 +41,56 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
 
-	// retrieve workout history from cache
-	useEffect(() => {
-		if (!init) {
-			setInit(true);
-			return;
-		}
+	/*
+	Effect hooks for managing workout data subscriptions and updates.
+	*/
 
+	// Effect hook to listen for changes in workout data
+	useEffect(() => {
 		if (!user) return;
 
-		const retrievedWorkout = async () => {
-			await syncWorkoutsFromFirestore(realm, user.uid);
-			setWorkoutHistory(await getWorkouts(realm, user.uid));
-		};
+		// Subscribe to changes in workout data using Realm
+		const unsubscribe = listenToWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
+				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
+			}
+		);
 
-		// getWorkoutHistory();
-		retrievedWorkout();
-	}, [init, user]);
+		return () => {
+			unsubscribe(); // Unsubscribe from workout data changes
+		};
+	}, [user, realm]);
+
+	// Effect hook to listen for changes in deleted workout data
+	useEffect(() => {
+		if (!user) return;
+
+		// Subscribe to changes in deleted workout data using Realm
+		const unsubscribe = listenToDeletedWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
+				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
+			}
+		);
+
+		return () => {
+			unsubscribe(); // Unsubscribe from deleted workout data changes
+		};
+	}, [user, realm]);
+
+	/*
+	Functions related to managing active workouts, exercises, and workout history
+	*/
 
 	const workoutStarted = () => {
 		setWorkoutExercises([]);
 		WorkoutStartTime.current = new Date();
 		WorkoutId.current = uuid.v4();
-	};
-
-	const workoutCompleted = async () => {
-		// check if there is resync workout cache
-		await syncPendingWorkoutsToFirestore(realm);
-
-		// loop through activeExercise to check for empty sets and remove them
-		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
-		const WorkoutExerciseFiltered = workoutExercises.map((exercise) => {
-			const sets = exercise.sets.filter(
-				(set) =>
-					set.weight !== null &&
-					set.weight !== "" &&
-					set.weight !== 0 &&
-					set.time !== null &&
-					set.time !== "" &&
-					set.time !== 0 &&
-					set.distance !== null &&
-					set.distance !== "" &&
-					set.distance !== 0
-			);
-			return { ...exercise, sets };
-		});
-
-		// TODO: remove this filter and add a check in the UI to prevent adding exercises without sets
-		const WorkoutExerciseChecked = WorkoutExerciseFiltered.filter(
-			(exercise) => exercise.sets.length > 0
-		);
-
-		// TODO: add a check in the UI to prevent adding empty exercises
-		if (WorkoutExerciseChecked.length === 0) {
-			console.log("No exercises added");
-			workoutCancelled();
-			return;
-		}
-
-		// Set the workout title if it is empty
-		if (WorkoutTitle.current === "") {
-			WorkoutTitle.current = "Untitled Workout";
-		}
-
-		//format duration to 00:00:00 (hh:mm:ss) format for the workout duratio
-
-		// Set the workout finish time
-		const WorkoutFinishTime = new Date();
-
-		// Create workout object
-		const workout = {
-			userId: user.uid,
-			name: WorkoutTitle.current,
-			id: WorkoutId.current,
-			exercises: WorkoutExerciseChecked,
-			startedAt: WorkoutStartTime.current,
-			completedAt: WorkoutFinishTime,
-			updatedAt: WorkoutFinishTime,
-			uploadedAt: WorkoutFinishTime,
-			duration: formatDuration(WorkoutTimer.current),
-			notes: WorkoutNote.current,
-		};
-
-		// Add workout to workout history
-		setWorkoutHistory((prevHistory) => [...prevHistory, workout]);
-
-		// Goes to WOrkoutFunctions.js to add workout to cache and firestore
-		addWorkout(realm, workout.userId, workout);
-
-		// Reset useStates
-		workoutCancelled();
 	};
 
 	const workoutCancelled = () => {
@@ -142,9 +103,33 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutTimer.current = 0;
 	};
 
+	const workoutCompleted = async () => {
+		// check if there is resync workout cache
+		await syncPendingWorkoutsToFirestore(realm, user.uid);
+
+		const workout = buildWorkoutObject(
+			user.uid,
+			WorkoutId.current,
+			WorkoutTitle.current,
+			WorkoutNote.current,
+			workoutExercises,
+			WorkoutStartTime.current,
+			WorkoutTimer.current
+		);
+
+		
+		addWorkout(realm, workout.userId, workout);
+
+		// Reset useStates
+		workoutCancelled();
+	};
+
 	// Add excercise to active workout
 	const addExerciseToWorkout = async (exercise) => {
-		setWorkoutExercises((prevExercises) => [...prevExercises, exercise]);
+		setWorkoutExercises((prevExercises) => [
+			...prevExercises,
+			{ ...exercise, exerciseId: uuid.v4() },
+		]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
 
@@ -202,10 +187,10 @@ export const WorkoutProvider = ({ children }) => {
 
 	const removeWorkoutFromHistory = (workout) => {
 		const newWorkoutHistory = workoutHistory.filter(
-			(workoutcheck) => workoutcheck.id !== workout.id
+			(workoutcheck) => workoutcheck.workoutId !== workout.workoutId
 		);
 		setWorkoutHistory(newWorkoutHistory);
-		deleteWorkout(realm, workout.userId, workout.id);
+		deleteWorkout(realm, workout.userId, workout.workoutId);
 	};
 
 	return (

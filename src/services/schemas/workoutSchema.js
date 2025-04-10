@@ -10,18 +10,27 @@ export const ExerciseSetSchema = {
 
 export const WorkoutExerciseSchema = {
 	name: "WorkoutExercise",
+	primaryKey: "exerciseId",
 	properties: {
+		exerciseId: "string",
 		id: "string",
 		name: "string",
 		sets: "ExerciseSet[]",
+		completed: "bool",
+		createdAt: "date",
+		updatedAt: "date",
+		notes: "string",
+		order: "int",
+		type: "string",
 	},
 };
 
 export const WorkoutSchema = {
 	name: "Workout",
-	primaryKey: "id",
+	primaryKey: "workoutId",
 	properties: {
-		id: "string",
+		workoutId: "string",
+		userId: "string",
 		name: "string",
 		notes: "string",
 		exercises: "WorkoutExercise[]",
@@ -30,7 +39,6 @@ export const WorkoutSchema = {
 		updatedAt: "date",
 		uploadedAt: "date",
 		duration: "string",
-		userId: "string",
         syncStatus: "string", // "synced", "pending", "failed"
 	},
 };

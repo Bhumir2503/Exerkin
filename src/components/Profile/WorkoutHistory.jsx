@@ -100,7 +100,7 @@ const WorkoutHistory = () => {
 						</View>
 					</TouchableWithoutFeedback>
 				)}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.workoutId}
 			/>
 
 			<WorkoutHistoryModal

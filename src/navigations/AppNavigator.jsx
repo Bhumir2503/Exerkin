@@ -62,9 +62,8 @@ export default function AppNavigator() {
 				tabBarStyle: {
 					backgroundColor: themeStyle.backgroundColor,
 					borderTopWidth: 0,
-					shadowOpacity: 0,
-					elevation: 0,
-					height: Platform.OS === "ios" ? 75 : 60,
+
+					height: Platform.OS === "ios" ? 85 : 60,
 					paddingBottom: 20, // Add padding at the bottom
 					paddingTop: 5, // Add padding at the top
 					display: hideTab ? "none" : "flex",

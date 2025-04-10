@@ -211,7 +211,6 @@ export default function Measurement({ navigation }) {
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
-			flex: 1,
 			backgroundColor: themeStyle.backgroundColor,
 		},
 		backButton: {

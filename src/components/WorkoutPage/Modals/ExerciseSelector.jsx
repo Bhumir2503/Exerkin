@@ -110,8 +110,8 @@ const ExerciseSelector = () => {
 				notes: "",
 				order: workoutExercises.length+1,
 				completed: false,
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
 
 			addExerciseToWorkout(exercise)
