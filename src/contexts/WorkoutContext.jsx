@@ -103,7 +103,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	const workoutCompleted = async () => {
 		// check if there is resync workout cache
-		await syncPendingWorkoutsToFirestore(realm);
+		await syncPendingWorkoutsToFirestore(realm, user.uid);
 
 		// loop through activeExercise to check for empty sets and remove them
 		// TODO: remove this filter and add a check in the UI to prevent adding empty sets
@@ -177,7 +177,7 @@ export const WorkoutProvider = ({ children }) => {
 
 	// Add excercise to active workout
 	const addExerciseToWorkout = async (exercise) => {
-		setWorkoutExercises((prevExercises) => [...prevExercises, exercise]);
+		setWorkoutExercises((prevExercises) => [...prevExercises, {...exercise, exerciseId: uuid.v4()}]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
 

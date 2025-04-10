@@ -10,10 +10,18 @@ export const ExerciseSetSchema = {
 
 export const WorkoutExerciseSchema = {
 	name: "WorkoutExercise",
+	primaryKey: "exerciseId",
 	properties: {
+		exerciseId: "string",
 		id: "string",
 		name: "string",
 		sets: "ExerciseSet[]",
+		completed: "bool",
+		createdAt: "date",
+		updatedAt: "date",
+		notes: "string",
+		order: "int",
+		type: "string",
 	},
 };
 

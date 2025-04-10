@@ -23,10 +23,8 @@ export const setRealmWorkout = async (
 		realm.write(() => {
 			realm.create(
 				"Workout",
-				{
-					userId: userId,
+				{...workoutData,
 					syncStatus: syncStatus,
-					...workoutData,
 				},
 				"modified"
 			);
@@ -86,9 +84,12 @@ export const removeAllRealmWorkout = async (realm, userId) => {
 
 // Get all workouts for a user that are pending sync
 export const getPendingRealmWorkouts = async (realm, userId) => {
+	console.log("Fetching pending workouts for user:", userId);
 	const pendingWorkouts = realm
 		.objects("Workout")
-		.filtered('userId == $0 AND syncStatus != "synced"', userId);
+		.filtered("syncStatus != $0", "synced");
+
+	console.log("Pending workouts:", pendingWorkouts.length);
 	return pendingWorkouts;
 };
 
@@ -108,14 +109,19 @@ export const mergeWorkoutsToRealm = (realm, workouts) => {
 		workout.completedAt = workout.completedAt.toDate();
 		workout.updatedAt = workout.updatedAt.toDate();
 		workout.uploadedAt = workout.uploadedAt.toDate();
-		realm.create(
-			"Workout",
-			{
-				...workout,
-				syncStatus: "synced",
-			},
-			"modified"
-		);
+
+		workout.exercises.forEach((exercise) => {
+			exercise.createdAt = exercise.createdAt.toDate();
+			exercise.updatedAt = exercise.updatedAt.toDate();
+		})
+
+		workout.syncStatus = "synced";
+			realm.create(
+				"Workout",
+				workout,
+				"modified"
+			);
+
 	});
 };
 
@@ -138,7 +144,7 @@ export const getLastWorkoutSyncTime = (realm) => {
 };
 
 // Update sync timestamp
-export const updateLastWorkoutSyncTime =(realm) => {
+export const updateLastWorkoutSyncTime = (realm) => {
 	realm.create(
 		"SyncStatus",
 		{

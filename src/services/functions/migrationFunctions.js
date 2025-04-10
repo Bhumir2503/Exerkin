@@ -57,3 +57,41 @@ export const migrationVersion8 = (oldRealm, newRealm) => {
 		}
 	}
 }
+
+
+export const migrationVersion9 = (oldRealm, newRealm) => {
+	migrationVersion8(oldRealm, newRealm);
+
+	if (oldRealm.schemaVersion < 9) {
+		const oldObjects = oldRealm.objects("WorkoutExercise");
+		const newObjects = newRealm.objects("WorkoutExercise");
+		for (let i = 0; i < oldObjects.length; i++) {
+			const oldObject = oldObjects[i];
+			const newObject = newObjects[i];
+
+			newObject.type = oldObject.type || "cardio-time"; // Default to weight if not set
+			newObject.notes = oldObject.notes || ""; // Default to empty string if not set
+			newObject.order = oldObject.order || 0; // Default to 0 if not set
+			newObject.createdAt = oldObject.createdAt || new Date(); // Default to current date if not set
+			newObject.updatedAt = oldObject.updatedAt || new Date(); // Default to current date if not set
+			newObject.completed = oldObject.completed || false; // Default to false if not set
+			newObject.sets = oldObject.sets || []; // Default to empty array if not set
+		}
+
+	}
+}
+
+export const migrationVersion12 = (oldRealm, newRealm) => {
+	migrationVersion9(oldRealm, newRealm);
+
+	if (oldRealm.schemaVersion < 12) {
+		const oldObjects = oldRealm.objects("WorkoutExercise");
+		const newObjects = newRealm.objects("WorkoutExercise");
+		for (let i = 0; i < oldObjects.length; i++) {
+			const oldObject = oldObjects[i];
+			const newObject = newObjects[i];
+
+			newObject.exerciseId = oldObject.id || i; // Copy the id to exerciseId
+		}
+	}
+}
