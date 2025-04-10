@@ -3,11 +3,12 @@ import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import {useTheme} from "../../../contexts/ThemeContext";
 import {useWorkout} from "../../../contexts/WorkoutContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const AssistedWeightExercise = ({ exercise }) => {
     const { themeStyle } = useTheme();
     const styles = createStyles(themeStyle);
-    const { addSetToExercise, updateSetInExercise } = useWorkout();
+    const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } = useWorkout();
 
     const addSet = () => {
         // Add a new set with null values for weight and reps
@@ -36,9 +37,18 @@ const AssistedWeightExercise = ({ exercise }) => {
         });
     };
 
+    const handleDeleteExercise = () => {
+        removeExerciseFromWorkout(exercise.id);
+    };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.workoutName}>{exercise.name}</Text>
+            <View style={styles.headerRow}>
+				<Text style={styles.workoutName}>{exercise.name}</Text>
+				<Pressable onPress={handleDeleteExercise}>
+					<Ionicons name="trash-outline" size={20} color={themeStyle.error} />
+				</Pressable>
+			</View>
             <Header repetitionType={"Set"} metrics={["-lbs", "reps"]} />
             {exercise.sets.map((set, index) => (
                 <UserInputSection
@@ -88,6 +98,12 @@ const createStyles = (themeStyle) => {
 			fontWeight: "700",
 			fontSize: 16,
 		},
+        headerRow: {
+            flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginBottom: 5,
+        },
 	});
 };
 
