@@ -66,6 +66,15 @@ const WorkoutHistory = () => {
 		return text.substring(0, maxLength - 3) + " ...";
 	};
 
+	const generateNumExercises = (num) => {
+		if (num != 1) {
+			return `${num} exercises`;
+		}
+		else{
+			return `${num} exercise`;
+		}
+	}
+
 	// if the workout history is empty, display a message
 	// otherwise, display the workout history
 	return workoutHistory.length > 0 ? (
@@ -90,9 +99,9 @@ const WorkoutHistory = () => {
 								<Text style={styles.workoutTime}>
 									{item.time}
 								</Text>
-							</View>
+							</View>  
 							<Text style={styles.workoutTime}>
-								{item.exercises.length} workouts
+								{generateNumExercises(item.exercises.length)}
 							</Text>
 							<Text style={styles.workoutNote}>
 								{truncateNotes(item.notes)}
