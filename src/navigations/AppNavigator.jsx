@@ -71,8 +71,8 @@ export default function AppNavigator() {
 			})}
 		>
 			<Tab.Screen name="Home" component={ProfileNavigator} />
-			<Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
+			<Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Measure" component={Measurement} />
 		</Tab.Navigator>
 	);
