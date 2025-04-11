@@ -4,11 +4,18 @@ import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkout } from "../../../contexts/WorkoutContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+	Menu,
+	MenuTrigger,
+	MenuOptions,
+	MenuOption,
+} from "react-native-popup-menu";
 
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } = useWorkout();
+	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
+		useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
@@ -45,9 +52,36 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>
-				<Pressable onPress={handleDeleteExercise}>
-					<Ionicons name="trash-outline" size={20} color={themeStyle.error} />
-				</Pressable>
+				<Menu style={styles.menu}>
+					<MenuTrigger>
+						<Ionicons
+							name="ellipsis-horizontal"
+							size={24}
+							color={themeStyle.textColorSecondary}
+							style={styles.menuTrigger}
+						/>
+					</MenuTrigger>
+					<MenuOptions
+						customStyles={{
+							optionsContainer: styles.menuOptions,
+							optionsWrapper: styles.menuOptionsWrapper,
+						}}
+					>
+						<MenuOption
+							onSelect={handleDeleteExercise}
+							style={styles.menuOptionContainer}
+						>
+							<Ionicons
+								name="trash-outline"
+								size={18}
+								color={themeStyle.error}
+							/>
+							<Text style={styles.menuOption}>
+								Delete Exercise
+							</Text>
+						</MenuOption>
+					</MenuOptions>
+				</Menu>
 			</View>
 			<Header repetitionType={"Set"} metrics={["lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
@@ -103,6 +137,31 @@ const createStyles = (themeStyle) => {
 			justifyContent: "space-between",
 			alignItems: "center",
 			marginBottom: 5,
+		},
+		menuTrigger: {
+			padding: 5,
+			paddingVertical: 0,
+			borderRadius: 6,
+		},
+		menuOptions: {
+			backgroundColor: themeStyle.card,
+			padding: 4,
+			justifyContent: "center",
+			alignItems: "center",
+			marginLeft: -25,
+			marginTop: 15,
+		},
+		menuOptionContainer: {
+			flexDirection: "row",
+			alignItems: "center",
+			padding: 12,
+			borderRadius: 6,
+		},
+		menuOption: {
+			fontSize: 16,
+			color: themeStyle.error,
+			marginLeft: 8,
+			fontWeight: "500",
 		},
 	});
 };
