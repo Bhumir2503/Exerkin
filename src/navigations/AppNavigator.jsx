@@ -6,6 +6,7 @@ import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct
 import WorkoutNavigator from "./WorkoutNavigator";
 import Friends from "../pages/Friends/Friends";
 import Measurement from "../pages/Measure/Measurement";
+import MeasurementNavigator from "./MeasurementNavigator";
 import StatsNavigator from "./StatsNavigator";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -73,7 +74,7 @@ export default function AppNavigator() {
 			<Tab.Screen name="Home" component={ProfileNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			<Tab.Screen name="Stat" component={StatsNavigator} />
-			<Tab.Screen name="Measure" component={Measurement} />
+			<Tab.Screen name="Measure" component={MeasurementNavigator} />
 		</Tab.Navigator>
 	);
 }

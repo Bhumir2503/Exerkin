@@ -556,7 +556,7 @@ const createStyles = (themeStyle) =>
 		},
 		scrollContent: {
 			paddingHorizontal: 24,
-			paddingBottom: 30,
+			paddingBottom: 10,
 		},
 		infoCard: {
 			flexDirection: "row",
