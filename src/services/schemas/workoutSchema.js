@@ -5,23 +5,20 @@ export const ExerciseSetSchema = {
 		reps: "string?",
 		time: "string?",
 		distance: "string?",
+		completed: "bool?",
+		setType: "string?", // "warmUp", "workingSet", "coolDown"
+
 	},
 };
 
 export const WorkoutExerciseSchema = {
 	name: "WorkoutExercise",
-	primaryKey: "exerciseId",
 	properties: {
 		exerciseId: "string",
-		id: "string",
 		name: "string",
 		sets: "ExerciseSet[]",
-		completed: "bool",
-		createdAt: "date",
-		updatedAt: "date",
 		notes: "string",
-		order: "int",
-		type: "string",
+		exerciseType: "string",
 	},
 };
 
@@ -30,15 +27,19 @@ export const WorkoutSchema = {
 	primaryKey: "workoutId",
 	properties: {
 		workoutId: "string",
+		templateId: "string?",
 		userId: "string",
 		name: "string",
-		notes: "string",
+		notes: "string?",
 		exercises: "WorkoutExercise[]",
 		startedAt: "date",
 		completedAt: "date",
+		createdAt: "date",
 		updatedAt: "date",
-		uploadedAt: "date",
 		duration: "string",
+		unitSystem: "string?", // "metric" or "imperial"
+		imageURL: "string?",
+		isTemplate: "bool?",
         syncStatus: "string", // "synced", "pending", "failed"
 	},
 };

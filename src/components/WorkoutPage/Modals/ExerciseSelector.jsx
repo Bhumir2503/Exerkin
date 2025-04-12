@@ -18,12 +18,11 @@ import {
 	getExercisesByCategory,
 } from "../../../services/constants/exerciseLibrary";
 
+import { buildExerciseObject } from "../../../services/helpers/objectBuilder";
+
 const ExerciseSelector = () => {
 	const { themeStyle } = useTheme();
-	const {
-		addExerciseToWorkout,
-		workoutExercises,
-	} = useWorkout();
+	const { addExerciseToWorkout, workoutExercises } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	// Choose Modal Popup
@@ -37,8 +36,9 @@ const ExerciseSelector = () => {
 	// State for filtered exercises
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 	// Get array of already added exercise IDs
+
 	const getAddedExerciseIds = () => {
-		return workoutExercises.map((exercise) => exercise.id);
+		return workoutExercises.map((exercise) => exercise.exerciseId);
 	};
 
 	// Filter exercises based on search, category, and already added exercises
@@ -89,32 +89,10 @@ const ExerciseSelector = () => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
-			let setType = null;
-			if (selectedExercise.type === "weightlifting") {
-				setType = [{reps: null, weight: null}];
-			} else if (selectedExercise.type === "bodyweight") {
-				setType = [{reps: null}];
-			} else if (selectedExercise.type === "assisted-weight") {
-				setType = [{reps: null, weight: null}];
-			} else if (selectedExercise.type === "cardio-distance") {
-				setType = [{time: null, distance: null}];
-			} else if (selectedExercise.type === "cardio-time") {
-				setType = [{time: null}];
-			}
 
-			const exercise = {
-				id: selectedExercise.id,
-				name: selectedExercise.name,
-				type: selectedExercise.type,
-				sets: setType,
-				notes: "",
-				order: workoutExercises.length+1,
-				completed: false,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			};
+			const exercise = buildExerciseObject(selectedExercise);
 
-			addExerciseToWorkout(exercise)
+			addExerciseToWorkout(exercise);
 
 			closeModal();
 		}
@@ -135,11 +113,12 @@ const ExerciseSelector = () => {
 					]}
 					onPress={() => setSelectedCategory(null)}
 				>
-					<Text 
+					<Text
 						style={[
-							styles.categoryText, 
-							!selectedCategory && styles.selectedCategoryText
-						]}>
+							styles.categoryText,
+							!selectedCategory && styles.selectedCategoryText,
+						]}
+					>
 						All
 					</Text>
 				</TouchableOpacity>
@@ -148,19 +127,20 @@ const ExerciseSelector = () => {
 					<TouchableOpacity
 						key={category.id}
 						style={[
-							styles.categoryChip, 
-							selectedCategory === category.id 
-							&& styles.selectedCategoryChip,
+							styles.categoryChip,
+							selectedCategory === category.id &&
+								styles.selectedCategoryChip,
 						]}
 						onPress={() => setSelectedCategory(category.id)}
 					>
-						<Text 
+						<Text
 							key={category.id}
 							style={[
-								selectedCategory === category.id ?
-								styles.selectedCategoryText :
-								styles.categoryText
-							]}>
+								selectedCategory === category.id
+									? styles.selectedCategoryText
+									: styles.categoryText,
+							]}
+						>
 							{category.name}
 						</Text>
 					</TouchableOpacity>
@@ -175,11 +155,7 @@ const ExerciseSelector = () => {
 				onPress={() => setModalVisible(true)}
 				style={styles.button}
 			>
-				<Ionicons
-					name="add-circle-outline"
-					size={24}
-					color={"white"}
-				/>
+				<Ionicons name="add-circle-outline" size={24} color={"white"} />
 				<Text style={styles.buttonText}>Add Exercise</Text>
 			</TouchableOpacity>
 
@@ -514,7 +490,6 @@ const createStyles = (themeStyle) =>
 		},
 		selectedExerciseItem: {
 			borderColor: themeStyle.primary,
-
 		},
 		exerciseItemMain: {
 			flex: 1,

@@ -6,6 +6,8 @@ import { useWorkout } from "../../../contexts/WorkoutContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
 
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
 const CardioDistanceExercise = ({ exercise }) => {
 const { themeStyle } = useTheme();
     const styles = createStyles(themeStyle);
@@ -13,7 +15,7 @@ const { themeStyle } = useTheme();
 
     const addSet = () => {
         // Add a new set with null values for time and distance
-        addSetToExercise(exercise.id, { time: null, distance: null });
+        addSetToExercise(exercise.exerciseId, buildSetObject());
 
     };
 
@@ -29,7 +31,7 @@ const { themeStyle } = useTheme();
             if (prevValue.endsWith(":")) {
                 // If deleting a colon, also remove the digit before it
                 const newValue = prevValue.slice(0, -2);
-                updateSetInExercise(exercise.id, index, {
+                updateSetInExercise(exercise.exerciseId, index, {
                     ...exercise.sets[index],
                     time: newValue !== "" ? newValue : null,
                 });
@@ -37,7 +39,7 @@ const { themeStyle } = useTheme();
             } else {
                 // Normal backspace - just remove the last character
                 const newValue = prevValue.slice(0, -1);
-                updateSetInExercise(exercise.id, index, {
+                updateSetInExercise(exercise.exerciseId, index, {
                     ...exercise.sets[index],
                     time: newValue !== "" ? newValue : null,
                 });
@@ -74,7 +76,7 @@ const { themeStyle } = useTheme();
         }
 
         // Update the time for the specific set
-        updateSetInExercise(exercise.id, index, {
+        updateSetInExercise(exercise.exerciseId, index, {
             ...exercise.sets[index],
             time: number !== "" ? number : null,
         });
@@ -85,14 +87,14 @@ const { themeStyle } = useTheme();
         const number = text.replace(/[^0-9.]/g, "");
 
         // Update the distance for the specific set
-        updateSetInExercise(exercise.id, index, {
+        updateSetInExercise(exercise.exerciseId, index, {
             ...exercise.sets[index],
             distance: number !== "" ? number : null,
         });
     };
 
     const handleDeleteExercise = () => {
-        removeExerciseFromWorkout(exercise.id);
+        removeExerciseFromWorkout(exercise.exerciseId);
     }
 
     return (
@@ -134,7 +136,7 @@ const { themeStyle } = useTheme();
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric", "decimal"]}
 					placeholders={["30:00", "1.5"]}

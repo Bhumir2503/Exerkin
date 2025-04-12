@@ -63,13 +63,11 @@ export const fetchDeletedWorkouts = async (userId, lastSynced) => {
 	}
 };
 
-export const uploadWorkout = async (userId, workout) => {
+export const uploadWorkout = async (workout) => {
 	try {
 		await workoutsCollection.doc(workout.workoutId).set({
 			...workout,
-			userId: userId,
 			updatedAt: new Date(),
-			uploadedAt: new Date(),
 		});
 	} catch (error) {
 		console.error(

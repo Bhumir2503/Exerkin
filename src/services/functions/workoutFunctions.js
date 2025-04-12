@@ -37,7 +37,6 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 			}));
 
 			realm.write(() => {
-				console.log("Testing	");
 				mergeWorkoutsToRealm(realm, newWorkouts);
 				updateLastWorkoutSyncTime(realm);
 			});
@@ -80,17 +79,9 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 export const syncPendingWorkoutsToFirestore = async (realm, userId) => {
 	try {
 		const pendingWorkouts = await getPendingRealmWorkouts(realm, userId);
-		console.log(
-			"(Sync) Syncing pending workouts to Firestore:",
-			pendingWorkouts.length
-		);
 
 		if (pendingWorkouts.length === 0) return;
 
-		console.log(
-			"(Sync) Pending workouts to sync:",
-			pendingWorkouts[0].exercises
-		);
 		realm.write(() => {
 			pendingWorkouts.forEach((workout) => {
 				// Convert to plain object
@@ -142,10 +133,11 @@ export const getWorkouts = async (realm, userId) => {
 // Function to add a new workout to Firestore and Realm
 export const addWorkout = async (realm, userId, workoutData) => {
 	try {
-		await uploadWorkout(userId, workoutData); // Upload workout data to Firestore
+		await uploadWorkout(workoutData); // Upload workout data to Firestore
 		await setRealmWorkout(realm, userId, workoutData, "synced"); // Set workout in Realm as synced
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error); // Log error if adding workout fails
+		workoutData.syncStatus = "pending"; // Set sync status to pending
 		await setRealmWorkout(realm, userId, workoutData, "pending"); // Set workout in Realm as pending if sync fails
 	}
 };

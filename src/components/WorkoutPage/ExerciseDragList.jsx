@@ -16,8 +16,7 @@ import CardioTimeExercise from "./ExerciseCard/CardioTimeExercise";
 
 export const ExerciseDragList = () => {
 	const { workoutExercises, setWorkoutExercises } = useWorkout();
-	const { themeStyle } = useTheme();
-	const styles = createStyles(themeStyle);
+	const styles = createStyles();
 
 	if(!workoutExercises || workoutExercises.length === 0) {
 		return (
@@ -37,7 +36,7 @@ export const ExerciseDragList = () => {
 					data={workoutExercises}
 					onReorder={handleReorder}
 					renderItem={renderItem}
-					keyExtractor={(item) => item.id}
+					keyExtractor={(item) => item.exerciseId}
 					bounces={false}
 				/>
 			</View>
@@ -45,17 +44,18 @@ export const ExerciseDragList = () => {
 	);
 };
 
-const Card = ({ id, name, sets, type }) => {
+const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
 	const drag = useReorderableDrag();
 
 	const exercise = {
-		id,
+		exerciseId,
 		name,
 		sets,
+		notes,
 	};
 
 	const renderExercise = () => {
-		switch (type) {
+		switch (exerciseType) {
 			case "bodyweight":
 				return <BodyWeightExercise exercise={exercise} />;
 			case "weightlifting":
@@ -74,7 +74,7 @@ const Card = ({ id, name, sets, type }) => {
 	return <Pressable onLongPress={drag}>{renderExercise()}</Pressable>;
 };
 
-const createStyles = (theme) => {
+const createStyles = () => {
 	return StyleSheet.create({
 		container: {
 			flex:1,
