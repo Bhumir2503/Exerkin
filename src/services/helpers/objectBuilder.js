@@ -19,21 +19,7 @@ export const buildWorkoutObject = (
 		name = "Untitled Workout";
 	}
 
-	const workoutFiltered = exercises.map((exercise) => {
-		const sets = exercise.sets.filter(
-			(set) =>
-				set.weight !== null &&
-				set.weight !== "" &&
-				set.weight !== 0 &&
-				set.time !== null &&
-				set.time !== "" &&
-				set.time !== 0 &&
-				set.distance !== null &&
-				set.distance !== "" &&
-				set.distance !== 0
-		);
-		return { ...exercise, sets };
-	});
+    const workoutFiltered = exercises
 
 	const workoutChecked = workoutFiltered.filter(
 		(exercise) => exercise.sets.length > 0
@@ -61,6 +47,7 @@ export const buildWorkoutObject = (
 
 export const buildExerciseObject = (selectedExercise) => {
 	const exercise = {
+        uniqueId: uuid.v4(),
 		exerciseId: selectedExercise.id,
 		name: selectedExercise.name,
 		sets: [buildSetObject()],

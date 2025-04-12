@@ -13,11 +13,8 @@ export const getRealmWorkouts = async (realm, userId) => {
 	}
 };
 
-export const setRealmWorkout = async (
-	realm,
-	workoutData,
-	syncStatus
-) => {
+export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
+	console.log("Testing:", workoutData.userId);
 	try {
 		realm.write(() => {
 			realm.create(
@@ -34,15 +31,11 @@ export const setRealmWorkout = async (
 	}
 };
 
-export const removeRealmWorkout = async (
-	realm,
-	workoutId,
-	syncStatus
-) => {
+export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) => {
 	realm.write(() => {
 		const workout = realm
 			.objects("Workout")
-			.filtered("workoutId == $1", workoutId)[0];
+			.filtered("workoutId == $0", workoutId)[0];
 
 		if (workout) {
 			// 🔁 Loop through each WorkoutExercise
@@ -60,17 +53,16 @@ export const removeRealmWorkout = async (
 
 		// 📝 Add to DeletedWorkout collection
 		realm.create("DeletedWorkout", {
-			userId: workout.userId,
+			userId: userId,
 			deletedId: workoutId,
 			deletedAt: new Date(),
 			syncStatus: syncStatus,
 		});
 	});
 };
-export const removeAllRealmWorkout = async (realm, userId) => {
+export const removeAllRealmWorkout = async (realm) => {
 	realm.write(() => {
-		const workouts = realm
-			.objects("Workout")
+		const workouts = realm.objects("Workout");
 		if (workouts) {
 			realm.delete(workouts);
 		}
@@ -106,6 +98,18 @@ export const mergeWorkoutsToRealm = (realm, workouts) => {
 		workout.updatedAt = workout.updatedAt.toDate();
 		workout.syncStatus = "synced";
 		realm.create("Workout", workout, "modified");
+	});
+};
+
+// Delete workouts from Realm
+export const removeWorkoutsFromRealm = (realm, workoutIds) => {
+	workoutIds.forEach((id) => {
+		const workout = realm.objectForPrimaryKey("Workout", id);
+		if (workout) {
+			workout.exercises.forEach((ex) => realm.delete(ex.sets));
+			realm.delete(workout.exercises);
+			realm.delete(workout);
+		}
 	});
 };
 

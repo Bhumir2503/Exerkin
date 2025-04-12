@@ -105,11 +105,11 @@ export const removeWorkoutFromFirestore = async (workoutId) => {
 	}
 };
 
-export const markWorkoutAsDeleted = async (workout) => {
+export const markWorkoutAsDeleted = async (userId, workoutId) => {
 	try {
-		await deletedWorkoutsCollection.doc(workout.workoutId).set({
-			deletedId: workout.workoutId,
-            userId: workout.userId,
+		await deletedWorkoutsCollection.doc(workoutId).set({
+			deletedId: workoutId,
+            userId: userId,
             deletedAt: new Date(),
 		});
 	} catch (error) {

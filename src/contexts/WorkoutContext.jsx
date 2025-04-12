@@ -129,10 +129,9 @@ export const WorkoutProvider = ({ children }) => {
 			WorkoutTimer.current,
 			"synced"
 		);
-		console.log("Workout completed:", workout);
 
 		
-		addWorkout(realm, workout.userId, workout);
+		addWorkout(realm, workout);
 
 		// Reset useStates
 		workoutCancelled();
