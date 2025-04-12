@@ -13,7 +13,7 @@ import CardioDistanceExercise from "./ExerciseCard/CardioDistanceExercise";
 import CardioTimeExercise from "./ExerciseCard/CardioTimeExercise";
 
 export const TemplateExerciseDragList = () => {
-    const {templateExercises, setTemplateExercises} = useTemplate();
+	const { templateExercises, setTemplateExercises } = useTemplate();
 	const styles = createStyles();
 
 	if (!templateExercises || templateExercises.length === 0) {
@@ -33,7 +33,7 @@ export const TemplateExerciseDragList = () => {
 					data={templateExercises}
 					onReorder={handleReorder}
 					renderItem={renderItem}
-					keyExtractor={(item) => item.id}
+					keyExtractor={(item) => item.exerciseId}
 					bounces={false}
 				/>
 			</View>
@@ -41,17 +41,18 @@ export const TemplateExerciseDragList = () => {
 	);
 };
 
-const Card = ({ id, name, sets, type }) => {
+const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
 	const drag = useReorderableDrag();
 
 	const exercise = {
-		id,
+		exerciseId,
 		name,
 		sets,
+		notes,
 	};
 
 	const renderExercise = () => {
-		switch (type) {
+		switch (exerciseType) {
 			case "bodyweight":
 				return <BodyWeightExercise exercise={exercise} />;
 			case "weightlifting":
@@ -69,7 +70,6 @@ const Card = ({ id, name, sets, type }) => {
 
 	return <Pressable onLongPress={drag}>{renderExercise()}</Pressable>;
 };
-
 const createStyles = () => {
 	return StyleSheet.create({
 		container: {

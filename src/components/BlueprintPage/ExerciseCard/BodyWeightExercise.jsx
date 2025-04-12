@@ -4,6 +4,8 @@ import { useTemplate } from "../../../contexts/TemplateContext";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
 const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -12,7 +14,7 @@ const BodyWeightExercise = ({ exercise }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for reps
-		addSetToTemplateExercise(exercise.id, { reps: null });
+		addSetToTemplateExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -20,7 +22,7 @@ const BodyWeightExercise = ({ exercise }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInTemplateExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
@@ -33,7 +35,7 @@ const BodyWeightExercise = ({ exercise }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={[""]}

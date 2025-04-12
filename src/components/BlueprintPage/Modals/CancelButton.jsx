@@ -45,11 +45,11 @@ const CancelButton = ({ navigation }) => {
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
                             <Text style={styles.modalTitle}>
-                                Cancel Workout?
+                                Cancel Blueprints?
                             </Text>
                             <Text style={styles.modalText}>
-                                Your template will not be saved. Active
-                                template data will be lost.
+                                Your blueprint will not be saved. Active
+                                blueprint data will be lost.
                             </Text>
                         </View>
 
