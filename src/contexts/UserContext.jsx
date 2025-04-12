@@ -72,6 +72,11 @@ export const UserProvider = ({ children }) => {
 					console.error("(UserContext) - Failed to setRealmUser:", e);
 				}
 			}
+			else{
+				console.log("(UserContext) - User doc does not exist");
+				setIsNewUser(true);
+				setSetupComplete(false);
+			}
 		});
 
 		userDocUnsubscribeRef.current = unsubscribe;
@@ -90,6 +95,8 @@ export const UserProvider = ({ children }) => {
 		setUser(authUser);
 
 		try {
+			console.log(
+				"(UserContext) - Checking if user has completed setup...")
 			listenToUserDocChanges(authUser.uid);
 		} catch (error) {
 			console.error(

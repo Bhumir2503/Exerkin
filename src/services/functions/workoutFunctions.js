@@ -2,7 +2,6 @@
 import {
 	uploadWorkout,
 	removeWorkoutFromFirestore,
-	markWorkoutAsDeleted,
 } from "../firestore/firestoreWorkoutServices";
 
 // Realm Imports - AKA the local database
@@ -24,26 +23,36 @@ const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
 
 export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastWorkoutSyncTime(realm);
+
 	const unsubscribe = workoutsCollection
 		.where("userId", "==", userId)
 		.where("updatedAt", ">", lastSynced)
-		.onSnapshot((snapshot) => {
-			if (snapshot.empty) {
+		.where("deleted", "==", false)
+		.onSnapshot(
+			(snapshot) => {
+				if (!snapshot || snapshot.empty) {
+					onUpdate();
+					return;
+				}
+
+				const newWorkouts = snapshot.docs.map((doc) => ({
+					...doc.data(),
+				}));
+
+				realm.write(() => {
+					mergeWorkoutsToRealm(realm, newWorkouts);
+					updateLastWorkoutSyncTime(realm);
+				});
+
+				// Call the onUpdate function to notify about the update
 				onUpdate();
-				return;
+			},
+			(error) => {
+				console.error("Error fetching workouts:", error);
+				// Handle error here, if needed
 			}
-			const newWorkouts = snapshot.docs.map((doc) => ({
-				...doc.data(),
-			}));
+		);
 
-			realm.write(() => {
-				mergeWorkoutsToRealm(realm, newWorkouts);
-				updateLastWorkoutSyncTime(realm);
-			});
-
-			// Call the onUpdate function to notify about the update
-			onUpdate();
-		});
 	return unsubscribe;
 };
 
@@ -53,65 +62,36 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 		lastSynced.getTime() === new Date(0).getTime()
 			? new Date()
 			: lastSynced;
-	return (unsubscribe = deletedWorkoutsCollection
+
+	const unsubscribe = workoutsCollection
 		.where("userId", "==", userId)
 		.where("deletedAt", ">", effectiveLastSynced)
-		.onSnapshot((snapshot) => {
-			if (snapshot.empty) {
-				onUpdate();
-				return;
-			}
-
-			const deletedWorkouts = snapshot.docs.map((doc) => ({
-				...doc.data(),
-			}));
-
-			realm.write(() => {
-				const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
-				removeWorkoutsFromRealm(realm, idsToDelete);
-				updateLastWorkoutSyncTime(realm);
-			});
-
-			onUpdate();
-		}));
-};
-
-export const syncPendingWorkoutsToFirestore = async (realm, userId) => {
-	try {
-		const pendingWorkouts = await getPendingRealmWorkouts(realm, userId);
-
-		if (pendingWorkouts.length === 0) return;
-
-		realm.write(() => {
-			pendingWorkouts.forEach((workout) => {
-				// Convert to plain object
-				const workoutData = {
-					...workout,
-					exercises: workout.exercises.map((exercise) => ({
-						...exercise,
-						sets: exercise.sets.map((set) => ({
-							...set,
-						})),
-					})),
-				};
-
-				try {
-					// Update sync status and upload workout to Firestore
-					workout.syncStatus = "synced";
-					uploadWorkout(workoutData); // Convert to plain object
-				} catch (error) {
-					console.error(
-						"(Sync) Upload failed for",
-						workout.workoutId,
-						error
-					);
-					workout.syncStatus = "failed";
+		.onSnapshot(
+			(snapshot) => {
+				if (!snapshot || snapshot.empty) {
+					onUpdate();
+					return;
 				}
-			});
-		});
-	} catch (error) {
-		console.error("(Sync) Error syncing pending workouts:", error);
-	}
+
+				const deletedWorkouts = snapshot.docs.map((doc) => ({
+					...doc.data(),
+				}));
+
+				realm.write(() => {
+					const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
+					removeWorkoutsFromRealm(realm, idsToDelete);
+					updateLastWorkoutSyncTime(realm);
+				});
+
+				onUpdate();
+			},
+			(error) => {
+				console.error("Error fetching deleted workouts:", error);
+				// Handle error here, if needed
+			}
+		);
+
+	return unsubscribe;
 };
 
 /*
@@ -133,13 +113,10 @@ export const getWorkouts = async (realm, userId) => {
 // Function to add a new workout to Firestore and Realm
 export const addWorkout = async (realm, workoutData) => {
 	try {
-
 		await uploadWorkout(workoutData); // Upload workout data to Firestore
-		await setRealmWorkout(realm, workoutData, "synced"); // Set workout in Realm as synced
+		await setRealmWorkout(realm, workoutData); // Set workout in Realm as synced
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error); // Log error if adding workout fails
-		workoutData.syncStatus = "pending"; // Set sync status to pending
-		await setRealmWorkout(realm, workoutData, "pending"); // Set workout in Realm as pending if sync fails
 	}
 };
 
@@ -149,14 +126,11 @@ export const editWorkout = () => {
 };
 
 // Function to delete a workout from Firestore and mark it in Realm
-export const deleteWorkout = async (realm, userId,  workoutId) => {
-	console.log(userId, workoutId);
+export const deleteWorkout = async (realm, workoutId) => {
 	try {
 		await removeWorkoutFromFirestore(workoutId); // Remove workout from Firestore
-		await markWorkoutAsDeleted(userId, workoutId); // Mark workout as deleted in Firestore
-		await removeRealmWorkout(realm, userId, workoutId, "deleted"); // Remove workout from Realm and mark as deleted
+		await removeRealmWorkout(realm, workoutId); // Remove workout from Realm and mark as deleted
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error deleting workout:", error); // Log error if deleting workout fails
-		await removeRealmWorkout(realm, userId, workoutId, "pending"); // Mark workout as pending in Realm if deletion fails
 	}
 };

@@ -10,7 +10,6 @@ import uuid from "react-native-uuid";
 
 import { useRealm } from "./RealmProvider";
 import {
-	syncPendingWorkoutsToFirestore,
 	getWorkouts,
 	addWorkout,
 	deleteWorkout,
@@ -112,9 +111,6 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	const workoutCompleted = async () => {
-		// check if there is resync workout cache
-		await syncPendingWorkoutsToFirestore(realm, user.uid);
-
 		const workout = buildWorkoutObject(
 			WorkoutId.current,
 			TemplateId.current,
@@ -199,11 +195,7 @@ export const WorkoutProvider = ({ children }) => {
 	};
 
 	const removeWorkoutFromHistory = (workout) => {
-		const newWorkoutHistory = workoutHistory.filter(
-			(workoutcheck) => workoutcheck.workoutId !== workout.workoutId
-		);
-		setWorkoutHistory(newWorkoutHistory);
-		deleteWorkout(realm, workout.userId, workout.workoutId);
+		deleteWorkout(realm, workout.workoutId);
 	};
 
 	return (

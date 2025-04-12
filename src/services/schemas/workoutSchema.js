@@ -44,6 +44,7 @@ export const WorkoutSchema = {
 		unitSystem: "string?", // "metric" or "imperial"
 		imageURL: "string?",
 		isTemplate: "bool?",
-        syncStatus: "string", // "synced", "pending", "failed"
+		deleted: "bool?",
+		deletedAt: "date?",
 	},
 };
