@@ -11,6 +11,8 @@ import {
 	MenuOption,
 } from "react-native-popup-menu";
 
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -19,7 +21,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToExercise(exercise.id, { weight: null, reps: null });
+		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -27,7 +29,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(exercise.id, index, {
+		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			weight: number !== "" ? number : null,
 		});
@@ -38,14 +40,14 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exercise.id, index, {
+		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
 	};
 
 	const handleDeleteExercise = () => {
-		removeExerciseFromWorkout(exercise.id);
+		removeExerciseFromWorkout(exercise.exerciseId);
 	};
 
 	return (
@@ -87,7 +89,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["decimal", "numeric"]}
 					placeholders={["135", "12"]}

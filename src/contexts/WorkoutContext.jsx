@@ -20,7 +20,7 @@ import {
 
 import { useUser } from "./UserContext";
 
-import { buildWorkoutObject } from "../services/helpers/workoutHelperFunctions";
+import { buildWorkoutObject } from "../services/helpers/objectBuilder";
 
 const WorkoutContext = createContext();
 
@@ -28,18 +28,20 @@ export const WorkoutProvider = ({ children }) => {
 	const { user } = useUser();
 	const realm = useRealm();
 
-	//Workout Section States
-	const ModalType = useRef("WorkoutModal");
-
 	//  Workout History, Workout Exercises, Workout Notes, Workout Title, Workout Start Time, Workout Date
 	const WorkoutId = useRef(null);
 	const [workoutHistory, setWorkoutHistory] = useState([]);
 	const [workoutExercises, setWorkoutExercises] = useState([]);
-
+	
 	const WorkoutTitle = useRef("");
 	const WorkoutNote = useRef("");
 	const WorkoutStartTime = useRef(null);
 	const WorkoutTimer = useRef(0);
+	const imageURL = useRef(null);
+	const unitSystem = useRef(user?.unitSystem || "imperial");
+
+	const TemplateId = useRef(null);
+	const isTemplate = useRef(false);
 
 	/*
 	Effect hooks for managing workout data subscriptions and updates.
@@ -101,6 +103,12 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutNote.current = "";
 		WorkoutStartTime.current = null;
 		WorkoutTimer.current = 0;
+
+		TemplateId.current = null;
+		isTemplate.current = false;
+		imageURL.current = null;
+		unitSystem.current = user?.unitSystem || "imperial";
+
 	};
 
 	const workoutCompleted = async () => {
@@ -108,17 +116,22 @@ export const WorkoutProvider = ({ children }) => {
 		await syncPendingWorkoutsToFirestore(realm, user.uid);
 
 		const workout = buildWorkoutObject(
-			user.uid,
 			WorkoutId.current,
+			TemplateId.current,
+			user.uid,
 			WorkoutTitle.current,
 			WorkoutNote.current,
+			isTemplate.current,
+			imageURL.current,
+			unitSystem.current,
 			workoutExercises,
 			WorkoutStartTime.current,
-			WorkoutTimer.current
+			WorkoutTimer.current,
+			"synced"
 		);
 
 		
-		addWorkout(realm, workout.userId, workout);
+		addWorkout(realm, workout);
 
 		// Reset useStates
 		workoutCancelled();
@@ -128,7 +141,7 @@ export const WorkoutProvider = ({ children }) => {
 	const addExerciseToWorkout = async (exercise) => {
 		setWorkoutExercises((prevExercises) => [
 			...prevExercises,
-			{ ...exercise, exerciseId: uuid.v4() },
+			{ ...exercise, },
 		]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
@@ -136,7 +149,7 @@ export const WorkoutProvider = ({ children }) => {
 	// Remove exercise from active workout
 	const removeExerciseFromWorkout = (exerciseId) => {
 		setWorkoutExercises((prevExercises) =>
-			prevExercises.filter((exercise) => exercise.id !== exerciseId)
+			prevExercises.filter((exercise) => exercise.exerciseId !== exerciseId)
 		);
 	};
 
@@ -144,7 +157,7 @@ export const WorkoutProvider = ({ children }) => {
 	const addSetToExercise = (exerciseId, set) => {
 		setWorkoutExercises((prevExercises) =>
 			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
+				exercise.exerciseId === exerciseId
 					? { ...exercise, sets: [...exercise.sets, set] }
 					: exercise
 			)
@@ -156,7 +169,7 @@ export const WorkoutProvider = ({ children }) => {
 	const updateSetInExercise = (exerciseId, setIndex, set) => {
 		setWorkoutExercises((prevExercises) =>
 			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
+				exercise.exerciseId === exerciseId
 					? {
 							...exercise,
 							sets: exercise.sets.map((prevSet, index) =>
@@ -173,7 +186,7 @@ export const WorkoutProvider = ({ children }) => {
 	const removeSetFromExercise = (exerciseId, setIndex) => {
 		setWorkoutExercises((prevExercises) =>
 			prevExercises.map((exercise) =>
-				exercise.id === exerciseId
+				exercise.exerciseId === exerciseId
 					? {
 							...exercise,
 							sets: exercise.sets.filter(
@@ -196,8 +209,6 @@ export const WorkoutProvider = ({ children }) => {
 	return (
 		<WorkoutContext.Provider
 			value={{
-				ModalType,
-
 				workoutStarted,
 				workoutCompleted,
 				workoutCancelled,

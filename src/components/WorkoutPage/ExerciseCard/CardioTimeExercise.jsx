@@ -12,6 +12,8 @@ import {
 } from "react-native-popup-menu";
 import { Ionicons } from "@expo/vector-icons";
 
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
 const CardioTimeExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -19,7 +21,7 @@ const CardioTimeExercise = ({ exercise }) => {
 		useWorkout();
 
 	const addSet = () => {
-		addSetToExercise(exercise.id, { time: null });
+		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -28,14 +30,14 @@ const CardioTimeExercise = ({ exercise }) => {
 		if (text.length < prevValue.length) {
 			if (prevValue.endsWith(":")) {
 				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(exercise.id, index, {
+				updateSetInExercise(exercise.exerciseId, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
 				return;
 			} else {
 				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(exercise.id, index, {
+				updateSetInExercise(exercise.exerciseId, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -65,14 +67,14 @@ const CardioTimeExercise = ({ exercise }) => {
 			}
 		}
 
-		updateSetInExercise(exercise.id, index, {
+		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			time: number !== "" ? number : null,
 		});
 	};
 
 	const handleDeleteExercise = () => {
-		removeExerciseFromWorkout(exercise.id);
+		removeExerciseFromWorkout(exercise.exerciseId);
 	};
 
 	return (
@@ -114,7 +116,7 @@ const CardioTimeExercise = ({ exercise }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={["10:00"]}
@@ -167,16 +169,16 @@ const createStyles = (themeStyle) => {
 		},
 		menuTrigger: {
 			padding: 5,
-            paddingVertical: 0,
-            borderRadius: 6,
+			paddingVertical: 0,
+			borderRadius: 6,
 		},
 		menuOptions: {
 			backgroundColor: themeStyle.card,
 			padding: 4,
 			justifyContent: "center",
 			alignItems: "center",
-            marginLeft: -25,
-            marginTop: 15,
+			marginLeft: -25,
+			marginTop: 15,
 		},
 		menuOptionContainer: {
 			flexDirection: "row",

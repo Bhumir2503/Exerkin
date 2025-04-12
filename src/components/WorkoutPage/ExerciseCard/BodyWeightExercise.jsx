@@ -11,6 +11,8 @@ import {
 	MenuOption,
 } from "react-native-popup-menu";
 
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
 const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -18,7 +20,7 @@ const BodyWeightExercise = ({ exercise }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for reps
-		addSetToExercise(exercise.id, { reps: null });
+		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -26,14 +28,14 @@ const BodyWeightExercise = ({ exercise }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInExercise(exercise.id, index, {
+		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
 	};
 
 	const handleDeleteExercise = () => {
-		removeExerciseFromWorkout(exercise.id);
+		removeExerciseFromWorkout(exercise.exerciseId);
 	}
 
 	return (
@@ -75,7 +77,7 @@ const BodyWeightExercise = ({ exercise }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={["12"]}

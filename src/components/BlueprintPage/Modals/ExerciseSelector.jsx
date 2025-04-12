@@ -18,6 +18,8 @@ import {
 	getExercisesByCategory,
 } from "../../../services/constants/exerciseLibrary";
 
+import { buildExerciseObject } from "../../../services/helpers/objectBuilder";
+
 const ExerciseSelector = () => {
 	const { themeStyle } = useTheme();
     const { addExerciseToTemplate, templateExercises } = useTemplate();
@@ -35,7 +37,7 @@ const ExerciseSelector = () => {
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 	// Get array of already added exercise IDs
 	const getAddedExerciseIds = () => {
-		return templateExercises.map((exercise) => exercise.id);
+		return templateExercises.map((exercise) => exercise.exerciseId);
 	};
 
 	// Filter exercises based on search, category, and already added exercises
@@ -86,31 +88,7 @@ const ExerciseSelector = () => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
-			let setType = null;
-			if (selectedExercise.type === "weightlifting") {
-				setType = [{ reps: null, weight: null }];
-			} else if (selectedExercise.type === "bodyweight") {
-				setType = [{ reps: null }];
-			} else if (selectedExercise.type === "assisted-weight") {
-				setType = [{ reps: null, weight: null }];
-			} else if (selectedExercise.type === "cardio-distance") {
-				setType = [{ time: null, distance: null }];
-			} else if (selectedExercise.type === "cardio-time") {
-				setType = [{ time: null }];
-			}
-
-			const exercise = {
-				id: selectedExercise.id,
-				name: selectedExercise.name,
-				type: selectedExercise.type,
-				sets: setType,
-				notes: "",
-				order: templateExercises.length + 1,
-				completed: false,
-				createdAt: new Date().toISOString(),
-				updatedAt: new Date().toISOString(),
-			};
-
+			const exercise = buildExerciseObject(selectedExercise);
 			addExerciseToTemplate(exercise);
 
 			closeModal();
@@ -370,7 +348,7 @@ const ExerciseSelector = () => {
 								disabled={!selectedExercise}
 							>
 								<Text style={styles.addButtonText}>
-									Add to Workout
+									Add to Blueprint
 								</Text>
 							</TouchableOpacity>
 						</View>

@@ -3,53 +3,79 @@ import React, {
 	useState,
 	useContext,
     useRef,
+    useEffect,
 } from "react";
 
 import firestore from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
+import { addTemplate, getTemplates } from "../services/functions/templateFunctions";
+
 
 import { useUser } from "./UserContext";
+import { useRealm } from "./RealmProvider";
+import { buildTemplateObject } from "../services/helpers/objectBuilder";
 
 const TemplateContext = createContext();
 
 export const TemplateProvider = ({ children }) => {
-	const [init, setInit] = useState(false);
 	const { user } = useUser();
+    const realm = useRealm();
 
     const TemplateId = useRef(null);
     const [storedTemplate, setStoredTemplate] = useState([]);
     const [templateExercises, setTemplateExercises] = useState([]);
+    const unitSystem = useRef(user?.unitSystem || "imperial");
 
     const TemplateTitle = useRef("");
     const TemplateNote = useRef("");
-    const TemplateStartTime = useRef(null);
+
+    useEffect(() => {
+        const fetchTemplates = async () => {
+            const templates = await getTemplates(realm);
+            setStoredTemplate(templates);
+        };
+        fetchTemplates();
+    }, [user, realm]);
+
 
     const templateStarted = () => {
         setTemplateExercises([]);
-        TemplateStartTime.current = firestore.Timestamp.now();
         TemplateId.current = uuid.v4()
     }
 
-    const saveTemplate = async () => {
-        cancelTemplate(); 
-    }
-
+    
     const cancelTemplate = async () => {
         setTemplateExercises([]);
         TemplateTitle.current = "";
         TemplateNote.current = "";
-        TemplateStartTime.current = null;
+    }
+
+
+    const saveTemplate = async () => {
+
+        const template = buildTemplateObject(
+            TemplateId.current,
+            user.uid,
+            TemplateTitle.current,
+            TemplateNote.current,
+            templateExercises,
+            unitSystem.current,
+            "synced"
+        );
+
+        addTemplate(realm, template);
+        cancelTemplate(); 
     }
 
     const addExerciseToTemplate = (exercise) => {
-        setTemplateExercises((prevExercises) => [...prevExercises, exercise]);
+        setTemplateExercises((prevExercises) => [...prevExercises,{ ...exercise}]);
     }
 
     const addSetToTemplateExercise = (exerciseId, set) => {
         setTemplateExercises((prevExercises) =>
             prevExercises.map((exercise) =>
-                exercise.id === exerciseId
+                exercise.exerciseId === exerciseId
                     ? { ...exercise, sets: [...exercise.sets, set] }
                     : exercise
             )
@@ -59,7 +85,7 @@ export const TemplateProvider = ({ children }) => {
     const updateSetInTemplateExercise = (exerciseId, index, set) => {
         setTemplateExercises((prevExercises) =>
             prevExercises.map((exercise) =>
-                exercise.id === exerciseId
+                exercise.exerciseId === exerciseId
                     ? {
                         ...exercise,
                         sets: exercise.sets.map((s, i) =>
@@ -74,7 +100,7 @@ export const TemplateProvider = ({ children }) => {
     const removeSetFromTemplateExercise = (exerciseId, index) => {
         setTemplateExercises((prevExercises) =>
             prevExercises.map((exercise) =>
-                exercise.id === exerciseId
+                exercise.exerciseId === exerciseId
                     ? {
                         ...exercise,
                         sets: exercise.sets.filter((_, i) => i !== index),
@@ -96,7 +122,6 @@ export const TemplateProvider = ({ children }) => {
                 setTemplateExercises,
                 TemplateTitle,
                 TemplateNote,
-                TemplateStartTime,
 
                 templateStarted,
                 saveTemplate,

@@ -3,6 +3,7 @@ import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTemplate } from "../../../contexts/TemplateContext";
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
 const CardioDistanceExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
@@ -12,7 +13,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
-		addSetToTemplateExercise(exercise.id, { time: null, distance: null });
+		addSetToTemplateExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleTimeChange = (text, index) => {
@@ -26,7 +27,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 			if (prevValue.endsWith(":")) {
 				// If deleting a colon, also remove the digit before it
 				const newValue = prevValue.slice(0, -2);
-				updateSetInTemplateExercise(exercise.id, index, {
+				updateSetInTemplateExercise(exercise.exerciseId, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -34,7 +35,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 			} else {
 				// Normal backspace - just remove the last character
 				const newValue = prevValue.slice(0, -1);
-				updateSetInTemplateExercise(exercise.id, index, {
+				updateSetInTemplateExercise(exercise.exerciseId, index, {
 					...exercise.sets[index],
 					time: newValue !== "" ? newValue : null,
 				});
@@ -71,7 +72,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 		}
 
 		// Update the time for the specific set
-		updateSetInTemplateExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			time: number !== "" ? number : null,
 		});
@@ -82,7 +83,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 		const number = text.replace(/[^0-9.]/g, "");
 
 		// Update the distance for the specific set
-		updateSetInTemplateExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			distance: number !== "" ? number : null,
 		});
@@ -95,7 +96,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric", "decimal"]}
 					placeholders={["", ""]}

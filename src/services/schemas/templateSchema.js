@@ -1,19 +1,28 @@
 export const ExerciseSetSchema = {
 	name: "ExerciseSet",
+	primaryKey: "setId",
 	properties: {
+		setId: "string",
 		weight: "string?",
 		reps: "string?",
 		time: "string?",
 		distance: "string?",
+		completed: "bool?",
+		setType: "string?", // "warmUp", "workingSet", "coolDown"
+		notes: "string?",
 	},
 };
 
 export const TemplateExerciseSchema = {
 	name: "TemplateExercise",
+	primaryKey: "uniqueId",
 	properties: {
-		id: "string",
+		uniqueId: "string",
+		exerciseId: "string",
 		name: "string",
 		sets: "ExerciseSet[]",
+		notes: "string?",
+		exerciseType: "string",
 	},
 };
 
@@ -22,13 +31,14 @@ export const TemplateSchema = {
 	primaryKey: "templateId",
 	properties: {
 		templateId: "string",
-		title: "string",
-		note: "string",
+		userId: "string",
+		name: "string",
+		note: "string?",
 		exercises: "TemplateExercise[]",
 		createdAt: "date",
 		updatedAt: "date",
-		uploadedAt: "date",
-		userId: "string",
+		deletedAt: "date?",
+		unitSystem: "string", // "metric" or "imperial"
         syncStatus: "string", // "synced", "pending", "failed"
 	},
 };

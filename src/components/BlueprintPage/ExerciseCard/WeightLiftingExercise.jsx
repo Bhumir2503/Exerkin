@@ -3,6 +3,7 @@ import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useTemplate } from "../../../contexts/TemplateContext";
+import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
@@ -12,7 +13,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
-		addSetToTemplateExercise(exercise.id, { weight: null, reps: null });
+		addSetToTemplateExercise(exercise.exerciseId, buildSetObject());
 	};
 
 	const handleWeightChange = (text, index) => {
@@ -20,7 +21,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the weight for the specific set by using the index of the set
-		updateSetInTemplateExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			weight: number !== "" ? number : null,
 		});
@@ -31,7 +32,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		const number = text.replace(/[^0-9]/g, "");
 
 		// Update the reps for the specific set by using the index of the set
-		updateSetInTemplateExercise(exercise.id, index, {
+		updateSetInTemplateExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
@@ -44,7 +45,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
-					id={exercise.id}
+					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["decimal", "numeric"]}
 					placeholders={["", ""]}

@@ -7,14 +7,9 @@ import { migrationVersion13 } from "../services/functions/migrationFunctions";
 const RealmContext = createContext(null);
 
 const realmConfig = {
-	path: "default.realm",
+	path: "exerkin.realm",
 	schema: realmSchemas,
-	schemaVersion: 13,
-	migration: (oldRealm, newRealm) => {
-		if (oldRealm.schemaVersion < 13) {
-			migrationVersion13(oldRealm, newRealm);
-		}
-	},
+	schemaVersion: 1,
 
 };
 
