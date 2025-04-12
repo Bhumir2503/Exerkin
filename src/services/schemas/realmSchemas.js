@@ -8,6 +8,8 @@ import { UserSchema } from "./userSchema";
 import { MeasurementSchema } from "./measurementSchema";
 import { SyncStatusSchema } from "./syncStatusSchema";
 
+import { TemplateSchema, TemplateExerciseSchema, } from "./templateSchema";
+
 export const realmSchemas = [
 	WorkoutSchema,
 	WorkoutExerciseSchema,
@@ -16,5 +18,7 @@ export const realmSchemas = [
 	UserSchema,
 	MeasurementSchema,
 	SyncStatusSchema,
+	TemplateSchema,
+	TemplateExerciseSchema,
 	// add more here if needed
 ];

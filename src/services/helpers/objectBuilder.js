@@ -73,8 +73,8 @@ export const buildSetObject = () => {
 };
 
 export const buildTemplateObject = (
-	userId,
 	templateId,
+	userId,
 	name,
 	notes,
 	exercises,
@@ -82,24 +82,10 @@ export const buildTemplateObject = (
 	status
 ) => {
 	if (name === "") {
-		name = "Untitled Template";
+		name = "Untitled Blueprint";
 	}
 
-	const workoutFiltered = exercises.map((exercise) => {
-		const sets = exercise.sets.filter(
-			(set) =>
-				set.weight !== null &&
-				set.weight !== "" &&
-				set.weight !== 0 &&
-				set.time !== null &&
-				set.time !== "" &&
-				set.time !== 0 &&
-				set.distance !== null &&
-				set.distance !== "" &&
-				set.distance !== 0
-		);
-		return { ...exercise, sets };
-	});
+	const workoutFiltered = exercises
 
 	const workoutChecked = workoutFiltered.filter(
 		(exercise) => exercise.sets.length > 0

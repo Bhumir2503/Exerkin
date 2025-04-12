@@ -14,7 +14,6 @@ export const getRealmWorkouts = async (realm, userId) => {
 };
 
 export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
-	console.log("Testing:", workoutData.userId);
 	try {
 		realm.write(() => {
 			realm.create(
