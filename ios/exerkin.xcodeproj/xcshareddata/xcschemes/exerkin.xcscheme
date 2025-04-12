@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "exerkin.app"
-               BlueprintName = "exerkin"
-               ReferencedContainer = "container:exerkin.xcodeproj">
+               BuildableName = "Exerkin.app"
+               BlueprintName = "Exerkin"
+               ReferencedContainer = "container:Exerkin.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "exerkinTests.xctest"
-               BlueprintName = "exerkinTests"
-               ReferencedContainer = "container:exerkin.xcodeproj">
+               BuildableName = "ExerkinTests.xctest"
+               BlueprintName = "ExerkinTests"
+               ReferencedContainer = "container:Exerkin.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "exerkin.app"
-            BlueprintName = "exerkin"
-            ReferencedContainer = "container:exerkin.xcodeproj">
+            BuildableName = "Exerkin.app"
+            BlueprintName = "Exerkin"
+            ReferencedContainer = "container:Exerkin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "exerkin.app"
-            BlueprintName = "exerkin"
-            ReferencedContainer = "container:exerkin.xcodeproj">
+            BuildableName = "Exerkin.app"
+            BlueprintName = "Exerkin"
+            ReferencedContainer = "container:Exerkin.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
