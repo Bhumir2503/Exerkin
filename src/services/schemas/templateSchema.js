@@ -37,6 +37,7 @@ export const TemplateSchema = {
 		exercises: "TemplateExercise[]",
 		createdAt: "date",
 		updatedAt: "date",
+		deletedAt: "date?",
 		unitSystem: "string", // "metric" or "imperial"
         syncStatus: "string", // "synced", "pending", "failed"
 	},

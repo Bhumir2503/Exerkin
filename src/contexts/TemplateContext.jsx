@@ -65,7 +65,6 @@ export const TemplateProvider = ({ children }) => {
         );
 
         addTemplate(realm, template);
-        setStoredTemplate(getTemplates(realm));
         cancelTemplate(); 
     }
 

@@ -348,7 +348,7 @@ const ExerciseSelector = () => {
 								disabled={!selectedExercise}
 							>
 								<Text style={styles.addButtonText}>
-									Add to Workout
+									Add to Blueprint
 								</Text>
 							</TouchableOpacity>
 						</View>

@@ -99,6 +99,7 @@ export const buildTemplateObject = (
 		exercises: workoutChecked,
 		createdAt: new Date(),
 		updatedAt: new Date(),
+		deletedAt: null,
 		unitSystem,
 		syncStatus: status,
 	};
