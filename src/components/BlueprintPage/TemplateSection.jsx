@@ -71,8 +71,8 @@ const TemplateSection = ({ navigation }) => {
 					>
 						<View style={styles.templateIconContainer}>
 							<Ionicons
-								name="document-outline"
-								size={24}
+								name="bookmark"
+								size={32}
 								color={themeStyle.primary}
 							/>
 						</View>
@@ -127,11 +127,6 @@ const createStyles = (themeStyle) => {
 			padding: 28,
 			alignItems: "center",
 			justifyContent: "center",
-			shadowColor: themeStyle.shadowColor || "#000",
-			shadowOffset: { width: 0, height: 2 },
-			shadowOpacity: 0.1,
-			shadowRadius: 4,
-			elevation: 3,
 		},
 		emptyStateIconContainer: {
 			backgroundColor: `${themeStyle.primary}20`,
@@ -176,15 +171,9 @@ const createStyles = (themeStyle) => {
 			borderRadius: 8,
 			padding: 16,
 			marginBottom: 12,
-			shadowColor: themeStyle.shadowColor || "#000",
-			shadowOffset: { width: 0, height: 1 },
-			shadowOpacity: 0.08,
-			shadowRadius: 3,
-			elevation: 2,
+
 		},
 		templateIconContainer: {
-			backgroundColor: `${themeStyle.primary}15`,
-			padding: 10,
 			borderRadius: 6,
 			marginRight: 14,
 		},

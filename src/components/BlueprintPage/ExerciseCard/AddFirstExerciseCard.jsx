@@ -21,7 +21,7 @@ const AddFirstExerciseCard = () => {
 			<View style={styles.content}>
 				<View style={styles.IconContainer}>
 					<Ionicons
-						name="document-outline"
+						name="document-text-outline"
 						size={40}
 						color={themeStyle.primary}
 					/>
