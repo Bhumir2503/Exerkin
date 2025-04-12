@@ -31,7 +31,7 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutId = useRef(null);
 	const [workoutHistory, setWorkoutHistory] = useState([]);
 	const [workoutExercises, setWorkoutExercises] = useState([]);
-	
+
 	const WorkoutTitle = useRef("");
 	const WorkoutNote = useRef("");
 	const WorkoutStartTime = useRef(null);
@@ -107,7 +107,6 @@ export const WorkoutProvider = ({ children }) => {
 		isTemplate.current = false;
 		imageURL.current = null;
 		unitSystem.current = user?.unitSystem || "imperial";
-
 	};
 
 	const workoutCompleted = async () => {
@@ -126,7 +125,6 @@ export const WorkoutProvider = ({ children }) => {
 			"synced"
 		);
 
-		
 		addWorkout(realm, workout);
 
 		// Reset useStates
@@ -137,7 +135,7 @@ export const WorkoutProvider = ({ children }) => {
 	const addExerciseToWorkout = async (exercise) => {
 		setWorkoutExercises((prevExercises) => [
 			...prevExercises,
-			{ ...exercise, },
+			{ ...exercise },
 		]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
@@ -145,7 +143,9 @@ export const WorkoutProvider = ({ children }) => {
 	// Remove exercise from active workout
 	const removeExerciseFromWorkout = (exerciseId) => {
 		setWorkoutExercises((prevExercises) =>
-			prevExercises.filter((exercise) => exercise.exerciseId !== exerciseId)
+			prevExercises.filter(
+				(exercise) => exercise.exerciseId !== exerciseId
+			)
 		);
 	};
 

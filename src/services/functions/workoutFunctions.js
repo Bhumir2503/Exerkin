@@ -79,7 +79,7 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 					...doc.data(),
 				}));
 				realm.write(() => {
-					const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
+					const idsToDelete = deletedWorkouts.map((d) => d.workoutId);
 					removeWorkoutsFromRealm(realm, idsToDelete);
 					updateLastWorkoutSyncTime(realm);
 				});

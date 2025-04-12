@@ -43,7 +43,7 @@ export const removeRealmWorkout = async (
 					realm.delete(set);
 				});
 				// Delete the Exercise
-				realm.delete(workout.exercises);
+				realm.delete(exercise);
 			});
 
 			// Finally delete the Workout
@@ -68,6 +68,7 @@ export const mergeWorkoutsToRealm = (realm, workouts) => {
 // Delete workouts from Realm
 export const removeWorkoutsFromRealm = (realm, workoutIds) => {
 	workoutIds.forEach((id) => {
+		console.log("Deleting workout with ID:", id);
 		const workout = realm.objectForPrimaryKey("Workout", id);
 		if (workout) {
 			workout.exercises.forEach((ex) => {

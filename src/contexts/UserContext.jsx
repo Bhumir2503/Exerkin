@@ -2,7 +2,6 @@ import { createContext, useState, useContext, useEffect, useRef } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { hasCompleteProfile } from "../services/firestore/firestoreUserServices";
 
 import { useRealm } from "./RealmProvider";
 import {
@@ -44,7 +43,6 @@ export const UserProvider = ({ children }) => {
 
 	const listenToUserDocChanges = (uid) => {
 		if (!uid) return;
-
 		resetUserDocUnsubscribe();
 
 		const userDocRef = firestore().collection("users").doc(uid);

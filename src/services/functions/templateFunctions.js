@@ -15,8 +15,7 @@ const templatesCollection = firestore().collection("templates");
 export const listenToTemplateChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastTemplateSyncTime(realm);
 
-	console.log("lastSynced", lastSynced);
-	console.log("userId", userId);
+
 	const unsubscribe = templatesCollection
 		.where("userId", "==", userId)
 		.where("updatedAt", ">", lastSynced)
@@ -27,6 +26,7 @@ export const listenToTemplateChanges = (realm, userId, onUpdate) => {
 					onUpdate();
 					return;
 				}
+
 				const newTemplates = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
