@@ -23,7 +23,6 @@ const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
 
 export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastWorkoutSyncTime(realm);
-
 	const unsubscribe = workoutsCollection
 		.where("userId", "==", userId)
 		.where("updatedAt", ">", lastSynced)
@@ -31,6 +30,7 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
+					console.log("No new workouts found.");
 					onUpdate();
 					return;
 				}
@@ -38,6 +38,8 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 				const newWorkouts = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
+
+				console.log("newWorkouts", newWorkouts);
 
 				realm.write(() => {
 					mergeWorkoutsToRealm(realm, newWorkouts);
@@ -62,13 +64,13 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 		lastSynced.getTime() === new Date(0).getTime()
 			? new Date()
 			: lastSynced;
-
 	const unsubscribe = workoutsCollection
 		.where("userId", "==", userId)
 		.where("deletedAt", ">", effectiveLastSynced)
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
+					console.log("No deleted workouts found.");
 					onUpdate();
 					return;
 				}
@@ -76,7 +78,6 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 				const deletedWorkouts = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
-
 				realm.write(() => {
 					const idsToDelete = deletedWorkouts.map((d) => d.deletedId);
 					removeWorkoutsFromRealm(realm, idsToDelete);
