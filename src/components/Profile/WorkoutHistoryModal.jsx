@@ -10,7 +10,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
-
 	formatDateObjectToTime,
 	formatDurationTimeToText,
 } from "../../services/helpers/timeFormatter";
@@ -35,6 +34,12 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 		console.log("Edit workout:", selectedWorkout.workoutId);
 		// You would typically navigate to an edit screen or open another modal
 	};
+
+	const handleSaveAsTemplate = () => {
+		// Add save as template functionality here
+		console.log("Save as template:", selectedWorkout.workoutId);
+		// You would typically save the workout as a template in your app
+	}
 
 	return (
 		<Modal
@@ -70,14 +75,23 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 								<View style={styles.actionButtons}>
 									<Pressable
 										style={styles.iconButton}
+										onPress={handleSaveAsTemplate}
+									>
+										<Ionicons
+											name="bookmark-outline"
+											size={24}
+											color={themeStyle.success || "#000"}
+										/>
+									</Pressable>
+
+									<Pressable
+										style={styles.iconButton}
 										onPress={handleEdit}
 									>
 										<Ionicons
 											name="create-outline"
 											size={24}
-											color={
-												themeStyle.textColorSecondary || "#000"
-											}
+											color={themeStyle.accent || "#000"}
 										/>
 									</Pressable>
 									<Pressable
@@ -87,9 +101,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 										<Ionicons
 											name="trash-outline"
 											size={24}
-											color={
-												themeStyle.error || "#000"
-											}
+											color={themeStyle.error || "#000"}
 										/>
 									</Pressable>
 								</View>

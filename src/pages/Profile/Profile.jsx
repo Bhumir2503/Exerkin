@@ -43,7 +43,15 @@ export default function Profile({ navigation }) {
 				{/* Header */}
 				<View style={styles.header}>
 					<View style={styles.topBar}>
-						<View style={styles.iconButton}></View>
+						<View
+							style={styles.iconButton}
+						>
+							<Ionicons
+								name="arrow-back"
+								size={24}
+								color={"transparent"}
+							/>
+						</View>
 						<Text style={styles.appTitle}>Exerkin</Text>
 						<TouchableOpacity
 							style={styles.iconButton}

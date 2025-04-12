@@ -59,14 +59,6 @@ export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) =
 		});
 	});
 };
-export const removeAllRealmWorkout = async (realm) => {
-	realm.write(() => {
-		const workouts = realm.objects("Workout");
-		if (workouts) {
-			realm.delete(workouts);
-		}
-	});
-};
 
 // Get all workouts for a user that are pending sync
 export const getPendingRealmWorkouts = async (realm) => {
@@ -105,8 +97,12 @@ export const removeWorkoutsFromRealm = (realm, workoutIds) => {
 	workoutIds.forEach((id) => {
 		const workout = realm.objectForPrimaryKey("Workout", id);
 		if (workout) {
-			workout.exercises.forEach((ex) => realm.delete(ex.sets));
-			realm.delete(workout.exercises);
+			workout.exercises.forEach((ex) => {
+				ex.sets.forEach((set) => {
+					realm.delete(set);
+				});
+				realm.delete(ex);
+			})
 			realm.delete(workout);
 		}
 	});
