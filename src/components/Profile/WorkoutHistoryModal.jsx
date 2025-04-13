@@ -6,6 +6,7 @@ import {
 	ScrollView,
 	Text,
 	Pressable,
+	Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
@@ -15,10 +16,22 @@ import {
 } from "../../services/helpers/timeFormatter";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
+import * as NavigationBar from "expo-navigation-bar";
+
+const WorkoutHistoryModal = ({
+	selectedWorkout,
+	setSelectedWorkout,
+	navigation,
+}) => {
 	const { themeStyle } = useTheme();
 	const { removeWorkoutFromHistory, workoutEditStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
+
+	if (Platform.OS === "android") {
+		NavigationBar.setBackgroundColorAsync(
+			themeStyle.backgroundColor
+		);
+	}
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -33,7 +46,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }
 		// Add edit functionality here
 		closeModal();
 		workoutEditStarted(selectedWorkout);
-		navigation.navigate("EditModal")
+		navigation.navigate("EditModal");
 
 		// You would typically navigate to an edit screen or open another modal
 	};
@@ -42,7 +55,7 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }
 		// Add save as template functionality here
 		console.log("Save as template:", selectedWorkout.workoutId);
 		// You would typically save the workout as a template in your app
-	}
+	};
 
 	return (
 		<Modal
