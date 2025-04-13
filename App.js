@@ -47,22 +47,10 @@ export default function App() {
 	const [init, setInit] = useState(true);
 	console.log("App.js: Starting app..."); // For debugging purposes
 	if (Platform.OS === "android") {
-		NavigationBar.setVisibilityAsync("hidden");
 		NavigationBar.setBackgroundColorAsync(
 			midnightPurpleTheme.backgroundColor
 		);
 	}
-
-	useEffect(() => {
-		if (Platform.OS === "android") {
-			const intervalId = setInterval(() => {
-				NavigationBar.setVisibilityAsync("hidden");
-			}, 5000);
-
-			return () => clearInterval(intervalId); // Cleanup on unmount
-		}
-		setInit(false);
-	}, []);
 
 
 
