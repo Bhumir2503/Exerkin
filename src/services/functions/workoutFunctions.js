@@ -9,6 +9,7 @@ import {
 import {
 	getRealmWorkouts,
 	setRealmWorkout,
+	setEditedRealmWorkout,
 	removeRealmWorkout,
 	mergeWorkoutsToRealm,
 	removeWorkoutsFromRealm,
@@ -31,7 +32,9 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
-					console.log("No new workouts found. -- 1 Read from firestore");
+					console.log(
+						"No new workouts found. -- 1 Read from firestore"
+					);
 					onUpdate();
 					return;
 				}
@@ -125,25 +128,13 @@ export const addWorkout = async (realm, workoutData) => {
 
 // Function placeholder for editing a workout (to be implemented)
 export const editWorkout = async (realm, workoutData) => {
-	realm.write(async () => {
-		const workout = {
-			...workoutData,
-			exercises: workoutData.exercises.map((exercise) => ({
-				...exercise,
-				sets: exercise.sets.map((set) => ({
-					...set,
-				})),
-			})),
-			syncStatus: "unsynced",
-		};
-		
-		try {
-			await editWorkoutInFirestore(workout); // Upload workout data to Firestore
-		} catch (error) {
-			console.error("(WorkoutFunctions) - Error editing workout:", error); // Log error if editing workout fails
-		}
-	});
+	const workout = await setEditedRealmWorkout(realm, workoutData); // Set edited workout in Realm
 
+	try {
+		await editWorkoutInFirestore(workout); // Upload workout data to Firestore
+	} catch (error) {
+		console.error("(WorkoutFunctions) - Error editing workout:", error); // Log error if editing workout fails
+	}
 	// Functionality for editing workouts will be implemented here
 };
 

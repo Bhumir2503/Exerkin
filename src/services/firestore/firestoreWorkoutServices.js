@@ -21,6 +21,7 @@ export const editWorkoutInFirestore = async (workout) => {
 		await workoutsCollection.doc(workout.workoutId).set(
 			{
 				...workout,
+				syncStatus: "synced",
 				exercises: workout.exercises,
 				updatedAt: firestore.FieldValue.serverTimestamp(),
 			},
