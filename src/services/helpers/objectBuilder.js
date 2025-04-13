@@ -40,6 +40,8 @@ export const buildWorkoutObject = (
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		duration: formatDuration(duration),
+		deleted: false,
+		deletedAt: null,
 		syncStatus: status,
 	};
 	return workout;

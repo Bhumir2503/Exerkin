@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "exerkin",
+    "name": "Exerkin",
     "slug": "exerkin",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,7 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.bhumir2503.ExerKin"

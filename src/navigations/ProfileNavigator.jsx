@@ -8,6 +8,7 @@ import TermsOfService from "../components/Profile/TermsOfService";
 import PrivacyPolicy from "../components/Profile/PrivacyPolicy";
 
 import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
+import EditModal from "../components/EditPage/EditModal";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -43,6 +44,15 @@ export default function ProfileNavigator() {
 			<Stack.Screen
 				name="WorkoutModal"
 				component={WorkoutModal}
+				options={{
+					cardStyleInterpolator:
+						CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
+				}}
+			/>
+
+			<Stack.Screen
+				name="EditModal"
+				component={EditModal}
 				options={{
 					cardStyleInterpolator:
 						CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide

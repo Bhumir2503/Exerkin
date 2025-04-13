@@ -10,12 +10,12 @@ import uuid from "react-native-uuid";
 
 import { useRealm } from "./RealmProvider";
 import {
-	syncPendingWorkoutsToFirestore,
 	getWorkouts,
 	addWorkout,
 	deleteWorkout,
 	listenToWorkoutChanges,
 	listenToDeletedWorkoutChanges,
+	editWorkout,
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
@@ -32,7 +32,7 @@ export const WorkoutProvider = ({ children }) => {
 	const WorkoutId = useRef(null);
 	const [workoutHistory, setWorkoutHistory] = useState([]);
 	const [workoutExercises, setWorkoutExercises] = useState([]);
-	
+
 	const WorkoutTitle = useRef("");
 	const WorkoutNote = useRef("");
 	const WorkoutStartTime = useRef(null);
@@ -95,6 +95,20 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutId.current = uuid.v4();
 	};
 
+	const workoutEditStarted = (workout) => {
+		// Set the workoutId to the workoutId of the workout being edited
+		WorkoutId.current = workout.workoutId;
+		WorkoutTitle.current = workout.name;
+		WorkoutNote.current = workout.notes;
+		WorkoutStartTime.current = workout.startedAt;
+		TemplateId.current = workout.templateId;
+		isTemplate.current = workout.isTemplate;
+		imageURL.current = workout.imageURL;
+		unitSystem.current = workout.unitSystem;
+		WorkoutTimer.current = workout.timer;
+		setWorkoutExercises(workout.exercises);
+	}
+
 	const workoutCancelled = () => {
 		// Reset useStates
 		setWorkoutExercises([]);
@@ -108,13 +122,9 @@ export const WorkoutProvider = ({ children }) => {
 		isTemplate.current = false;
 		imageURL.current = null;
 		unitSystem.current = user?.unitSystem || "imperial";
-
 	};
 
 	const workoutCompleted = async () => {
-		// check if there is resync workout cache
-		await syncPendingWorkoutsToFirestore(realm, user.uid);
-
 		const workout = buildWorkoutObject(
 			WorkoutId.current,
 			TemplateId.current,
@@ -130,18 +140,38 @@ export const WorkoutProvider = ({ children }) => {
 			"synced"
 		);
 
-		
 		addWorkout(realm, workout);
-
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
 		// Reset useStates
 		workoutCancelled();
 	};
+
+	const workoutEditCompleted = async () => {
+		const workout = buildWorkoutObject(
+			WorkoutId.current,
+			TemplateId.current,
+			user.uid,
+			WorkoutTitle.current,
+			WorkoutNote.current,
+			isTemplate.current,
+			imageURL.current,
+			unitSystem.current,
+			workoutExercises,
+			WorkoutStartTime.current,
+			WorkoutTimer.current,
+			"synced"
+		);
+
+		editWorkout(realm, workout);
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
+		workoutCancelled();
+	}
 
 	// Add excercise to active workout
 	const addExerciseToWorkout = async (exercise) => {
 		setWorkoutExercises((prevExercises) => [
 			...prevExercises,
-			{ ...exercise, },
+			{ ...exercise },
 		]);
 		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
 	};
@@ -149,7 +179,9 @@ export const WorkoutProvider = ({ children }) => {
 	// Remove exercise from active workout
 	const removeExerciseFromWorkout = (exerciseId) => {
 		setWorkoutExercises((prevExercises) =>
-			prevExercises.filter((exercise) => exercise.exerciseId !== exerciseId)
+			prevExercises.filter(
+				(exercise) => exercise.exerciseId !== exerciseId
+			)
 		);
 	};
 
@@ -198,18 +230,16 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
-	const removeWorkoutFromHistory = (workout) => {
-		const newWorkoutHistory = workoutHistory.filter(
-			(workoutcheck) => workoutcheck.workoutId !== workout.workoutId
-		);
-		setWorkoutHistory(newWorkoutHistory);
-		deleteWorkout(realm, workout.userId, workout.workoutId);
+	const removeWorkoutFromHistory = async(workout) => {
+		deleteWorkout(realm, workout.workoutId);
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history after deletion
 	};
 
 	return (
 		<WorkoutContext.Provider
 			value={{
 				workoutStarted,
+				workoutEditStarted,
 				workoutCompleted,
 				workoutCancelled,
 				addSetToExercise,

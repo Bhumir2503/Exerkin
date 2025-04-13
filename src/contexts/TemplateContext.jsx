@@ -2,15 +2,19 @@ import React, {
 	createContext,
 	useState,
 	useContext,
-    useRef,
-    useEffect,
+	useRef,
+	useEffect,
 } from "react";
 
 import firestore from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
-import { addTemplate, getTemplates } from "../services/functions/templateFunctions";
-
+import {
+	addTemplate,
+	getTemplates,
+	listenToDeletedTemplateChanges,
+	listenToTemplateChanges,
+} from "../services/functions/templateFunctions";
 
 import { useUser } from "./UserContext";
 import { useRealm } from "./RealmProvider";
@@ -20,116 +24,138 @@ const TemplateContext = createContext();
 
 export const TemplateProvider = ({ children }) => {
 	const { user } = useUser();
-    const realm = useRealm();
+	const realm = useRealm();
 
-    const TemplateId = useRef(null);
-    const [storedTemplate, setStoredTemplate] = useState([]);
-    const [templateExercises, setTemplateExercises] = useState([]);
-    const unitSystem = useRef(user?.unitSystem || "imperial");
+	const TemplateId = useRef(null);
+	const [storedTemplate, setStoredTemplate] = useState([]);
+	const [templateExercises, setTemplateExercises] = useState([]);
+	const unitSystem = useRef(user?.unitSystem || "imperial");
 
-    const TemplateTitle = useRef("");
-    const TemplateNote = useRef("");
+	const TemplateTitle = useRef("");
+	const TemplateNote = useRef("");
 
-    useEffect(() => {
-        const fetchTemplates = async () => {
-            const templates = await getTemplates(realm);
-            setStoredTemplate(templates);
-        };
-        fetchTemplates();
-    }, [user, realm]);
+	useEffect(() => {
+		if (!user) return;
 
+		const unsubscribe = listenToTemplateChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedTemplates = await getTemplates(realm, user.uid);
+				setStoredTemplate(updatedTemplates);
+			}
+		);
 
-    const templateStarted = () => {
-        setTemplateExercises([]);
-        TemplateId.current = uuid.v4()
-    }
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
 
-    
-    const cancelTemplate = async () => {
-        setTemplateExercises([]);
-        TemplateTitle.current = "";
-        TemplateNote.current = "";
-    }
+	useEffect(() => {
+		if (!user) return;
 
+		const unsubscribe = listenToDeletedTemplateChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedTemplates = await getTemplates(realm, user.uid);
+				setStoredTemplate(updatedTemplates);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
 
-    const saveTemplate = async () => {
+	const templateStarted = () => {
+		setTemplateExercises([]);
+		TemplateId.current = uuid.v4();
+	};
 
-        const template = buildTemplateObject(
-            TemplateId.current,
-            user.uid,
-            TemplateTitle.current,
-            TemplateNote.current,
-            templateExercises,
-            unitSystem.current,
-            "synced"
-        );
+	const cancelTemplate = async () => {
+		setTemplateExercises([]);
+		TemplateTitle.current = "";
+		TemplateNote.current = "";
+	};
 
-        addTemplate(realm, template);
-        cancelTemplate(); 
-    }
+	const saveTemplate = async () => {
+		const template = buildTemplateObject(
+			TemplateId.current,
+			user.uid,
+			TemplateTitle.current,
+			TemplateNote.current,
+			templateExercises,
+			unitSystem.current,
+			"synced"
+		);
 
-    const addExerciseToTemplate = (exercise) => {
-        setTemplateExercises((prevExercises) => [...prevExercises,{ ...exercise}]);
-    }
+		addTemplate(realm, template);
+		cancelTemplate();
+	};
 
-    const addSetToTemplateExercise = (exerciseId, set) => {
-        setTemplateExercises((prevExercises) =>
-            prevExercises.map((exercise) =>
-                exercise.exerciseId === exerciseId
-                    ? { ...exercise, sets: [...exercise.sets, set] }
-                    : exercise
-            )
-        );
-    };
+	const addExerciseToTemplate = (exercise) => {
+		setTemplateExercises((prevExercises) => [
+			...prevExercises,
+			{ ...exercise },
+		]);
+	};
 
-    const updateSetInTemplateExercise = (exerciseId, index, set) => {
-        setTemplateExercises((prevExercises) =>
-            prevExercises.map((exercise) =>
-                exercise.exerciseId === exerciseId
-                    ? {
-                        ...exercise,
-                        sets: exercise.sets.map((s, i) =>
-                            i === index ? { ...s, ...set } : s
-                        ),
-                    }
-                    : exercise
-            )
-        );
-    }
+	const addSetToTemplateExercise = (exerciseId, set) => {
+		setTemplateExercises((prevExercises) =>
+			prevExercises.map((exercise) =>
+				exercise.exerciseId === exerciseId
+					? { ...exercise, sets: [...exercise.sets, set] }
+					: exercise
+			)
+		);
+	};
 
-    const removeSetFromTemplateExercise = (exerciseId, index) => {
-        setTemplateExercises((prevExercises) =>
-            prevExercises.map((exercise) =>
-                exercise.exerciseId === exerciseId
-                    ? {
-                        ...exercise,
-                        sets: exercise.sets.filter((_, i) => i !== index),
-                    }
-                    : exercise
-            )
-        );
-    }
+	const updateSetInTemplateExercise = (exerciseId, index, set) => {
+		setTemplateExercises((prevExercises) =>
+			prevExercises.map((exercise) =>
+				exercise.exerciseId === exerciseId
+					? {
+							...exercise,
+							sets: exercise.sets.map((s, i) =>
+								i === index ? { ...s, ...set } : s
+							),
+					  }
+					: exercise
+			)
+		);
+	};
 
-
+	const removeSetFromTemplateExercise = (exerciseId, index) => {
+		setTemplateExercises((prevExercises) =>
+			prevExercises.map((exercise) =>
+				exercise.exerciseId === exerciseId
+					? {
+							...exercise,
+							sets: exercise.sets.filter((_, i) => i !== index),
+					  }
+					: exercise
+			)
+		);
+	};
 
 	return (
 		<TemplateContext.Provider
 			value={{
-                TemplateId,
-                storedTemplate,
-                setStoredTemplate,
-                templateExercises,
-                setTemplateExercises,
-                TemplateTitle,
-                TemplateNote,
+				TemplateId,
+				storedTemplate,
+				setStoredTemplate,
+				templateExercises,
+				setTemplateExercises,
+				TemplateTitle,
+				TemplateNote,
 
-                templateStarted,
-                saveTemplate,
-                cancelTemplate,
-                addExerciseToTemplate,
-                addSetToTemplateExercise,
-                updateSetInTemplateExercise,
-                removeSetFromTemplateExercise,
+				templateStarted,
+				saveTemplate,
+				cancelTemplate,
+				addExerciseToTemplate,
+				addSetToTemplateExercise,
+				updateSetInTemplateExercise,
+				removeSetFromTemplateExercise,
 			}}
 		>
 			{children}

@@ -2,15 +2,13 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import Realm from "realm";
 import { realmSchemas } from "../services/schemas/realmSchemas";
 import { ActivityIndicator, View } from "react-native";
-import { migrationVersion13 } from "../services/functions/migrationFunctions";
 
 const RealmContext = createContext(null);
 
 const realmConfig = {
-	path: "exerkin.realm",
+	path: "ExerkinDB.realm",
 	schema: realmSchemas,
 	schemaVersion: 1,
-
 };
 
 let realmInstance;
@@ -25,6 +23,8 @@ export const RealmProvider = ({ children }) => {
 				if (!realmInstance || realmInstance.isClosed) {
 					realmInstance = await Realm.open(realmConfig);
 				}
+
+				console.log("Realm File Path:", realmInstance.path);
 				setRealm(realmInstance);
 			} catch (error) {
 				// Handle any errors that occurred during opening the Realm

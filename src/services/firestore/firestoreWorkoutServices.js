@@ -1,88 +1,28 @@
-import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 
 const workoutsCollection = firestore().collection("workouts");
-const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
-
-export const fetchNewWorkouts = async (userId, lastSynced) => {
-	try {
-		const snapshot = await workoutsCollection
-			.where("userId", "==", userId)
-			.where("updatedAt", ">", lastSynced)
-			.get();
-
-		console.log(
-			"(FirestoreWorkoutServices) - Retrieved documents count:",
-			snapshot.size
-		);
-		if (snapshot.empty) {
-			return [];
-		}
-
-		const workouts = snapshot.docs.map((doc) => ({
-			...doc.data(),
-		}));
-
-		return workouts;
-	} catch (error) {
-		console.error(
-			"(FirestoreWorkoutServices) - Error fetching new workouts:",
-			error
-		);
-		return [];
-	}
-};
-
-export const fetchDeletedWorkouts = async (userId, lastSynced) => {
-	try {
-		const snapshot = await deletedWorkoutsCollection
-			.where("userId", "==", userId)
-			.where("deletedAt", ">", lastSynced)
-			.get();
-
-		console.log(
-			"(FirestoreWorkoutServices) - Retrieved deleted documents count:",
-			snapshot.size
-		);
-
-		if (snapshot.empty) {
-			return [];
-		}
-
-		const deletedWorkouts = snapshot.docs.map((doc) => ({
-			...doc.data(),
-		}));
-
-		return deletedWorkouts;
-	} catch (error) {
-		console.error(
-			"(FirestoreWorkoutServices) - Error fetching deleted workouts:",
-			error
-		);
-		return [];
-	}
-};
 
 export const uploadWorkout = async (workout) => {
 	try {
 		await workoutsCollection.doc(workout.workoutId).set({
 			...workout,
-			updatedAt: new Date(),
+			updatedAt: firestore.FieldValue.serverTimestamp(),
 		});
 	} catch (error) {
-		console.error(
+		throw new Error(
 			"(FirestoreWorkoutServices) - Error uploading workout:",
 			error
 		);
 	}
 };
 
-export const uploadWorkoutUpdate = async (workout) => {
+export const editWorkoutInFirestore = async (workout) => {
 	try {
 		await workoutsCollection.doc(workout.workoutId).set(
 			{
 				...workout,
-				updatedAt: firestore.Timestamp.now(),
+				exercises: workout.exercises,
+				updatedAt: firestore.FieldValue.serverTimestamp(),
 			},
 			{ merge: true }
 		);
@@ -96,25 +36,16 @@ export const uploadWorkoutUpdate = async (workout) => {
 
 export const removeWorkoutFromFirestore = async (workoutId) => {
 	try {
-		await workoutsCollection.doc(workoutId).delete();
+		await workoutsCollection.doc(workoutId).set(
+			{
+				deleted: true,
+				deletedAt: firestore.FieldValue.serverTimestamp(),
+			},
+			{ merge: true }
+		);
 	} catch (error) {
 		console.error(
 			"(FirestoreWorkoutServices) - Error removing workout:",
-			error
-		);
-	}
-};
-
-export const markWorkoutAsDeleted = async (userId, workoutId) => {
-	try {
-		await deletedWorkoutsCollection.doc(workoutId).set({
-			deletedId: workoutId,
-            userId: userId,
-            deletedAt: new Date(),
-		});
-	} catch (error) {
-		console.error(
-			"(FirestoreWorkoutServices) - Error marking workout as deleted:",
 			error
 		);
 	}

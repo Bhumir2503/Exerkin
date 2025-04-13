@@ -13,7 +13,7 @@ import { formatTimeStamptoDateString } from "../../services/helpers/timeFormatte
 
 // Workout History Component
 // Displays a list of past workouts with details such as date, time, and notes.
-const WorkoutHistory = () => {
+const WorkoutHistory = ({navigation}) => {
 	const { workoutHistory } = useWorkout();
 	const { themeStyle } = useTheme();
 	const [selectedWorkout, setSelectedWorkout] = useState(null);
@@ -96,8 +96,10 @@ const WorkoutHistory = () => {
 									{item.name ? item.name : "Workout"} -{" "}
 									{formatTimeStamptoDateString(item.startedAt)}
 								</Text>
-								<Text style={styles.workoutTime}>
-									{item.time}
+								<Text style={styles.syncStatus}>
+									{item.syncStatus !== "synced" &&
+										"Unsynced"
+									}
 								</Text>
 							</View>  
 							<Text style={styles.workoutTime}>
@@ -115,6 +117,7 @@ const WorkoutHistory = () => {
 			<WorkoutHistoryModal
 				selectedWorkout={selectedWorkout}
 				setSelectedWorkout={setSelectedWorkout}
+				navigation={navigation}
 			/>
 		</View>
 	) : (
@@ -166,6 +169,13 @@ const createStyles = (themeStyle) =>
 			fontWeight: "bold",
 			color: themeStyle.textColor,
 		},
+		syncStatus: {
+			fontSize: 14,
+			color: themeStyle.accent,
+			fontWeight: "bold",
+			textAlign: "right",
+		},
+
 		workoutTime: {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,

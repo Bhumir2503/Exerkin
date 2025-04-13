@@ -16,11 +16,7 @@ export const getRealmWorkouts = async (realm, userId) => {
 export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
 	try {
 		realm.write(() => {
-			realm.create(
-				"Workout",
-				{ ...workoutData, syncStatus: syncStatus },
-				"modified"
-			);
+			realm.create("Workout", { ...workoutData, syncStatus: syncStatus }, "modified");
 		});
 	} catch (error) {
 		console.error(
@@ -30,7 +26,10 @@ export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
 	}
 };
 
-export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) => {
+export const removeRealmWorkout = async (
+	realm,
+	workoutId,
+) => {
 	realm.write(() => {
 		const workout = realm
 			.objects("Workout")
@@ -39,62 +38,30 @@ export const removeRealmWorkout = async (realm, userId, workoutId, syncStatus) =
 		if (workout) {
 			// 🔁 Loop through each WorkoutExercise
 			workout.exercises.forEach((exercise) => {
-				// 🧨 Delete all ExerciseSets
-				realm.delete(exercise.sets);
+				// 🔁 Loop through each ExerciseSe
+				exercise.sets.forEach((set) => {
+					realm.delete(set);
+				});
+				// Delete the Exercise
+				realm.delete(exercise);
 			});
 
-			// 🧨 Delete all WorkoutExercises
-			realm.delete(workout.exercises);
-
-			// 💥 Finally delete the Workout
+			// Finally delete the Workout
 			realm.delete(workout);
 		}
-
-		// 📝 Add to DeletedWorkout collection
-		realm.create("DeletedWorkout", {
-			userId: userId,
-			deletedId: workoutId,
-			deletedAt: new Date(),
-			syncStatus: syncStatus,
-		});
 	});
-};
-export const removeAllRealmWorkout = async (realm) => {
-	realm.write(() => {
-		const workouts = realm.objects("Workout");
-		if (workouts) {
-			realm.delete(workouts);
-		}
-	});
-};
-
-// Get all workouts for a user that are pending sync
-export const getPendingRealmWorkouts = async (realm) => {
-	console.log("Fetching pending workouts for user:");
-	const pendingWorkouts = realm
-		.objects("Workout")
-		.filtered("syncStatus != $0", "synced");
-
-	console.log("Pending workouts:", pendingWorkouts.length);
-	return pendingWorkouts;
-};
-
-// Mark workout as synced
-export const markWorkoutAsSynced = (realm, workoutId) => {
-	const workout = realm.objectForPrimaryKey("Workout", workoutId);
-	if (workout) {
-		workout.syncStatus = "synced";
-	}
 };
 
 // Merge Firestore workouts into Realm
 export const mergeWorkoutsToRealm = (realm, workouts) => {
 	workouts.forEach((workout) => {
+		console.log("Merging workout:", workout);
 		// Convert Firestore timestamps to JavaScript Date objects
 		workout.startedAt = workout.startedAt.toDate();
 		workout.completedAt = workout.completedAt.toDate();
 		workout.createdAt = workout.createdAt.toDate();
 		workout.updatedAt = workout.updatedAt.toDate();
+		workout.deletedAt = null;
 		workout.syncStatus = "synced";
 		realm.create("Workout", workout, "modified");
 	});
@@ -103,10 +70,15 @@ export const mergeWorkoutsToRealm = (realm, workouts) => {
 // Delete workouts from Realm
 export const removeWorkoutsFromRealm = (realm, workoutIds) => {
 	workoutIds.forEach((id) => {
+		console.log("Deleting workout with ID:", id);
 		const workout = realm.objectForPrimaryKey("Workout", id);
 		if (workout) {
-			workout.exercises.forEach((ex) => realm.delete(ex.sets));
-			realm.delete(workout.exercises);
+			workout.exercises.forEach((ex) => {
+				ex.sets.forEach((set) => {
+					realm.delete(set);
+				});
+				realm.delete(ex);
+			});
 			realm.delete(workout);
 		}
 	});
