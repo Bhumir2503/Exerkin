@@ -260,7 +260,7 @@ const createStyles = (themeStyle) =>
 			paddingVertical: 10,
 		},
 		scrollViewContent: {
-			paddingBottom: 0,
+			paddingBottom: 20,
 		},
 		title: {
 			fontSize: 18,

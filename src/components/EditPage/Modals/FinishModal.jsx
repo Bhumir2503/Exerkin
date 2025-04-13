@@ -14,7 +14,7 @@ import { useWorkout } from "../../../contexts/WorkoutContext";
 
 const FinishModal = ({ navigation }) => {
 	const { themeStyle } = useTheme();
-	const { workoutCompleted } = useWorkout();
+	const { workoutEditCompleted } = useWorkout();
 
 	const styles = createStyles(themeStyle);
 
@@ -26,7 +26,7 @@ const FinishModal = ({ navigation }) => {
 
 	const handleLogIt = () => {
 		navigation.goBack();
-		workoutCompleted();
+		workoutEditCompleted();
 		setVisible(false);
 	};
 

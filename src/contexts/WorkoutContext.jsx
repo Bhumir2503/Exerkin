@@ -20,7 +20,7 @@ import {
 
 import { useUser } from "./UserContext";
 
-import { buildWorkoutObject } from "../services/helpers/objectBuilder";
+import { buildWorkoutObject, buildWorkoutEditObject } from "../services/helpers/objectBuilder";
 
 const WorkoutContext = createContext();
 
@@ -159,9 +159,8 @@ export const WorkoutProvider = ({ children }) => {
 			workoutExercises,
 			WorkoutStartTime.current,
 			WorkoutTimer.current,
-			"synced"
+			"synced",
 		);
-
 		editWorkout(realm, workout);
 		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
 		workoutCancelled();
@@ -241,6 +240,7 @@ export const WorkoutProvider = ({ children }) => {
 				workoutStarted,
 				workoutEditStarted,
 				workoutCompleted,
+				workoutEditCompleted,
 				workoutCancelled,
 				addSetToExercise,
 				updateSetInExercise,

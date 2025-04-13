@@ -44,7 +44,55 @@ export const buildWorkoutObject = (
 		deletedAt: null,
 		syncStatus: status,
 	};
+
 	return workout;
+};
+
+export const buildWorkoutEditObject = (
+	workoutId,
+	templateId,
+	userId,
+	name,
+	notes,
+	isTemplate,
+	imageURL,
+	unitSystem,
+	exercises,
+	startTime,
+	duration,
+	status
+) => {
+	if (name === "") {
+		name = "Untitled Workout";
+	}
+
+	const workoutFiltered = exercises.filter(
+		(exercise) => exercise.sets.length > 0
+	);
+	
+
+	const workout = {
+		workoutId,
+		templateId,
+		userId,
+		name,
+		notes,
+		isTemplate,
+		imageURL,
+		unitSystem,
+		exercises: workoutChecked,
+		startedAt: startTime,
+		completedAt: new Date(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		duration: formatDuration(duration),
+		deleted: false,
+		deletedAt: null,
+		syncStatus: status,
+	};
+
+	return workout;
+
 };
 
 export const buildExerciseObject = (selectedExercise) => {

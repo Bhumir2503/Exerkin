@@ -31,11 +31,12 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
-					console.log("No new workouts found.");
+					console.log("No new workouts found. -- 1 Read from firestore");
 					onUpdate();
 					return;
 				}
 
+				console.log("New workouts found.  -- Reads from Firestore");
 				const newWorkouts = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
@@ -113,7 +114,6 @@ export const getWorkouts = async (realm, userId) => {
 
 // Function to add a new workout to Firestore and Realm
 export const addWorkout = async (realm, workoutData) => {
-	console.log("Adding workout:", workoutData);
 	await setRealmWorkout(realm, workoutData, "unsynced"); // Set workout in Realm with synced status
 	try {
 		await uploadWorkout(workoutData); // Upload workout data to Firestore
@@ -125,14 +125,25 @@ export const addWorkout = async (realm, workoutData) => {
 
 // Function placeholder for editing a workout (to be implemented)
 export const editWorkout = async (realm, workoutData) => {
-	console.log("Editing workout:", workoutData);
+	realm.write(async () => {
+		const workout = {
+			...workoutData,
+			exercises: workoutData.exercises.map((exercise) => ({
+				...exercise,
+				sets: exercise.sets.map((set) => ({
+					...set,
+				})),
+			})),
+			syncStatus: "unsynced",
+		};
+		
+		try {
+			await editWorkoutInFirestore(workout); // Upload workout data to Firestore
+		} catch (error) {
+			console.error("(WorkoutFunctions) - Error editing workout:", error); // Log error if editing workout fails
+		}
+	});
 
-	await setRealmWorkout(realm, workoutData, "unsynced"); // Set workout in Realm with synced status
-	try {
-		await editWorkoutInFirestore(workoutData); // Upload workout data to Firestore
-	} catch (error) {
-		console.error("(WorkoutFunctions) - Error editing workout:", error); // Log error if editing workout fails
-	}
 	// Functionality for editing workouts will be implemented here
 };
 
