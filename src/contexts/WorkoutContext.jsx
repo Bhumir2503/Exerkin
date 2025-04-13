@@ -15,6 +15,7 @@ import {
 	deleteWorkout,
 	listenToWorkoutChanges,
 	listenToDeletedWorkoutChanges,
+	editWorkout,
 } from "../services/functions/workoutFunctions";
 
 import { useUser } from "./UserContext";
@@ -94,6 +95,20 @@ export const WorkoutProvider = ({ children }) => {
 		WorkoutId.current = uuid.v4();
 	};
 
+	const workoutEditStarted = (workout) => {
+		// Set the workoutId to the workoutId of the workout being edited
+		WorkoutId.current = workout.workoutId;
+		WorkoutTitle.current = workout.name;
+		WorkoutNote.current = workout.notes;
+		WorkoutStartTime.current = workout.startedAt;
+		TemplateId.current = workout.templateId;
+		isTemplate.current = workout.isTemplate;
+		imageURL.current = workout.imageURL;
+		unitSystem.current = workout.unitSystem;
+		WorkoutTimer.current = workout.timer;
+		setWorkoutExercises(workout.exercises);
+	}
+
 	const workoutCancelled = () => {
 		// Reset useStates
 		setWorkoutExercises([]);
@@ -126,10 +141,31 @@ export const WorkoutProvider = ({ children }) => {
 		);
 
 		addWorkout(realm, workout);
-
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
 		// Reset useStates
 		workoutCancelled();
 	};
+
+	const workoutEditCompleted = async () => {
+		const workout = buildWorkoutObject(
+			WorkoutId.current,
+			TemplateId.current,
+			user.uid,
+			WorkoutTitle.current,
+			WorkoutNote.current,
+			isTemplate.current,
+			imageURL.current,
+			unitSystem.current,
+			workoutExercises,
+			WorkoutStartTime.current,
+			WorkoutTimer.current,
+			"synced"
+		);
+
+		editWorkout(realm, workout);
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
+		workoutCancelled();
+	}
 
 	// Add excercise to active workout
 	const addExerciseToWorkout = async (exercise) => {
@@ -194,14 +230,16 @@ export const WorkoutProvider = ({ children }) => {
 		);
 	};
 
-	const removeWorkoutFromHistory = (workout) => {
+	const removeWorkoutFromHistory = async(workout) => {
 		deleteWorkout(realm, workout.workoutId);
+		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history after deletion
 	};
 
 	return (
 		<WorkoutContext.Provider
 			value={{
 				workoutStarted,
+				workoutEditStarted,
 				workoutCompleted,
 				workoutCancelled,
 				addSetToExercise,

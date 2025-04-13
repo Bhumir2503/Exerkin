@@ -120,7 +120,7 @@ export default function Profile({ navigation }) {
 							</Text>
 						</View>
 					) : (
-						<WorkoutHistory />
+						<WorkoutHistory navigation={navigation}/>
 					)}
 				</View>
 			</SafeAreaView>

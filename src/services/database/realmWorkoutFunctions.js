@@ -55,12 +55,14 @@ export const removeRealmWorkout = async (
 // Merge Firestore workouts into Realm
 export const mergeWorkoutsToRealm = (realm, workouts) => {
 	workouts.forEach((workout) => {
+		console.log("Merging workout:", workout);
 		// Convert Firestore timestamps to JavaScript Date objects
 		workout.startedAt = workout.startedAt.toDate();
 		workout.completedAt = workout.completedAt.toDate();
 		workout.createdAt = workout.createdAt.toDate();
 		workout.updatedAt = workout.updatedAt.toDate();
 		workout.deletedAt = null;
+		workout.syncStatus = "synced";
 		realm.create("Workout", workout, "modified");
 	});
 };

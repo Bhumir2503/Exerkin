@@ -2,6 +2,7 @@
 import {
 	uploadWorkout,
 	removeWorkoutFromFirestore,
+	editWorkoutInFirestore,
 } from "../firestore/firestoreWorkoutServices";
 
 // Realm Imports - AKA the local database
@@ -15,10 +16,11 @@ import {
 	updateLastWorkoutSyncTime,
 } from "../database/realmWorkoutFunctions";
 
+// Utility Imports
+import NetInfo from "@react-native-community/netinfo";
 import firestore from "@react-native-firebase/firestore";
 
 const workoutsCollection = firestore().collection("workouts");
-const deletedWorkoutsCollection = firestore().collection("deletedWorkouts");
 
 export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastWorkoutSyncTime(realm);
@@ -111,27 +113,35 @@ export const getWorkouts = async (realm, userId) => {
 
 // Function to add a new workout to Firestore and Realm
 export const addWorkout = async (realm, workoutData) => {
+	console.log("Adding workout:", workoutData);
+	await setRealmWorkout(realm, workoutData, "unsynced"); // Set workout in Realm with synced status
 	try {
 		await uploadWorkout(workoutData); // Upload workout data to Firestore
-		await setRealmWorkout(realm, workoutData, workoutData.syncStatus); // Set workout in Realm as synced
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error); // Log error if adding workout fails
-		await setRealmWorkout(realm, workoutData, "pending"); // Set workout in Realm as pending
 	}
+	// Set workout in Realm with synced status
 };
 
 // Function placeholder for editing a workout (to be implemented)
-export const editWorkout = () => {
+export const editWorkout = async (realm, workoutData) => {
+	console.log("Editing workout:", workoutData);
+
+	await setRealmWorkout(realm, workoutData, "unsynced"); // Set workout in Realm with synced status
+	try {
+		await editWorkoutInFirestore(workoutData); // Upload workout data to Firestore
+	} catch (error) {
+		console.error("(WorkoutFunctions) - Error editing workout:", error); // Log error if editing workout fails
+	}
 	// Functionality for editing workouts will be implemented here
 };
 
 // Function to delete a workout from Firestore and mark it in Realm
 export const deleteWorkout = async (realm, workoutId) => {
+	await removeRealmWorkout(realm, workoutId); // Remove workout from Realm
 	try {
 		await removeWorkoutFromFirestore(workoutId); // Remove workout from Firestore
-		await removeRealmWorkout(realm, workoutId); // Remove workout from Realm and mark as deleted
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error deleting workout:", error); // Log error if deleting workout fails
-		await removeRealmWorkout(realm, workoutId); // Remove workout from Realm
 	}
 };

@@ -9,7 +9,7 @@ export const uploadWorkout = async (workout) => {
 			updatedAt: firestore.FieldValue.serverTimestamp(),
 		});
 	} catch (error) {
-		console.error(
+		throw new Error(
 			"(FirestoreWorkoutServices) - Error uploading workout:",
 			error
 		);
@@ -21,6 +21,7 @@ export const editWorkoutInFirestore = async (workout) => {
 		await workoutsCollection.doc(workout.workoutId).set(
 			{
 				...workout,
+				exercises: workout.exercises,
 				updatedAt: firestore.FieldValue.serverTimestamp(),
 			},
 			{ merge: true }

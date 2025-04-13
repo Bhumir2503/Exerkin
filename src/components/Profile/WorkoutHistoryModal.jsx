@@ -15,9 +15,9 @@ import {
 } from "../../services/helpers/timeFormatter";
 import { useWorkout } from "../../contexts/WorkoutContext";
 
-const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
+const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
-	const { removeWorkoutFromHistory } = useWorkout();
+	const { removeWorkoutFromHistory, workoutEditStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	const closeModal = () => {
@@ -31,7 +31,10 @@ const WorkoutHistoryModal = ({ selectedWorkout, setSelectedWorkout }) => {
 
 	const handleEdit = () => {
 		// Add edit functionality here
-		console.log("Edit workout:", selectedWorkout.workoutId);
+		closeModal();
+		workoutEditStarted(selectedWorkout);
+		navigation.navigate("EditModal")
+
 		// You would typically navigate to an edit screen or open another modal
 	};
 
