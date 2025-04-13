@@ -42,6 +42,7 @@ export const buildWorkoutObject = (
 		duration: formatDuration(duration),
 		deleted: false,
 		deletedAt: null,
+		syncStatus: status,
 	};
 	return workout;
 };

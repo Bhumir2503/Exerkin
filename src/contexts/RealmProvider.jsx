@@ -6,7 +6,7 @@ import { ActivityIndicator, View } from "react-native";
 const RealmContext = createContext(null);
 
 const realmConfig = {
-	path: "exerkinDB.realm",
+	path: "ExerkinDB.realm",
 	schema: realmSchemas,
 	schemaVersion: 1,
 };

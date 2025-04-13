@@ -46,5 +46,6 @@ export const WorkoutSchema = {
 		isTemplate: "bool?",
 		deleted: "bool?",
 		deletedAt: "date?",
+		syncStatus: "string?", // "synced", "pending", "failed"
 	},
 };

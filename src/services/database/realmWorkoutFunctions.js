@@ -13,10 +13,10 @@ export const getRealmWorkouts = async (realm, userId) => {
 	}
 };
 
-export const setRealmWorkout = async (realm, workoutData) => {
+export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
 	try {
 		realm.write(() => {
-			realm.create("Workout", { ...workoutData }, "modified");
+			realm.create("Workout", { ...workoutData, syncStatus: syncStatus }, "modified");
 		});
 	} catch (error) {
 		console.error(

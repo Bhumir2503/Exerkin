@@ -9,7 +9,6 @@ import {
 	getRealmWorkouts,
 	setRealmWorkout,
 	removeRealmWorkout,
-	getPendingRealmWorkouts,
 	mergeWorkoutsToRealm,
 	removeWorkoutsFromRealm,
 	getLastWorkoutSyncTime,
@@ -38,8 +37,6 @@ export const listenToWorkoutChanges = (realm, userId, onUpdate) => {
 				const newWorkouts = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
-
-				console.log("newWorkouts", newWorkouts);
 
 				realm.write(() => {
 					mergeWorkoutsToRealm(realm, newWorkouts);
@@ -108,6 +105,7 @@ export const getWorkouts = async (realm, userId) => {
 		return workouts;
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error getting workouts:", error); // Log error if fetching workouts fails
+		return [];
 	}
 };
 
@@ -115,9 +113,10 @@ export const getWorkouts = async (realm, userId) => {
 export const addWorkout = async (realm, workoutData) => {
 	try {
 		await uploadWorkout(workoutData); // Upload workout data to Firestore
-		await setRealmWorkout(realm, workoutData); // Set workout in Realm as synced
+		await setRealmWorkout(realm, workoutData, workoutData.syncStatus); // Set workout in Realm as synced
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error); // Log error if adding workout fails
+		await setRealmWorkout(realm, workoutData, "pending"); // Set workout in Realm as pending
 	}
 };
 
@@ -133,5 +132,6 @@ export const deleteWorkout = async (realm, workoutId) => {
 		await removeRealmWorkout(realm, workoutId); // Remove workout from Realm and mark as deleted
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error deleting workout:", error); // Log error if deleting workout fails
+		await removeRealmWorkout(realm, workoutId); // Remove workout from Realm
 	}
 };
