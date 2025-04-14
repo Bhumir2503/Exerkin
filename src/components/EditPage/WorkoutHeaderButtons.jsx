@@ -28,10 +28,6 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 		WorkoutTitleRef.current = text;
 	};
 
-	const handleDownArrowPress = () => {
-		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
-	};
-
 	return (
 		<>
 			<View style={{ ...styles.container }}>
@@ -51,7 +47,7 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 						value={workoutTitle}
 						placeholder={"Untitled Workout"}
 						onChangeText={(text) => handleTitleChange(text)}
-						maxLength={32}
+						maxLength={30}
 						placeholderTextColor={themeStyle.textColorSecondary}
 						cursorColor={themeStyle.primary} // Add primary color to cursor
 						autoCapitalize="none"

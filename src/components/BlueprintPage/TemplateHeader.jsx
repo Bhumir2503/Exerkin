@@ -49,7 +49,7 @@ const TemplateHeader = ({ navigation }) => {
 						value={templateTitle}
 						placeholder={"Untitled Blueprint"}
 						onChangeText={(text) => handleTitleChange(text)}
-						maxLength={32}
+						maxLength={30}
 						placeholderTextColor={themeStyle.textColorSecondary}
 						cursorColor={themeStyle.primary} // Add primary color to cursor
 						autoCapitalize="none"

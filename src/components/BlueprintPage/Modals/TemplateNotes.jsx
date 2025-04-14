@@ -94,6 +94,9 @@ const TemplateNotes = () => {
 								multiline
 								maxLength={MAX_CHARACTERS}
 								autoFocus
+								cursorColor={themeStyle.primary}
+								caretHidden={false}
+								showSoftInputOnFocus={true}
 							/>
 							<Text style={styles.charCount}>
 								{MAX_CHARACTERS - tempNotes.length} /{" "}

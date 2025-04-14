@@ -129,7 +129,6 @@ export const addWorkout = async (realm, workoutData) => {
 // Function placeholder for editing a workout (to be implemented)
 export const editWorkout = async (realm, workoutData) => {
 	const workout = await setEditedRealmWorkout(realm, workoutData); // Set edited workout in Realm
-
 	try {
 		await editWorkoutInFirestore(workout); // Upload workout data to Firestore
 	} catch (error) {

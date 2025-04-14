@@ -279,6 +279,7 @@ const createStyles = (themeStyle) =>
 			fontSize: 18,
 			fontWeight: "bold",
 			color: themeStyle.primary || "#000",
+			flex: 2,
 		},
 		text: {
 			fontSize: 16,
@@ -327,8 +328,11 @@ const createStyles = (themeStyle) =>
 			fontWeight: "bold",
 		},
 		actionButtons: {
+			flex: 1,
 			flexDirection: "row",
+			justifyContent: "flex-end",
 			alignItems: "center",
+			backgroundColor: themeStyle.backgroundColor,
 		},
 		iconButton: {
 			padding: 5,
