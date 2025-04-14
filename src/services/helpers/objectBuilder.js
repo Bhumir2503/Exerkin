@@ -145,7 +145,7 @@ export const buildTemplateObject = (
 		templateId,
 		userId,
 		name,
-		notes,
+		note: notes,
 		exercises: workoutChecked,
 		createdAt: new Date(),
 		updatedAt: new Date(),

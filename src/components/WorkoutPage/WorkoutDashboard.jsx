@@ -14,10 +14,11 @@ import { useState, memo} from "react";
 import TemplateSection from "../BlueprintPage/TemplateSection";
 
 
-const WorkoutDashboard = memo(({navigation, onStartWorkout}) => {
+const WorkoutDashboard = memo(({navigation, onStartWorkout, setIsModalOpen}) => {
 	const { themeStyle } = useTheme();
 	const { workoutStarted , WorkoutId} = useWorkout();
 	const styles = createStyles(themeStyle);
+
 
 	const startButtonPressed = () => {
 		workoutStarted();
@@ -37,9 +38,9 @@ const WorkoutDashboard = memo(({navigation, onStartWorkout}) => {
 				showsVerticalScrollIndicator={false}
 				style={{
 					marginTop: 20,
-					height: "100%",
 					padding: 10,
 					paddingHorizontal: 0,
+					flex: 1,
 				}}
 			>
 				<View

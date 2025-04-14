@@ -10,7 +10,6 @@ export default function Workout({ navigation }) {
 
 	const { themeStyle } = useTheme();
 
-	const [isModalOpen, setIsModalOpen] = useState(false);
 	const styles = createStyles(themeStyle);
 
 	const WorkoutButtonPressed = () => {
