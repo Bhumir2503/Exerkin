@@ -16,7 +16,11 @@ export const getRealmWorkouts = async (realm, userId) => {
 export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
 	try {
 		realm.write(() => {
-			realm.create("Workout", { ...workoutData, syncStatus: syncStatus }, "modified");
+			realm.create(
+				"Workout",
+				{ ...workoutData, syncStatus: syncStatus },
+				"modified"
+			);
 		});
 	} catch (error) {
 		console.error(
@@ -26,10 +30,39 @@ export const setRealmWorkout = async (realm, workoutData, syncStatus) => {
 	}
 };
 
-export const removeRealmWorkout = async (
-	realm,
-	workoutId,
-) => {
+export const setEditedRealmWorkout = async (realm, workoutData) => {
+	const workout = {
+		...workoutData,
+		exercises: workoutData.exercises.map((exercise) => ({
+			...exercise,
+			sets: exercise.sets.map((set) => ({
+				...set,
+			})),
+		})),
+		syncStatus: "unsynced",
+	};
+	try {
+		realm.write(() => {
+			realm.create(
+				"Workout",
+				{
+					...workout,
+				},
+				"modified"
+			);
+		});
+
+		return workout;
+	} catch (error) {
+		console.error(
+			"(RealmWorkoutFunctions) - Error setting edited workout:",
+			error
+		);
+		return null;
+	}
+};
+
+export const removeRealmWorkout = async (realm, workoutId) => {
 	realm.write(() => {
 		const workout = realm
 			.objects("Workout")

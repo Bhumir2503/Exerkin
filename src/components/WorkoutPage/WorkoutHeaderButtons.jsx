@@ -52,7 +52,7 @@ const WorkoutHeaderButtons = ({ setMainModalVisible, navigation }) => {
 						value={workoutTitle}
 						placeholder={"Untitled Workout"}
 						onChangeText={(text) => handleTitleChange(text)}
-						maxLength={32}
+						maxLength={30}
 						placeholderTextColor={themeStyle.textColorSecondary}
 						cursorColor={themeStyle.primary} // Add primary color to cursor
 						autoCapitalize="none"

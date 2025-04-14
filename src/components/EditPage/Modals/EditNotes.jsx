@@ -94,6 +94,9 @@ const EditNotes = () => {
 								multiline
 								maxLength={MAX_CHARACTERS}
 								autoFocus
+								cursorColor={themeStyle.primary}
+								caretHidden={false}
+								showSoftInputOnFocus
 							/>
 							<Text style={styles.charCount}>
 								{MAX_CHARACTERS - tempNotes.length} /{" "}

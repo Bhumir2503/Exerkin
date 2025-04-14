@@ -93,7 +93,10 @@ const WorkoutNotes = () => {
 								onChangeText={handleWorkoutNotesChange}
 								multiline
 								maxLength={MAX_CHARACTERS}
-								autoFocus
+								autoFocus={true}
+								cursorColor={themeStyle.primary}
+								caretHidden={false}
+								showSoftInputOnFocus={true}
 							/>
 							<Text style={styles.charCount}>
 								{MAX_CHARACTERS - tempNotes.length} /{" "}

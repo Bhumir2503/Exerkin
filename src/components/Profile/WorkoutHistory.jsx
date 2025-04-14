@@ -23,7 +23,16 @@ const WorkoutHistory = ({navigation}) => {
 		setSelectedWorkout(workout);
 	};
 
-	const truncateNotes = (text, maxLength = 80) => {
+	const truncateTitle = (text, maxLength = 20) => {
+		if (!text) return "No title";
+	
+		if (text.length > maxLength) {
+			return text.substring(0, maxLength - 3).trim() + " ...";
+		}
+		return text;
+	}
+
+	const truncateNotes = (text, maxLength = 50) => {
 		if (!text) return "No notes";
 	
 		//splitting by punctuation
@@ -93,7 +102,7 @@ const WorkoutHistory = ({navigation}) => {
 						<View style={styles.workoutCard}>
 							<View style={styles.workoutHeader}>
 								<Text style={styles.workoutTitle}>
-									{item.name ? item.name : "Workout"} -{" "}
+									{item.name ? truncateTitle(item.name) : "Workout"} -{" "}
 									{formatTimeStamptoDateString(item.startedAt)}
 								</Text>
 								<Text style={styles.syncStatus}>
