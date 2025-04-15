@@ -19,6 +19,13 @@ const { themeStyle } = useTheme();
 
     };
 
+	const handleCompleted = (index) => {
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			completed: !exercise.sets[index].completed,
+		});
+	}
+
 
     const handleTimeChange = (text, index) => {
         // Store the previous value to compare
@@ -132,7 +139,7 @@ const { themeStyle } = useTheme();
 					</MenuOptions>
 				</Menu>
 			</View>
-			<Header repetitionType={"Round"} metrics={["time", "miles"]} />
+			<Header repetitionType={"Round"} metrics={["time", "mi"]} />
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
@@ -140,9 +147,9 @@ const { themeStyle } = useTheme();
 					index={index}
 					inputTypes={["numeric", "decimal"]}
 					placeholders={["30:00", "1.5"]}
-					functions={[handleTimeChange, handleDistanceChange]}
+					functions={[handleTimeChange, handleDistanceChange, handleCompleted]}
 					lengths={[7, 5]}
-					values={[set.time, set.distance]}
+					values={[set.time, set.distance, set.completed]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

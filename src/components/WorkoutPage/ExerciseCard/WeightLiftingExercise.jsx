@@ -24,6 +24,13 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
+	const handleCompleted = (index) => {
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			completed: !exercise.sets[index].completed,
+		});
+	};
+
 	const handleWeightChange = (text, index) => {
 		// make sure only number are accepted
 		const number = text.replace(/[^0-9]/g, "");
@@ -93,9 +100,9 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 					index={index}
 					inputTypes={["decimal", "numeric"]}
 					placeholders={["135", "12"]}
-					functions={[handleWeightChange, handleRepsChange]}
+					functions={[handleWeightChange, handleRepsChange, handleCompleted]}
 					lengths={[4, 3]}
-					values={[set.weight, set.reps]}
+					values={[set.weight, set.reps, set.completed]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

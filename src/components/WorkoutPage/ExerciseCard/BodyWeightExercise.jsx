@@ -16,11 +16,19 @@ import { buildSetObject } from "../../../services/helpers/objectBuilder";
 const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } = useWorkout();
+	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
+		useWorkout();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
 		addSetToExercise(exercise.exerciseId, buildSetObject());
+	};
+
+	const handleCompleted = (index) => {
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			completed: !exercise.sets[index].completed,
+		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -36,7 +44,7 @@ const BodyWeightExercise = ({ exercise }) => {
 
 	const handleDeleteExercise = () => {
 		removeExerciseFromWorkout(exercise.exerciseId);
-	}
+	};
 
 	return (
 		<View style={styles.container}>
@@ -81,9 +89,9 @@ const BodyWeightExercise = ({ exercise }) => {
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={["12"]}
-					functions={[handleRepsChange]}
+					functions={[handleRepsChange, handleCompleted]}
 					lengths={[3]}
-					values={[set.reps]}
+					values={[set.reps, set.completed]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

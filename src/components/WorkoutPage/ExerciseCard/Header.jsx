@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
+import IonIcons from "@expo/vector-icons/Ionicons";
 
 const Header = ({ repetitionType, metrics }) => {
 	const { themeStyle } = useTheme();
@@ -7,7 +8,7 @@ const Header = ({ repetitionType, metrics }) => {
 
 	return (
 		<View style={styles.header}>
-			<Text style={styles.repetitionType}>{repetitionType}</Text>
+			<Text style={styles.repetitionType}>Set</Text>
 			<View style={{ flexDirection: "row" }}>
 				{metrics.map((metric, index) => (
 					<Text
@@ -24,6 +25,21 @@ const Header = ({ repetitionType, metrics }) => {
 						{metric}
 					</Text>
 				))}
+				<View
+					style={{
+						width: 30,
+						justifyContent: "center",
+						alignItems: "center",
+						marginLeft: 8,
+					}}
+				>
+					<IonIcons
+						name="checkmark"
+						size={20}
+						color={themeStyle.success}
+						style={{}}
+					/>
+				</View>
 			</View>
 		</View>
 	);
@@ -34,6 +50,7 @@ const createStyles = (themeStyle) => {
 		header: {
 			flexDirection: "row",
 			justifyContent: "space-between",
+			alignItems: "center",
 			width: "100%",
 		},
 		repetitionType: {

@@ -24,6 +24,13 @@ const CardioTimeExercise = ({ exercise }) => {
 		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
+	const handleCompleted = (index) => {
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			completed: !exercise.sets[index].completed,
+		});
+	};
+
 	const handleTimeChange = (text, index) => {
 		const prevValue = exercise.sets[index]?.time || "";
 
@@ -120,9 +127,9 @@ const CardioTimeExercise = ({ exercise }) => {
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={["10:00"]}
-					functions={[handleTimeChange]}
+					functions={[handleTimeChange, handleCompleted]}
 					lengths={[7]}
-					values={[set.time]}
+					values={[set.time, set.completed]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

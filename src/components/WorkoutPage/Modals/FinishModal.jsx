@@ -34,7 +34,7 @@ const FinishModal = ({ navigation }) => {
 		<>
 			<TouchableOpacity onPress={() => setVisible(true)}>
 				<Ionicons
-					name="checkmark-sharp"
+					name="checkmark"
 					size={32}
 					color={themeStyle.primary}
 				/>

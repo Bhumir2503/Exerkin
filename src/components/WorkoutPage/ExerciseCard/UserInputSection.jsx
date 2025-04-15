@@ -4,6 +4,7 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
+	Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -73,7 +74,7 @@ const UserInputSection = ({
 				>
 					{index + 1}
 				</Text>
-				<View style={{ flexDirection: "row" }}>
+				<View style={{ flexDirection: "row", alignItems: "center" }}>
 					{inputTypes.map((inputType, inputIndex) => (
 						<TextInput
 							key={inputIndex}
@@ -93,6 +94,29 @@ const UserInputSection = ({
 							}
 						/>
 					))}
+					<TouchableOpacity
+						style={{
+							backgroundColor: !values[values.length-1] ? themeStyle.inputBackground : themeStyle.success,
+							borderRadius: 6,
+							paddingVertical: 3,
+							justifyContent: "center",
+							alignItems: "center",
+							width: 30,
+							marginLeft: 8,
+						}}
+						onPress={() => {
+							functions[functions.length - 1](index);
+						}}
+					>
+						<Ionicons
+							name="checkmark"
+							size={20}
+							color={!values[values.length-1] ? themeStyle.success: "#fff"}
+							style={{}}
+						/> 
+						
+						
+					</TouchableOpacity>
 				</View>
 			</View>
 		</Swipeable>
