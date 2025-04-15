@@ -10,6 +10,7 @@ import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutHistoryModal from "./WorkoutHistoryModal";
 import { formatTimeStamptoDateString } from "../../services/helpers/timeFormatter";
+import { Ionicons } from "@expo/vector-icons";
 
 // Workout History Component
 // Displays a list of past workouts with details such as date, time, and notes.
@@ -105,11 +106,11 @@ const WorkoutHistory = ({navigation}) => {
 									{item.name ? truncateTitle(item.name) : "Workout"} -{" "}
 									{formatTimeStamptoDateString(item.startedAt)}
 								</Text>
-								<Text style={styles.syncStatus}>
-									{item.syncStatus !== "synced" &&
-										"Unsynced"
-									}
-								</Text>
+								{item.syncStatus !== "synced" && <Ionicons
+									name="cloud-offline-outline"
+									size={20}
+									color={themeStyle.accent}
+								/>}
 							</View>  
 							<Text style={styles.workoutTime}>
 								{generateNumExercises(item.exercises.length)}

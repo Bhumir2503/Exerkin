@@ -65,14 +65,19 @@ export default function Settings({ navigation }) {
 					themeStyle={themeStyle}
 					items={[
 						{
-							name: "Account",
-							icon: "person-outline",
-							location: "",
+							name: "Update Email",
+							icon: "mail-outline",
+							location: "UpdateEmail",
 						},
 						{
-							name: "Edit Profile",
+							name: "Change Password",
+							icon: "lock-closed-outline",
+							location: "ChangePassword",
+						},
+						{
+							name: "Edit Username",
 							icon: "create-outline",
-							location: "EditProfile",
+							location: "EditUsername",
 						},
 					]}
 					navigation={navigation}
@@ -86,6 +91,11 @@ export default function Settings({ navigation }) {
 							name: "Edit Theme",
 							icon: "color-palette-outline",
 							location: "EditTheme",
+						},
+						{
+							name: "Change Unit System",
+							icon: "scale-outline",
+							location: "ChangeUnitSystem",
 						},
 						{
 							name: "Notification Settings",
@@ -115,6 +125,11 @@ export default function Settings({ navigation }) {
 							icon: "lock-closed-outline",
 							location: "PrivacyPolicy",
 						},
+						{
+							name: "Help & Support",
+							icon: "help-circle-outline",
+							location: "HelpSupport",
+						}
 					]}
 					navigation={navigation}
 				/>
