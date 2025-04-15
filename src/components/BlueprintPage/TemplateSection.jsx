@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useTemplate } from "../../contexts/TemplateContext";
 import { useState } from "react";
+import { FlatList } from "react-native-gesture-handler";
 
 const TemplateSection = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -35,6 +36,59 @@ const TemplateSection = ({ navigation }) => {
 		// You can add navigation to workout screen here with the selected template
 		// For example: navigation.navigate("WorkoutScreen", { template: selectedTemplate });
 		setModalVisible(false);
+	};
+
+	const getExerciseIcon = (exerciseType) => {
+		switch (exerciseType) {
+			case "bodyweight":
+				return (
+					<Ionicons
+						name="body-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+			case "weightlifting":
+				return (
+					<Ionicons
+						name="barbell-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+			case "assisted-weight":
+				return (
+					<Ionicons
+						name="hand-left-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+			case "cardio-distance":
+				return (
+					<Ionicons
+						name="walk-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+			case "cardio-time":
+				return (
+					<Ionicons
+						name="stopwatch-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+			default:
+				return (
+					<Ionicons
+						name="fitness-outline"
+						size={20}
+						color={themeStyle.primary}
+					/>
+				);
+		}
 	};
 
 	if (!hasTemplates) {
@@ -127,7 +181,10 @@ const TemplateSection = ({ navigation }) => {
 					style={styles.modalOverlay}
 					onPress={() => setModalVisible(false)}
 				>
-					<View style={styles.modalContainer}>
+					<Pressable
+						style={styles.modalContainer}
+						onPress={(e) => e.stopPropagation()}
+					>
 						{selectedTemplate && (
 							<>
 								<View style={styles.modalHeader}>
@@ -151,184 +208,118 @@ const TemplateSection = ({ navigation }) => {
 									</Pressable>
 								</View>
 
-								<ScrollView
-									style={styles.modalBody}
-									showsVerticalScrollIndicator={false}
-								>
-									<View style={styles.detailSection}>
-										<View style={styles.sectionTitleRow}>
-											<Ionicons
-												name="information-circle-outline"
-												size={20}
-												color={themeStyle.primary}
-											/>
-											<Text style={styles.sectionTitle}>
-												Note
-											</Text>
-										</View>
-										<Text style={styles.modalDescription}>
-											{selectedTemplate.note ||
-												"No note available for this blueprint."}
+								<View style={styles.detailSection}>
+									<View style={styles.sectionTitleRow}>
+										<Ionicons
+											name="information-circle-outline"
+											size={20}
+											color={themeStyle.primary}
+										/>
+										<Text style={styles.sectionTitle}>
+											Note
 										</Text>
 									</View>
+									<Text style={styles.modalDescription}>
+										{selectedTemplate.note ||
+											"No note available for this blueprint."}
+									</Text>
+								</View>
 
-									<View style={styles.divider} />
-
-									<View style={styles.detailSection}>
-										<View style={styles.sectionTitleRow}>
+								<View style={styles.divider} />
+								<View style={styles.detailSection}>
+									<View style={styles.sectionTitleRow}>
+										<Ionicons
+											name="fitness-outline"
+											size={20}
+											color={themeStyle.primary}
+										/>
+										<Text style={styles.sectionTitle}>
+											Exercises
+										</Text>
+									</View>
+								</View>
+								<FlatList
+									data={selectedTemplate.exercises}
+									keyExtractor={(item) =>
+										item.exerciseId.toString()
+									}
+									renderItem={({ item }) => (
+										<View style={styles.exercisesList}>
+											<View style={styles.exerciseItem}>
+												<View
+													style={
+														styles.exerciseIconContainer
+													}
+												>
+													{getExerciseIcon(
+														item.exerciseType
+													)}
+												</View>
+												<View
+													style={
+														styles.exerciseDetails
+													}
+												>
+													<Text
+														style={
+															styles.exerciseName
+														}
+													>
+														{item.name}
+													</Text>
+												</View>
+											</View>
+										</View>
+									)}
+									ListEmptyComponent={() => (
+										<View
+											style={
+												styles.emptyExercisesContainer
+											}
+										>
 											<Ionicons
-												name="fitness-outline"
-												size={20}
-												color={themeStyle.primary}
+												name="warning-outline"
+												size={24}
+												color={themeStyle.textColor}
+												style={{
+													marginBottom: 8,
+												}}
 											/>
-											<Text style={styles.sectionTitle}>
-												Exercises
+											<Text style={styles.noExercises}>
+												No exercises available for this{" "}
+												blueprint.
 											</Text>
 										</View>
+									)}
+									showsVerticalScrollIndicator={false}
+									showsHorizontalScrollIndicator={false}
+									bounces={false}
+									style={{
+										paddingBottom: 20,
+									}}
+									contentContainerStyle={{
+										paddingBottom: 20,
 
-										{selectedTemplate.exercises &&
-										selectedTemplate.exercises.length >
-											0 ? (
-											<View style={styles.exercisesList}>
-												{selectedTemplate.exercises.map(
-													(exercise, index) => {
-														const getIcon = () => {
-															switch (
-																exercise.exerciseType
-															) {
-																case "bodyweight":
-																	return (
-																		<Ionicons
-																			name="body-outline"
-																			size={
-																				18
-																			}
-																			color={
-																				themeStyle.textColor
-																			}
-																		/>
-																	);
-																case "weightlifting":
-																	return (
-																		<Ionicons
-																			name="barbell-outline"
-																			size={
-																				18
-																			}
-																			color={
-																				themeStyle.textColor
-																			}
-																		/>
-																	);
-																case "assisted-weight":
-																	return (
-																		<Ionicons
-																			name="hand-left-outline"
-																			size={
-																				18
-																			}
-																			color={
-																				themeStyle.textColor
-																			}
-																		/>
-																	);
-																case "cardio-distance":
-																	return (
-																		<Ionicons
-																			name="walk-outline"
-																			size={
-																				18
-																			}
-																			color={
-																				themeStyle.textColor
-																			}
-																		/>
-																	);
-																case "cardio-time":
-																	return (
-																		<Ionicons
-																			name="stopwatch-outline"
-																			size={
-																				18
-																			}
-																			color={
-																				themeStyle.textColor
-																			}
-																		/>
-																	);
-																default:
-																	return null;
-															}
-														};
-
-														return (
-															<View
-																key={index}
-																style={
-																	styles.exerciseItem
-																}
-															>
-																<View
-																	style={
-																		styles.exerciseIconContainer
-																	}
-																>
-																	{getIcon()}
-																</View>
-																<View
-																	style={
-																		styles.exerciseDetails
-																	}
-																>
-																	<Text
-																		style={
-																			styles.exerciseName
-																		}
-																	>
-																		{
-																			exercise.name
-																		}
-																	</Text>
-																</View>
-															</View>
-														);
-													}
-												)}
-											</View>
-										) : (
-											<View
-												style={
-													styles.emptyExercisesContainer
-												}
-											>
-												<Ionicons
-													name="alert-circle-outline"
-													size={24}
-													color={
-														themeStyle.textColorSecondary
-													}
-												/>
-												<Text
-													style={styles.noExercises}
-												>
-													No exercises added to this
-													blueprint
-												</Text>
-											</View>
-										)}
-									</View>
-								</ScrollView>
+										paddingLeft: 0,
+										paddingRight: 20,
+										gap: 8,
+									}}
+								/>
 
 								<View style={styles.modalFooter}>
 									<Pressable
 										style={[
 											styles.modalButton,
-											styles.cancelButton,
+											styles.editButton,
 										]}
-										onPress={() => setModalVisible(false)}
+										onPress={() =>
+											console.log(
+												"Haha you can't edit this - Bhumir Patel"
+											)
+										}
 									>
-										<Text style={styles.cancelButtonText}>
-											Cancel
+										<Text style={styles.editButtonText}>
+											Edit
 										</Text>
 									</Pressable>
 
@@ -352,7 +343,7 @@ const TemplateSection = ({ navigation }) => {
 								</View>
 							</>
 						)}
-					</View>
+					</Pressable>
 				</Pressable>
 			</Modal>
 		</View>
@@ -492,7 +483,8 @@ const createStyles = (themeStyle) => {
 			maxHeight: "70%",
 		},
 		detailSection: {
-			marginBottom: 16,
+			marginBottom: 8,
+			paddingHorizontal: 20,
 		},
 		sectionTitleRow: {
 			flexDirection: "row",
@@ -515,6 +507,7 @@ const createStyles = (themeStyle) => {
 			height: 1,
 			backgroundColor: themeStyle.borderColor,
 			marginVertical: 8,
+			marginBottom: 24,
 		},
 		exercisesList: {
 			marginTop: 6,
@@ -570,8 +563,7 @@ const createStyles = (themeStyle) => {
 			justifyContent: "space-between",
 			padding: 20,
 			paddingTop: 16,
-			borderTopWidth: 1,
-			borderTopColor: themeStyle.borderColor,
+			paddingBottom: 30,
 		},
 		modalButton: {
 			paddingVertical: 14,
@@ -585,7 +577,7 @@ const createStyles = (themeStyle) => {
 		buttonIcon: {
 			marginRight: 8,
 		},
-		cancelButton: {
+		editButton: {
 			backgroundColor: themeStyle.card,
 			marginRight: 10,
 		},
@@ -593,7 +585,7 @@ const createStyles = (themeStyle) => {
 			backgroundColor: themeStyle.primary,
 			marginLeft: 10,
 		},
-		cancelButtonText: {
+		editButtonText: {
 			color: themeStyle.textColor,
 			fontWeight: "600",
 			fontSize: 16,
