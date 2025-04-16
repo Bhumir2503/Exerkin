@@ -1,52 +1,35 @@
 import { formatDuration } from "./timeFormatter";
 import uuid from "react-native-uuid";
 
-export const buildWorkoutObject = (
-	workoutId,
-	templateId,
-	userId,
-	name,
-	notes,
-	isTemplate,
-	imageURL,
-	unitSystem,
-	exercises,
-	startTime,
-	duration,
-	status
-) => {
-	if (name === "") {
-		name = "Untitled Workout";
+
+export const buildWorkoutObject = (workout) => {
+	if (workout.name === "") {
+		workout.name = "Untitled Workout";
 	}
 
-    const workoutFiltered = exercises
-
-	const workoutChecked = workoutFiltered.filter(
+	const workoutFiltered = workout.exercises.filter(
 		(exercise) => exercise.sets.length > 0
 	);
 
-	const workout = {
-		workoutId,
-		templateId,
-		userId,
-		name,
-		notes,
-		isTemplate,
-		imageURL,
-		unitSystem,
-		exercises: workoutChecked,
-		startedAt: startTime,
-		completedAt: new Date(),
+	return {
+		userId: workout.userId,
+		workoutId: workout.workoutId,
+		name: workout.name,
+		notes: workout.notes,
+		imageURL: workout.imageURL,
+		unitSystem: workout.unitSystem,
+		exercises: workoutFiltered,
+		startedAt: workout.startedAt,
+		completedAt: workout.completedAt,
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		duration: formatDuration(duration),
+		duration: formatDuration(workout.duration),
 		deleted: false,
 		deletedAt: null,
-		syncStatus: status,
-	};
+		syncStatus: "Synced",
+	}
 
-	return workout;
-};
+}
 
 export const buildWorkoutEditObject = (
 	workoutId,

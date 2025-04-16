@@ -4,6 +4,8 @@ import React, {
 	useContext,
 	useEffect,
 	useRef,
+	useCallback,
+	useMemo,
 } from "react";
 
 import uuid from "react-native-uuid";
@@ -20,7 +22,7 @@ import {
 
 import { useUser } from "./UserContext";
 
-import { buildWorkoutObject, buildWorkoutEditObject } from "../services/helpers/objectBuilder";
+import { buildWorkoutObject } from "../services/helpers/objectBuilder";
 
 const WorkoutContext = createContext();
 
@@ -28,242 +30,263 @@ export const WorkoutProvider = ({ children }) => {
 	const { user } = useUser();
 	const realm = useRealm();
 
-	//  Workout History, Workout Exercises, Workout Notes, Workout Title, Workout Start Time, Workout Date
-	const WorkoutId = useRef(null);
+	// Workout state
 	const [workoutHistory, setWorkoutHistory] = useState([]);
 	const [workoutExercises, setWorkoutExercises] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState(null);
 
-	const WorkoutTitle = useRef("");
-	const WorkoutNote = useRef("");
-	const WorkoutStartTime = useRef(null);
-	const WorkoutTimer = useRef(0);
+	// Workout refs (don't need re-renders)
+	const workoutId = useRef(null);
+	const workoutTitle = useRef("");
+	const workoutNotes = useRef("");
+	const workoutStartTime = useRef(null);
+	const workoutTimer = useRef(0);
 	const imageURL = useRef(null);
 	const unitSystem = useRef(user?.unitSystem || "imperial");
-
-	const TemplateId = useRef(null);
+	const templateId = useRef(null);
 	const isTemplate = useRef(false);
 
-	/*
-	Effect hooks for managing workout data subscriptions and updates.
-	*/
+	// Load initial workout data
+	useEffect(() => {
+		const loadWorkouts = async () => {
+			if (!user) return;
 
-	// Effect hook to listen for changes in workout data
+			try {
+				setIsLoading(true);
+				setError(null);
+				const userWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(userWorkouts);
+			} catch (err) {
+				console.error("Failed to load workouts:", err);
+				setError("Failed to load your workout history");
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		loadWorkouts();
+	}, [user, realm]);
+
+	// Subscribe to workout changes
 	useEffect(() => {
 		if (!user) return;
 
-		// Subscribe to changes in workout data using Realm
-		const unsubscribe = listenToWorkoutChanges(
+		const handleWorkoutUpdate = async () => {
+			try {
+				const updatedWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(updatedWorkouts);
+			} catch (err) {
+				console.error("Error updating workouts:", err);
+			}
+		};
+
+		// Setup subscriptions
+		const unsubscribeChanges = listenToWorkoutChanges(
 			realm,
 			user.uid,
-			async () => {
-				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
-				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
-			}
+			handleWorkoutUpdate
 		);
 
+		const unsubscribeDeletes = listenToDeletedWorkoutChanges(
+			realm,
+			user.uid,
+			handleWorkoutUpdate
+		);
+
+		// Cleanup subscriptions
 		return () => {
-			unsubscribe(); // Unsubscribe from workout data changes
+			unsubscribeChanges();
+			unsubscribeDeletes();
 		};
 	}, [user, realm]);
 
-	// Effect hook to listen for changes in deleted workout data
-	useEffect(() => {
-		if (!user) return;
-
-		// Subscribe to changes in deleted workout data using Realm
-		const unsubscribe = listenToDeletedWorkoutChanges(
-			realm,
-			user.uid,
-			async () => {
-				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
-				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
-			}
-		);
-
-		return () => {
-			unsubscribe(); // Unsubscribe from deleted workout data changes
-		};
-	}, [user, realm]);
-
-	/*
-	Functions related to managing active workouts, exercises, and workout history
-	*/
-
-	const workoutStarted = () => {
+	// Workout session management
+	const workoutStarted = useCallback(() => {
 		setWorkoutExercises([]);
-		WorkoutStartTime.current = new Date();
-		WorkoutId.current = uuid.v4();
-	};
+		workoutStartTime.current = new Date();
+		workoutId.current = uuid.v4();
+	}, []);
 
-	const workoutEditStarted = (workout) => {
+	const workoutEditStarted = useCallback((workout) => {
 		// Set the workoutId to the workoutId of the workout being edited
-		WorkoutId.current = workout.workoutId;
-		WorkoutTitle.current = workout.name;
-		WorkoutNote.current = workout.notes;
-		WorkoutStartTime.current = workout.startedAt;
-		TemplateId.current = workout.templateId;
+		workoutId.current = workout.workoutId;
+		workoutTitle.current = workout.name;
+		workoutNotes.current = workout.notes;
+		workoutStartTime.current = workout.startedAt;
+		templateId.current = workout.templateId;
 		isTemplate.current = workout.isTemplate;
 		imageURL.current = workout.imageURL;
 		unitSystem.current = workout.unitSystem;
-		WorkoutTimer.current = workout.timer;
+		workoutTimer.current = workout.timer;
 		setWorkoutExercises(workout.exercises);
-	}
+	}, []);
 
-	const workoutCancelled = () => {
-		// Reset useStates
+	const resetWorkoutState = useCallback(() => {
 		setWorkoutExercises([]);
-		WorkoutId.current = null;
-		WorkoutTitle.current = "";
-		WorkoutNote.current = "";
-		WorkoutStartTime.current = null;
-		WorkoutTimer.current = 0;
-
-		TemplateId.current = null;
+		workoutId.current = null;
+		workoutTitle.current = "";
+		workoutNotes.current = "";
+		workoutStartTime.current = null;
+		workoutTimer.current = 0;
+		templateId.current = null;
 		isTemplate.current = false;
 		imageURL.current = null;
 		unitSystem.current = user?.unitSystem || "imperial";
-	};
+	}, [user?.unitSystem]);
 
-	const workoutCompleted = async () => {
-		const workout = buildWorkoutObject(
-			WorkoutId.current,
-			TemplateId.current,
-			user.uid,
-			WorkoutTitle.current,
-			WorkoutNote.current,
-			isTemplate.current,
-			imageURL.current,
-			unitSystem.current,
+	const workoutCancelled = useCallback(() => {
+		resetWorkoutState();
+	}, [resetWorkoutState]);
+
+	// Save workout to database
+	const saveWorkout = useCallback(async () => {
+		try {
+			setIsLoading(true);
+			setError(null);
+
+			const workout = buildWorkoutObject(
+				workoutId.current,
+				templateId.current,
+				user.uid,
+				workoutTitle.current,
+				workoutNotes.current,
+				isTemplate.current,
+				imageURL.current,
+				unitSystem.current,
+				workoutExercises,
+				workoutStartTime.current,
+				workoutTimer.current,
+				"synced"
+			);
+
+			return workout;
+		} catch (err) {
+			console.error("Error preparing workout:", err);
+			setError("Failed to save workout");
+			throw err;
+		} finally {
+			setIsLoading(false);
+		}
+	}, [user?.uid, workoutExercises]);
+
+	// Complete a workout
+	const workoutCompleted = useCallback(async () => {
+		try {
+			const workout = await saveWorkout();
+			await addWorkout(realm, workout);
+			const updatedWorkouts = await getWorkouts(realm, user.uid);
+			setWorkoutHistory(updatedWorkouts);
+			resetWorkoutState();
+		} catch (err) {
+			console.error("Error completing workout:", err);
+			setError("Failed to save your workout");
+		}
+	}, [realm, user?.uid, saveWorkout, resetWorkoutState]);
+
+	// Complete an edited workout
+	const workoutEditCompleted = useCallback(async () => {
+		try {
+			const workout = await saveWorkout();
+			await editWorkout(realm, workout);
+			const updatedWorkouts = await getWorkouts(realm, user.uid);
+			setWorkoutHistory(updatedWorkouts);
+			resetWorkoutState();
+		} catch (err) {
+			console.error("Error saving edited workout:", err);
+			setError("Failed to save your workout changes");
+		}
+	}, [realm, user?.uid, saveWorkout, resetWorkoutState]);
+
+
+	
+	// History management
+	const removeWorkoutFromHistory = useCallback(
+		async (workout) => {
+			try {
+				await deleteWorkout(realm, workout.workoutId);
+				const updatedWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(updatedWorkouts);
+			} catch (err) {
+				console.error("Error deleting workout:", err);
+				setError("Failed to delete workout");
+			}
+		},
+		[realm, user?.uid]
+	);
+
+	// Memoize the context value to prevent unnecessary renders
+	const contextValue = useMemo(
+		() => ({
+			// Session management
+			workoutStarted,
+			workoutEditStarted,
+			workoutCompleted,
+			workoutEditCompleted,
+			workoutCancelled,
+
+			// Exercise management
+			addExerciseToWorkout,
+			removeExerciseFromWorkout,
+
+			// Set management
+			addSetToExercise,
+			updateSetInExercise,
+			removeSetFromExercise,
+
+			// History management
+			removeWorkoutFromHistory,
+
+			// State
 			workoutExercises,
-			WorkoutStartTime.current,
-			WorkoutTimer.current,
-			"synced"
-		);
+			setWorkoutExercises,
+			workoutHistory,
 
-		addWorkout(realm, workout);
-		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
-		// Reset useStates
-		workoutCancelled();
-	};
+			// Refs (exposed for direct manipulation if needed)
+			workoutId,
+			workoutNotes: workoutNotes,
+			workoutTitle: workoutTitle,
+			workoutStartTime: workoutStartTime,
+			workoutTimer: workoutTimer,
 
-	const workoutEditCompleted = async () => {
-		const workout = buildWorkoutObject(
-			WorkoutId.current,
-			TemplateId.current,
-			user.uid,
-			WorkoutTitle.current,
-			WorkoutNote.current,
-			isTemplate.current,
-			imageURL.current,
-			unitSystem.current,
+			// Status
+			isLoading,
+			error,
+
+			// Clear error
+			clearError: () => setError(null),
+		}),
+		[
+			workoutStarted,
+			workoutEditStarted,
+			workoutCompleted,
+			workoutEditCompleted,
+			workoutCancelled,
+			addExerciseToWorkout,
+			removeExerciseFromWorkout,
+			addSetToExercise,
+			updateSetInExercise,
+			removeSetFromExercise,
+			removeWorkoutFromHistory,
 			workoutExercises,
-			WorkoutStartTime.current,
-			WorkoutTimer.current,
-			"synced",
-		);
-		editWorkout(realm, workout);
-		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history with the new workout
-		workoutCancelled();
-	}
-
-	// Add excercise to active workout
-	const addExerciseToWorkout = async (exercise) => {
-		setWorkoutExercises((prevExercises) => [
-			...prevExercises,
-			{ ...exercise },
-		]);
-		// TODO: add to cache so that it can be retrieved if the app crashes or is closed and continues the workout
-	};
-
-	// Remove exercise from active workout
-	const removeExerciseFromWorkout = (exerciseId) => {
-		setWorkoutExercises((prevExercises) =>
-			prevExercises.filter(
-				(exercise) => exercise.exerciseId !== exerciseId
-			)
-		);
-	};
-
-	// Add set to exercise in active workout
-	const addSetToExercise = (exerciseId, set) => {
-		setWorkoutExercises((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.exerciseId === exerciseId
-					? { ...exercise, sets: [...exercise.sets, set] }
-					: exercise
-			)
-		);
-	};
-
-	// Update set in exercise in active workout
-	// setIndex is the index of the set in the exercise.sets array
-	const updateSetInExercise = (exerciseId, setIndex, set) => {
-		setWorkoutExercises((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.exerciseId === exerciseId
-					? {
-							...exercise,
-							sets: exercise.sets.map((prevSet, index) =>
-								index === setIndex ? set : prevSet
-							),
-					  }
-					: exercise
-			)
-		);
-	};
-
-	// Remove set from exercise in active workout
-	// setIndex is the index of the set in the exercise.sets array
-	const removeSetFromExercise = (exerciseId, setIndex) => {
-		setWorkoutExercises((prevExercises) =>
-			prevExercises.map((exercise) =>
-				exercise.exerciseId === exerciseId
-					? {
-							...exercise,
-							sets: exercise.sets.filter(
-								(_, index) => index !== setIndex
-							),
-					  }
-					: exercise
-			)
-		);
-	};
-
-	const removeWorkoutFromHistory = async(workout) => {
-		deleteWorkout(realm, workout.workoutId);
-		setWorkoutHistory(await getWorkouts(realm, user.uid)); // Update workout history after deletion
-	};
+			workoutHistory,
+			isLoading,
+			error,
+		]
+	);
 
 	return (
-		<WorkoutContext.Provider
-			value={{
-				workoutStarted,
-				workoutEditStarted,
-				workoutCompleted,
-				workoutEditCompleted,
-				workoutCancelled,
-				addSetToExercise,
-				updateSetInExercise,
-				removeSetFromExercise,
-
-				workoutExercises,
-				setWorkoutExercises,
-				workoutHistory,
-				setWorkoutHistory,
-				WorkoutId,
-				WorkoutNote,
-				WorkoutTitle,
-				WorkoutStartTime,
-				WorkoutTimer,
-				addExerciseToWorkout,
-				removeExerciseFromWorkout,
-
-				removeWorkoutFromHistory,
-			}}
-		>
+		<WorkoutContext.Provider value={contextValue}>
 			{children}
 		</WorkoutContext.Provider>
 	);
 };
 
-export const useWorkout = () => useContext(WorkoutContext);
+// Custom hook for consuming the context
+export const useWorkout = () => {
+	const context = useContext(WorkoutContext);
+	if (context === undefined) {
+		throw new Error("useWorkout must be used within a WorkoutProvider");
+	}
+	return context;
+};
