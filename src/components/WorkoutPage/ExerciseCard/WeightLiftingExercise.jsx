@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, Platform } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -10,10 +10,10 @@ import {
 	MenuOptions,
 	MenuOption,
 } from "react-native-popup-menu";
-
+import { trigger } from "react-native-haptic-feedback";
 import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
-const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
+const WeightLiftingExercise = ({ exercise}) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
@@ -25,6 +25,11 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	};
 
 	const handleCompleted = (index) => {
+				if(Platform.OS === "ios") {
+					trigger("selection");
+				}else{
+					trigger("impactLight");
+				}
 		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			completed: !exercise.sets[index].completed,
@@ -100,7 +105,11 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 					index={index}
 					inputTypes={["decimal", "numeric"]}
 					placeholders={["135", "12"]}
-					functions={[handleWeightChange, handleRepsChange, handleCompleted]}
+					functions={[
+						handleWeightChange,
+						handleRepsChange,
+						handleCompleted,
+					]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps, set.completed]}
 				/>

@@ -10,32 +10,32 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		190EF8C1036C03733E604DCC /* Pods_Exerkin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1476F6628160E20AAA47B54E /* Pods_Exerkin.framework */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		40F695E0F23D4435A3D7D3FD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0FB7FB964FFD44E1A0FE6674 /* GoogleService-Info.plist */; };
-		854A94B697C547649E05FB68 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ED55B60B914CD29CFC9895 /* noop-file.swift */; };
+		4B0D82D3484F4179967D95BD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 35CCFACDF47042008ECBF792 /* GoogleService-Info.plist */; };
+		7D80957798664B0A8C6D05D1 /* Pods_Exerkin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25E28277BD36118E74976C83 /* Pods_Exerkin.framework */; };
+		89CC3971F6EC442093785FDB /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4990733494B4E278A6DD4CE /* noop-file.swift */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
+		B52A13ECA2C046AF1DCEAE7E /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B45D1ACB5DE3775458A5C95A /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		D06916E7697F4420F45342C4 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 52FE24CF0715AF3496BBE013 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0FB7FB964FFD44E1A0FE6674 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Exerkin/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Exerkin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Exerkin.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Exerkin/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Exerkin/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Exerkin/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Exerkin/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Exerkin/main.m; sourceTree = "<group>"; };
-		1476F6628160E20AAA47B54E /* Pods_Exerkin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Exerkin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		52FE24CF0715AF3496BBE013 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Exerkin/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		25E28277BD36118E74976C83 /* Pods_Exerkin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Exerkin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		35CCFACDF47042008ECBF792 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Exerkin/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		38CD2A3A62084D98826D58DB /* Exerkin-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "Exerkin-Bridging-Header.h"; path = "Exerkin/Exerkin-Bridging-Header.h"; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-Exerkin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exerkin.debug.xcconfig"; path = "Target Support Files/Pods-Exerkin/Pods-Exerkin.debug.xcconfig"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-Exerkin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Exerkin.release.xcconfig"; path = "Target Support Files/Pods-Exerkin/Pods-Exerkin.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = Exerkin/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B45D1ACB5DE3775458A5C95A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = Exerkin/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
+		D4990733494B4E278A6DD4CE /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "Exerkin/noop-file.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F7ED55B60B914CD29CFC9895 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "Exerkin/noop-file.swift"; sourceTree = "<group>"; };
-		FA59D0D4263343CEA7CD82C0 /* Exerkin-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "Exerkin-Bridging-Header.h"; path = "Exerkin/Exerkin-Bridging-Header.h"; sourceTree = "<group>"; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Exerkin/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -44,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				190EF8C1036C03733E604DCC /* Pods_Exerkin.framework in Frameworks */,
+				7D80957798664B0A8C6D05D1 /* Pods_Exerkin.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,10 +61,10 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				0FB7FB964FFD44E1A0FE6674 /* GoogleService-Info.plist */,
-				F7ED55B60B914CD29CFC9895 /* noop-file.swift */,
-				FA59D0D4263343CEA7CD82C0 /* Exerkin-Bridging-Header.h */,
-				52FE24CF0715AF3496BBE013 /* PrivacyInfo.xcprivacy */,
+				35CCFACDF47042008ECBF792 /* GoogleService-Info.plist */,
+				D4990733494B4E278A6DD4CE /* noop-file.swift */,
+				38CD2A3A62084D98826D58DB /* Exerkin-Bridging-Header.h */,
+				B45D1ACB5DE3775458A5C95A /* PrivacyInfo.xcprivacy */,
 			);
 			name = Exerkin;
 			sourceTree = "<group>";
@@ -73,7 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				1476F6628160E20AAA47B54E /* Pods_Exerkin.framework */,
+				25E28277BD36118E74976C83 /* Pods_Exerkin.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -150,14 +150,14 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Exerkin" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				CDCB03D3E2F14ED9D73645F5 /* [Expo] Configure project */,
+				D229D3D2CB95954CFD54F9DB /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				BA90E0C87B760DD861B43346 /* [CP] Embed Pods Frameworks */,
-				6B65BF9FCDA38C97C3DE4191 /* [CP-User] [RNFB] Core Configuration */,
+				BECF6D8D29A0A11557E69486 /* [CP] Embed Pods Frameworks */,
+				2977C24598174F27162B3822 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -207,8 +207,8 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				40F695E0F23D4435A3D7D3FD /* GoogleService-Info.plist in Resources */,
-				D06916E7697F4420F45342C4 /* PrivacyInfo.xcprivacy in Resources */,
+				4B0D82D3484F4179967D95BD /* GoogleService-Info.plist in Resources */,
+				B52A13ECA2C046AF1DCEAE7E /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,7 +252,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6B65BF9FCDA38C97C3DE4191 /* [CP-User] [RNFB] Core Configuration */ = {
+		2977C24598174F27162B3822 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -343,7 +343,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exerkin/Pods-Exerkin-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BA90E0C87B760DD861B43346 /* [CP] Embed Pods Frameworks */ = {
+		BECF6D8D29A0A11557E69486 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -361,7 +361,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Exerkin/Pods-Exerkin-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		CDCB03D3E2F14ED9D73645F5 /* [Expo] Configure project */ = {
+		D229D3D2CB95954CFD54F9DB /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -390,7 +390,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				854A94B697C547649E05FB68 /* noop-file.swift in Sources */,
+				89CC3971F6EC442093785FDB /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,7 +425,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bhumir2503.ExerKin;
-				PRODUCT_NAME = "Exerkin";
+				PRODUCT_NAME = Exerkin;
 				SWIFT_OBJC_BRIDGING_HEADER = "Exerkin/Exerkin-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -457,7 +457,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bhumir2503.ExerKin;
-				PRODUCT_NAME = "Exerkin";
+				PRODUCT_NAME = Exerkin;
 				SWIFT_OBJC_BRIDGING_HEADER = "Exerkin/Exerkin-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

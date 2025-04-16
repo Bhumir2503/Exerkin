@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, Platform } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -11,7 +11,7 @@ import {
 	MenuOption,
 } from "react-native-popup-menu";
 import { Ionicons } from "@expo/vector-icons";
-
+import { trigger } from "react-native-haptic-feedback";
 import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
 const CardioTimeExercise = ({ exercise }) => {
@@ -25,6 +25,11 @@ const CardioTimeExercise = ({ exercise }) => {
 	};
 
 	const handleCompleted = (index) => {
+				if(Platform.OS === "ios") {
+					trigger("selection");
+				}else{
+					trigger("impactLight");
+				}
 		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
 			completed: !exercise.sets[index].completed,
