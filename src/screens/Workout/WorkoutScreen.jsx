@@ -4,7 +4,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { memo } from "react";
 
 import PrimaryButton from "../../components/PrimaryButton";
-import TemplateSection from "../../components/BlueprintPage/TemplateSection";
 
 import { useWorkoutSession } from "../../hooks/useWorkoutSession";
 import { useTheme } from "../../contexts/ThemeContext";

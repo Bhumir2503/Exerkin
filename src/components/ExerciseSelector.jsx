@@ -10,19 +10,20 @@ import {
 	FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { useWorkout } from "../../../contexts/WorkoutContext";
+import { useTheme } from "../contexts/ThemeContext";
+import { useWorkoutExercises } from "../contexts/workout/WorkoutExercisesContext";
 import {
 	exercises,
 	exerciseCategories,
 	getExercisesByCategory,
-} from "../../../services/constants/exerciseLibrary";
+} from "../services/constants/exerciseLibrary";
 
-import { buildExerciseObject } from "../../../services/helpers/objectBuilder";
+import { buildExerciseObject } from "../services/helpers/objectBuilder";
 
-const ExerciseSelector = () => {
+const ExerciseSelector = (type) => {
 	const { themeStyle } = useTheme();
-	const { addExerciseToWorkout, workoutExercises } = useWorkout();
+	const { workoutExercises, addExercise } = useWorkoutExercises();
+
 	const styles = createStyles(themeStyle);
 
 	// Choose Modal Popup
@@ -38,7 +39,12 @@ const ExerciseSelector = () => {
 	// Get array of already added exercise IDs
 
 	const getAddedExerciseIds = () => {
-		return workoutExercises.map((exercise) => exercise.exerciseId);
+		if (type === "workout") {
+			return workoutExercises.map((exercise) => exercise.id);
+		} else if (type === "template") {
+			// TODO: Add template logic here
+		}
+		return [];
 	};
 
 	// Filter exercises based on search, category, and already added exercises
@@ -89,11 +95,12 @@ const ExerciseSelector = () => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
-
 			const exercise = buildExerciseObject(selectedExercise);
-
-			addExerciseToWorkout(exercise);
-
+			if (type === "workout") {
+				addExercise(exercise);
+			} else if (type === "template") {
+				// TODO: Add template logic here
+			}
 			closeModal();
 		}
 	};

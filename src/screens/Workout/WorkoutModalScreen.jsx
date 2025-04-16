@@ -1,9 +1,18 @@
-import { View, Platform, StyleSheet, KeyboardAvoidingView } from "react-native";
+import {
+	View,
+	Platform,
+	StyleSheet,
+	KeyboardAvoidingView,
+	TouchableWithoutFeedback,
+	Keyboard,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "../../contexts/ThemeContext";
 
 import Header from "./components/Header";
+import InfoCard from "../../components/InfoCard";
+import Footer from "./components/Footer";
 // import WorkoutTimer from "../../components/WorkoutTimer";
 // import WorkoutNotes from "../../components/Modals/WorkoutNotes";
 // import RestTimer from "../../components/Modals/RestTimer";
@@ -12,16 +21,18 @@ import Header from "./components/Header";
 // import CancelButton from "../../components/Modals/CancelButton";
 // import AddFirstExerciseCard from "../../components/ExerciseCard/AddFirstExerciseCard";
 
-const WorkoutModalScreen = ({navigation }) => {
+const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	const dismissKeyboard = () => {
+		Keyboard.dismiss();
+	};
+
 	return (
-		<SafeAreaView
-			style={styles.container}
-		>
+		<SafeAreaView style={styles.container}>
 			<Header navigation={navigation} />
-{/* 
+			{/* 
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : "height"}
 				style={styles.containerContent}
@@ -39,11 +50,22 @@ const WorkoutModalScreen = ({navigation }) => {
 					<ExerciseDragList />
 					<AddFirstExerciseCard />
 				</View>
-			</KeyboardAvoidingView>
-			<View style={styles.bottomFixed}>
-				<ExerciseSelector />
-				<CancelButton navigation={navigation} />
-			</View> */}
+			</KeyboardAvoidingView>} */}
+			<TouchableWithoutFeedback onPress={dismissKeyboard}>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={styles.containerContent}
+				>
+					<InfoCard
+						icon={"barbell-outline"}
+						title={"Get Started With Your Workout"}
+						message={
+							"Click the button below to select your first exercise. You can add multiple sets for each exercise and track your progress."
+						}
+					/>
+				</KeyboardAvoidingView>
+			</TouchableWithoutFeedback>
+			<Footer />
 		</SafeAreaView>
 	);
 };
@@ -54,26 +76,9 @@ const createStyles = (theme) => {
 			backgroundColor: theme.backgroundColor,
 			flex: 1,
 		},
-		contentContainer: {
-			flex: 1,
-		},
 		containerContent: {
 			flex: 1,
-			width: "100%",
-		},
-		scrollView: {
-			width: "100%",
-			alignItems: "center",
-		},
-		timerStyle: {
-			paddingVertical: 15,
-			paddingHorizontal: 20,
-			flexDirection: "row",
-			alignItems: "center",
-			justifyContent: "space-between",
-		},
-		bottomFixed: {
-			marginBottom: Platform.OS === "ios" ? 0 : 15,
+			marginTop: 10,
 		},
 	});
 };

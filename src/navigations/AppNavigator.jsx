@@ -2,12 +2,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
-import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
+// import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
 import WorkoutNavigator from "./WorkoutNavigator";
-import Friends from "../pages/Friends/Friends";
-import Measurement from "../pages/Measure/Measurement";
-import MeasurementNavigator from "./MeasurementNavigator";
-import StatsNavigator from "./StatsNavigator";
+// import Friends from "../pages/Friends/Friends";
+// import Measurement from "../pages/Measure/Measurement";
+// import MeasurementNavigator from "./MeasurementNavigator";
+// import StatsNavigator from "./StatsNavigator";
 
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
@@ -27,7 +27,7 @@ export default function AppNavigator() {
 				subRoute.name === "EditProfile" ||
 				subRoute.name === "TermsOfService" ||
 				subRoute.name === "PrivacyPolicy" ||
-				subRoute.name == "WorkoutModal" ||
+				subRoute.name == "WorkoutModalScreen" ||
 				subRoute.name == "TemplateModal" ||
 				subRoute.name == "EditModal"
 		)
