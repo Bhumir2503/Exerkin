@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from "react";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../UserContext";
 
 const WorkoutMetaContext = createContext();
 

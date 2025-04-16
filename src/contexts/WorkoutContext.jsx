@@ -48,58 +48,58 @@ export const WorkoutProvider = ({ children }) => {
 	const isTemplate = useRef(false);
 
 	// Load initial workout data
-	useEffect(() => {
-		const loadWorkouts = async () => {
-			if (!user) return;
+	// useEffect(() => {
+	// 	const loadWorkouts = async () => {
+	// 		if (!user) return;
 
-			try {
-				setIsLoading(true);
-				setError(null);
-				const userWorkouts = await getWorkouts(realm, user.uid);
-				setWorkoutHistory(userWorkouts);
-			} catch (err) {
-				console.error("Failed to load workouts:", err);
-				setError("Failed to load your workout history");
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	// 		try {
+	// 			setIsLoading(true);
+	// 			setError(null);
+	// 			const userWorkouts = await getWorkouts(realm, user.uid);
+	// 			setWorkoutHistory(userWorkouts);
+	// 		} catch (err) {
+	// 			console.error("Failed to load workouts:", err);
+	// 			setError("Failed to load your workout history");
+	// 		} finally {
+	// 			setIsLoading(false);
+	// 		}
+	// 	};
 
-		loadWorkouts();
-	}, [user, realm]);
+	// 	loadWorkouts();
+	// }, [user, realm]);
 
-	// Subscribe to workout changes
-	useEffect(() => {
-		if (!user) return;
+	// // Subscribe to workout changes
+	// useEffect(() => {
+	// 	if (!user) return;
 
-		const handleWorkoutUpdate = async () => {
-			try {
-				const updatedWorkouts = await getWorkouts(realm, user.uid);
-				setWorkoutHistory(updatedWorkouts);
-			} catch (err) {
-				console.error("Error updating workouts:", err);
-			}
-		};
+	// 	const handleWorkoutUpdate = async () => {
+	// 		try {
+	// 			const updatedWorkouts = await getWorkouts(realm, user.uid);
+	// 			setWorkoutHistory(updatedWorkouts);
+	// 		} catch (err) {
+	// 			console.error("Error updating workouts:", err);
+	// 		}
+	// 	};
 
-		// Setup subscriptions
-		const unsubscribeChanges = listenToWorkoutChanges(
-			realm,
-			user.uid,
-			handleWorkoutUpdate
-		);
+	// 	// Setup subscriptions
+	// 	const unsubscribeChanges = listenToWorkoutChanges(
+	// 		realm,
+	// 		user.uid,
+	// 		handleWorkoutUpdate
+	// 	);
 
-		const unsubscribeDeletes = listenToDeletedWorkoutChanges(
-			realm,
-			user.uid,
-			handleWorkoutUpdate
-		);
+	// 	const unsubscribeDeletes = listenToDeletedWorkoutChanges(
+	// 		realm,
+	// 		user.uid,
+	// 		handleWorkoutUpdate
+	// 	);
 
-		// Cleanup subscriptions
-		return () => {
-			unsubscribeChanges();
-			unsubscribeDeletes();
-		};
-	}, [user, realm]);
+	// 	// Cleanup subscriptions
+	// 	return () => {
+	// 		unsubscribeChanges();
+	// 		unsubscribeDeletes();
+	// 	};
+	// }, [user, realm]);
 
 	// Workout session management
 	const workoutStarted = useCallback(() => {
@@ -218,60 +218,13 @@ export const WorkoutProvider = ({ children }) => {
 	// Memoize the context value to prevent unnecessary renders
 	const contextValue = useMemo(
 		() => ({
-			// Session management
-			workoutStarted,
-			workoutEditStarted,
-			workoutCompleted,
-			workoutEditCompleted,
-			workoutCancelled,
 
-			// Exercise management
-			addExerciseToWorkout,
-			removeExerciseFromWorkout,
-
-			// Set management
-			addSetToExercise,
-			updateSetInExercise,
-			removeSetFromExercise,
-
-			// History management
-			removeWorkoutFromHistory,
-
-			// State
-			workoutExercises,
-			setWorkoutExercises,
-			workoutHistory,
-
-			// Refs (exposed for direct manipulation if needed)
-			workoutId,
-			workoutNotes: workoutNotes,
-			workoutTitle: workoutTitle,
-			workoutStartTime: workoutStartTime,
-			workoutTimer: workoutTimer,
-
-			// Status
-			isLoading,
-			error,
 
 			// Clear error
 			clearError: () => setError(null),
 		}),
 		[
-			workoutStarted,
-			workoutEditStarted,
-			workoutCompleted,
-			workoutEditCompleted,
-			workoutCancelled,
-			addExerciseToWorkout,
-			removeExerciseFromWorkout,
-			addSetToExercise,
-			updateSetInExercise,
-			removeSetFromExercise,
-			removeWorkoutFromHistory,
-			workoutExercises,
-			workoutHistory,
-			isLoading,
-			error,
+
 		]
 	);
 

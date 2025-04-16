@@ -7,11 +7,13 @@ import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { WorkoutProvider } from "./src/contexts/WorkoutContext";
+
+import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
 import { TemplateProvider } from "./src/contexts/TemplateContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { NetworkProvider } from "./src/contexts/NetworkContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
+
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
 import { useTheme } from "./src/contexts/ThemeContext";
@@ -66,7 +68,7 @@ export default function App() {
 										<TemplateProvider>
 											<WorkoutProvider>
 												<AppContent />
-											</WorkoutProvider>
+											</WorkoutProvider>	
 										</TemplateProvider>
 									</UserProvider>
 								</RealmProvider>

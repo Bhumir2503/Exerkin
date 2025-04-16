@@ -9,9 +9,9 @@ import React, {
 import {
 	getWorkouts,
 	deleteWorkout,
-} from "../services/functions/workoutFunctions";
-import { useRealm } from "../contexts/RealmProvider";
-import { useUser } from "../contexts/UserContext";
+} from "../../services/functions/workoutFunctions";
+import { useRealm } from "../RealmProvider";
+import { useUser } from "../UserContext";
 
 const WorkoutHistoryContext = createContext();
 

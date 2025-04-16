@@ -29,12 +29,14 @@ export default function AppNavigator() {
 				subRoute.name === "PrivacyPolicy" ||
 				subRoute.name == "WorkoutModal" ||
 				subRoute.name == "TemplateModal" ||
-				subRoute.name == "EditModal" 
+				subRoute.name == "EditModal"
 		)
 	);
 
 	return (
 		<Tab.Navigator
+			// initialRouteName="Home"
+			initialRouteName="Workout"
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
@@ -72,10 +74,10 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Home" component={ProfileNavigator} />
+			{/* <Tab.Screen name="Home" component={ProfileNavigator} /> */}
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
-			<Tab.Screen name="Stat" component={StatsNavigator} />
-			<Tab.Screen name="Measure" component={MeasurementNavigator} />
+			{/* <Tab.Screen name="Stat" component={StatsNavigator} />
+			<Tab.Screen name="Measure" component={MeasurementNavigator} /> */}
 		</Tab.Navigator>
 	);
 }
