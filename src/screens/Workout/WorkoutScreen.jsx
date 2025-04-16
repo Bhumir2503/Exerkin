@@ -1,22 +1,23 @@
-import { Text, StyleSheet, ScrollView } from "react-native";
+import { Text, StyleSheet, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { memo } from "react";
 
 import PrimaryButton from "../../components/PrimaryButton";
+import InfoCard from "../../components/InfoCard";
 
 import { useWorkoutSession } from "../../hooks/useWorkoutSession";
 import { useTheme } from "../../contexts/ThemeContext";
 
 const WorkoutScreen = memo(({ navigation }) => {
-    const { workoutStart } = useWorkoutSession();
+	const { workoutStart } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	const startButtonPressed = () => {
 		console.log("Start Workout Button Pressed");
-        workoutStart();
-        navigation.navigate("WorkoutModalScreen");
+		workoutStart();
+		navigation.navigate("WorkoutModalScreen");
 	};
 
 	return (
@@ -28,6 +29,17 @@ const WorkoutScreen = memo(({ navigation }) => {
 				onPress={startButtonPressed}
 				icon="fitness"
 			/>
+			<View style={styles.coach}>
+				<Text style={styles.subTitle}>AI Coach</Text>
+				<InfoCard
+					icon={"sparkles-outline"}
+					title={"AI Workout Suggestions"}
+					message={
+						"Get personalized workout suggestions based on your goals. Coming soon!"
+					}
+					width={"100%"}
+				/>
+			</View>
 			{/* <ScrollView
 				bounces={false}
 				showsVerticalScrollIndicator={false}
@@ -47,10 +59,10 @@ const createStyles = (theme) => {
 	return StyleSheet.create({
 		container: {
 			backgroundColor: theme.backgroundColor,
-            flex: 1,
+			flex: 1,
 			marginBottom: 0,
-            padding: 20,
-            paddingTop: 0,
+			padding: 20,
+			paddingTop: 0,
 		},
 		title: {
 			color: theme.textColor,
@@ -63,11 +75,14 @@ const createStyles = (theme) => {
 			fontSize: 18,
 			marginBottom: 20,
 		},
-		activeWorkoutBarContainer: {
-			position: "absolute",
-			bottom: 10,
-			left: 0,
-			right: 0,
+		coach: {
+			marginTop: 20,
+			flex: 1,
+		},
+		subTitle: {
+			color: theme.textColor,
+			fontSize: 24,
+			fontWeight: "bold",
 		},
 	});
 };

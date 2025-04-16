@@ -3,11 +3,11 @@ import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 
-const InfoCard = ({ icon, title, message }) => {
+const InfoCard = ({ icon, title, message, width }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
-		<View style={styles.container}>
+		<View style={{ ...styles.container, width: width ? width : "90%" }}>
 			<View style={styles.content}>
 				<View style={styles.IconContainer}>
 					<Ionicons
@@ -28,7 +28,6 @@ const createStyles = (themeStyle) => {
 	return StyleSheet.create({
 		container: {
 			margin: "auto",
-			width: "90%",
 			backgroundColor: themeStyle.card,
 			borderRadius: 8,
 			padding: 16,
