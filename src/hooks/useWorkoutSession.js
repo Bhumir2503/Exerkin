@@ -55,6 +55,8 @@ export const useWorkoutSession = () => {
 			templateId: templateIdRef.current,
 			isTemplate: isTemplateRef.current,
 		});
+
+		console.log("Workout Object: ", workoutObject);
 	}, [user?.uid, workoutExercises]);
 
     return {

@@ -17,6 +17,7 @@ const WorkoutScreen = memo(({ navigation }) => {
 	const startButtonPressed = () => {
 		console.log("Start Workout Button Pressed");
         workoutStart();
+        navigation.navigate("WorkoutModalScreen");
 	};
 
 	return (
