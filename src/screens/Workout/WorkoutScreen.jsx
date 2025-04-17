@@ -35,9 +35,9 @@ const WorkoutScreen = memo(({ navigation }) => {
 				<Text style={styles.subTitle}>AI Coach</Text>
 				<InfoCard
 					icon={"sparkles-outline"}
-					title={"AI Workout Suggestions"}
+					title={"Coming Soon!"}
 					message={
-						"Get personalized workout suggestions based on your goals. Coming soon!"
+						"Your AI Coach will help you with your workout. Stay tuned for updates!"
 					}
 					width={"100%"}
 				/>
