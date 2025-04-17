@@ -1,4 +1,4 @@
-import { Text, StyleSheet, ScrollView, View } from "react-native";
+import { Text, StyleSheet, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { memo } from "react";
@@ -51,6 +51,11 @@ const WorkoutScreen = memo(({ navigation }) => {
 			>
 				<TemplateSection navigation={navigation} />
 			</ScrollView> */}
+			<Pressable
+				onPress={() => navigation.navigate("WorkoutModalScreen")}
+			>
+				<Text>Press me</Text>
+			</Pressable>
 		</SafeAreaView>
 	);
 });
