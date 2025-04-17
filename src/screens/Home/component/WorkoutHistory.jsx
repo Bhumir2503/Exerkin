@@ -110,6 +110,9 @@ const WorkoutHistory = ({ navigation }) => {
 					(a, b) => b.startedAt - a.startedAt
 				)}
 				style={{ width: "100%", flex: 1 }}
+				contentContainerStyle={{
+					paddingBottom: 75,
+				}}
 				showsVerticalScrollIndicator={false}
 				bounces={false}
 				renderItem={({ item }) => (

@@ -8,6 +8,7 @@ import Profile from "./component/Profile";
 import Stats from "./component/Stats";
 import QuoteCard from "./component/QuoteCard";
 import WorkoutHistory from "./component/WorkoutHistory";
+import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
 const HomeScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -23,6 +24,7 @@ const HomeScreen = ({ navigation }) => {
 			<Stats />
 			<QuoteCard />
             <WorkoutHistory navigation={navigation} />
+			<ActiveWorkoutBar navigate={navigation.navigate} />
 		</SafeAreaView>
 	);
 };
