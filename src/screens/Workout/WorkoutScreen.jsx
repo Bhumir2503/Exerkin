@@ -22,7 +22,7 @@ const WorkoutScreen = memo(({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<Text style={styles.title}>Get Started</Text>
 			<Text style={styles.description}>Ready to start your workout?</Text>
 			<PrimaryButton

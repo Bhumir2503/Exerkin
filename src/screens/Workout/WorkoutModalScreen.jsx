@@ -32,7 +32,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<Header navigation={navigation} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<KeyboardAvoidingView

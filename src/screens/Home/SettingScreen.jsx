@@ -127,7 +127,7 @@ const SettingScreen = ({ navigation }) => {
 						{
 							name: "Help & Support",
 							icon: "help-circle-outline",
-							location: "HelpSupport",
+							location: "HelpAndSupport",
 						},
 					]}
 					navigation={navigation}

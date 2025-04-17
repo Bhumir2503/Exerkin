@@ -15,7 +15,7 @@ const PrivacyPolicy = ({ navigation }) => {
 	const styles = createStyles(themeStyle);
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<View style={styles.header}>
 				<TouchableOpacity
 					style={styles.backButton}

@@ -11,6 +11,7 @@ const ThemeScreen = ({ navigation }) => {
 	return (
 		<SafeAreaView
 			style={{ backgroundColor: themeStyle.backgroundColor, flex: 1 }}
+			edges={["top", "left", "right"]}
 		>
 			<View
 				style={{
