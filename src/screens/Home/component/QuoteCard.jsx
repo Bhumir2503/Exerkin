@@ -45,7 +45,7 @@ const createStyles = (themeStyle) =>
 		by: {
 			fontSize: 14,
             marginTop: 10,
-			color: themeStyle.textColorSecondary,
+			color: themeStyle.accent,
 			textAlign: "right",
 		},
 	});

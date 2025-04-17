@@ -22,29 +22,8 @@ export const WorkoutHistoryProvider = ({ children }) => {
 	const realm = useRealm();
 	const { user } = useUser();
 
-	const refreshWorkoutHistory = useCallback(async () => {
-		if (!user) return;
-		try {
-			const workouts = await getWorkouts(realm, user.uid);
-			setWorkoutHistory(workouts);
-		} catch (error) {
-			console.error("Failed to fetch workout history:", error);
-		}
-	}, [user, realm]);
 
-	const removeWorkoutFromHistory = useCallback(
-		async (workoutId) => {
-			if (!user) return;
-			try {
-				await deleteWorkout(realm, workoutId);
-				await refreshWorkoutHistory();
-			} catch (error) {
-				console.error("Failed to delete workout:", error);
-			}
-		},
-		[realm, user, refreshWorkoutHistory]
-	);
-
+	
 	useEffect(() => {
 		if (!user) return;
 		// Subscribe to changes in workout data using Realm
@@ -56,16 +35,16 @@ export const WorkoutHistoryProvider = ({ children }) => {
 				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
 			}
 		);
-
+		
 		return () => {
 			unsubscribe(); // Unsubscribe from workout data changes
 		};
 	}, [user, realm]);
-
+	
 	// Effect hook to listen for changes in deleted workout data
 	useEffect(() => {
 		if (!user) return;
-
+		
 		// Subscribe to changes in deleted workout data using Realm
 		const unsubscribe = listenToDeletedWorkoutChanges(
 			realm,
@@ -75,18 +54,32 @@ export const WorkoutHistoryProvider = ({ children }) => {
 				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
 			}
 		);
-
+		
 		return () => {
 			unsubscribe(); // Unsubscribe from deleted workout data changes
 		};
 	}, [user, realm]);
+	
+	const removeWorkoutFromHistory = useCallback(
+		async (workout) => {
+			if (!user) return;
+			try {
+				await deleteWorkout(realm, workout.workoutId);
+				const updatedWorkouts = await getWorkouts(realm, user.uid);
+				setWorkoutHistory(updatedWorkouts);
+			} catch (error) {
+				console.error("Failed to delete workout:", error);
+			}
+		},
+		[realm, user]
+	);
 
 	return (
 		<WorkoutHistoryContext.Provider
 			value={{
 				workoutHistory,
 				setWorkoutHistory,
-				refreshWorkoutHistory,
+				
 				removeWorkoutFromHistory,
 			}}
 		>

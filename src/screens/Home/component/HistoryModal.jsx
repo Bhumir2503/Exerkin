@@ -6,33 +6,27 @@ import {
 	ScrollView,
 	Text,
 	Pressable,
-	Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../../contexts/ThemeContext";
 import {
 	formatDateObjectToTime,
 	formatDurationTimeToText,
-} from "../../services/helpers/timeFormatter";
+} from "../../../services/helpers/timeFormatter";
+import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 
-import { useWorkoutHistory } from "../../contexts/workout/WorkoutHistoryContext";
 
-import * as NavigationBar from "expo-navigation-bar";
 
-const WorkoutHistoryModal = ({
+const HistoryModal = ({
 	selectedWorkout,
 	setSelectedWorkout,
 	navigation,
 }) => {
 	const { themeStyle } = useTheme();
+    const { removeWorkoutFromHistory } = useWorkoutHistory();
 	
-	const styles = createStyles(themeStyle);
+    const styles = createStyles(themeStyle);
 
-	if (Platform.OS === "android") {
-		NavigationBar.setBackgroundColorAsync(
-			themeStyle.backgroundColor
-		);
-	}
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -40,7 +34,7 @@ const WorkoutHistoryModal = ({
 
 	const handleDelete = () => {
 		closeModal();
-		// removeWorkoutFromHistory(selectedWorkout);
+		removeWorkoutFromHistory(selectedWorkout);
 	};
 
 	const handleEdit = () => {
@@ -341,4 +335,4 @@ const createStyles = (themeStyle) =>
 		},
 	});
 
-export default WorkoutHistoryModal;
+export default HistoryModal;
