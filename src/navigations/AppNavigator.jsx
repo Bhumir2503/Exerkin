@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
-import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
+// import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
 import WorkoutNavigator from "./WorkoutNavigator";
 import HomeNavigator from "./HomeNavigator";
 // import Friends from "../pages/Friends/Friends";
@@ -23,8 +23,8 @@ export default function AppNavigator() {
 	const hideTab = state?.routes?.some((route) =>
 		route?.state?.routes?.some(
 			(subRoute) =>
-				subRoute.name === "Settings" ||
-				subRoute.name === "EditTheme" ||
+				subRoute.name === "SettingScreen" ||
+				subRoute.name === "ThemeScreen" ||
 				subRoute.name === "EditProfile" ||
 				subRoute.name === "TermsOfService" ||
 				subRoute.name === "PrivacyPolicy" ||

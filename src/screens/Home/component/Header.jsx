@@ -16,7 +16,7 @@ const Header = ({ navigation }) => {
 			<Text style={styles.appTitle}>Exerkin</Text>
 			<Pressable
 				style={styles.iconButton}
-				onPress={() => navigation.navigate("Settings")}
+				onPress={() => navigation.navigate("SettingScreen")}
 			>
 				<Ionicons
 					name="settings"

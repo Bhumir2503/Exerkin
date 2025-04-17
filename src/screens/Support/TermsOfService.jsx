@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 
-export default function TermsOfService({ navigation }) {
+const TermsOfService = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
@@ -267,7 +267,7 @@ export default function TermsOfService({ navigation }) {
 			</ScrollView>
 		</SafeAreaView>
 	);
-}
+};
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
@@ -340,3 +340,5 @@ const createStyles = (themeStyle) =>
 			textAlign: "center",
 		},
 	});
+
+export default TermsOfService;
