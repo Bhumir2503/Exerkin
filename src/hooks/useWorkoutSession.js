@@ -38,12 +38,16 @@ export const useWorkoutSession = () => {
 		setUnitSystem,
 		templateIdRef,
 		isTemplateRef,
+		formTypeRef,
+
+		resetWorkoutMeta,
 	} = useWorkoutMeta();
 
 	const workoutStart = () => {
 		clearExercises();
 		workoutIdRef.current = uuid.v4();
 		workoutStartTimeRef.current = new Date();
+		formTypeRef.current = "workout";
 	};
 
 	const workoutFinish = async () => {
@@ -73,18 +77,10 @@ export const useWorkoutSession = () => {
 
 	const workoutCancel = () => {
 		setWorkoutError(null);
-		workoutEndTimeRef.current = new Date();
-		workoutIdRef.current = null;
-		workoutStartTimeRef.current = null;
-		workoutCreatedAtRef.current = null;
-		workoutEndTimeRef.current = null;
 		setWorkoutTitle("");
 		setWorkoutNotes("");
 		clearExercises();
-		setImageURL(null);
-		setUnitSystem(user?.unitSystem || "imperial");
-		templateIdRef.current = null;
-		isTemplateRef.current = false;
+		resetWorkoutMeta();
 		resetTimer();
 	};
 

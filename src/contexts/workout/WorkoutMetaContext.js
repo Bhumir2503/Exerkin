@@ -23,6 +23,19 @@ export const WorkoutMetaProvider = ({ children }) => {
 	);
     const templateIdRef = useRef(null);
     const isTemplateRef = useRef(false);
+    const formTypeRef = useRef(null);
+
+    const resetWorkoutMeta = () => {
+        workoutIdRef.current = null;
+        workoutStartTimeRef.current = null;
+        workoutEndTimeRef.current = null;
+        workoutCreatedAtRef.current = null;
+        setImageURL(null);
+        setUnitSystem(user?.unitSystem || "imperial");
+        templateIdRef.current = null;
+        isTemplateRef.current = false;
+        formTypeRef.current = null;
+    }
 
 
 	return (
@@ -38,6 +51,10 @@ export const WorkoutMetaProvider = ({ children }) => {
                 setUnitSystem,
                 templateIdRef,
                 isTemplateRef,
+                formTypeRef,
+
+                resetWorkoutMeta,
+
 			}}
 		>
 			{children}
