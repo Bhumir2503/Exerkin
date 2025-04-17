@@ -71,6 +71,7 @@ export const WorkoutExercisesProvider = ({ children }) => {
 		<WorkoutExercisesContext.Provider
 			value={{
 				workoutExercises,
+                setWorkoutExercises,
 				addExercise,
 				updateExercise,
 				removeExercise,

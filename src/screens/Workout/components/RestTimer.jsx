@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Modal, TouchableWithoutFeedback } from "react-native";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -107,6 +107,12 @@ const RestTimer = () => {
 				onRequestClose={() => setModalVisible(false)}
 				statusBarTranslucent={true}
 			>
+				<TouchableWithoutFeedback
+					onPress={() => setModalVisible(false)}
+				>
+					<View style={styles.backgroundOverlay}></View>
+				</TouchableWithoutFeedback>
+
 				<View style={styles.centeredView}>
 					<View style={styles.modalView}>
 						<View style={styles.timerHeader}>
@@ -287,8 +293,8 @@ const createStyles = (themeStyle) =>
 			borderRadius: 8,
 			padding: 10,
 			paddingHorizontal: 15,
-            marginHorizontal: 10,
-            marginRight: 0,
+			marginHorizontal: 10,
+			marginRight: 0,
 		},
 		buttonContent: {
 			flexDirection: "row",
@@ -299,11 +305,18 @@ const createStyles = (themeStyle) =>
 			fontWeight: "bold",
 			fontSize: 16,
 		},
-		centeredView: {
+		backgroundOverlay: {
+			position: "absolute",
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0,
+			backgroundColor: "rgba(0, 0, 0, 0.75)",
+		},
+		centeredView: { 
 			flex: 1,
 			justifyContent: "center",
 			alignItems: "center",
-			backgroundColor: "rgba(0, 0, 0, 0.5)",
 		},
 		modalView: {
 			width: "90%",

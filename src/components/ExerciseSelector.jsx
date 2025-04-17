@@ -20,7 +20,7 @@ import {
 
 import { buildExerciseObject } from "../services/helpers/objectBuilder";
 
-const ExerciseSelector = (type) => {
+const ExerciseSelector = ({type}) => {
 	const { themeStyle } = useTheme();
 	const { workoutExercises, addExercise } = useWorkoutExercises();
 
@@ -40,7 +40,8 @@ const ExerciseSelector = (type) => {
 
 	const getAddedExerciseIds = () => {
 		if (type === "workout") {
-			return workoutExercises.map((exercise) => exercise.id);
+			console.log("workoutExercises", workoutExercises);
+			return workoutExercises.map((exercise) => exercise.exerciseId);
 		} else if (type === "template") {
 			// TODO: Add template logic here
 		}
@@ -95,8 +96,8 @@ const ExerciseSelector = (type) => {
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
-			const exercise = buildExerciseObject(selectedExercise);
 			if (type === "workout") {
+				const exercise = buildExerciseObject(selectedExercise);
 				addExercise(exercise);
 			} else if (type === "template") {
 				// TODO: Add template logic here

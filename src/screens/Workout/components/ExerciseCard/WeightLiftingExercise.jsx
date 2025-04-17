@@ -1,92 +1,53 @@
-import React from "react";
-import { Text, View, StyleSheet, Pressable, Platform } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { useWorkout } from "../../../contexts/WorkoutContext";
+import { useTheme } from "../../../../contexts/ThemeContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import {
 	Menu,
 	MenuTrigger,
 	MenuOptions,
 	MenuOption,
 } from "react-native-popup-menu";
-import { Ionicons } from "@expo/vector-icons";
-import { trigger } from "react-native-haptic-feedback";
-import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
-const CardioTimeExercise = ({ exercise }) => {
+import { buildSetObject } from "../../../../services/helpers/objectBuilder";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+
+const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
-		useWorkout();
+	const { addSetToExercise, updateSetInExercise, removeExercise } =
+		useWorkoutExercises();
 
 	const addSet = () => {
+		// Add a new set with null values for weight and reps
 		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
-	const handleCompleted = (index) => {
-				if(Platform.OS === "ios") {
-					trigger("selection");
-				}else{
-					trigger("impactLight");
-				}
+	const handleWeightChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, "");
+
+		// Update the weight for the specific set by using the index of the set
 		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
-			completed: !exercise.sets[index].completed,
+			weight: number !== "" ? number : null,
 		});
 	};
 
-	const handleTimeChange = (text, index) => {
-		const prevValue = exercise.sets[index]?.time || "";
+	const handleRepsChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, "");
 
-		if (text.length < prevValue.length) {
-			if (prevValue.endsWith(":")) {
-				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(exercise.exerciseId, index, {
-					...exercise.sets[index],
-					time: newValue !== "" ? newValue : null,
-				});
-				return;
-			} else {
-				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(exercise.exerciseId, index, {
-					...exercise.sets[index],
-					time: newValue !== "" ? newValue : null,
-				});
-				return;
-			}
-		}
-
-		let number = text.replace(/[^0-9:]/g, "");
-
-		if (number) {
-			const digits = number.replace(/:/g, "");
-
-			if (digits.length <= 2) {
-				number = digits;
-			} else if (digits.length <= 4) {
-				const minutes = digits.slice(0, digits.length - 2);
-				const seconds = digits.slice(digits.length - 2);
-				number = `${minutes}:${seconds}`;
-			} else {
-				const seconds = digits.slice(digits.length - 2);
-				const minutes = digits.slice(
-					digits.length - 4,
-					digits.length - 2
-				);
-				const hours = digits.slice(0, digits.length - 4);
-				number = `${hours}:${minutes}:${seconds}`;
-			}
-		}
-
+		// Update the reps for the specific set by using the index of the set
 		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
-			time: number !== "" ? number : null,
+			reps: number !== "" ? number : null,
 		});
 	};
 
 	const handleDeleteExercise = () => {
-		removeExerciseFromWorkout(exercise.exerciseId);
+		removeExercise(exercise.exerciseId);
 	};
 
 	return (
@@ -124,17 +85,17 @@ const CardioTimeExercise = ({ exercise }) => {
 					</MenuOptions>
 				</Menu>
 			</View>
-			<Header repetitionType={"Round"} metrics={["time"]} />
+			<Header repetitionType={"Set"} metrics={["lbs", "reps"]} />
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
 					id={exercise.exerciseId}
 					index={index}
-					inputTypes={["numeric"]}
-					placeholders={["10:00"]}
-					functions={[handleTimeChange, handleCompleted]}
-					lengths={[7]}
-					values={[set.time, set.completed]}
+					inputTypes={["decimal", "numeric"]}
+					placeholders={["135", "12"]}
+					functions={[handleWeightChange, handleRepsChange]}
+					lengths={[4, 3]}
+					values={[set.weight, set.reps]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>
@@ -177,7 +138,7 @@ const createStyles = (themeStyle) => {
 			flexDirection: "row",
 			justifyContent: "space-between",
 			alignItems: "center",
-			marginBottom: 10,
+			marginBottom: 5,
 		},
 		menuTrigger: {
 			padding: 5,
@@ -207,4 +168,4 @@ const createStyles = (themeStyle) => {
 	});
 };
 
-export default CardioTimeExercise;
+export default WeightLiftingExercise;

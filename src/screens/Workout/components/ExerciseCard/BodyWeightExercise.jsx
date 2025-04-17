@@ -1,8 +1,7 @@
-import { Text, View, StyleSheet, Pressable, Platform } from "react-native";
+import { View, Pressable, Text, StyleSheet } from "react-native";
+import { useTheme } from "../../../../contexts/ThemeContext";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { useWorkout } from "../../../contexts/WorkoutContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
 	Menu,
@@ -11,42 +10,17 @@ import {
 	MenuOption,
 } from "react-native-popup-menu";
 
-import {trigger} from "react-native-haptic-feedback";
+import { buildSetObject } from "../../../../services/helpers/objectBuilder";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
 
-import { buildSetObject } from "../../../services/helpers/objectBuilder";
-
-const AssistedWeightExercise = ({ exercise }) => {
+const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
-		useWorkout();
+	const { addSetToExercise, updateSetInExercise, removeExercise } = useWorkoutExercises();
 
 	const addSet = () => {
-		// Add a new set with null values for weight and reps
+		// Add a new set with null values for reps
 		addSetToExercise(exercise.exerciseId, buildSetObject());
-	};
-
-	const handleCompleted = (index) => {
-		if(Platform.OS === "ios") {
-			trigger("selection");
-		}else{
-			trigger("impactLight");
-		}
-		updateSetInExercise(exercise.exerciseId, index, {
-			...exercise.sets[index],
-			completed: !exercise.sets[index].completed,
-		});
-	};
-
-	const handleWeightChange = (text, index) => {
-		// make sure only number are accepted
-		const number = text.replace(/[^0-9]/g, "");
-
-		// Update the weight for the specific set by using the index of the set
-		updateSetInExercise(exercise.exerciseId, index, {
-			...exercise.sets[index],
-			weight: number !== "" ? number : null,
-		});
 	};
 
 	const handleRepsChange = (text, index) => {
@@ -61,8 +35,8 @@ const AssistedWeightExercise = ({ exercise }) => {
 	};
 
 	const handleDeleteExercise = () => {
-		removeExerciseFromWorkout(exercise.exerciseId);
-	};
+		removeExercise(exercise.exerciseId);
+	}
 
 	return (
 		<View style={styles.container}>
@@ -99,17 +73,17 @@ const AssistedWeightExercise = ({ exercise }) => {
 					</MenuOptions>
 				</Menu>
 			</View>
-			<Header repetitionType={"Set"} metrics={["-lbs", "reps"]} />
+			<Header repetitionType={"Set"} metrics={["reps"]} />
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
 					id={exercise.exerciseId}
 					index={index}
-					inputTypes={["decimal", "numeric"]}
-					placeholders={["135", "12"]}
-					functions={[handleWeightChange, handleRepsChange, handleCompleted]}
-					lengths={[4, 3]}
-					values={[set.weight, set.reps, set.completed]}
+					inputTypes={["numeric"]}
+					placeholders={["12"]}
+					functions={[handleRepsChange]}
+					lengths={[3]}
+					values={[set.reps]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>
@@ -182,4 +156,4 @@ const createStyles = (themeStyle) => {
 	});
 };
 
-export default AssistedWeightExercise;
+export default BodyWeightExercise;

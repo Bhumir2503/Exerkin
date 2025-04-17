@@ -1,35 +1,23 @@
-import { Text, View, StyleSheet, Pressable, Platform } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { useWorkout } from "../../../contexts/WorkoutContext";
+import { useTheme } from "../../../../contexts/ThemeContext";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
-import { trigger } from "react-native-haptic-feedback";
-import { buildSetObject } from "../../../services/helpers/objectBuilder";
+
+import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 
 const CardioDistanceExercise = ({ exercise }) => {
 const { themeStyle } = useTheme();
     const styles = createStyles(themeStyle);
-    const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } = useWorkout();
+	const { addSetToExercise, updateSetInExercise, removeExercise } = useWorkoutExercises();
 
     const addSet = () => {
         // Add a new set with null values for time and distance
         addSetToExercise(exercise.exerciseId, buildSetObject());
 
     };
-
-	const handleCompleted = (index) => {
-				if(Platform.OS === "ios") {
-					trigger("selection");
-				}else{
-					trigger("impactLight");
-				}
-		updateSetInExercise(exercise.exerciseId, index, {
-			...exercise.sets[index],
-			completed: !exercise.sets[index].completed,
-		});
-	}
 
 
     const handleTimeChange = (text, index) => {
@@ -106,7 +94,7 @@ const { themeStyle } = useTheme();
     };
 
     const handleDeleteExercise = () => {
-        removeExerciseFromWorkout(exercise.exerciseId);
+        removeExercise(exercise.exerciseId);
     }
 
     return (
@@ -144,7 +132,7 @@ const { themeStyle } = useTheme();
 					</MenuOptions>
 				</Menu>
 			</View>
-			<Header repetitionType={"Round"} metrics={["time", "mi"]} />
+			<Header repetitionType={"Round"} metrics={["time", "miles"]} />
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
@@ -152,9 +140,9 @@ const { themeStyle } = useTheme();
 					index={index}
 					inputTypes={["numeric", "decimal"]}
 					placeholders={["30:00", "1.5"]}
-					functions={[handleTimeChange, handleDistanceChange, handleCompleted]}
+					functions={[handleTimeChange, handleDistanceChange]}
 					lengths={[7, 5]}
-					values={[set.time, set.distance, set.completed]}
+					values={[set.time, set.distance]}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

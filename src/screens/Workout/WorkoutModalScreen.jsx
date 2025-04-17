@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 
 import Header from "./components/Header";
-import InfoCard from "../../components/InfoCard";
+import WorkoutDragList from "./components/WorkoutDragList";
 import Footer from "./components/Footer";
 import WorkoutTimer from "./components/WorkoutTimer";
 import Notes from "./components/Notes";
@@ -64,14 +64,8 @@ const WorkoutModalScreen = ({ navigation }) => {
 							<RestTimer />
 						</View>
 					</View>
-
-					<InfoCard
-						icon={"barbell-outline"}
-						title={"Get Started With Your Workout"}
-						message={
-							"Click the button below to select your first exercise. You can add multiple sets for each exercise and track your progress."
-						}
-					/>
+					<WorkoutDragList />
+					
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
 			<Footer />

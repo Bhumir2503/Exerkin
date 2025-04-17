@@ -4,12 +4,11 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
-	Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../../contexts/ThemeContext";
-import { useWorkout } from "../../../contexts/WorkoutContext";
+import { useTheme } from "../../../../contexts/ThemeContext";
 import { Swipeable } from "react-native-gesture-handler";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
 
 const UserInputSection = ({
 	id,
@@ -20,7 +19,7 @@ const UserInputSection = ({
 	lengths,
 	values,
 }) => {
-	const { removeSetFromExercise } = useWorkout();
+	const { removeSetFromExercise } = useWorkoutExercises();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
@@ -74,7 +73,7 @@ const UserInputSection = ({
 				>
 					{index + 1}
 				</Text>
-				<View style={{ flexDirection: "row", alignItems: "center" }}>
+				<View style={{ flexDirection: "row" }}>
 					{inputTypes.map((inputType, inputIndex) => (
 						<TextInput
 							key={inputIndex}
@@ -94,29 +93,6 @@ const UserInputSection = ({
 							}
 						/>
 					))}
-					<TouchableOpacity
-						style={{
-							backgroundColor: !values[values.length-1] ? themeStyle.inputBackground : themeStyle.success,
-							borderRadius: 6,
-							paddingVertical: 3,
-							justifyContent: "center",
-							alignItems: "center",
-							width: 30,
-							marginLeft: 8,
-						}}
-						onPress={() => {
-							functions[functions.length - 1](index);
-						}}
-					>
-						<Ionicons
-							name="checkmark"
-							size={20}
-							color={!values[values.length-1] ? themeStyle.success: "#fff"}
-							style={{}}
-						/> 
-						
-						
-					</TouchableOpacity>
 				</View>
 			</View>
 		</Swipeable>
