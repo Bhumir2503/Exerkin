@@ -95,10 +95,8 @@ export default function SetUsername() {
 	]);
 
 	// Helper function to determine if user is female based on selected gender
-	// For simplicity, we'll use a placeholder - you would need to add gender selection to the form
 	const isFemale = () => {
-		// Replace with actual gender selection logic
-		return false; // Default to male for this example
+		return gender === "female";
 	};
 
 	// Navy method body fat calculation
@@ -128,6 +126,11 @@ export default function SetUsername() {
 				450
 			);
 		}
+	};
+
+	// Check if username meets all requirements
+	const isUsernameValid = () => {
+		return /^[a-zA-Z0-9_-]{3,20}$/.test(username);
 	};
 
 	// Show measurement guidance modal
@@ -209,11 +212,26 @@ export default function SetUsername() {
 			return false;
 		}
 
-		// Check for special characters except underscore
-		const specialCharsRegex = /[^a-zA-Z0-9_]/;
+		if (username.length > 20) {
+			setError("Username must be no more than 20 characters");
+			return false;
+		}
+
+		// Check for special characters except underscore and hyphen
+		const specialCharsRegex = /[^a-zA-Z0-9_-]/;
 		if (specialCharsRegex.test(username)) {
 			setError(
-				"Username can only contain letters, numbers, and underscores"
+				"Username can only contain letters, numbers, underscores, and hyphens"
+			);
+			return false;
+		}
+
+		// Combined regex to check the entire pattern in one go
+		// Username should be 3-20 characters and contain only letters, numbers, underscores, and hyphens
+		const fullRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+		if (!fullRegex.test(username)) {
+			setError(
+				"Username must be 3-20 characters and may only contain letters, numbers, underscores, and hyphens"
 			);
 			return false;
 		}
@@ -417,7 +435,7 @@ export default function SetUsername() {
 					</View>
 
 					{step === 1 ? (
-						// Step 1: Username
+						// Step 1: Username with visual validation indicators
 						<View style={styles.formContainer}>
 							<View style={styles.inputContainer}>
 								<Text style={styles.label}>Username</Text>
@@ -446,7 +464,11 @@ export default function SetUsername() {
 										autoCorrect={false}
 										maxLength={20}
 										returnKeyType="next"
-										onSubmitEditing={handleNextStep}
+										onSubmitEditing={() => {
+											if (isUsernameValid()) {
+												handleNextStep();
+											}
+										}}
 									/>
 								</View>
 								{error ? (
@@ -458,12 +480,134 @@ export default function SetUsername() {
 								<Text style={styles.helperText}>
 									This will be your public identity on Exerkin
 								</Text>
+
+								{/* Username validation rules with indicators */}
+								<View style={styles.validationRulesContainer}>
+									<Text style={styles.validationTitle}>
+										Username requirements:
+									</Text>
+
+									<View style={styles.validationRule}>
+										<Ionicons
+											name={
+												username.length >= 3
+													? "checkmark-circle"
+													: "ellipse-outline"
+											}
+											size={16}
+											color={
+												username.length >= 3
+													? "#4CAF50"
+													: "#94a1b2"
+											}
+										/>
+										<Text
+											style={[
+												styles.validationText,
+												username.length >= 3 &&
+													styles.validationTextSuccess,
+											]}
+										>
+											At least 3 characters long
+										</Text>
+									</View>
+
+									<View style={styles.validationRule}>
+										<Ionicons
+											name={
+												username.length <= 20
+													? "checkmark-circle"
+													: "ellipse-outline"
+											}
+											size={16}
+											color={
+												username.length <= 20
+													? "#4CAF50"
+													: "#94a1b2"
+											}
+										/>
+										<Text
+											style={[
+												styles.validationText,
+												username.length <= 20 &&
+													styles.validationTextSuccess,
+											]}
+										>
+											Maximum 20 characters
+										</Text>
+									</View>
+
+									<View style={styles.validationRule}>
+										<Ionicons
+											name={
+												!/[^a-zA-Z0-9_-]/.test(username)
+													? "checkmark-circle"
+													: "ellipse-outline"
+											}
+											size={16}
+											color={
+												!/[^a-zA-Z0-9_-]/.test(username)
+													? "#4CAF50"
+													: "#94a1b2"
+											}
+										/>
+										<Text
+											style={[
+												styles.validationText,
+												!/[^a-zA-Z0-9_-]/.test(
+													username
+												) &&
+													styles.validationTextSuccess,
+											]}
+										>
+											Only letters, numbers, underscores,
+											and hyphens
+										</Text>
+									</View>
+
+									<View style={styles.validationRule}>
+										<Ionicons
+											name={
+												/^[a-zA-Z0-9_-]{3,20}$/.test(
+													username
+												)
+													? "checkmark-circle"
+													: "ellipse-outline"
+											}
+											size={18}
+											color={
+												/^[a-zA-Z0-9_-]{3,20}$/.test(
+													username
+												)
+													? "#4CAF50"
+													: "#94a1b2"
+											}
+										/>
+										<Text
+											style={[
+												styles.validationText,
+												/^[a-zA-Z0-9_-]{3,20}$/.test(
+													username
+												) &&
+													styles.validationTextSuccess,
+												{ fontWeight: "600" },
+											]}
+										>
+											All requirements met
+										</Text>
+									</View>
+								</View>
 							</View>
 
 							<View style={styles.buttonContainer}>
 								<TouchableOpacity
-									style={styles.button}
+									style={[
+										styles.button,
+										!isUsernameValid() &&
+											styles.buttonDisabled,
+									]}
 									onPress={handleNextStep}
+									disabled={!isUsernameValid()}
 								>
 									<Text style={styles.buttonText}>
 										Continue
@@ -1088,6 +1232,9 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 24,
 		flex: 1,
 	},
+	buttonDisabled: {
+		backgroundColor: "rgba(127, 42, 240, 0.5)",
+	},
 	backButton: {
 		backgroundColor: "transparent",
 		borderWidth: 1,
@@ -1253,5 +1400,33 @@ const styles = StyleSheet.create({
 	},
 	unitSystemContainer: {
 		marginBottom: 24,
+	},
+	// New styles for validation rules
+	validationRulesContainer: {
+		marginTop: 16,
+		backgroundColor: "#1e1e24",
+		borderRadius: 8,
+		padding: 16,
+		borderLeftWidth: 3,
+		borderLeftColor: "#7f2af0",
+	},
+	validationTitle: {
+		fontSize: 14,
+		fontWeight: "600",
+		color: "#fffffe",
+		marginBottom: 10,
+	},
+	validationRule: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginBottom: 8,
+	},
+	validationText: {
+		marginLeft: 8,
+		fontSize: 14,
+		color: "#94a1b2",
+	},
+	validationTextSuccess: {
+		color: "#4CAF50",
 	},
 });
