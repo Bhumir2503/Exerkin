@@ -168,7 +168,7 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.card,
 			padding: 20,
 			borderRadius: 8,
-			marginBottom: 20,
+			marginVertical: 10,
 		},
 		workoutTitle: {
 			fontSize: 18,

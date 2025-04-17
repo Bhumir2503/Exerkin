@@ -5,6 +5,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 import Header from "./component/Header";
 import Profile from "./component/Profile";
+import Stats from "./component/Stats";
 import QuoteCard from "./component/QuoteCard";
 import WorkoutHistory from "./component/WorkoutHistory";
 
@@ -19,6 +20,7 @@ const HomeScreen = ({ navigation }) => {
         >
 			<Header navigation={navigation} />
 			<Profile />
+			<Stats />
 			<QuoteCard />
             <WorkoutHistory />
 		</SafeAreaView>
