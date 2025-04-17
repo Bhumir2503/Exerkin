@@ -102,7 +102,7 @@ const WorkoutHistory = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>
-				Previous {workoutHistoryLength === 1 ? "Workout" : "Workouts"}
+				Past {workoutHistoryLength === 1 ? "Workout" : "Workouts"}
 			</Text>
 			<FlatList
 				keyExtractor={(item) => item.workoutId}

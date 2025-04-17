@@ -27,9 +27,8 @@ const createStyles = (themeStyle) =>
 			backgroundColor: themeStyle.card,
 			borderRadius: 8,
 			padding: 16,
-			marginVertical: 15,
-			alignItems: "center",
 
+			alignItems: "center",
 			width: "90%",
 		},
 		content: {
