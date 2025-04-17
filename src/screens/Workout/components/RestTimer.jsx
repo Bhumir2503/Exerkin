@@ -4,6 +4,7 @@ import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutTimer } from "../../../contexts/workout/WorkoutTimerContext";
+import { useWorkoutMeta } from "../../../contexts/workout/WorkoutMetaContext";
 
 const presetDurations = [30, 60, 120, 180];
 const TIME_ADJUSTMENT = 15; // Amount to add/subtract in seconds
@@ -18,6 +19,7 @@ const RestTimer = () => {
 		startRestTimer,
 		stopRestTimer,
 	} = useWorkoutTimer();
+	const { formTypeRef } = useWorkoutMeta();
 
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedDuration, setSelectedDuration] = useState(60);
@@ -77,6 +79,10 @@ const RestTimer = () => {
 		setRemainingRestTime(preset);
 		setTimerKey((prev) => prev + 1); // Force timer component to reset
 	};
+
+	if (formTypeRef.current === "edit") {
+		return null; // Don't show the rest timer in template mode
+	}
 
 	return (
 		<>

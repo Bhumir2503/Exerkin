@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
 			<Profile />
 			<Stats />
 			<QuoteCard />
-            <WorkoutHistory />
+            <WorkoutHistory navigation={navigation} />
 		</SafeAreaView>
 	);
 };

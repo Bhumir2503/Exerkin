@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
 
 import HomeScreen from "../screens/Home/HomeScreen";
+import WorkoutModalScreen from "../screens/Workout/WorkoutModalScreen";
 
 import UpdateEmail from "../screens/Home/UpdateEmail";
 import ChangePassword from "../screens/Home/ChangePassword";
@@ -29,11 +30,19 @@ export default function HomeNavigator() {
 				},
 				headerTintColor: themeStyle.textColor,
 				headerShown: false,
-				gestureEnabled: true,
+				gestureEnabled: false,
 				cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
 			}}
 		>
 			<Stack.Screen name="HomeScreen" component={HomeScreen} />
+			<Stack.Screen
+				name="WorkoutModalScreen"
+				component={WorkoutModalScreen}
+				options={{
+					cardStyleInterpolator:
+						CardStyleInterpolators.forVerticalIOS,
+				}}
+			/>
 
 			<Stack.Screen
 				name="SettingScreen"
@@ -41,7 +50,6 @@ export default function HomeNavigator() {
 				options={{
 					cardStyleInterpolator:
 						CardStyleInterpolators.forHorizontalIOS,
-					gestureDirection: "horizontal",
 				}}
 			/>
 			<Stack.Screen name={"ThemeScreen"} component={ThemeScreen} />
@@ -49,14 +57,8 @@ export default function HomeNavigator() {
 			<Stack.Screen name="TermsOfService" component={TermsOfService} />
 			<Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
 			<Stack.Screen name="UpdateEmail" component={UpdateEmail} />
-			<Stack.Screen
-				name="ChangePassword"
-				component={ChangePassword}
-			/>
-			<Stack.Screen
-				name="EditUsername"
-				component={EditUsername}
-			/>
+			<Stack.Screen name="ChangePassword" component={ChangePassword} />
+			<Stack.Screen name="EditUsername" component={EditUsername} />
 		</Stack.Navigator>
 	);
 }

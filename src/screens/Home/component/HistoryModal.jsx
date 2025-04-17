@@ -14,19 +14,14 @@ import {
 	formatDurationTimeToText,
 } from "../../../services/helpers/timeFormatter";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
+import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
-
-
-const HistoryModal = ({
-	selectedWorkout,
-	setSelectedWorkout,
-	navigation,
-}) => {
+const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
-    const { removeWorkoutFromHistory } = useWorkoutHistory();
-	
-    const styles = createStyles(themeStyle);
+	const { removeWorkoutFromHistory } = useWorkoutHistory();
+	const {editStart, workoutIdRef } = useWorkoutSession();
 
+	const styles = createStyles(themeStyle);
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -40,8 +35,8 @@ const HistoryModal = ({
 	const handleEdit = () => {
 		// Add edit functionality here
 		closeModal();
-		// workoutEditStarted(selectedWorkout);
-		// navigation.navigate("EditModal");
+		editStart(selectedWorkout);
+		navigation.navigate("WorkoutModalScreen");
 
 		// You would typically navigate to an edit screen or open another modal
 	};
@@ -96,8 +91,9 @@ const HistoryModal = ({
 									</Pressable>
 
 									<Pressable
-										style={styles.iconButton}
+										style={{...styles.iconButton, opacity: workoutIdRef.current !== null ? 0.5 : 1}}
 										onPress={handleEdit}
+										disabled={workoutIdRef.current !== null}
 									>
 										<Ionicons
 											name="create-outline"

@@ -5,13 +5,15 @@ import { useWorkoutMeta } from "../../../contexts/workout/WorkoutMetaContext";
 
 const WorkoutTimer = () => {
 	const { workoutTimer } = useWorkoutTimer();
-	const { workoutStartTimeRef } = useWorkoutMeta();
+	const { workoutStartTimeRef, formTypeRef } = useWorkoutMeta();
 	return (
 		<View style={{}}>
-			<Timer
-				initialSeconds={workoutTimer}
-				startTime={workoutStartTimeRef.current}
-			/>
+			{formTypeRef.current === "workout" ? (
+				<Timer
+					initialSeconds={workoutTimer}
+					startTime={workoutStartTimeRef.current}
+				/>
+			) : null}
 		</View>
 	);
 };

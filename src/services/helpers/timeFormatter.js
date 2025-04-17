@@ -81,7 +81,13 @@ export const formatDurationTimeToText = (time) => {
 	}
 };
 
-export const formatDuration = (seconds) => {
+export const formatDuration = (startTime, endTime) => {
+	// Calculate the difference in milliseconds
+	const diffMs = endTime - startTime;
+
+	// Convert milliseconds to seconds
+	const seconds = Math.floor(diffMs / 1000);
+
 	// Format as MM:SS if less than 1 hour
 	if (seconds < 3600) {
 		const mins = Math.floor(seconds / 60);
@@ -98,4 +104,4 @@ export const formatDuration = (seconds) => {
 			.toString()
 			.padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
 	}
-}
+};

@@ -12,11 +12,11 @@ import TwoActionModal from "../../../components/TwoActionModal";
 const Header = ({ navigation }) => {
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
 	const { workoutExercises } = useWorkoutExercises();
-    const { workoutFinish } = useWorkoutSession();
+	const { formTypeRef, workoutFinish, editFinish  } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-	const workoutLength = workoutExercises.length;	
+	const workoutLength = workoutExercises.length;
 
 	const handleDownArrowPress = () => {
 		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
@@ -27,11 +27,15 @@ const Header = ({ navigation }) => {
 	};
 
 	const handleFinishPress = () => {
-        // Handle finish action here
-        navigation.goBack();
-        console.log("Workout Completed");
-        workoutFinish();
-    };
+		// Handle finish action here
+		navigation.goBack();
+		console.log("Workout Completed");
+		if (formTypeRef.current === "workout") {
+			workoutFinish();
+		}else if(formTypeRef.current === "edit"){
+			editFinish();
+		}
+	};
 
 	return (
 		<>
@@ -41,8 +45,8 @@ const Header = ({ navigation }) => {
 					<Ionicons
 						name="chevron-down"
 						size={32}
-						color={themeStyle.primary}
-						onPress={handleDownArrowPress}
+						color={formTypeRef.current === "workout" ? themeStyle.primary: "transparent"}
+						onPress={formTypeRef.current === "workout" ? handleDownArrowPress: null}
 					/>
 				</View>
 				{/* Center section - always centered */}
@@ -61,23 +65,28 @@ const Header = ({ navigation }) => {
 					/>
 				</View>
 				<View style={styles.rightSection}>
-				
-						{workoutLength !== 0 && <TwoActionModal
-							actionOne={() => {console.log("Modal closed")}}
-							actionTwo={() => {handleFinishPress()}}
-							title={"Log Workout as Complete?"}
+					{workoutLength !== 0 && (
+						<TwoActionModal
+							actionOne={() => {
+								console.log("Modal closed");
+							}}
+							actionTwo={() => {
+								handleFinishPress();
+							}}
+							title={formTypeRef.current === "workout" ? "Log Workout as Complete?": "Save Changes?"}
 							subText={
-								"Log this workout and view your progress in your training history."
+								formTypeRef.current === "workout" ? "Log this workout and view your progress in your training history.": "Save changes to this workout?"
 							}
 							actionOneText={"Cancel"}
-							actionTwoText={"Log It!"}
+							actionTwoText={formTypeRef.current === "workout" ?"Log It!": "Save Changes"}
 						>
 							<Ionicons
 								name="checkmark"
 								size={32}
 								color={themeStyle.primary}
 							/>
-                        </TwoActionModal>}
+						</TwoActionModal>
+					)}
 				</View>
 			</View>
 		</>

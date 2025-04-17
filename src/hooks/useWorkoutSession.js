@@ -10,11 +10,12 @@ import { useUser } from "../contexts/UserContext";
 import { useCallback } from "react";
 import uuid from "react-native-uuid";
 
-import { buildWorkoutObject } from "../services/helpers/objectBuilder";
+import { buildWorkoutEditObject, buildWorkoutObject } from "../services/helpers/objectBuilder";
 
 import {
 	getWorkouts,
 	addWorkout,
+	editWorkout,
 } from "../services/functions/workoutFunctions";
 import { useRealm } from "../contexts/RealmProvider";
 
@@ -23,7 +24,7 @@ export const useWorkoutSession = () => {
 	const realm = useRealm();
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
 	const { workoutNotes, setWorkoutNotes } = useWorkoutNotes();
-	const { workoutExercises, clearExercises } = useWorkoutExercises();
+	const { workoutExercises,setWorkoutExercises, clearExercises } = useWorkoutExercises();
 	const { workoutHistory, setWorkoutHistory } = useWorkoutHistory();
 	const { workoutTimer, resetTimer } = useWorkoutTimer();
 	const { setWorkoutError } = useWorkoutError();
@@ -62,7 +63,6 @@ export const useWorkoutSession = () => {
 			workoutExercises: workoutExercises,
 			startedAt: workoutStartTimeRef.current,
 			completedAt: workoutEndTimeRef.current,
-			duration: workoutTimer,
 			imageURL: imageURL,
 			unitSystem: "imperial",
 			templateId: templateIdRef.current,
@@ -84,6 +84,46 @@ export const useWorkoutSession = () => {
 		resetTimer();
 	};
 
+	const editStart =(workout) => {
+		setWorkoutError(null);
+		workoutIdRef.current = workout.workoutId;
+		setWorkoutTitle(workout.name);
+		setWorkoutNotes(workout.notes);
+		workoutStartTimeRef.current = workout.startedAt;
+		workoutEndTimeRef.current = workout.completedAt;
+		workoutCreatedAtRef.current = workout.createdAt;
+		templateIdRef.current = workout.templateId;
+		isTemplateRef.current = workout.isTemplate;
+		setImageURL(workout.imageURL);
+		setUnitSystem(workout.unitSystem);
+		setWorkoutExercises(workout.exercises);
+		formTypeRef.current = "edit";
+	}
+
+	const editFinish = async () => {
+		setWorkoutError(null);
+
+		const workoutObject = buildWorkoutEditObject({
+			userId: user.uid,
+			workoutId: workoutIdRef.current,
+			workoutTitle: workoutTitle,
+			workoutNotes: workoutNotes,
+			workoutExercises: workoutExercises,
+			startedAt: workoutStartTimeRef.current,
+			completedAt: workoutEndTimeRef.current,
+			createdAt: workoutCreatedAtRef.current,
+			imageURL: imageURL,
+			unitSystem: "imperial",
+			templateId: templateIdRef.current,
+			isTemplate: isTemplateRef.current,
+		});
+
+		editWorkout(realm, workoutObject);
+		const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
+		setWorkoutHistory(updatedWorkoutHistory);
+		workoutCancel();
+	}
+
 	return {
 		workoutIdRef,
 		workoutTitle,
@@ -91,8 +131,11 @@ export const useWorkoutSession = () => {
 		workoutExercises,
 		workoutTimer,
 		workoutStartTimeRef,
+		formTypeRef,
 		workoutStart,
 		workoutFinish,
 		workoutCancel,
+		editStart,
+		editFinish,
 	};
 };
