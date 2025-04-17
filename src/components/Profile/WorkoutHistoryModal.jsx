@@ -14,7 +14,7 @@ import {
 	formatDateObjectToTime,
 	formatDurationTimeToText,
 } from "../../services/helpers/timeFormatter";
-import { useWorkout } from "../../contexts/WorkoutContext";
+// import { useWorkout } from "../../contexts/WorkoutContext";
 
 import * as NavigationBar from "expo-navigation-bar";
 
@@ -24,7 +24,7 @@ const WorkoutHistoryModal = ({
 	navigation,
 }) => {
 	const { themeStyle } = useTheme();
-	const { removeWorkoutFromHistory, workoutEditStarted } = useWorkout();
+	// const { removeWorkoutFromHistory, workoutEditStarted } = useWorkout();
 	const styles = createStyles(themeStyle);
 
 	if (Platform.OS === "android") {
@@ -39,14 +39,14 @@ const WorkoutHistoryModal = ({
 
 	const handleDelete = () => {
 		closeModal();
-		removeWorkoutFromHistory(selectedWorkout);
+		// removeWorkoutFromHistory(selectedWorkout);
 	};
 
 	const handleEdit = () => {
 		// Add edit functionality here
 		closeModal();
-		workoutEditStarted(selectedWorkout);
-		navigation.navigate("EditModal");
+		// workoutEditStarted(selectedWorkout);
+		// navigation.navigate("EditModal");
 
 		// You would typically navigate to an edit screen or open another modal
 	};

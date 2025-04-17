@@ -3,19 +3,19 @@ import uuid from "react-native-uuid";
 
 
 export const buildWorkoutObject = (workout) => {
-	if (workout.name === "") {
-		workout.name = "Untitled Workout";
+	if (workout.workoutTitle === "") {
+		workout.workoutTitle = "Untitled Workout";
 	}
 
-	const workoutFiltered = workout.exercises.filter(
+	const workoutFiltered = workout.workoutExercises.filter(
 		(exercise) => exercise.sets.length > 0
 	);
 
 	return {
 		userId: workout.userId,
 		workoutId: workout.workoutId,
-		name: workout.name,
-		notes: workout.notes,
+		name: workout.workoutTitle,
+		notes: workout.workoutNotes,
 		imageURL: workout.imageURL,
 		unitSystem: workout.unitSystem,
 		exercises: workoutFiltered,
@@ -27,7 +27,7 @@ export const buildWorkoutObject = (workout) => {
 		deleted: false,
 		deletedAt: null,
 		syncStatus: "Synced",
-	}
+	};
 
 }
 

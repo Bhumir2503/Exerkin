@@ -6,16 +6,16 @@ import {
 	StyleSheet,
 	TouchableWithoutFeedback,
 } from "react-native";
-import { useWorkout } from "../../contexts/WorkoutContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import WorkoutHistoryModal from "./WorkoutHistoryModal";
 import { formatTimeStamptoDateString } from "../../services/helpers/timeFormatter";
 import { Ionicons } from "@expo/vector-icons";
+import { useWorkoutHistory } from "../../contexts/workout/WorkoutHistoryContext";
 
 // Workout History Component
 // Displays a list of past workouts with details such as date, time, and notes.
 const WorkoutHistory = ({navigation}) => {
-	const { workoutHistory } = useWorkout();
+	const { workoutHistory } = useWorkoutHistory();
 	const { themeStyle } = useTheme();
 	const [selectedWorkout, setSelectedWorkout] = useState(null);
 	const styles = createStyles(themeStyle);

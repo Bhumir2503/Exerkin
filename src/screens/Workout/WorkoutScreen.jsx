@@ -53,13 +53,7 @@ const WorkoutScreen = memo(({ navigation }) => {
 			>
 				<TemplateSection navigation={navigation} />
 			</ScrollView> */}
-			<Pressable
-				onPress={() => navigation.navigate("WorkoutModalScreen")}
-			>
-				<Text>Press me</Text>
-			</Pressable>
 			<ActiveWorkoutBar navigate={navigation.navigate} />
-
 		</SafeAreaView>
 	);
 });

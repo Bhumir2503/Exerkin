@@ -10,14 +10,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
 
 const CARD_PADDING = 16;
 
 export default function Settings({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { user, onLogout, username } = useUser();
-	const { clearWorkoutHistory, clearTemplates } = useWorkout();
+
 	const styles = createStyles(themeStyle);
 
 	// Get the first letter of the username for the avatar
@@ -134,25 +133,6 @@ export default function Settings({ navigation }) {
 					navigation={navigation}
 				/>
 
-				<SettingsCategory
-					title="Developer Tools"
-					themeStyle={themeStyle}
-					items={[
-						{
-							name: "Clear Workout History",
-							icon: "trash-outline",
-							onPress: clearWorkoutHistory,
-							dangerAction: true,
-						},
-						{
-							name: "Clear Templates",
-							icon: "trash-outline",
-							onPress: clearTemplates,
-							dangerAction: true,
-						},
-					]}
-					navigation={navigation}
-				/>
 
 				{/* Logout Section */}
 				<View style={styles.logoutSection}>

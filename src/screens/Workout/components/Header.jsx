@@ -27,8 +27,8 @@ const Header = ({ navigation }) => {
 	const handleFinishPress = () => {
         // Handle finish action here
         console.log("Workout Completed");
-        navigation.goBack();
         workoutFinish();
+        navigation.goBack();
     };
 
 	return (

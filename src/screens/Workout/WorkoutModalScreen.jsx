@@ -68,7 +68,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 					
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
-			<Footer />
+			<Footer navigation={navigation} />
 		</SafeAreaView>
 	);
 };

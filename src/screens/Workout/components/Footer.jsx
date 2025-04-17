@@ -1,37 +1,40 @@
 import { View, StyleSheet, Text, Platform } from "react-native";
 
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 import TwoActionModal from "../../../components/TwoActionModal";
 import ExerciseSelector from "../../../components/ExerciseSelector";
 
-const Footer = () => {
+const Footer = ({navigation}) => {
+	const { workoutCancel } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-    const handleConfirm = () => {
-        console.log("Workout Cancelled")
+	const handleConfirm = () => {
+		console.log("Workout Cancelled");
+		workoutCancel();
+		navigation.goBack();
+	};
 
-    }
-
-    const handleCancel = () => {
-        console.log("Not Cancelling Workout")
-    }
+	const handleCancel = () => {
+		console.log("Not Cancelling Workout");
+	};
 
 	return (
 		<View style={styles.footerContainer}>
-            <ExerciseSelector type={"workout"}/>
+			<ExerciseSelector type={"workout"} />
 			<TwoActionModal
-                title={"Cancel Workout?"}
-                subText={"Your progress will not be saved. Workout session will be lost."}
-                actionOne={handleCancel}
-                actionTwo={handleConfirm}
-                actionOneText={"Nah"}
-                actionTwoText={"Confirm"}
-            >
-				<Text style={styles.CancelButton} >
-					Cancel Workout
-				</Text>
+				title={"Cancel Workout?"}
+				subText={
+					"Your progress will not be saved. Workout session will be lost."
+				}
+				actionOne={handleCancel}
+				actionTwo={handleConfirm}
+				actionOneText={"Nah"}
+				actionTwoText={"Confirm"}
+			>
+				<Text style={styles.CancelButton}>Cancel Workout</Text>
 			</TwoActionModal>
 		</View>
 	);

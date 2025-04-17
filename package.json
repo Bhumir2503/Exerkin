@@ -46,7 +46,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
     "react-native-uuid": "^2.0.3",
-    "realm": "^12.14.1"
+    "realm": "^12.14.1",
+    "success-motivational-quotes": "^1.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

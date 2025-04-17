@@ -9,6 +9,8 @@ import React, {
 import {
 	getWorkouts,
 	deleteWorkout,
+	listenToDeletedWorkoutChanges,
+	listenToWorkoutChanges,
 } from "../../services/functions/workoutFunctions";
 import { useRealm } from "../RealmProvider";
 import { useUser } from "../UserContext";
@@ -43,10 +45,41 @@ export const WorkoutHistoryProvider = ({ children }) => {
 		[realm, user, refreshWorkoutHistory]
 	);
 
-	// Automatically load on mount
 	useEffect(() => {
-		refreshWorkoutHistory();
-	}, [refreshWorkoutHistory]);
+		if (!user) return;
+		// Subscribe to changes in workout data using Realm
+		const unsubscribe = listenToWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
+				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
+			}
+		);
+
+		return () => {
+			unsubscribe(); // Unsubscribe from workout data changes
+		};
+	}, [user, realm]);
+
+	// Effect hook to listen for changes in deleted workout data
+	useEffect(() => {
+		if (!user) return;
+
+		// Subscribe to changes in deleted workout data using Realm
+		const unsubscribe = listenToDeletedWorkoutChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
+				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
+			}
+		);
+
+		return () => {
+			unsubscribe(); // Unsubscribe from deleted workout data changes
+		};
+	}, [user, realm]);
 
 	return (
 		<WorkoutHistoryContext.Provider

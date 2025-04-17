@@ -86,6 +86,14 @@ export const WorkoutTimerProvider = ({ children }) => {
 		clearInterval(intervalRef.current);
 	};
 
+	const resetTimer = () => {
+		setWorkoutTimer(0);
+		setRestDuration(0);
+		setIsResting(false);
+		setRemainingRestTime(0);
+		clearInterval(intervalRef.current);
+	};
+
 	return (
 		<WorkoutTimerContext.Provider
 			value={{
@@ -99,6 +107,7 @@ export const WorkoutTimerProvider = ({ children }) => {
 				setRemainingRestTime,
 				startRestTimer,
 				stopRestTimer,
+				resetTimer,
 			}}
 		>
 			{children}

@@ -4,18 +4,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../../contexts/UserContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
 import {
 	workoutStreak,
 	getWorkoutsThisWeek,
 } from "../../services/helpers/workoutHistoryHelpers";
 import WorkoutHistory from "../../components/Profile/WorkoutHistory";
-import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
+
+import { useWorkoutHistory } from "../../contexts/workout/WorkoutHistoryContext";
 
 export default function Profile({ navigation }) {
 	const { themeStyle } = useTheme();
 	const { username } = useUser();
-	const { workoutHistory } = useWorkout();
+	const { workoutHistory } = useWorkoutHistory();
 	const [stats, setStats] = useState([
 		{ label: "Workouts", value: 0 },
 		{ label: "Streak", value: 0 },
@@ -124,9 +124,6 @@ export default function Profile({ navigation }) {
 					)}
 				</View>
 			</SafeAreaView>
-				<ActiveWorkoutBar
-					onPress={() => navigation.navigate("WorkoutModal")}
-				/>
 		</View>
 	);
 }

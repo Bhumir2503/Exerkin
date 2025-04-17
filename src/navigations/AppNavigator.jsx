@@ -2,8 +2,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
-// import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
+import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
 import WorkoutNavigator from "./WorkoutNavigator";
+import HomeNavigator from "./HomeNavigator";
 // import Friends from "../pages/Friends/Friends";
 // import Measurement from "../pages/Measure/Measurement";
 // import MeasurementNavigator from "./MeasurementNavigator";
@@ -36,7 +37,7 @@ export default function AppNavigator() {
 	return (
 		<Tab.Navigator
 			// initialRouteName="Home"
-			initialRouteName="Workout"
+			initialRouteName="Home"
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
@@ -74,7 +75,7 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			{/* <Tab.Screen name="Home" component={ProfileNavigator} /> */}
+			<Tab.Screen name="Home" component={HomeNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			{/* <Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Measure" component={MeasurementNavigator} /> */}
