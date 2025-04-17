@@ -12,7 +12,10 @@ import uuid from "react-native-uuid";
 
 import { buildWorkoutObject } from "../services/helpers/objectBuilder";
 
-import { getWorkouts, addWorkout } from "../services/functions/workoutFunctions";
+import {
+	getWorkouts,
+	addWorkout,
+} from "../services/functions/workoutFunctions";
 import { useRealm } from "../contexts/RealmProvider";
 
 export const useWorkoutSession = () => {
@@ -47,34 +50,25 @@ export const useWorkoutSession = () => {
 		setWorkoutError(null);
 		workoutEndTimeRef.current = new Date();
 
-		
-		try{
-			const workoutObject = buildWorkoutObject({
-				userId: user.uid,
-				workoutId: workoutIdRef.current,
-				workoutTitle: workoutTitle,
-				workoutNotes: workoutNotes,
-				workoutExercises: workoutExercises,
-				startedAt: workoutStartTimeRef.current,
-				completedAt: workoutEndTimeRef.current,
-				duration: workoutTimer,
-				imageURL: imageURL,
-				unitSystem: "imperial",
-				templateId: templateIdRef.current,
-				isTemplate: isTemplateRef.current,
-			});
+		const workoutObject = buildWorkoutObject({
+			userId: user.uid,
+			workoutId: workoutIdRef.current,
+			workoutTitle: workoutTitle,
+			workoutNotes: workoutNotes,
+			workoutExercises: workoutExercises,
+			startedAt: workoutStartTimeRef.current,
+			completedAt: workoutEndTimeRef.current,
+			duration: workoutTimer,
+			imageURL: imageURL,
+			unitSystem: "imperial",
+			templateId: templateIdRef.current,
+			isTemplate: isTemplateRef.current,
+		});
 
-			console.log("Workout Object:", workoutObject);
-
-			await addWorkout(realm, workoutObject);
-			const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
-			setWorkoutHistory(updatedWorkoutHistory);
-			workoutCancel();
-		}catch(e){
-			console.error("Error saving workout:", e);
-		}
-
-
+		addWorkout(realm, workoutObject);
+		const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
+		setWorkoutHistory(updatedWorkoutHistory);
+		workoutCancel();
 	};
 
 	const workoutCancel = () => {

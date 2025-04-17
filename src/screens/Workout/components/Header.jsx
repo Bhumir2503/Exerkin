@@ -16,6 +16,8 @@ const Header = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	const workoutLength = workoutExercises.length;	
+
 	const handleDownArrowPress = () => {
 		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
@@ -26,9 +28,9 @@ const Header = ({ navigation }) => {
 
 	const handleFinishPress = () => {
         // Handle finish action here
+        navigation.goBack();
         console.log("Workout Completed");
         workoutFinish();
-        navigation.goBack();
     };
 
 	return (
@@ -60,7 +62,7 @@ const Header = ({ navigation }) => {
 				</View>
 				<View style={styles.rightSection}>
 				
-						<TwoActionModal
+						{workoutLength !== 0 && <TwoActionModal
 							actionOne={() => {console.log("Modal closed")}}
 							actionTwo={() => {handleFinishPress()}}
 							title={"Log Workout as Complete?"}
@@ -75,7 +77,7 @@ const Header = ({ navigation }) => {
 								size={32}
 								color={themeStyle.primary}
 							/>
-                        </TwoActionModal>
+                        </TwoActionModal>}
 				</View>
 			</View>
 		</>

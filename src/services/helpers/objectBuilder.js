@@ -26,6 +26,8 @@ export const buildWorkoutObject = (workout) => {
 		duration: formatDuration(workout.duration),
 		deleted: false,
 		deletedAt: null,
+		templateId: workout.templateId,
+		isTemplate: workout.isTemplate,
 		syncStatus: "Synced",
 	};
 

@@ -161,7 +161,7 @@ const createStyles = (themeStyle) =>
 		title: {
 			fontSize: 20,
 			fontWeight: "bold",
-			marginBottom: 15,
+
 			color: themeStyle.textColor,
 		},
 		workoutCard: {

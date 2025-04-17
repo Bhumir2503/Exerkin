@@ -34,24 +34,6 @@ const WorkoutModalScreen = ({ navigation }) => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<Header navigation={navigation} />
-			{/* 
-			<KeyboardAvoidingView
-				behavior={Platform.OS === "ios" ? "padding" : "height"}
-				style={styles.containerContent}
-				keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 20}
-			>
-				<View style={{ flex: 1 }}>
-					<View style={styles.timerStyle}>
-						<View style={{ flexDirection: "row" }}>
-							<WorkoutNotes />
-							<RestTimer />
-						</View>
-					</View>
-
-					<ExerciseDragList />
-					<AddFirstExerciseCard />
-				</View>
-			</KeyboardAvoidingView>} */}
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}

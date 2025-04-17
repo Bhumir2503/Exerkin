@@ -123,7 +123,6 @@ export const addWorkout = async (realm, workoutData) => {
 	} catch (error) {
 		console.error("(WorkoutFunctions) - Error adding workout:", error); // Log error if adding workout fails
 	}
-	// Set workout in Realm with synced status
 };
 
 // Function placeholder for editing a workout (to be implemented)
