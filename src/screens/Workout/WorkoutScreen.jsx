@@ -5,12 +5,13 @@ import { memo } from "react";
 
 import PrimaryButton from "../../components/PrimaryButton";
 import InfoCard from "../../components/InfoCard";
+import ActiveWorkoutBar from "./components/ActiveWorkoutBar";
 
 import { useWorkoutSession } from "../../hooks/useWorkoutSession";
 import { useTheme } from "../../contexts/ThemeContext";
 
 const WorkoutScreen = memo(({ navigation }) => {
-	const { workoutStart } = useWorkoutSession();
+	const { workoutStart, workoutIdRef } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
@@ -28,6 +29,7 @@ const WorkoutScreen = memo(({ navigation }) => {
 				title="Start Workout"
 				onPress={startButtonPressed}
 				icon="fitness"
+				disable={workoutIdRef.current ? true : false}
 			/>
 			<View style={styles.coach}>
 				<Text style={styles.subTitle}>AI Coach</Text>
@@ -56,6 +58,8 @@ const WorkoutScreen = memo(({ navigation }) => {
 			>
 				<Text>Press me</Text>
 			</Pressable>
+			<ActiveWorkoutBar navigate={navigation.navigate} />
+
 		</SafeAreaView>
 	);
 });

@@ -60,6 +60,7 @@ export const useWorkoutSession = () => {
 	}, [user?.uid, workoutExercises]);
 
     return {
+		workoutIdRef,
         workoutTitle,
         workoutNotes,
         workoutExercises,

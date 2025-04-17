@@ -40,7 +40,6 @@ const ExerciseSelector = ({type}) => {
 
 	const getAddedExerciseIds = () => {
 		if (type === "workout") {
-			console.log("workoutExercises", workoutExercises);
 			return workoutExercises.map((exercise) => exercise.exerciseId);
 		} else if (type === "template") {
 			// TODO: Add template logic here
