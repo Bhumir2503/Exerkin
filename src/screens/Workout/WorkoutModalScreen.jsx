@@ -15,6 +15,7 @@ import InfoCard from "../../components/InfoCard";
 import Footer from "./components/Footer";
 import WorkoutTimer from "./components/WorkoutTimer";
 import Notes from "./components/Notes";
+import RestTimer from "./components/RestTimer";
 // import WorkoutNotes from "../../components/Modals/WorkoutNotes";
 // import RestTimer from "../../components/Modals/RestTimer";
 // import ExerciseDragList from "../../components/ExerciseDragList";
@@ -60,6 +61,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 						<WorkoutTimer />
 						<View style={{ flexDirection: "row" }}>
 							<Notes />
+							<RestTimer />
 						</View>
 					</View>
 
