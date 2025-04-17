@@ -24,7 +24,7 @@ const HelpAndSupport = ({ navigation }) => {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<View style={styles.header}>
 				<TouchableOpacity
 					style={styles.backButton}
@@ -44,7 +44,7 @@ const HelpAndSupport = ({ navigation }) => {
 				showsVerticalScrollIndicator={true}
 			>
 				<View style={styles.content}>
-					<Text style={styles.title}>Exerkin Support Center</Text>
+
 
 					<Text style={styles.paragraph}>
 						We're here to help make your fitness journey smoother.
@@ -243,9 +243,9 @@ const createStyles = (themeStyle) =>
 			flexDirection: "row",
 			alignItems: "center",
 			paddingHorizontal: 16,
-			paddingVertical: 12,
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
+			paddingVertical: 0,
+			paddingTop: 0,
+
 		},
 		backButton: {
 			padding: 4,
@@ -261,6 +261,7 @@ const createStyles = (themeStyle) =>
 		},
 		content: {
 			padding: 16,
+
 			paddingBottom: 40,
 		},
 		title: {

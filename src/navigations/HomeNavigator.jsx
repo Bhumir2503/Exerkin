@@ -2,6 +2,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
 
 import HomeScreen from "../screens/Home/HomeScreen";
+
+import UpdateEmail from "../screens/Home/UpdateEmail";
+import ChangePassword from "../screens/Home/ChangePassword";
+import EditUsername from "../screens/Home/EditUsername";
+
 import ThemeScreen from "../screens/Home/ThemeScreen";
 import SettingScreen from "../screens/Home/SettingScreen";
 import PrivacyPolicy from "../screens/Support/PrivacyPolicy";
@@ -42,9 +47,15 @@ export default function HomeNavigator() {
 			<Stack.Screen name={"ThemeScreen"} component={ThemeScreen} />
 			<Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 			<Stack.Screen name="TermsOfService" component={TermsOfService} />
+			<Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
+			<Stack.Screen name="UpdateEmail" component={UpdateEmail} />
 			<Stack.Screen
-				name="HelpAndSupport"
-				component={HelpAndSupport}
+				name="ChangePassword"
+				component={ChangePassword}
+			/>
+			<Stack.Screen
+				name="EditUsername"
+				component={EditUsername}
 			/>
 		</Stack.Navigator>
 	);

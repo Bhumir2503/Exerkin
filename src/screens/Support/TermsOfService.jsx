@@ -35,7 +35,7 @@ const TermsOfService = ({ navigation }) => {
 				showsVerticalScrollIndicator={true}
 			>
 				<View style={styles.content}>
-					<Text style={styles.title}>Exerkin Terms of Service</Text>
+
 
 					<Text style={styles.sectionTitle}>1. Introduction</Text>
 					<Text style={styles.paragraph}>
@@ -279,9 +279,9 @@ const createStyles = (themeStyle) =>
 			flexDirection: "row",
 			alignItems: "center",
 			paddingHorizontal: 16,
-			paddingVertical: 12,
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
+			paddingVertical: 0,
+			paddingTop: 0,
+
 		},
 		backButton: {
 			padding: 4,
@@ -297,6 +297,7 @@ const createStyles = (themeStyle) =>
 		},
 		content: {
 			padding: 16,
+			paddingTop: 0,
 			paddingBottom: 40,
 		},
 		title: {

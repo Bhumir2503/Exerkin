@@ -423,7 +423,7 @@ const createStyles = (themeStyle) =>
 			fontSize: 20,
 			color: themeStyle.textColor,
 			fontWeight: "bold",
-			marginLeft: 10,
+			marginLeft: 12,
 		},
 		sectionTitle: {
 			fontSize: 18,
