@@ -20,8 +20,8 @@ import { useTheme } from "./src/contexts/ThemeContext";
 
 import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
-import SetUsername from "./src/pages/Auth/SetUsername";
-import SplashScreen from "./src/pages/Auth/SplashScreen"; // Create this component for better UX
+import SetUsername from "./src/screens/Auth/SetUsername";
+import SplashScreen from "./src/screens/Auth/SplashScreen"; // Create this component for better UX
 
 enableScreens();
 
@@ -54,8 +54,6 @@ export default function App() {
 		);
 	}
 
-
-
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
 			<NetworkProvider>
@@ -68,7 +66,7 @@ export default function App() {
 										<TemplateProvider>
 											<WorkoutProvider>
 												<AppContent />
-											</WorkoutProvider>	
+											</WorkoutProvider>
 										</TemplateProvider>
 									</UserProvider>
 								</RealmProvider>

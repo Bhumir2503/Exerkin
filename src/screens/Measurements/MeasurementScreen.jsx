@@ -8,14 +8,16 @@ import {
 	ScrollView,
 	Alert,
 	Modal,
-	StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
 
-export default function Measurement({ navigation }) {
+
+import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
+
+const MeasurementScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const { user } = useUser();
 	const styles = createStyles(themeStyle);
@@ -252,14 +254,14 @@ export default function Measurement({ navigation }) {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
+		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={styles.scrollContent}
 			>
-			<View style={styles.topBar}>
-				<Text style={styles.title}>Body Measurements</Text>
-			</View>
+				<View style={styles.topBar}>
+					<Text style={styles.title}>Body Measurements</Text>
+				</View>
 
 				{/* Info card */}
 				<View style={styles.infoCard}>
@@ -520,6 +522,7 @@ export default function Measurement({ navigation }) {
 					</View>
 				</View>
 			</Modal>
+            <ActiveWorkoutBar navigate={navigation.navigate} />
 		</SafeAreaView>
 	);
 }
@@ -527,7 +530,6 @@ export default function Measurement({ navigation }) {
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
 		container: {
-
 			backgroundColor: themeStyle.backgroundColor || "#16161a",
 		},
 		header: {
@@ -556,7 +558,7 @@ const createStyles = (themeStyle) =>
 		},
 		scrollContent: {
 			paddingHorizontal: 24,
-			paddingBottom: 10,
+			paddingBottom: 75,
 		},
 		infoCard: {
 			flexDirection: "row",
@@ -780,3 +782,5 @@ const createStyles = (themeStyle) =>
 			fontWeight: "600",
 		},
 	});
+
+export default MeasurementScreen;
