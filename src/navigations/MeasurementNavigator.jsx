@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
-import Measurement from "../pages/Measure/Measurement";
-import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
+import MeasurementScreen from "../screens/Measurements/MeasurementScreen";
+import WorkoutModalScreen from "../screens/Workout/WorkoutModalScreen";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -24,8 +24,14 @@ export default function MeasurementNavigator() {
 				cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
 			}}
 		>
-			<Stack.Screen name="Measurements" component={Measurement} />
-			<Stack.Screen name="WorkoutModal" component={WorkoutModal} />
+			<Stack.Screen
+				name="MeasurementScreen"
+				component={MeasurementScreen}
+			/>
+			<Stack.Screen
+				name="WorkoutModalScreen"
+				component={WorkoutModalScreen}
+			/>
 		</Stack.Navigator>
 	);
 }

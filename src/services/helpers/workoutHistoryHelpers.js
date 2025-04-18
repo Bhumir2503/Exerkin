@@ -67,22 +67,56 @@ export const workoutStreak = (workoutHistory) => {
 
 // Helper function to get workouts from current week
 export const getWorkoutsThisWeek = (workoutHistory) => {
-	if (!workoutHistory || workoutHistory.length === 0) return 0;
 
 	const today = new Date();
+	
+	// Set to Monday as start of week
+	// Adjust for the current day (0 = Sunday, 1 = Monday, etc.)
+	// For Monday as first day: today.getDay() || 7 (converts Sunday from 0 to 7)
+	const dayOfWeek = today.getDay() || 7;
 	const startOfWeek = new Date(today);
-	startOfWeek.setDate(today.getDate() - today.getDay()); // Start of week (Sunday)
+	startOfWeek.setDate(today.getDate() - (dayOfWeek - 1)); // Start of week (Monday)
 	startOfWeek.setHours(0, 0, 0, 0);
+
+	// Get end of week (Sunday) for better filtering
+	const endOfWeek = new Date(startOfWeek);
+	endOfWeek.setDate(startOfWeek.getDate() + 6);
+	endOfWeek.setHours(23, 59, 59, 999);
 
 	let count = 0;
 
 	workoutHistory.forEach((workout) => {
-		const workoutDate = workout.date?.seconds
-			? new Date(workout.date.seconds * 1000)
-			: new Date(workout.date);
-
-		if (workoutDate >= startOfWeek) {
-			count++;
+		// Use completedAt as the date field
+		let workoutDate;
+		
+		try {
+			if (!workout.completedAt) {
+				return; // Skip this workout if completedAt is missing
+			}
+			
+			// Handle different date formats
+			if (workout.completedAt instanceof Date) {
+				workoutDate = workout.completedAt;
+			} else if (typeof workout.completedAt === 'string') {
+				workoutDate = new Date(workout.completedAt);
+			} else if (typeof workout.completedAt === 'number') {
+				workoutDate = new Date(workout.completedAt);
+			} else if (workout.completedAt?.seconds) {
+				// Handle Firestore timestamp
+				workoutDate = new Date(workout.completedAt.seconds * 1000);
+			} else if (workout.completedAt?.toDate && typeof workout.completedAt.toDate === 'function') {
+				// Handle Firestore Timestamp that has toDate() method
+				workoutDate = workout.completedAt.toDate();
+			}
+			
+			// Check if workoutDate is valid before comparing
+			if (workoutDate && !isNaN(workoutDate.getTime()) && 
+				workoutDate >= startOfWeek && workoutDate <= endOfWeek) {
+				count++;
+			}
+		} catch (error) {
+			console.error("Error processing workout date:", error);
+			// Continue with the next workout
 		}
 	});
 

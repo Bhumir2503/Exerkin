@@ -1,8 +1,8 @@
-import {Text, View, StyleSheet, Pressable} from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
-import {useTheme} from "../../../contexts/ThemeContext";
-import {useWorkout} from "../../../contexts/WorkoutContext";
+import { useTheme } from "../../../contexts/ThemeContext";
+import { useWorkout } from "../../../contexts/WorkoutContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
 	Menu,
@@ -14,42 +14,43 @@ import {
 import { buildSetObject } from "../../../services/helpers/objectBuilder";
 
 const AssistedWeightExercise = ({ exercise }) => {
-    const { themeStyle } = useTheme();
-    const styles = createStyles(themeStyle);
-    const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } = useWorkout();
+	const { themeStyle } = useTheme();
+	const styles = createStyles(themeStyle);
+	const { addSetToExercise, updateSetInExercise, removeExerciseFromWorkout } =
+		useWorkout();
 
-    const addSet = () => {
-        // Add a new set with null values for weight and reps
-        addSetToExercise(exercise.exerciseId, buildSetObject());
-    };
+	const addSet = () => {
+		// Add a new set with null values for weight and reps
+		addSetToExercise(exercise.exerciseId, buildSetObject());
+	};
 
-    const handleWeightChange = (text, index) => {
-        // make sure only number are accepted
-        const number = text.replace(/[^0-9]/g, "");
+	const handleWeightChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, "");
 
-        // Update the weight for the specific set by using the index of the set
-        updateSetInExercise(exercise.exerciseId, index, {
-            ...exercise.sets[index],
-            weight: number !== "" ? number : null,
-        });
-    };
+		// Update the weight for the specific set by using the index of the set
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			weight: number !== "" ? number : null,
+		});
+	};
 
-    const handleRepsChange = (text, index) => {
-        // make sure only number are accepted
-        const number = text.replace(/[^0-9]/g, "");
+	const handleRepsChange = (text, index) => {
+		// make sure only number are accepted
+		const number = text.replace(/[^0-9]/g, "");
 
-        // Update the reps for the specific set by using the index of the set
-        updateSetInExercise(exercise.exerciseId, index, {
-            ...exercise.sets[index],
-            reps: number !== "" ? number : null,
-        });
-    };
+		// Update the reps for the specific set by using the index of the set
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			reps: number !== "" ? number : null,
+		});
+	};
 
-    const handleDeleteExercise = () => {
-        removeExerciseFromWorkout(exercise.exerciseId);
-    };
+	const handleDeleteExercise = () => {
+		removeExerciseFromWorkout(exercise.exerciseId);
+	};
 
-    return (
+	return (
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>

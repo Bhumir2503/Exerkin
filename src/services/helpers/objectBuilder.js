@@ -1,103 +1,71 @@
 import { formatDuration } from "./timeFormatter";
 import uuid from "react-native-uuid";
 
-export const buildWorkoutObject = (
-	workoutId,
-	templateId,
-	userId,
-	name,
-	notes,
-	isTemplate,
-	imageURL,
-	unitSystem,
-	exercises,
-	startTime,
-	duration,
-	status
-) => {
-	if (name === "") {
-		name = "Untitled Workout";
+export const buildWorkoutObject = (workout) => {
+	if (workout.workoutTitle === "") {
+		workout.workoutTitle = "Untitled Workout";
 	}
 
-    const workoutFiltered = exercises
-
-	const workoutChecked = workoutFiltered.filter(
+	const workoutFiltered = workout.workoutExercises.filter(
 		(exercise) => exercise.sets.length > 0
 	);
 
-	const workout = {
-		workoutId,
-		templateId,
-		userId,
-		name,
-		notes,
-		isTemplate,
-		imageURL,
-		unitSystem,
-		exercises: workoutChecked,
-		startedAt: startTime,
-		completedAt: new Date(),
+	return {
+		userId: workout.userId,
+		workoutId: workout.workoutId,
+		name: workout.workoutTitle,
+		notes: workout.workoutNotes,
+		imageURL: workout.imageURL,
+		unitSystem: workout.unitSystem,
+		exercises: workoutFiltered,
+		startedAt: workout.startedAt,
+		completedAt: workout.completedAt,
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		duration: formatDuration(duration),
+		duration: formatDuration(workout.startedAt, workout.completedAt),
 		deleted: false,
 		deletedAt: null,
-		syncStatus: status,
+		templateId: workout.templateId,
+		isTemplate: workout.isTemplate,
+		syncStatus: "Synced",
 	};
-
-	return workout;
 };
 
-export const buildWorkoutEditObject = (
-	workoutId,
-	templateId,
-	userId,
-	name,
-	notes,
-	isTemplate,
-	imageURL,
-	unitSystem,
-	exercises,
-	startTime,
-	duration,
-	status
-) => {
-	if (name === "") {
-		name = "Untitled Workout";
+export const buildWorkoutEditObject = (workout) => {
+	if (workout.workoutTitle === "") {
+		workout.workoutTitle = "Untitled Workout";
 	}
 
-	const workoutFiltered = exercises.filter(
+	const workoutFiltered = workout.workoutExercises.filter(
 		(exercise) => exercise.sets.length > 0
 	);
-	
 
-	const workout = {
-		workoutId,
-		templateId,
-		userId,
-		name,
-		notes,
-		isTemplate,
-		imageURL,
-		unitSystem,
-		exercises: workoutChecked,
-		startedAt: startTime,
-		completedAt: new Date(),
-		createdAt: new Date(),
+	return {
+		userId: workout.userId,
+		workoutId: workout.workoutId,
+		name: workout.workoutTitle,
+		notes: workout.workoutNotes,
+		imageURL: workout.imageURL,
+		unitSystem: workout.unitSystem,
+		exercises: workoutFiltered,
+		startedAt: workout.startedAt,
+		completedAt: workout.completedAt,
+		createdAt: workout.createdAt,
 		updatedAt: new Date(),
-		duration: formatDuration(duration),
+		duration: formatDuration(workout.startedAt, workout.completedAt),
 		deleted: false,
 		deletedAt: null,
-		syncStatus: status,
+		templateId: workout.templateId,
+		isTemplate: workout.isTemplate,
+		syncStatus: "Synced",
 	};
 
 	return workout;
-
 };
 
 export const buildExerciseObject = (selectedExercise) => {
 	const exercise = {
-        uniqueId: uuid.v4(),
+		uniqueId: uuid.v4(),
 		exerciseId: selectedExercise.id,
 		name: selectedExercise.name,
 		sets: [buildSetObject()],
@@ -122,9 +90,6 @@ export const buildSetObject = () => {
 	return set;
 };
 
-
-
-
 export const buildTemplateObject = (
 	templateId,
 	userId,
@@ -138,7 +103,7 @@ export const buildTemplateObject = (
 		name = "Untitled Blueprint";
 	}
 
-	const workoutFiltered = exercises
+	const workoutFiltered = exercises;
 
 	const workoutChecked = workoutFiltered.filter(
 		(exercise) => exercise.sets.length > 0

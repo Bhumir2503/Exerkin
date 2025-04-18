@@ -1,9 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
 
-import Workout from "../pages/Workout/Workout";
-import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
-import TemplateModal from "../components/BlueprintPage/TemplateModal";
+import WorkoutScreen from "../screens/Workout/WorkoutScreen";
+import WorkoutModalScreen from "../screens/Workout/WorkoutModalScreen";
+
+// import TemplateModal from "../components/BlueprintPage/TemplateModal";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -16,19 +17,20 @@ export default function WorkoutNavigator() {
 			screenOptions={{
 				headerStyle: {
 					backgroundColor: themeStyle.backgroundColor,
-					elevation: 0,
-					shadowOpacity: 0,
 				},
 				headerTintColor: themeStyle.textColor,
 				headerShown: false,
-				gestureEnabled: true,
-				// Slide in from bottom for modals on iOS and Android
+				gestureEnabled: false,
 				cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
 			}}
 		>
-			<Stack.Screen name="WorkoutHome" component={Workout} />
-			<Stack.Screen name="WorkoutModal" component={WorkoutModal} />
-			<Stack.Screen name="TemplateModal" component={TemplateModal} />
+			<Stack.Screen name="WorkoutScreen" component={WorkoutScreen} />
+			<Stack.Screen
+				name="WorkoutModalScreen"
+				component={WorkoutModalScreen}
+			/>
+			{/* <Stack.Screen name="WorkoutModal" component={WorkoutModal} />
+			<Stack.Screen name="TemplateModal" component={TemplateModal} /> */}
 		</Stack.Navigator>
 	);
 }

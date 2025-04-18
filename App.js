@@ -7,19 +7,21 @@ import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { WorkoutProvider } from "./src/contexts/WorkoutContext";
+
+import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
 import { TemplateProvider } from "./src/contexts/TemplateContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { NetworkProvider } from "./src/contexts/NetworkContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
+
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
 import { useTheme } from "./src/contexts/ThemeContext";
 
 import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
-import SetUsername from "./src/pages/Auth/SetUsername";
-import SplashScreen from "./src/pages/Auth/SplashScreen"; // Create this component for better UX
+import SetUsername from "./src/screens/Auth/SetUsername";
+import SplashScreen from "./src/screens/Auth/SplashScreen"; // Create this component for better UX
 
 enableScreens();
 
@@ -51,8 +53,6 @@ export default function App() {
 			midnightPurpleTheme.backgroundColor
 		);
 	}
-
-
 
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>

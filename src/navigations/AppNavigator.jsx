@@ -2,12 +2,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationState } from "@react-navigation/native";
 import { Platform } from "react-native";
 
-import ProfileNavigator from "./ProfileNavigator"; // Ensure this is the correct path to your ProfileNavigator
 import WorkoutNavigator from "./WorkoutNavigator";
-import Friends from "../pages/Friends/Friends";
-import Measurement from "../pages/Measure/Measurement";
-import MeasurementNavigator from "./MeasurementNavigator";
+import HomeNavigator from "./HomeNavigator";
+
 import StatsNavigator from "./StatsNavigator";
+import MeasurementNavigator from "./MeasurementNavigator";
 
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
@@ -22,19 +21,22 @@ export default function AppNavigator() {
 	const hideTab = state?.routes?.some((route) =>
 		route?.state?.routes?.some(
 			(subRoute) =>
-				subRoute.name === "Settings" ||
-				subRoute.name === "EditTheme" ||
+				subRoute.name === "SettingScreen" ||
+				subRoute.name === "ThemeScreen" ||
 				subRoute.name === "EditProfile" ||
 				subRoute.name === "TermsOfService" ||
 				subRoute.name === "PrivacyPolicy" ||
-				subRoute.name == "WorkoutModal" ||
+				subRoute.name === "HelpAndSupport" ||
+				subRoute.name == "WorkoutModalScreen" ||
 				subRoute.name == "TemplateModal" ||
-				subRoute.name == "EditModal" 
+				subRoute.name == "EditModal"
 		)
 	);
 
 	return (
 		<Tab.Navigator
+			// initialRouteName="Home"
+			initialRouteName="Home"
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
@@ -72,7 +74,7 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Home" component={ProfileNavigator} />
+			<Tab.Screen name="Home" component={HomeNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			<Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Measure" component={MeasurementNavigator} />

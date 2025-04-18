@@ -103,7 +103,6 @@ export const mergeWorkoutsToRealm = (realm, workouts) => {
 // Delete workouts from Realm
 export const removeWorkoutsFromRealm = (realm, workoutIds) => {
 	workoutIds.forEach((id) => {
-		console.log("Deleting workout with ID:", id);
 		const workout = realm.objectForPrimaryKey("Workout", id);
 		if (workout) {
 			workout.exercises.forEach((ex) => {
