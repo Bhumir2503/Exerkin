@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "../contexts/ThemeContext";
-import Stats from "../pages/Stats/Stats";
-import WorkoutModal from "../components/WorkoutPage/WorkoutModal";
+import StatsScreen from "../screens/Stats/StatsScreen";
+import WorkoutModalScreen from "../screens/Workout/WorkoutModalScreen";
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -24,8 +24,8 @@ export default function StatsNavigator() {
 				cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, // Use forModalPresentationIOS for iOS style modal slide
 			}}
 		>
-			<Stack.Screen name="Stats" component={Stats} />
-			<Stack.Screen name="WorkoutModal" component={WorkoutModal} />
+			<Stack.Screen name="StatsScreen" component={StatsScreen} />
+			<Stack.Screen name="WorkoutModalScreen" component={WorkoutModalScreen} />
 		</Stack.Navigator>
 	);
 }

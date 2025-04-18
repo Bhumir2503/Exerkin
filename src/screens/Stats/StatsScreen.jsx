@@ -10,15 +10,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkout } from "../../contexts/WorkoutContext";
+import { useWorkoutHistory } from "../../contexts/workout/WorkoutHistoryContext";
 import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
-import ActiveWorkoutBar from "../../components/WorkoutPage/ActiveWorkoutBar";
+import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
 const { width } = Dimensions.get("window");
 const SCREEN_WIDTH = width;
-
-export default function Stats({ navigation }) {
-	const { workoutHistory } = useWorkout();
+const StatsScreen = ({ navigation }) => {
+	const { workoutHistory } = useWorkoutHistory();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [filterType, setFilterType] = useState("1RM"); // "1RM", "Reps", "Volume"
@@ -1436,7 +1435,7 @@ export default function Stats({ navigation }) {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: themeStyle.backgroundColor }}>
-			<SafeAreaView style={styles.container}>
+			<SafeAreaView style={styles.container} edges={["top"]}>
 				<View style={styles.topBar}>
 					<Text style={styles.title}>Stats & Analytics</Text>
 				</View>
@@ -1458,7 +1457,8 @@ export default function Stats({ navigation }) {
 						<Text
 							style={[
 								styles.tabText,
-								activeTab === "overview" && styles.activeTabText,
+								activeTab === "overview" &&
+									styles.activeTabText,
 							]}
 						>
 							Overview
@@ -1537,6 +1537,7 @@ export default function Stats({ navigation }) {
 				</View>
 				<ScrollView
 					style={styles.scrollContainer}
+                    contentContainerStyle={{ paddingBottom: 75 }}
 					showsVerticalScrollIndicator={false}
 				>
 					{activeTab === "overview" && renderOverviewTab()}
@@ -1545,7 +1546,9 @@ export default function Stats({ navigation }) {
 					{activeTab === "body" && renderBodyFocusTab()}
 				</ScrollView>
 			</SafeAreaView>
-				<ActiveWorkoutBar onPress={() => navigation.navigate("WorkoutModal")} />
+			<ActiveWorkoutBar
+				navigate={navigation.navigate}
+			/>
 		</View>
 	);
 }
@@ -1913,3 +1916,5 @@ const createStyles = (themeStyle) =>
 			letterSpacing: 0.3,
 		},
 	});
+
+export default StatsScreen;
