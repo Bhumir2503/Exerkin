@@ -43,6 +43,7 @@ export const WorkoutSchema = {
 		duration: "string",
 		unitSystem: "string?", // "metric" or "imperial"
 		imageURL: "string?",
+		base64Image: "string?",
 		isTemplate: "bool?",
 		deleted: "bool?",
 		deletedAt: "date?",

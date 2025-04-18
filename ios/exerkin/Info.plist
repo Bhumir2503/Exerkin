@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need to save photos to your library.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to attach workout images.</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>CFBundleAllowMixedLocalizations</key>
@@ -29,7 +33,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>com.bhumir2503.ExerKin</string>
+          <string>com.brianmerino.ExerKin</string>
         </array>
       </dict>
       <dict>

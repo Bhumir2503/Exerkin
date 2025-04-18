@@ -6,6 +6,7 @@ import {
 	ScrollView,
 	Text,
 	Pressable,
+	Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -153,6 +154,8 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								</Text>
 							)}
 						</View>
+
+						
 						<ScrollView
 							style={styles.scrollView}
 							contentContainerStyle={styles.scrollViewContent}
@@ -160,6 +163,15 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 							showsVerticalScrollIndicator={false}
 						>
 							<View>
+							{selectedWorkout.base64Image && (
+								<View style={{ alignItems: "center", marginVertical: 10 }}>
+									<Image
+									source={{ uri: `data:image/jpeg;base64,${selectedWorkout.base64Image}` }}
+									style={{ width: "100%", height: 200, borderRadius: 8 }}
+									resizeMode="cover"
+									/>
+								</View>
+							)}
 								{selectedWorkout.exercises.map(
 									(exercise, index) => (
 										<ExerciseCard
