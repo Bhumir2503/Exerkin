@@ -5,10 +5,14 @@ import {
 	KeyboardAvoidingView,
 	TouchableWithoutFeedback,
 	Keyboard,
+	TouchableOpacity,
+	Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "../../contexts/ThemeContext";
+import { useWorkoutMeta } from "../../contexts/workout/WorkoutMetaContext";
+import { pickImageAsBase64 } from "./components/imagePicker";
 
 import Header from "./components/Header";
 import WorkoutDragList from "./components/WorkoutDragList";
@@ -16,6 +20,7 @@ import Footer from "./components/Footer";
 import WorkoutTimer from "./components/WorkoutTimer";
 import Notes from "./components/Notes";
 import RestTimer from "./components/RestTimer";
+import ImageButton from "./components/ImageButton";
 // import WorkoutNotes from "../../components/Modals/WorkoutNotes";
 // import RestTimer from "../../components/Modals/RestTimer";
 // import ExerciseDragList from "../../components/ExerciseDragList";
@@ -44,6 +49,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 						<View style={{ flexDirection: "row" }}>
 							<Notes />
 							<RestTimer />
+							<ImageButton />
 						</View>
 					</View>
 					<WorkoutDragList />

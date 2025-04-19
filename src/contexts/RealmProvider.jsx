@@ -8,7 +8,7 @@ const RealmContext = createContext(null);
 const realmConfig = {
 	path: "ExerkinDB.realm",
 	schema: realmSchemas,
-	schemaVersion: 1,
+	schemaVersion: 2,
 };
 
 let realmInstance;
