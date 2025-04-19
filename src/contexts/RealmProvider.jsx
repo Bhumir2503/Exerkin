@@ -33,7 +33,7 @@ export const RealmProvider = ({ children }) => {
 				//erase all data in the realm
 				Realm.deleteFile(realmConfig);
 
-				realmInstance = await Realm.open(realmConfig);
+
 				console.error("Error opening Realm:", error);
 			} finally {
 				setLoading(false); // ✅ done initializing
