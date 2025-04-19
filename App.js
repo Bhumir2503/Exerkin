@@ -8,6 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import BlueprintProvider from "./src/contexts/blueprint/BlueprintProvider";
 import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
 import { TemplateProvider } from "./src/contexts/TemplateContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
@@ -65,7 +66,9 @@ export default function App() {
 									<UserProvider>
 										<TemplateProvider>
 											<WorkoutProvider>
-												<AppContent />
+												<BlueprintProvider>
+													<AppContent />
+												</BlueprintProvider>
 											</WorkoutProvider>
 										</TemplateProvider>
 									</UserProvider>

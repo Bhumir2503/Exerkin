@@ -1,0 +1,73 @@
+import { createContext, useContext, useState, useEffect } from "react";
+
+import { useUser } from "../UserContext";
+import { useRealm } from "../RealmProvider";
+import {
+	getTemplates,
+	listenToDeletedTemplateChanges,
+	listenToTemplateChanges,
+} from "../../services/functions/templateFunctions";
+
+const BlueprintStorageContext = createContext();
+
+export const BlueprintStorageProvider = ({ children }) => {
+	const { user } = useUser();
+	const realm = useRealm();
+
+	const [storedBlueprints, setStoredBlueprints] = useState(null);
+
+	useEffect(() => {
+		if (!user) return;
+
+		const unsubscribe = listenToTemplateChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedTemplates = await getTemplates(realm, user.uid);
+				console.log(updatedTemplates[0].exercises[0].sets);
+				setStoredBlueprints(updatedTemplates);
+			}
+		);
+
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
+
+	useEffect(() => {
+		if (!user) return;
+
+		const unsubscribe = listenToDeletedTemplateChanges(
+			realm,
+			user.uid,
+			async () => {
+				const updatedTemplates = await getTemplates(realm, user.uid);
+				setStoredBlueprints(updatedTemplates);
+			}
+		);
+		return () => {
+			unsubscribe();
+		};
+	}, [user, realm]);
+
+	return (
+		<BlueprintStorageContext.Provider
+			value={{
+				storedBlueprints,
+				setStoredBlueprints,
+			}}
+		>
+			{children}
+		</BlueprintStorageContext.Provider>
+	);
+};
+
+export const useBlueprintStorage = () => {
+	const context = useContext(BlueprintStorageContext);
+	if (!context) {
+		throw new Error(
+			"useBlueprintStorage must be used within a BlueprintStorageProvider"
+		);
+	}
+	return context;
+};

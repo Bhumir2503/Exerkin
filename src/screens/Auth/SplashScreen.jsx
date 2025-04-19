@@ -95,7 +95,7 @@ export default function SplashScreen({ onAnimationComplete }) {
 			>
 				<Image source={require("../../../assets/logo.png")} style={{width: 250, height:250}} />
 				<Text style={styles.title}>Exerkin</Text>
-				<Text style={styles.subtitle}>Train. Track. Triumph</Text>
+				<Text style={styles.subtitle}>Train. Track. Triumph.</Text>
 			</Animated.View>
 		</Animated.View>
 	);
