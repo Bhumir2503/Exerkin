@@ -741,12 +741,8 @@ const StatsScreen = ({ navigation }) => {
 		if (viewMode === "best") {
 			setViewMode("progress");
 		} else if (viewMode === "progress") {
-			setViewMode("activity");
-		} else if (viewMode === "activity") {
-			setViewMode("body");
-		} else {
 			setViewMode("best");
-		}
+		} 
 	};
 
 	const displayTimeRange = () => {

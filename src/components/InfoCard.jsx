@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 
-const InfoCard = ({ icon, title, message, width }) => {
+const InfoCard = ({ icon, title, message, width, children }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	return (
@@ -19,6 +19,7 @@ const InfoCard = ({ icon, title, message, width }) => {
 
 				<Text style={styles.title}>{title}</Text>
 				<Text style={styles.description}>{message}</Text>
+				{children}
 			</View>
 		</View>
 	);

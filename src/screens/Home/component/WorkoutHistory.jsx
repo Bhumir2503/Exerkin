@@ -109,12 +109,11 @@ const WorkoutHistory = ({ navigation }) => {
 				data={[...workoutHistory].sort(
 					(a, b) => b.startedAt - a.startedAt
 				)}
-				style={{ width: "100%", flex: 1 }}
+				style={{ width: "100%", flex: 1, borderTopRightRadius: 8, borderTopLeftRadius: 8 }}
 				contentContainerStyle={{
 					paddingBottom: 75,
 				}}
 				showsVerticalScrollIndicator={false}
-				bounces={false}
 				renderItem={({ item }) => (
 					<Pressable
 						onPress={() => setSelectedWorkout(item)}
