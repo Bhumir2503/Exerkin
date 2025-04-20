@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useState } from "react";
 
-const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
+const BlueprintCard = ({ template }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -42,9 +42,8 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 	};
 
 	// Handle view action from modal
-	const handleViewFromModal = () => {
+	const handleStartTemplate = () => {
 		closeModal();
-		onView(template.templateId);
 	};
 
 	// Exercise Card component for the modal
@@ -64,11 +63,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 			)}
 
 			<View style={styles.setsInfo}>
-				<Ionicons
-					name="list"
-					size={16}
-					color={themeStyle.textColor}
-				/>
+				<Ionicons name="list" size={16} color={themeStyle.textColor} />
 				<Text style={styles.setsText}>
 					{getSetCount(exercise)}{" "}
 					{getSetCount(exercise) === 1 ? "set" : "sets"}
@@ -126,7 +121,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 				<View style={styles.iconButtons}>
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => onEdit(template.templateId)}
+						onPress={() => console.log("Edit template")}
 					>
 						<Ionicons
 							name="pencil"
@@ -137,7 +132,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => onDelete(template.templateId)}
+						onPress={() => console.log("Delete template")}
 					>
 						<Ionicons
 							name="trash-outline"
@@ -182,7 +177,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 									<View style={styles.actionButtons}>
 										<Pressable
 											style={styles.iconButton}
-											onPress={handleViewFromModal}
+											onPress={handleStartTemplate}
 										>
 											<Ionicons
 												name="play-outline"
@@ -196,7 +191,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
-												onEdit(template.templateId)
+												console.log("Edit template")
 											}
 										>
 											<Ionicons
@@ -210,7 +205,7 @@ const BlueprintCard = ({ template, onView, onEdit, onDelete }) => {
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
-												onDelete(template.templateId)
+												console.log("Delete template")
 											}
 										>
 											<Ionicons
@@ -446,7 +441,6 @@ const createStyles = (theme) => {
 			borderRadius: 6,
 			padding: 15,
 			marginBottom: 12,
-
 		},
 		exerciseHeader: {
 			flexDirection: "row",
