@@ -10,11 +10,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useState } from "react";
+import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
 
 const BlueprintCard = ({ template }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
+	const { removeTemplateFromStorage } = useBlueprintStorage();
 
 	// Format creation date
 	const formatDate = (dateString) => {
@@ -132,7 +134,7 @@ const BlueprintCard = ({ template }) => {
 
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => console.log("Delete template")}
+						onPress={() => removeTemplateFromStorage(template.templateId)}
 					>
 						<Ionicons
 							name="trash-outline"

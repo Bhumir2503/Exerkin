@@ -15,11 +15,9 @@ export const setRealmTemplate = async (realm, template, syncStatus) => {
 	}
 };
 
-export const removeRealmTemplate = async (
+export const removeTemplateFromRealm = async (
 	realm,
-	userId,
 	templateId,
-	syncStatus
 ) => {
 	realm.write(() => {
 		const template = realm
@@ -27,27 +25,13 @@ export const removeRealmTemplate = async (
 			.filtered("templateId == $0", templateId)[0];
 
 		if (template) {
-			// 🔁 Loop through each TemplateExercise
 			template.exercises.forEach((exercise) => {
-				// 🧨 Delete all ExerciseSets
-				realm.delete(exercise.sets);
+				exercise.sets.forEach((set) => {
+					realm.delete(set);
+				});
+				realm.delete(exercise);
 			});
-
-			// 🧨 Delete all TemplateExercises
-			realm.delete(template.exercises);
-
-			// 💥 Finally delete the Template
 			realm.delete(template);
-		}
-
-		// will be used to sync with Firestore if failed
-		if (syncStatus === "pending") {
-			realm.create("DeletedTemplate", {
-				userId: userId,
-				deletedId: templateId,
-				deletedAt: new Date(),
-				syncStatus: syncStatus,
-			});
 		}
 	});
 };

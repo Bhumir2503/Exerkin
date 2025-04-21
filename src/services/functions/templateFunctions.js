@@ -6,7 +6,10 @@ import {
 	updateLastTemplateSyncTime,
 	mergeTemplatesToRealm,
 	removeTemplatesFromRealm,
+	removeTemplateFromRealm,
 } from "../database/realmTemplateFunctions";
+
+import { deleteTemplateFromFirestore } from "../firestore/firestoreTemplateServices";
 
 import firestore from "@react-native-firebase/firestore";
 
@@ -14,7 +17,6 @@ const templatesCollection = firestore().collection("templates");
 
 export const listenToTemplateChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastTemplateSyncTime(realm);
-
 
 	const unsubscribe = templatesCollection
 		.where("userId", "==", userId)
@@ -106,5 +108,14 @@ export const addTemplate = async (realm, template) => {
 		console.error("Error adding template:", e);
 		template.syncStatus = "pending";
 		await setRealmTemplate(realm, template, "pending");
+	}
+};
+
+export const deleteTemplate = async (realm, templateId) => {
+	await removeTemplateFromRealm(realm, templateId);
+	try {
+		await deleteTemplateFromFirestore(templateId);
+	} catch (e) {
+		console.error("Error deleting template:", e);
 	}
 };

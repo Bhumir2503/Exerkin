@@ -1,11 +1,15 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 
 const BlueprintTitleContext = createContext();
 
 
 export const BlueprintTitleProvider = ({ children }) => {
+    const [blueprintTitle, setBlueprintTitle] = useState("");
     return (
-        <BlueprintTitleContext.Provider value={{}}>
+        <BlueprintTitleContext.Provider value={{
+            blueprintTitle,
+            setBlueprintTitle,
+        }}>
             {children}
         </BlueprintTitleContext.Provider>
     );
