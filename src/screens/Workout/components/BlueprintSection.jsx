@@ -12,6 +12,7 @@ const BlueprintSection = ({ navigation }) => {
 	const { storedBlueprints } = useBlueprintStorage();
 
 	const handlePress = () => {
+		navigation.navigate("BlueprintModalScreen");
 		console.log("Blueprint Add Button Pressed");
 	};
 
