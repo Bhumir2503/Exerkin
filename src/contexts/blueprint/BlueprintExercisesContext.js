@@ -4,7 +4,7 @@ const BlueprintExercisesContext = createContext();
 
 export const BlueprintExercisesProvider = ({ children }) => {
 	const [blueprintExercises, setBlueprintExercises] = useState([]);
-	const addExercise = useCallback((exercise) => {
+	const addExerciseToBlueprint = useCallback((exercise) => {
 		setBlueprintExercises((prev) => [...prev, { ...exercise }]);
 	}, []);
 	const updateExercise = useCallback((exerciseId, updater) => {
@@ -66,7 +66,7 @@ export const BlueprintExercisesProvider = ({ children }) => {
 		<BlueprintExercisesContext.Provider value={{
             blueprintExercises,
             setBlueprintExercises,
-            addExercise,
+            addExerciseToBlueprint,
             updateExercise,
             removeExercise,
             clearExercises,

@@ -12,6 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../contexts/ThemeContext";
 import { useWorkoutExercises } from "../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../contexts/blueprint/BlueprintExercisesContext";
 import {
 	exercises,
 	exerciseCategories,
@@ -20,9 +21,11 @@ import {
 
 import { buildExerciseObject } from "../services/helpers/objectBuilder";
 
-const ExerciseSelector = ({type}) => {
+const ExerciseSelector = ({ type }) => {
 	const { themeStyle } = useTheme();
 	const { workoutExercises, addExercise } = useWorkoutExercises();
+	const { blueprintExercises, addExerciseToBlueprint } =
+		useBlueprintExercises();
 
 	const styles = createStyles(themeStyle);
 
@@ -41,8 +44,8 @@ const ExerciseSelector = ({type}) => {
 	const getAddedExerciseIds = () => {
 		if (type === "workout") {
 			return workoutExercises.map((exercise) => exercise.exerciseId);
-		} else if (type === "template") {
-			// TODO: Add template logic here
+		} else if (type === "blueprint") {
+			return blueprintExercises.map((exercise) => exercise.exerciseId);
 		}
 		return [];
 	};
@@ -98,8 +101,9 @@ const ExerciseSelector = ({type}) => {
 			if (type === "workout") {
 				const exercise = buildExerciseObject(selectedExercise);
 				addExercise(exercise);
-			} else if (type === "template") {
-				// TODO: Add template logic here
+			} else if (type === "blueprint") {
+				const exercise = buildExerciseObject(selectedExercise);
+				addExerciseToBlueprint(exercise);
 			}
 			closeModal();
 		}

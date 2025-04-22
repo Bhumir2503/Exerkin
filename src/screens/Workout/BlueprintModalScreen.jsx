@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "../../contexts/ThemeContext";
 
 import BlueprintHeader from "./components/BlueprintHeader";
+import BlueprintFooter from "./components/BlueprintFooter";
 
 const BlueprintModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -36,6 +37,7 @@ const BlueprintModalScreen = ({ navigation }) => {
 					{/* Add your content here */}
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
+			<BlueprintFooter navigation={navigation} />
 		</SafeAreaView>
 	);
 };

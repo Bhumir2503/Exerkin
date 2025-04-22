@@ -103,14 +103,6 @@ const Notes = () => {
 						</View>
 
 						<View style={styles.buttonContainer}>
-							{/* <TouchableOpacity
-									style={[styles.button, styles.cancelButton]}
-									onPress={cancelNotes}
-								>
-									<Text style={styles.cancelButtonText}>
-										Cancel
-									</Text>
-								</TouchableOpacity> */}
 							<TouchableOpacity
 								style={[styles.button, styles.saveButton]}
 								onPress={saveNotes}
