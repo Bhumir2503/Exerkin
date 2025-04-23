@@ -36,6 +36,7 @@ export const useWorkoutSession = () => {
 		imageURL,
 		setImageURL,
 		base64Image,
+		setBase64Image,
 		unitSystem,
 		setUnitSystem,
 		templateIdRef,
@@ -97,6 +98,7 @@ export const useWorkoutSession = () => {
 		templateIdRef.current = workout.templateId;
 		isTemplateRef.current = workout.isTemplate;
 		setImageURL(workout.imageURL);
+		setBase64Image(workout.base64Image);
 		setUnitSystem(workout.unitSystem);
 		setWorkoutExercises(workout.exercises);
 		formTypeRef.current = "edit";

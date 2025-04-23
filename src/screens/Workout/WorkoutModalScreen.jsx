@@ -7,6 +7,7 @@ import {
 	Keyboard,
 	TouchableOpacity,
 	Text,
+	Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -31,6 +32,8 @@ import ImageButton from "./components/ImageButton";
 const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+	const { base64Image } = useWorkoutMeta();
+
 
 	const dismissKeyboard = () => {
 		Keyboard.dismiss();
@@ -52,8 +55,11 @@ const WorkoutModalScreen = ({ navigation }) => {
 							<ImageButton />
 						</View>
 					</View>
+					{/* <Image source={{ uri: `data:image/jpeg;base64,${base64Image}` }}
+									style={{ width: "90%", height: 200, borderRadius: 8 , marginHorizontal: "auto"}}
+									resizeMode="cover"/> */}
 					<WorkoutDragList />
-					
+
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
 			<Footer navigation={navigation} />
