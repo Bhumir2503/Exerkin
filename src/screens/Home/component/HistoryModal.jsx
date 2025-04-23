@@ -24,7 +24,6 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { removeWorkoutFromHistory } = useWorkoutHistory();
 	const {editStart, workoutIdRef } = useWorkoutSession();
 	const [showFullNote, setShowFullNote] = useState(false);
-	const MAX_PREVIEW_LINES = 1; // Only show this many lines in collapsed mode
 
 	const styles = createStyles(themeStyle);
 
@@ -154,28 +153,19 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								<View style={{ marginTop: 10 }}>
 									<Text
 									style={styles.text}
-									numberOfLines={showFullNote ? undefined : MAX_PREVIEW_LINES}
+									numberOfLines={showFullNote ? undefined : 3}
+									ellipsizeMode="tail"
 									>
-									<Text style={{ fontWeight: "bold" }}>Notes:</Text>{" "}
+									<Text style={{ fontWeight: "bold" }}>Notes: </Text>
 									{selectedWorkout.notes}
 									</Text>
 
-									{/* Toggle Button */}
-									{selectedWorkout.notes.split("\n").length > MAX_PREVIEW_LINES && (
+									{/* Toggle button only if the note has multiple lines */}
 									<TouchableOpacity onPress={() => setShowFullNote(!showFullNote)}>
-										<Text
-										style={{
-											color: themeStyle.primary,
-											marginTop: 4,
-											marginBottom: 8,
-											fontSize: 14,
-											fontWeight: "500",
-										}}
-										>
+									<Text style={{ color: themeStyle.primary, marginTop: 5 }}>
 										{showFullNote ? "Hide full note" : "View full note"}
-										</Text>
+									</Text>
 									</TouchableOpacity>
-									)}
 								</View>
 							)}
 						</View>
