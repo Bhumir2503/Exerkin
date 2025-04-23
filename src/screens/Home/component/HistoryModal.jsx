@@ -7,6 +7,7 @@ import {
 	Text,
 	Pressable,
 	Image,
+	TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -14,6 +15,7 @@ import {
 	formatDateObjectToTime,
 	formatDurationTimeToText,
 } from "../../../services/helpers/timeFormatter";
+import { useState } from "react";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
@@ -21,8 +23,11 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
 	const { removeWorkoutFromHistory } = useWorkoutHistory();
 	const {editStart, workoutIdRef } = useWorkoutSession();
+	const [showFullNote, setShowFullNote] = useState(false);
+	const MAX_PREVIEW_LINES = 1; // Only show this many lines in collapsed mode
 
 	const styles = createStyles(themeStyle);
+
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -146,12 +151,32 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								</Text>
 							</View>
 							{selectedWorkout.notes !== "" && (
-								<Text style={styles.text}>
-									<Text style={{ fontWeight: "bold" }}>
-										Notes:
-									</Text>{" "}
+								<View style={{ marginTop: 10 }}>
+									<Text
+									style={styles.text}
+									numberOfLines={showFullNote ? undefined : MAX_PREVIEW_LINES}
+									>
+									<Text style={{ fontWeight: "bold" }}>Notes:</Text>{" "}
 									{selectedWorkout.notes}
-								</Text>
+									</Text>
+
+									{/* Toggle Button */}
+									{selectedWorkout.notes.split("\n").length > MAX_PREVIEW_LINES && (
+									<TouchableOpacity onPress={() => setShowFullNote(!showFullNote)}>
+										<Text
+										style={{
+											color: themeStyle.primary,
+											marginTop: 4,
+											marginBottom: 8,
+											fontSize: 14,
+											fontWeight: "500",
+										}}
+										>
+										{showFullNote ? "Hide full note" : "View full note"}
+										</Text>
+									</TouchableOpacity>
+									)}
+								</View>
 							)}
 						</View>
 
@@ -167,8 +192,8 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								<View style={{ alignItems: "center", marginVertical: 10 }}>
 									<Image
 									source={{ uri: `data:image/jpeg;base64,${selectedWorkout.base64Image}` }}
-									style={{ width: "100%", height: 200, borderRadius: 8 }}
-									resizeMode="cover"
+									style={{ width: "100%", aspectRatio: 3 / 4, borderRadius: 12, alignSelf: "center", marginBottom: 10}}
+									resizeMode="contain"
 									/>
 								</View>
 							)}
