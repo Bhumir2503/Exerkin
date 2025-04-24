@@ -5,8 +5,6 @@ import {
 	KeyboardAvoidingView,
 	TouchableWithoutFeedback,
 	Keyboard,
-	TouchableOpacity,
-	Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +12,8 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 import BlueprintHeader from "./components/BlueprintHeader";
 import BlueprintFooter from "./components/BlueprintFooter";
+import BlueprintNotes from "./components/BlueprintNotes";
+import BlueprintDragList from "./components/BlueprintDragList";
 
 const BlueprintModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -35,6 +35,11 @@ const BlueprintModalScreen = ({ navigation }) => {
 					style={styles.containerContent}
 				>
 					{/* Add your content here */}
+					<View style={styles.userInputButtons}>
+						<BlueprintNotes />
+					</View>
+					{/* Drag and Drop List */}
+					<BlueprintDragList />
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
 			<BlueprintFooter navigation={navigation} />
@@ -51,12 +56,13 @@ const createStyles = (themeStyle) =>
 		containerContent: {
 			flex: 1,
 			backgroundColor: themeStyle.backgroundColor,
-			paddingHorizontal: 16,
+			marginTop: 10,
 		},
 		userInputButtons: {
 			flexDirection: "row",
-			justifyContent: "space-between",
-			marginBottom: 16,
+			justifyContent: "flex-end",
+			padding: 20,
+			paddingVertical: 10,
 		},
 	});
 

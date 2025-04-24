@@ -81,7 +81,7 @@ const ExerciseSelector = ({ type }) => {
 		}
 
 		setFilteredExercises(result);
-	}, [searchQuery, selectedCategory, workoutExercises]);
+	}, [searchQuery, selectedCategory, workoutExercises, blueprintExercises]);
 
 	// Close modal and reset state
 	const closeModal = () => {

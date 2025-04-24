@@ -3,7 +3,6 @@ import { StyleSheet, View, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import TwoActionModal from "../../../components/TwoActionModal";
 
-
 import { useBlueprintTitle } from "../../../contexts/blueprint/BlueprintTitleContext";
 import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
 import { useBlueprintExercises } from "../../../contexts/blueprint/BlueprintExercisesContext";
@@ -11,66 +10,73 @@ import { useBlueprintExercises } from "../../../contexts/blueprint/BlueprintExer
 import { useTheme } from "../../../contexts/ThemeContext";
 
 const BlueprintHeader = ({ navigation }) => {
-    const { blueprintTitle, setBlueprintTitle } = useBlueprintTitle();
-    const { blueprintExercises } = useBlueprintExercises();
+	const { blueprintTitle, setBlueprintTitle } = useBlueprintTitle();
+	const { blueprintExercises } = useBlueprintExercises();
 
-    const {themeStyle} = useTheme();
-    const styles = createStyles(themeStyle);
+	const { themeStyle } = useTheme();
+	const styles = createStyles(themeStyle);
 
-    const workoutLength = blueprintExercises.length;
+	const workoutLength = blueprintExercises.length;
 
-    const handleDownArrowPress = () => {
-        navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
-    };
+	const handleDownArrowPress = () => {
+		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
+	};
 
-    const handleTitleChange = (text) => {
-        setBlueprintTitle(text);
-    };
+	const handleTitleChange = (text) => {
+		setBlueprintTitle(text);
+	};
 
-    const handleFinishPress = () => {
-        // Handle finish action here
-        navigation.goBack();
-        console.log("Blueprint Completed");
-    };
+	const handleFinishPress = () => {
+		// Handle finish action here
+		navigation.goBack();
+		console.log("Blueprint Completed");
+	};
 
-
-    return (
-        <>
-            <View style={{ ...styles.container }}>
-                {/* Left section */}
-                <View style={styles.leftSection}>
-                    <Ionicons
-                        name="chevron-down"
-                        size={32}
-                        color={themeStyle.primary}
-                        onPress={handleDownArrowPress}
-                    />
-                </View>
-                {/* Center section - always centered */}
-                <View style={styles.centerSection}>
-                    <TextInput
-                        style={styles.titleInput}
-                        value={blueprintTitle}
-                        placeholder={"Untitled Blueprint"}
-                        onChangeText={(text) => handleTitleChange(text)}
-                        maxLength={30}
-                        placeholderTextColor={themeStyle.textColorSecondary}
-                    />
-                </View>
-                {/* Right section */}
-                <View style={styles.rightSection}>
-                    <TwoActionModal
-                        title={"Finish Blueprint?"}
-                        message={`You have ${workoutLength} exercises in this blueprint. Do you want to finish it?`}
-                        actionText={"Finish"}
-                        cancelText={"Cancel"}
-                        onActionPress={handleFinishPress}
-                    />
-                </View>
-            </View>
-        </>
-    );
-}
+	return (
+		<>
+			<View style={{ ...styles.container }}>
+				{/* Left section */}
+				<View style={styles.leftSection}>
+					<Ionicons
+						name="chevron-down"
+						size={32}
+						color={themeStyle.primary}
+						onPress={handleDownArrowPress}
+					/>
+				</View>
+				{/* Center section - always centered */}
+				<View style={styles.centerSection}>
+					<TextInput
+						style={styles.titleInput}
+						value={blueprintTitle}
+						placeholder={"Untitled Blueprint"}
+						onChangeText={(text) => handleTitleChange(text)}
+						maxLength={30}
+						placeholderTextColor={themeStyle.textColorSecondary}
+					/>
+				</View>
+				{/* Right section */}
+				<View style={styles.rightSection}>
+					{workoutLength !== 0 && (
+						<TwoActionModal
+							title={"Finish Blueprint?"}
+							message={`You have ${workoutLength} exercises in this blueprint. Do you want to finish it?`}
+							actionText={"Finish"}
+							cancelText={"Cancel"}
+							onActionPress={handleFinishPress}
+						>
+							<Ionicons
+								name="checkmark"
+								size={32}
+								color={themeStyle.primary}
+							/>
+						</TwoActionModal>
+					)}
+				</View>
+			</View>
+		</>
+	);
+};
 
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({
@@ -107,4 +113,3 @@ const createStyles = (themeStyle) => {
 };
 
 export default BlueprintHeader;
-
