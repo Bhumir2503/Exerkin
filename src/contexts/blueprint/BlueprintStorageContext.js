@@ -5,6 +5,7 @@ import { useRealm } from "../RealmProvider";
 
 import {
 	getBlueprints,
+	deleteBlueprint,
 	listenToBlueprintChanges,
 	listenToDeletedBlueprintChanges,
 } from "../../services/functions/blueprintFunctions";
@@ -50,23 +51,23 @@ export const BlueprintStorageProvider = ({ children }) => {
 		};
 	}, [user, realm]);
 
-	// const removeTemplateFromStorage = (templateId) => {
-	// 	if (!storedBlueprints) return;
-	// 	if (!user) return;
-	// 	try {
-	// 		deleteTemplate(realm, templateId);
-	// 		const updatedTemplates = getBlueprints(realm, user.uid);
-	// 		setStoredBlueprints(updatedTemplates);
-	// 	} catch (error) {
-	// 		console.error("Failed to delete template:", error);
-	// 	}
-	// };
+	const removeBlueprintFromStorage = async (blueprintId) => {
+		if (!storedBlueprints || !user) return;
+		try {
+			await deleteBlueprint(realm, blueprintId);
+			const updatedBlueprints = await getBlueprints(realm, user.uid);
+			setStoredBlueprints(updatedBlueprints);
+		} catch (error) {
+			console.error("Error removing blueprint from storage:", error);
+		}
+	};
 
 	return (
 		<BlueprintStorageContext.Provider
 			value={{
 				storedBlueprints,
 				setStoredBlueprints,
+				removeBlueprintFromStorage,
 			}}
 		>
 			{children}

@@ -5,10 +5,15 @@ import {
 	getLastBlueprintSyncTime,
 	updateLastBlueprintSyncTime,
 	mergeBlueprintsToRealm,
-	setRealmBlueprint,
+	removeBlueprintFromRealm,
+	removeMultipleBlueprintFromRealm,
+	addBlueprintToRealm,
 } from "../database/realmBlueprintFunction";
 
-import { uploadBlueprintToFirestore } from "../firestore/firestoreBlueprintServices";
+import {
+	uploadBlueprintToFirestore,
+	removeBlueprintFromFirestore,
+} from "../firestore/firestoreBlueprintServices";
 
 export const getBlueprints = async (realm) => {
 	try {
@@ -21,13 +26,22 @@ export const getBlueprints = async (realm) => {
 };
 
 export const addBlueprint = async (realm, blueprint) => {
-    setRealmBlueprint(realm, blueprint, "unsynced");
-    try{
-        uploadBlueprintToFirestore(blueprint);
-    }catch (error) {
-        console.error("Error uploading blueprint to Firestore:", error);
-    }
-}
+	addBlueprintToRealm(realm, blueprint, "unsynced");
+	try {
+		uploadBlueprintToFirestore(blueprint);
+	} catch (error) {
+		console.error("Error uploading blueprint to Firestore:", error);
+	}
+};
+
+export const deleteBlueprint = async (realm, blueprintId) => {
+	removeBlueprintFromRealm(realm, blueprintId);
+	try {
+		await removeBlueprintFromFirestore(blueprintId);
+	} catch (error) {
+		console.error("Error removing blueprint from Firestore:", error);
+	}
+};
 
 export const listenToBlueprintChanges = (realm, userId, onUpdate) => {
 	const lastSynced = getLastBlueprintSyncTime(realm);
@@ -39,11 +53,13 @@ export const listenToBlueprintChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
-                    console.log("No new blueprints found. -- 1 Read from firestore");
+					console.log(
+						"No new blueprints found. -- 1 Read from firestore"
+					);
 					onUpdate();
 					return;
 				}
-                console.log("New blueprints found.  -- Reads from Firestore");
+				console.log("New blueprints found.  -- Reads from Firestore");
 				const newBlueprints = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
@@ -75,26 +91,24 @@ export const listenToDeletedBlueprintChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
-                    console.log("No deleted blueprints found. -- 1 Read from firestore");
+					console.log(
+						"No deleted blueprints found. -- 1 Read from firestore"
+					);
 					onUpdate();
 					return;
 				}
-                console.log("Deleted blueprints found.");
+				console.log("Deleted blueprints found.");
 				const deletedBlueprints = snapshot.docs.map((doc) => ({
 					...doc.data(),
 				}));
 
 				realm.write(() => {
-					deletedBlueprints.forEach((blueprint) => {
-						realm.delete(
-							realm
-								.objects("Blueprint")
-								.filtered(
-									"blueprintId == $0",
-									blueprint.blueprintId
-								)[0]
-						);
-					});
+					const idsToDelete = deletedBlueprints.map(
+						(blueprint) => blueprint.blueprintId
+					);
+
+					removeMultipleBlueprintFromRealm(realm, idsToDelete);
+					updateLastBlueprintSyncTime(realm);
 				});
 
 				onUpdate();

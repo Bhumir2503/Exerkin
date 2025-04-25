@@ -6,7 +6,7 @@ import { useBlueprintMeta } from "../contexts/blueprint/BlueprintMetaContext";
 
 import { useUser } from "../contexts/UserContext";
 import { useRealm } from "../contexts/RealmProvider";
-import { addBlueprint } from "../services/functions/blueprintFunctions";
+import { addBlueprint, getBlueprints } from "../services/functions/blueprintFunctions";
 
 import { buildBlueprintObject } from "../services/helpers/objectBuilder";
 
@@ -19,7 +19,7 @@ export const useBlueprintSession = () => {
 	const { blueprintNotes, setBlueprintNotes } = useBlueprintNotes();
 	const { blueprintExercises, setBlueprintExercises, clearExercises } =
 		useBlueprintExercises();
-	const { setBlueprintStorage } = useBlueprintStorage();
+	const { setStoredBlueprints } = useBlueprintStorage();
 	const { blueprintIdRef } = useBlueprintMeta();
 
 	const blueprintStart = () => {
@@ -40,6 +40,8 @@ export const useBlueprintSession = () => {
 
 		try {
 			await addBlueprint(realm, blueprintObject);
+			const updatedBlueprints = await getBlueprints(realm, user.uid);
+			setStoredBlueprints(updatedBlueprints);
 		} catch (error) {
 			console.error("Error adding blueprint:", error);
 		}

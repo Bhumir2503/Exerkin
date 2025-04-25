@@ -16,7 +16,7 @@ const BlueprintCard = ({ blueprint }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
-	const { removeTemplateFromStorage } = useBlueprintStorage();
+	const { removeBlueprintFromStorage } = useBlueprintStorage();
 
 	// Format creation date
 	const formatDate = (dateString) => {
@@ -83,7 +83,7 @@ const BlueprintCard = ({ blueprint }) => {
 						Created: {formatDate(blueprint.createdAt)}
 					</Text>
 				</View>
-				{!blueprint.syncStatus && (
+				{blueprint.syncStatus !== "synced" && (
 					<Ionicons
 						name="cloud-offline-outline"
 						size={18}
@@ -120,7 +120,7 @@ const BlueprintCard = ({ blueprint }) => {
 					<Text style={styles.startButtonText}>View Blueprint</Text>
 				</Pressable>
 
-				<View style={styles.iconButtons}>
+				{/* <View style={styles.iconButtons}>
 					<Pressable
 						style={styles.iconButton}
 						onPress={() => console.log("Edit blueprint")}
@@ -134,7 +134,7 @@ const BlueprintCard = ({ blueprint }) => {
 
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => removeTemplateFromStorage(blueprint.templateId)}
+						onPress={() => removeBlueprintFromStorage(blueprint.blueprintId)}
 					>
 						<Ionicons
 							name="trash-outline"
@@ -142,7 +142,7 @@ const BlueprintCard = ({ blueprint }) => {
 							color={themeStyle.error}
 						/>
 					</Pressable>
-				</View>
+				</View> */}
 			</View>
 
 			{/* Modal for Blueprint Details */}
@@ -190,7 +190,7 @@ const BlueprintCard = ({ blueprint }) => {
 											/>
 										</Pressable>
 
-										<Pressable
+										{/* <Pressable
 											style={styles.iconButton}
 											onPress={() =>
 												console.log("Edit blueprint")
@@ -203,15 +203,18 @@ const BlueprintCard = ({ blueprint }) => {
 													themeStyle.accent || "#000"
 												}
 											/>
-										</Pressable>
+										</Pressable> */}
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
-												console.log("Delete blueprint")
+												removeBlueprintFromStorage(
+													selectedTemplate.blueprintId
+												)
 											}
 										>
 											<Ionicons
 												name="trash-outline"
+
 												size={24}
 												color={
 													themeStyle.error || "#000"
@@ -349,7 +352,7 @@ const createStyles = (theme) => {
 		},
 		buttonContainer: {
 			flexDirection: "row",
-			justifyContent: "space-between",
+			justifyContent: "flex-end",
 			alignItems: "center",
 			marginTop: 10,
 		},
@@ -406,10 +409,13 @@ const createStyles = (theme) => {
 			fontSize: 22,
 			fontWeight: "bold",
 			color: theme.textColor,
+			flex: 2,
 		},
 		actionButtons: {
 			flexDirection: "row",
 			alignItems: "center",
+			justifyContent: "flex-end",
+			flex: 1.5,
 		},
 		text: {
 			fontSize: 14,

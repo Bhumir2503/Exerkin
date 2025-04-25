@@ -11,7 +11,7 @@ export const updateLastBlueprintSyncTime = (realm) => {
 	);
 };
 
-export const setRealmBlueprint = (realm, blueprint, syncStatus) => {
+export const addBlueprintToRealm = (realm, blueprint, syncStatus) => {
 	try {
 		realm.write(() => {
 			realm.create(
@@ -35,15 +35,29 @@ export const mergeBlueprintsToRealm = (realm, blueprints) => {
 		blueprint.updatedAt = blueprint.updatedAt.toDate();
 		blueprint.syncStatus = "synced";
 
-		console.log(
-			"Blueprint to be merged into Realm:",
-			blueprint
-		);
 		realm.create("Blueprint", blueprint, "modified");
 	});
 };
 
-export const removeBlueprintsFromRealm = (realm, ids) => {
+export const removeBlueprintFromRealm = (realm, blueprintId) => {
+	realm.write(() => {
+		const blueprint = realm
+			.objects("Blueprint")
+			.filtered("blueprintId == $0", blueprintId)[0];
+
+		if (blueprint) {
+			blueprint.exercises.forEach((exercise) => {
+				exercise.sets.forEach((set) => {
+					realm.delete(set);
+				});
+				realm.delete(exercise);
+			});
+			realm.delete(blueprint);
+		}
+	});
+};
+
+export const removeMultipleBlueprintFromRealm = (realm, ids) => {
 	ids.forEach((id) => {
 		const blueprint = realm
 			.objects("Blueprint")

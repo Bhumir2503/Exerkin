@@ -60,7 +60,7 @@ const BlueprintSection = ({ navigation }) => {
 					<Ionicons name="add" size={28} color={themeStyle.primary} />
 				</Pressable>
 			</View>
-			{storedBlueprints.map((blueprint) => (
+			{storedBlueprints && storedBlueprints.map((blueprint) => (
 				<BlueprintCard
 					key={blueprint.blueprintId}
 					blueprint={blueprint}
