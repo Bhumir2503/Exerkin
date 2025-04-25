@@ -11,12 +11,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useState } from "react";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
+import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
-const BlueprintCard = ({ blueprint }) => {
+const BlueprintCard = ({ blueprint, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const { removeBlueprintFromStorage } = useBlueprintStorage();
+	const { blueprintStart } = useWorkoutSession();
 
 	// Format creation date
 	const formatDate = (dateString) => {
@@ -27,6 +29,12 @@ const BlueprintCard = ({ blueprint }) => {
 			year: "numeric",
 		});
 	};
+
+	const handleStart = () => {
+		closeModal();
+		blueprintStart(blueprint);
+		navigation.navigate("WorkoutModalScreen");
+	}
 
 	// Count sets in each exercise
 	const getSetCount = (exercise) => {
@@ -108,7 +116,9 @@ const BlueprintCard = ({ blueprint }) => {
 							color={themeStyle.textColor}
 						/>
 						<Text style={styles.statText}>
-							{blueprint.exercises ? blueprint.exercises.length : 0}{" "}
+							{blueprint.exercises
+								? blueprint.exercises.length
+								: 0}{" "}
 							exercises
 						</Text>
 					</View>
@@ -179,7 +189,7 @@ const BlueprintCard = ({ blueprint }) => {
 									<View style={styles.actionButtons}>
 										<Pressable
 											style={styles.iconButton}
-											onPress={handleStartTemplate}
+											onPress={handleStart}
 										>
 											<Ionicons
 												name="play-outline"
@@ -214,7 +224,6 @@ const BlueprintCard = ({ blueprint }) => {
 										>
 											<Ionicons
 												name="trash-outline"
-
 												size={24}
 												color={
 													themeStyle.error || "#000"
@@ -354,7 +363,6 @@ const createStyles = (theme) => {
 			flexDirection: "row",
 			justifyContent: "flex-end",
 			alignItems: "center",
-			marginTop: 10,
 		},
 		startButton: {
 			backgroundColor: theme.primary,

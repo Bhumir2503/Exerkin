@@ -71,8 +71,8 @@ export const useWorkoutSession = () => {
 			blueprintId: blueprintIdRef.current,
 			isBlueprint: isBlueprintRef.current,
 		});
-
-		addWorkout(realm, workoutObject);
+		console.log("workoutObject", workoutObject);
+		editWorkout(realm, workoutObject);
 		const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
 		setWorkoutHistory(updatedWorkoutHistory);
 		workoutCancel();
@@ -129,6 +129,19 @@ export const useWorkoutSession = () => {
 		workoutCancel();
 	}
 
+	const blueprintStart = (blueprint) => {
+		setWorkoutError(null);
+		workoutIdRef.current = uuid.v4();
+		isBlueprintRef.current = true;
+		blueprintIdRef.current = blueprint.blueprintId;
+		workoutStartTimeRef.current = new Date();
+		formTypeRef.current = "workout";
+		setWorkoutTitle(blueprint.name);
+		console.log("blueprint", blueprint);
+		setWorkoutNotes(blueprint.note);
+		setWorkoutExercises(blueprint.exercises);
+	}
+
 	return {
 		workoutIdRef,
 		workoutTitle,
@@ -142,5 +155,6 @@ export const useWorkoutSession = () => {
 		workoutCancel,
 		editStart,
 		editFinish,
+		blueprintStart,
 	};
 };

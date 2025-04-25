@@ -156,6 +156,8 @@ const createStyles = (themeStyle) =>
 			padding: 16,
 			borderRadius: 8,
 			marginVertical: 10,
+			borderWidth: 1,
+			borderColor: themeStyle.borderColor,
 		},
 		workoutHeader: {
 			flexDirection: "row",
