@@ -26,9 +26,9 @@ export const buildWorkoutObject = (workout) => {
 		duration: formatDuration(workout.startedAt, workout.completedAt),
 		deleted: false,
 		deletedAt: null,
-		templateId: workout.templateId,
-		isTemplate: workout.isTemplate,
-		syncStatus: "Synced",
+		blueprintId: workout.blueprintId,
+		isBlueprint: workout.isBlueprint,
+		syncStatus: "Pending",
 	};
 };
 
@@ -57,12 +57,11 @@ export const buildWorkoutEditObject = (workout) => {
 		duration: formatDuration(workout.startedAt, workout.completedAt),
 		deleted: false,
 		deletedAt: null,
-		templateId: workout.templateId,
-		isTemplate: workout.isTemplate,
-		syncStatus: "Synced",
+		blueprintId: workout.templateId,
+		isBlueprint: workout.isTemplate,
+		syncStatus: "Pending",
 	};
 
-	return workout;
 };
 
 export const buildExerciseObject = (selectedExercise) => {
@@ -93,8 +92,8 @@ export const buildSetObject = () => {
 };
 
 export const buildBlueprintObject = (blueprint) => {
-	if (name === "") {
-		name = "Untitled Blueprint";
+	if (blueprint.blueprintTitle === "") {
+		blueprint.blueprintTitle = "Untitled Blueprint";
 	}
 
 	const workoutFiltered = blueprint.blueprintExercises.filter(
@@ -106,8 +105,8 @@ export const buildBlueprintObject = (blueprint) => {
 		(exercise) => exercise.sets.length > 0
 	);
 
-	const template = {
-		templateId: blueprint.templateId,
+	return {
+		blueprintId: blueprint.blueprintId,
 		userId: blueprint.userId,
 		name: blueprint.blueprintTitle,
 		note: blueprint.blueprintNotes,
@@ -118,5 +117,5 @@ export const buildBlueprintObject = (blueprint) => {
 		unitSystem: blueprint.unitSystem,
 		syncStatus: "Pending",
 	};
-	return template;
+
 };

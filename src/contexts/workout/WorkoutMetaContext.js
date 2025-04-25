@@ -22,8 +22,8 @@ export const WorkoutMetaProvider = ({ children }) => {
 	const [unitSystem, setUnitSystem] = useState(
         user?.unitSystem || "imperial"
 	);
-    const templateIdRef = useRef(null);
-    const isTemplateRef = useRef(false);
+    const blueprintIdRef = useRef(null);
+    const isBlueprintRef = useRef(false);
     const formTypeRef = useRef(null);
 
     const resetWorkoutMeta = () => {
@@ -34,8 +34,8 @@ export const WorkoutMetaProvider = ({ children }) => {
         setImageURL(null);
         setBase64Image(null);
         setUnitSystem(user?.unitSystem || "imperial");
-        templateIdRef.current = null;
-        isTemplateRef.current = false;
+        blueprintIdRef.current = null;
+        isBlueprintRef.current = false;
         formTypeRef.current = null;
     }
 
@@ -53,8 +53,8 @@ export const WorkoutMetaProvider = ({ children }) => {
                 setBase64Image,
                 unitSystem,
                 setUnitSystem,
-                templateIdRef,
-                isTemplateRef,
+                blueprintIdRef,
+                isBlueprintRef,
                 formTypeRef,
 
                 resetWorkoutMeta,

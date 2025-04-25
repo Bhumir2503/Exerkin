@@ -39,8 +39,8 @@ export const useWorkoutSession = () => {
 		setBase64Image,
 		unitSystem,
 		setUnitSystem,
-		templateIdRef,
-		isTemplateRef,
+		blueprintIdRef,
+		isBlueprintRef,
 		formTypeRef,
 
 		resetWorkoutMeta,
@@ -68,8 +68,8 @@ export const useWorkoutSession = () => {
 			imageURL: imageURL,
 			base64Image: base64Image,
 			unitSystem: "imperial",
-			templateId: templateIdRef.current,
-			isTemplate: isTemplateRef.current,
+			blueprintId: blueprintIdRef.current,
+			isBlueprint: isBlueprintRef.current,
 		});
 
 		addWorkout(realm, workoutObject);
@@ -95,8 +95,8 @@ export const useWorkoutSession = () => {
 		workoutStartTimeRef.current = workout.startedAt;
 		workoutEndTimeRef.current = workout.completedAt;
 		workoutCreatedAtRef.current = workout.createdAt;
-		templateIdRef.current = workout.templateId;
-		isTemplateRef.current = workout.isTemplate;
+		blueprintIdRef.current = workout.blueprintId;
+		isBlueprintRef.current = workout.isBlueprint;
 		setImageURL(workout.imageURL);
 		setBase64Image(workout.base64Image);
 		setUnitSystem(workout.unitSystem);
@@ -119,8 +119,8 @@ export const useWorkoutSession = () => {
 			imageURL: imageURL,
 			base64Image: base64Image,
 			unitSystem: "imperial",
-			templateId: templateIdRef.current,
-			isTemplate: isTemplateRef.current,
+			blueprintId: blueprintIdRef.current,
+			isBlueprint: isBlueprintRef.current,
 		});
 
 		editWorkout(realm, workoutObject);

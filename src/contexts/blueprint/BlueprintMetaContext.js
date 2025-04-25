@@ -4,19 +4,19 @@ const BlueprintMetaContext = createContext();
 
 
 export const BlueprintMetaProvider = ({ children }) => {
-    const templateIdRef = useRef(null);
+    const blueprintIdRef = useRef(null);
     const templateCreatedAtRef = useRef(null); 
     const [unitSystem, setUnitSystem] = useState("imperial");
 
     const resetBlueprintMeta = () => {
-        templateIdRef.current = null;
+        blueprintIdRef.current = null;
         templateCreatedAtRef.current = null;
         setUnitSystem("imperial");
     }
 
     return (
         <BlueprintMetaContext.Provider value={{
-            templateIdRef,
+            blueprintIdRef,
             templateCreatedAtRef,
             unitSystem,
             setUnitSystem,

@@ -20,18 +20,18 @@ export const useBlueprintSession = () => {
 	const { blueprintExercises, setBlueprintExercises, clearExercises } =
 		useBlueprintExercises();
 	const { blueprintStorage, setBlueprintStorage } = useBlueprintStorage();
-	const { templateIdRef, formTypeRef } = useBlueprintMeta();
+	const { blueprintIdRef, formTypeRef } = useBlueprintMeta();
 
 	const blueprintStart = () => {
 		clearExercises();
-		templateIdRef.current = uuid.v4();
+		blueprintIdRef.current = uuid.v4();
 		formTypeRef.current = "blueprint";
 	};
 
 	const blueprintFinish = async () => {
 		const blueprintObject = buildBlueprintObject({
 			userId: user.uid,
-			blueprintId: templateIdRef.current,
+			blueprintId: blueprintIdRef.current,
 			blueprintTitle: blueprintTitle,
 			blueprintNotes: blueprintNotes,
 			blueprintExercises: blueprintExercises,
@@ -47,7 +47,7 @@ export const useBlueprintSession = () => {
 	};
 
 	const blueprintCancel = () => {
-		templateIdRef.current = null;
+		blueprintIdRef.current = null;
 		formTypeRef.current = null;
 		setBlueprintTitle("");
 		setBlueprintNotes("");
