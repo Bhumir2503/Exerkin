@@ -28,7 +28,7 @@ export const buildWorkoutObject = (workout) => {
 		deletedAt: null,
 		blueprintId: workout.blueprintId,
 		isBlueprint: workout.isBlueprint,
-		syncStatus: "Pending",
+		syncStatus: "unsynced",
 	};
 };
 
@@ -57,9 +57,9 @@ export const buildWorkoutEditObject = (workout) => {
 		duration: formatDuration(workout.startedAt, workout.completedAt),
 		deleted: false,
 		deletedAt: null,
-		blueprintId: workout.templateId,
-		isBlueprint: workout.isTemplate,
-		syncStatus: "Pending",
+		blueprintId: workout.blueprintId,
+		isBlueprint: workout.isBlueprint,
+		syncStatus: "unsynced",
 	};
 
 };
@@ -115,7 +115,7 @@ export const buildBlueprintObject = (blueprint) => {
 		updatedAt: new Date(),
 		deletedAt: null,
 		unitSystem: blueprint.unitSystem,
-		syncStatus: "Pending",
+		syncStatus: "unsynced",
 	};
 
 };

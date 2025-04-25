@@ -18,7 +18,6 @@ import {
 } from "../database/realmWorkoutFunctions";
 
 // Utility Imports
-import NetInfo from "@react-native-community/netinfo";
 import firestore from "@react-native-firebase/firestore";
 
 const workoutsCollection = firestore().collection("workouts");
