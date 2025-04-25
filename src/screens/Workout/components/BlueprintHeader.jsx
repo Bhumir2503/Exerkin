@@ -12,6 +12,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 const BlueprintHeader = ({ navigation }) => {
 	const { blueprintTitle, setBlueprintTitle } = useBlueprintTitle();
 	const { blueprintExercises } = useBlueprintExercises();
+	const {blueprintFinish} = useBlueprintSession();
 
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -29,6 +30,7 @@ const BlueprintHeader = ({ navigation }) => {
 	const handleFinishPress = () => {
 		// Handle finish action here
 		navigation.goBack();
+		blueprintFinish();
 		console.log("Blueprint Completed");
 	};
 
@@ -60,10 +62,13 @@ const BlueprintHeader = ({ navigation }) => {
 					{workoutLength !== 0 && (
 						<TwoActionModal
 							title={"Finish Blueprint?"}
-							message={`You have ${workoutLength} exercises in this blueprint. Do you want to finish it?`}
-							actionText={"Finish"}
-							cancelText={"Cancel"}
-							onActionPress={handleFinishPress}
+							subText={`You have ${workoutLength} exercises in this blueprint. Do you want to create it?`}
+							actionOneText={"Cancel"}
+							actionTwoText={"Create"}
+							actionTwo={handleFinishPress}
+							actionOne={() => {
+								console.log("Modal closed");
+							}}
 						>
 							<Ionicons
 								name="checkmark"

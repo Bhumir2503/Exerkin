@@ -20,12 +20,12 @@ export const useBlueprintSession = () => {
 	const { blueprintExercises, setBlueprintExercises, clearExercises } =
 		useBlueprintExercises();
 	const { setBlueprintStorage } = useBlueprintStorage();
-	const { blueprintIdRef, formTypeRef } = useBlueprintMeta();
+	const { blueprintIdRef } = useBlueprintMeta();
 
 	const blueprintStart = () => {
 		clearExercises();
 		blueprintIdRef.current = uuid.v4();
-		formTypeRef.current = "blueprint";
+		console.log("Blueprint started, " + blueprintIdRef.current);
 	};
 
 	const blueprintFinish = async () => {
@@ -35,7 +35,7 @@ export const useBlueprintSession = () => {
 			blueprintTitle: blueprintTitle,
 			blueprintNotes: blueprintNotes,
 			blueprintExercises: blueprintExercises,
-			unitSystem: user.unitSystem,
+			unitSystem: "imperial",
 		});
 
 		try {

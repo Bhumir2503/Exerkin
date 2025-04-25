@@ -12,7 +12,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { useState } from "react";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
 
-const BlueprintCard = ({ template }) => {
+const BlueprintCard = ({ blueprint }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -33,9 +33,9 @@ const BlueprintCard = ({ template }) => {
 		return exercise.sets ? exercise.sets.length : 0;
 	};
 
-	// Open modal with template details
+	// Open modal with blueprint details
 	const openModal = () => {
-		setSelectedTemplate(template);
+		setSelectedTemplate(blueprint);
 	};
 
 	// Close modal
@@ -78,12 +78,12 @@ const BlueprintCard = ({ template }) => {
 		<View style={styles.cardContainer}>
 			<View style={styles.cardHeader}>
 				<View>
-					<Text style={styles.templateName}>{template.name}</Text>
+					<Text style={styles.templateName}>{blueprint.name}</Text>
 					<Text style={styles.dateText}>
-						Created: {formatDate(template.createdAt)}
+						Created: {formatDate(blueprint.createdAt)}
 					</Text>
 				</View>
-				{!template.syncStatus && (
+				{!blueprint.syncStatus && (
 					<Ionicons
 						name="cloud-offline-outline"
 						size={18}
@@ -94,9 +94,9 @@ const BlueprintCard = ({ template }) => {
 			</View>
 
 			<View style={styles.contentSection}>
-				{template.note && (
+				{blueprint.note && (
 					<Text style={styles.noteText} numberOfLines={2}>
-						{template.note}
+						{blueprint.note}
 					</Text>
 				)}
 
@@ -108,7 +108,7 @@ const BlueprintCard = ({ template }) => {
 							color={themeStyle.textColor}
 						/>
 						<Text style={styles.statText}>
-							{template.exercises ? template.exercises.length : 0}{" "}
+							{blueprint.exercises ? blueprint.exercises.length : 0}{" "}
 							exercises
 						</Text>
 					</View>
@@ -123,7 +123,7 @@ const BlueprintCard = ({ template }) => {
 				<View style={styles.iconButtons}>
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => console.log("Edit template")}
+						onPress={() => console.log("Edit blueprint")}
 					>
 						<Ionicons
 							name="pencil"
@@ -134,7 +134,7 @@ const BlueprintCard = ({ template }) => {
 
 					<Pressable
 						style={styles.iconButton}
-						onPress={() => removeTemplateFromStorage(template.templateId)}
+						onPress={() => removeTemplateFromStorage(blueprint.templateId)}
 					>
 						<Ionicons
 							name="trash-outline"
@@ -193,7 +193,7 @@ const BlueprintCard = ({ template }) => {
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
-												console.log("Edit template")
+												console.log("Edit blueprint")
 											}
 										>
 											<Ionicons
@@ -207,7 +207,7 @@ const BlueprintCard = ({ template }) => {
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
-												console.log("Delete template")
+												console.log("Delete blueprint")
 											}
 										>
 											<Ionicons

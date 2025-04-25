@@ -5,7 +5,10 @@ import {
 	getLastBlueprintSyncTime,
 	updateLastBlueprintSyncTime,
 	mergeBlueprintsToRealm,
+	setRealmBlueprint,
 } from "../database/realmBlueprintFunction";
+
+import { uploadBlueprintToFirestore } from "../firestore/firestoreBlueprintServices";
 
 export const getBlueprints = async (realm) => {
 	try {
@@ -18,7 +21,7 @@ export const getBlueprints = async (realm) => {
 };
 
 export const addBlueprint = async (realm, blueprint) => {
-    await setRealmBlueprint(realm, blueprint, "unsynced");
+    setRealmBlueprint(realm, blueprint, "unsynced");
     try{
         uploadBlueprintToFirestore(blueprint);
     }catch (error) {

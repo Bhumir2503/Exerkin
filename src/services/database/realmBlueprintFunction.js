@@ -34,6 +34,11 @@ export const mergeBlueprintsToRealm = (realm, blueprints) => {
 		blueprint.createdAt = blueprint.createdAt.toDate();
 		blueprint.updatedAt = blueprint.updatedAt.toDate();
 		blueprint.syncStatus = "synced";
+
+		console.log(
+			"Blueprint to be merged into Realm:",
+			blueprint
+		);
 		realm.create("Blueprint", blueprint, "modified");
 	});
 };
