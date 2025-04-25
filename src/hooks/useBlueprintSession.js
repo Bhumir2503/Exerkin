@@ -19,7 +19,7 @@ export const useBlueprintSession = () => {
 	const { blueprintNotes, setBlueprintNotes } = useBlueprintNotes();
 	const { blueprintExercises, setBlueprintExercises, clearExercises } =
 		useBlueprintExercises();
-	const { blueprintStorage, setBlueprintStorage } = useBlueprintStorage();
+	const { setBlueprintStorage } = useBlueprintStorage();
 	const { blueprintIdRef, formTypeRef } = useBlueprintMeta();
 
 	const blueprintStart = () => {
@@ -39,7 +39,7 @@ export const useBlueprintSession = () => {
 		});
 
 		try {
-			await addBlueprint(blueprintObject);
+			await addBlueprint(realm, blueprintObject);
 		} catch (error) {
 			console.error("Error adding blueprint:", error);
 		}
@@ -47,8 +47,6 @@ export const useBlueprintSession = () => {
 	};
 
 	const blueprintCancel = () => {
-		blueprintIdRef.current = null;
-		formTypeRef.current = null;
 		setBlueprintTitle("");
 		setBlueprintNotes("");
 		setBlueprintExercises([]);
@@ -56,5 +54,7 @@ export const useBlueprintSession = () => {
 
 	return {
 		blueprintStart,
+		blueprintFinish,
+		blueprintCancel,
 	};
 };

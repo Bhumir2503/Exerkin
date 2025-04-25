@@ -2,12 +2,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 import { useUser } from "../UserContext";
 import { useRealm } from "../RealmProvider";
+
 import {
-	getTemplates,
-	listenToDeletedTemplateChanges,
-	listenToTemplateChanges,
-	deleteTemplate,
-} from "../../services/functions/templateFunctions";
+	getBlueprints,
+	listenToBlueprintChanges,
+	listenToDeletedBlueprintChanges,
+} from "../../services/functions/blueprintFunctions";
 
 const BlueprintStorageContext = createContext();
 
@@ -20,11 +20,11 @@ export const BlueprintStorageProvider = ({ children }) => {
 	useEffect(() => {
 		if (!user) return;
 
-		const unsubscribe = listenToTemplateChanges(
+		const unsubscribe = listenToBlueprintChanges(
 			realm,
 			user.uid,
 			async () => {
-				const updatedTemplates = await getTemplates(realm, user.uid);
+				const updatedTemplates = await getBlueprints(realm, user.uid);
 				setStoredBlueprints(updatedTemplates);
 			}
 		);
@@ -37,11 +37,11 @@ export const BlueprintStorageProvider = ({ children }) => {
 	useEffect(() => {
 		if (!user) return;
 
-		const unsubscribe = listenToDeletedTemplateChanges(
+		const unsubscribe = listenToDeletedBlueprintChanges(
 			realm,
 			user.uid,
 			async () => {
-				const updatedTemplates = await getTemplates(realm, user.uid);
+				const updatedTemplates = await getBlueprints(realm, user.uid);
 				setStoredBlueprints(updatedTemplates);
 			}
 		);
@@ -50,24 +50,23 @@ export const BlueprintStorageProvider = ({ children }) => {
 		};
 	}, [user, realm]);
 
-	const removeTemplateFromStorage = (templateId) => {
-		if (!storedBlueprints) return;
-		if (!user) return;
-		try {
-			deleteTemplate(realm, templateId);
-			const updatedTemplates = getTemplates(realm, user.uid);
-			setStoredBlueprints(updatedTemplates);
-		} catch (error) {
-			console.error("Failed to delete template:", error);
-		}
-	};
+	// const removeTemplateFromStorage = (templateId) => {
+	// 	if (!storedBlueprints) return;
+	// 	if (!user) return;
+	// 	try {
+	// 		deleteTemplate(realm, templateId);
+	// 		const updatedTemplates = getBlueprints(realm, user.uid);
+	// 		setStoredBlueprints(updatedTemplates);
+	// 	} catch (error) {
+	// 		console.error("Failed to delete template:", error);
+	// 	}
+	// };
 
 	return (
 		<BlueprintStorageContext.Provider
 			value={{
 				storedBlueprints,
 				setStoredBlueprints,
-				removeTemplateFromStorage,
 			}}
 		>
 			{children}

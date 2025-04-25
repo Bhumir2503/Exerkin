@@ -37,6 +37,7 @@ export const BlueprintSchema = {
 		exercises: "BlueprintExercise[]",
 		createdAt: "date",
 		updatedAt: "date",
+		deleted: "bool?",
 		deletedAt: "date?",
 		unitSystem: "string", // "metric" or "imperial"
 		syncStatus: "string", // "synced", "pending", "failed"
