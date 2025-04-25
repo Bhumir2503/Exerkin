@@ -8,7 +8,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../contexts/ThemeContext";
 import { Swipeable } from "react-native-gesture-handler";
-import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 
 const UserInputSection = ({
 	id,
@@ -19,7 +19,7 @@ const UserInputSection = ({
 	lengths,
 	values,
 }) => {
-	const { removeSetFromExercise } = useWorkoutExercises();
+	const { removeSetFromExercise } = useBlueprintExercises();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 

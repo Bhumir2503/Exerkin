@@ -2,102 +2,106 @@ import { Text, View, StyleSheet, Pressable } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../../contexts/ThemeContext";
-import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu";
+import {
+	Menu,
+	MenuTrigger,
+	MenuOptions,
+	MenuOption,
+} from "react-native-popup-menu";
 
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 
 const CardioDistanceExercise = ({ exercise }) => {
-const { themeStyle } = useTheme();
-    const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExercise } = useWorkoutExercises();
+	const { themeStyle } = useTheme();
+	const styles = createStyles(themeStyle);
+	const { addSetToExercise, updateSetInExercise, removeExercise } =
+		useBlueprintExercises();
 
-    const addSet = () => {
-        // Add a new set with null values for time and distance
-        addSetToExercise(exercise.exerciseId, buildSetObject());
+	const addSet = () => {
+		// Add a new set with null values for time and distance
+		addSetToExercise(exercise.exerciseId, buildSetObject());
+	};
 
-    };
+	const handleTimeChange = (text, index) => {
+		// Store the previous value to compare
+		const prevValue = exercise.sets[index]?.time || "";
 
+		// If user is trying to delete and the text is shorter
+		if (text.length < prevValue.length) {
+			// Handle backspace - we'll remove the last character
+			// But we need to handle cases where the last character is a colon
+			if (prevValue.endsWith(":")) {
+				// If deleting a colon, also remove the digit before it
+				const newValue = prevValue.slice(0, -2);
+				updateSetInExercise(exercise.exerciseId, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
+				return;
+			} else {
+				// Normal backspace - just remove the last character
+				const newValue = prevValue.slice(0, -1);
+				updateSetInExercise(exercise.exerciseId, index, {
+					...exercise.sets[index],
+					time: newValue !== "" ? newValue : null,
+				});
+				return;
+			}
+		}
 
-    const handleTimeChange = (text, index) => {
-        // Store the previous value to compare
-        const prevValue = exercise.sets[index]?.time || "";
+		// For adding characters, keep only numbers and colons
+		let number = text.replace(/[^0-9:]/g, "");
 
-        // If user is trying to delete and the text is shorter
-        if (text.length < prevValue.length) {
-            // Handle backspace - we'll remove the last character
-            // But we need to handle cases where the last character is a colon
-            if (prevValue.endsWith(":")) {
-                // If deleting a colon, also remove the digit before it
-                const newValue = prevValue.slice(0, -2);
-                updateSetInExercise(exercise.exerciseId, index, {
-                    ...exercise.sets[index],
-                    time: newValue !== "" ? newValue : null,
-                });
-                return;
-            } else {
-                // Normal backspace - just remove the last character
-                const newValue = prevValue.slice(0, -1);
-                updateSetInExercise(exercise.exerciseId, index, {
-                    ...exercise.sets[index],
-                    time: newValue !== "" ? newValue : null,
-                });
-                return;
-            }
-        }
+		// Format time as MM:SS or HH:MM:SS
+		if (number) {
+			// Remove any existing colons
+			const digits = number.replace(/:/g, "");
 
-        // For adding characters, keep only numbers and colons
-        let number = text.replace(/[^0-9:]/g, "");
+			if (digits.length <= 2) {
+				// If 1-2 digits, treat as seconds only
+				number = digits;
+			} else if (digits.length <= 4) {
+				// Format as MM:SS
+				const minutes = digits.slice(0, digits.length - 2);
+				const seconds = digits.slice(digits.length - 2);
+				number = `${minutes}:${seconds}`;
+			} else {
+				// Format as HH:MM:SS for longer inputs
+				const seconds = digits.slice(digits.length - 2);
+				const minutes = digits.slice(
+					digits.length - 4,
+					digits.length - 2
+				);
+				const hours = digits.slice(0, digits.length - 4);
+				number = `${hours}:${minutes}:${seconds}`;
+			}
+		}
 
-        // Format time as MM:SS or HH:MM:SS
-        if (number) {
-            // Remove any existing colons
-            const digits = number.replace(/:/g, "");
+		// Update the time for the specific set
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			time: number !== "" ? number : null,
+		});
+	};
 
-            if (digits.length <= 2) {
-                // If 1-2 digits, treat as seconds only
-                number = digits;
-            } else if (digits.length <= 4) {
-                // Format as MM:SS
-                const minutes = digits.slice(0, digits.length - 2);
-                const seconds = digits.slice(digits.length - 2);
-                number = `${minutes}:${seconds}`;
-            } else {
-                // Format as HH:MM:SS for longer inputs
-                const seconds = digits.slice(digits.length - 2);
-                const minutes = digits.slice(
-                    digits.length - 4,
-                    digits.length - 2
-                );
-                const hours = digits.slice(0, digits.length - 4);
-                number = `${hours}:${minutes}:${seconds}`;
-            }
-        }
+	const handleDistanceChange = (text, index) => {
+		// Allow decimal points for distance
+		const number = text.replace(/[^0-9.]/g, "");
 
-        // Update the time for the specific set
-        updateSetInExercise(exercise.exerciseId, index, {
-            ...exercise.sets[index],
-            time: number !== "" ? number : null,
-        });
-    };
+		// Update the distance for the specific set
+		updateSetInExercise(exercise.exerciseId, index, {
+			...exercise.sets[index],
+			distance: number !== "" ? number : null,
+		});
+	};
 
-    const handleDistanceChange = (text, index) => {
-        // Allow decimal points for distance
-        const number = text.replace(/[^0-9.]/g, "");
+	const handleDeleteExercise = () => {
+		removeExercise(exercise.exerciseId);
+	};
 
-        // Update the distance for the specific set
-        updateSetInExercise(exercise.exerciseId, index, {
-            ...exercise.sets[index],
-            distance: number !== "" ? number : null,
-        });
-    };
-
-    const handleDeleteExercise = () => {
-        removeExercise(exercise.exerciseId);
-    }
-
-    return (
+	return (
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>
@@ -139,7 +143,7 @@ const { themeStyle } = useTheme();
 					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric", "decimal"]}
-					placeholders={["30:00", "1.5"]}
+					placeholders={["", ""]}
 					functions={[handleTimeChange, handleDistanceChange]}
 					lengths={[7, 5]}
 					values={[set.time, set.distance]}
@@ -150,7 +154,7 @@ const { themeStyle } = useTheme();
 			</Pressable>
 		</View>
 	);
-}
+};
 
 const createStyles = (themeStyle) => {
 	return StyleSheet.create({

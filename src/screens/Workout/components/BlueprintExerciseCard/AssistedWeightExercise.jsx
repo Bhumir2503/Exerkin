@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, Pressable } from "react-native";
 import Header from "./Header";
 import UserInputSection from "./UserInputSection";
 import { useTheme } from "../../../../contexts/ThemeContext";
-import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
 	Menu,
@@ -17,7 +17,7 @@ const AssistedWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise, removeExercise } =
-		useWorkoutExercises();
+		useBlueprintExercises();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
@@ -92,7 +92,7 @@ const AssistedWeightExercise = ({ exercise }) => {
 					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["decimal", "numeric"]}
-					placeholders={["135", "12"]}
+					placeholders={["", ""]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}

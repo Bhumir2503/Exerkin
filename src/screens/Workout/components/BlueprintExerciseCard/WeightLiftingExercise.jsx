@@ -11,13 +11,12 @@ import {
 } from "react-native-popup-menu";
 
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
-import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
-
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise, removeExercise } =
-		useWorkoutExercises();
+		useBlueprintExercises();
 
 	const addSet = () => {
 		// Add a new set with null values for weight and reps
@@ -92,7 +91,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["decimal", "numeric"]}
-					placeholders={["135", "12"]}
+					placeholders={["", ""]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}

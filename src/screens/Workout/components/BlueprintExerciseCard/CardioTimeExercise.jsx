@@ -12,13 +12,13 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
-import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 
 const CardioTimeExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { addSetToExercise, updateSetInExercise, removeExercise } =
-		useWorkoutExercises();
+		useBlueprintExercises();
 
 	const addSet = () => {
 		addSetToExercise(exercise.exerciseId, buildSetObject());
@@ -119,7 +119,7 @@ const CardioTimeExercise = ({ exercise }) => {
 					id={exercise.exerciseId}
 					index={index}
 					inputTypes={["numeric"]}
-					placeholders={["10:00"]}
+					placeholders={[""]}
 					functions={[handleTimeChange]}
 					lengths={[7]}
 					values={[set.time]}
