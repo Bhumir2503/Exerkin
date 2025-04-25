@@ -20,7 +20,8 @@ const BlueprintHeader = ({ navigation }) => {
 	const workoutLength = blueprintExercises.length;
 
 	const handleDownArrowPress = () => {
-		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
+		console.log("Down arrow pressed");
+		// navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
 
 	const handleTitleChange = (text) => {
@@ -39,12 +40,12 @@ const BlueprintHeader = ({ navigation }) => {
 			<View style={{ ...styles.container }}>
 				{/* Left section */}
 				<View style={styles.leftSection}>
-					<Ionicons
+					{/* <Ionicons
 						name="chevron-down"
 						size={32}
 						color={themeStyle.primary}
 						onPress={handleDownArrowPress}
-					/>
+					/> */}
 				</View>
 				{/* Center section - always centered */}
 				<View style={styles.centerSection}>
