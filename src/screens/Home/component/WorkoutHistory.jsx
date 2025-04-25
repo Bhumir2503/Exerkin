@@ -20,62 +20,10 @@ const WorkoutHistory = ({ navigation }) => {
 	const workoutHistoryLength = workoutHistory.length;
 
 	const truncateTitle = (text, maxLength = 20) => {
-		if (!text) return "No title";
 
-		if (text.length > maxLength) {
-			return text.substring(0, maxLength - 3).trim() + " ...";
-		}
 		return text;
 	};
 
-	const truncateNotes = (text, maxLength = 50) => {
-		if (!text) return "No notes";
-
-		//splitting by punctuation
-		const sentences = text.match(/[^.!?]+[.!?]*/g);
-
-		if (sentences && sentences.length > 0) {
-			//when there is punctuation, return this
-			let truncatedText = sentences[0].trim();
-			if (truncatedText.length >= maxLength) {
-				return (
-					truncatedText.substring(0, maxLength - 3).trim() + " ..."
-				);
-			}
-
-			//add part of the second sentence.
-			if (sentences.length > 1) {
-				let secondSentenceHalf = sentences[1]
-					.trim()
-					.split(" ")
-					.slice(0, 4)
-					.join(" ");
-				let combinedText = `${truncatedText} ${secondSentenceHalf}`;
-
-				if (combinedText.length > maxLength) {
-					return truncatedText + " ...";
-				}
-				return combinedText + " ...";
-			}
-
-			return truncatedText + " ...";
-		}
-
-		// if there is no punctuation, split by spaces and limit
-		if (text.includes(" ")) {
-			// Truncate by words
-			const words = text.split(" ");
-			let truncatedText = words.slice(0, 15).join(" ");
-
-			if (text.length > maxLength) {
-				return truncatedText + " ...";
-			}
-			return truncatedText;
-		}
-
-		// if there is no space or punctuation, stop using hardcode maxlength.
-		return text.substring(0, maxLength - 3) + " ...";
-	};
 
 	const generateNumExercises = (num) => {
 		if (num != 1) {
@@ -83,6 +31,12 @@ const WorkoutHistory = ({ navigation }) => {
 		} else {
 			return `${num} exercise`;
 		}
+	};
+
+	const formatCompletedDate = (timestamp) => {
+		const date = new Date(timestamp);
+		const options = { month: "short", day: "numeric", year: "numeric" };
+		return date.toLocaleDateString("en-US", options);
 	};
 
 	if (workoutHistoryLength === 0) {
@@ -109,7 +63,12 @@ const WorkoutHistory = ({ navigation }) => {
 				data={[...workoutHistory].sort(
 					(a, b) => b.startedAt - a.startedAt
 				)}
-				style={{ width: "100%", flex: 1, borderTopRightRadius: 8, borderTopLeftRadius: 8 }}
+				style={{
+					width: "100%",
+					flex: 1,
+					borderTopRightRadius: 8,
+					borderTopLeftRadius: 8,
+				}}
 				contentContainerStyle={{
 					paddingBottom: 75,
 				}}
@@ -119,27 +78,54 @@ const WorkoutHistory = ({ navigation }) => {
 						onPress={() => setSelectedWorkout(item)}
 						style={styles.workoutCard}
 					>
-						<View style={styles.workoutHeader}>
-							<Text style={styles.workoutTitle}>
-								{item.name
-									? truncateTitle(item.name)
-									: "Workout"}{" "}
-								- {formatTimeStamptoDateString(item.startedAt)}
+						<View style={styles.workoutLeftSection}>
+							<View style={styles.workoutHeader}>
+								<Text style={styles.workoutTitle}>
+									{item.name
+										? truncateTitle(item.name)
+										: "Workout"}
+								</Text>
+								{item.syncStatus !== "synced" && (
+									<Ionicons
+										name="cloud-offline-outline"
+										size={20}
+										color={themeStyle.accent}
+									/>
+								)}
+							</View>
+							<Text style={styles.workoutDate}>
+								Completed:{" "}
+								{formatCompletedDate(
+									item.completedAt || item.startedAt
+								)}
 							</Text>
-							{item.syncStatus !== "synced" && (
-								<Ionicons
-									name="cloud-offline-outline"
-									size={20}
-									color={themeStyle.accent}
-								/>
+							{item.notes && (
+								<Text
+									style={styles.workoutNote}
+									numberOfLines={2}
+								>
+									{item.notes}
+								</Text>
 							)}
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									marginTop: 8,
+								}}
+							>
+								<Ionicons
+									name="barbell-outline"
+									size={20}
+									color={themeStyle.textColor}
+								/>
+								<Text style={styles.exerciseCount}>
+									{generateNumExercises(
+										item.exercises.length
+									)}
+								</Text>
+							</View>
 						</View>
-						<Text style={styles.workoutTime}>
-							{generateNumExercises(item.exercises.length)}
-						</Text>
-						<Text style={styles.workoutNote}>
-							{truncateNotes(item.notes)}
-						</Text>
 					</Pressable>
 				)}
 			/>
@@ -163,44 +149,46 @@ const createStyles = (themeStyle) =>
 		title: {
 			fontSize: 20,
 			fontWeight: "bold",
-
 			color: themeStyle.textColor,
 		},
 		workoutCard: {
 			backgroundColor: themeStyle.card,
-			padding: 20,
+			padding: 16,
 			borderRadius: 8,
 			marginVertical: 10,
+			borderWidth: 1,
+			borderColor: themeStyle.borderColor,
 		},
-		workoutTitle: {
-			fontSize: 18,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-		},
-		syncStatus: {
-			fontSize: 14,
-			color: themeStyle.accent,
-			fontWeight: "bold",
-			textAlign: "right",
-		},
-
-		workoutTime: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginTop: 5,
-		},
-		workoutNote: {
-			fontSize: 14,
-			fontStyle: "italic",
-			color: themeStyle.textColorSecondary,
-			marginTop: 5,
-		},
-
 		workoutHeader: {
 			flexDirection: "row",
 			justifyContent: "space-between",
-			alignItems: "center",
-			width: "100%",
+			alignItems: "flex-start",
+		},
+		workoutLeftSection: {
+			flex: 1,
+		},
+		workoutTitle: {
+			fontSize: 20,
+			fontWeight: "700",
+			color: themeStyle.textColor,
+			marginBottom: 4,
+		},
+		workoutDate: {
+			fontSize: 12,
+			color: themeStyle.textColorSecondary,
+			marginBottom: 2,
+		},
+		exerciseCount: {
+			marginLeft: 8,
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+		},
+		workoutNote: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+			marginTop: 8,
+			lineHeight: 20,
+			fontStyle: "italic",
 		},
 	});
 

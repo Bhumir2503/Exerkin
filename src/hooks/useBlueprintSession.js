@@ -6,7 +6,7 @@ import { useBlueprintMeta } from "../contexts/blueprint/BlueprintMetaContext";
 
 import { useUser } from "../contexts/UserContext";
 import { useRealm } from "../contexts/RealmProvider";
-import { addBlueprint } from "../services/functions/blueprintFunctions";
+import { addBlueprint, getBlueprints } from "../services/functions/blueprintFunctions";
 
 import { buildBlueprintObject } from "../services/helpers/objectBuilder";
 
@@ -19,27 +19,29 @@ export const useBlueprintSession = () => {
 	const { blueprintNotes, setBlueprintNotes } = useBlueprintNotes();
 	const { blueprintExercises, setBlueprintExercises, clearExercises } =
 		useBlueprintExercises();
-	const { blueprintStorage, setBlueprintStorage } = useBlueprintStorage();
-	const { templateIdRef, formTypeRef } = useBlueprintMeta();
+	const { setStoredBlueprints } = useBlueprintStorage();
+	const { blueprintIdRef } = useBlueprintMeta();
 
 	const blueprintStart = () => {
 		clearExercises();
-		templateIdRef.current = uuid.v4();
-		formTypeRef.current = "blueprint";
+		blueprintIdRef.current = uuid.v4();
+		console.log("Blueprint started, " + blueprintIdRef.current);
 	};
 
 	const blueprintFinish = async () => {
 		const blueprintObject = buildBlueprintObject({
 			userId: user.uid,
-			blueprintId: templateIdRef.current,
+			blueprintId: blueprintIdRef.current,
 			blueprintTitle: blueprintTitle,
 			blueprintNotes: blueprintNotes,
 			blueprintExercises: blueprintExercises,
-			unitSystem: user.unitSystem,
+			unitSystem: "imperial",
 		});
 
 		try {
-			await addBlueprint(blueprintObject);
+			await addBlueprint(realm, blueprintObject);
+			const updatedBlueprints = await getBlueprints(realm, user.uid);
+			setStoredBlueprints(updatedBlueprints);
 		} catch (error) {
 			console.error("Error adding blueprint:", error);
 		}
@@ -47,8 +49,6 @@ export const useBlueprintSession = () => {
 	};
 
 	const blueprintCancel = () => {
-		templateIdRef.current = null;
-		formTypeRef.current = null;
 		setBlueprintTitle("");
 		setBlueprintNotes("");
 		setBlueprintExercises([]);
@@ -56,5 +56,7 @@ export const useBlueprintSession = () => {
 
 	return {
 		blueprintStart,
+		blueprintFinish,
+		blueprintCancel,
 	};
 };

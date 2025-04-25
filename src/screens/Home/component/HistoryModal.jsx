@@ -22,11 +22,20 @@ import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
 	const { removeWorkoutFromHistory } = useWorkoutHistory();
-	const {editStart, workoutIdRef } = useWorkoutSession();
+	const { editStart, workoutIdRef } = useWorkoutSession();
 	const [showFullNote, setShowFullNote] = useState(false);
 
 	const styles = createStyles(themeStyle);
 
+	// Format creation date
+	const formatDate = (dateString) => {
+		const date = new Date(dateString);
+		return date.toLocaleDateString("en-US", {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		});
+	};
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -96,7 +105,13 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 									</Pressable>
 
 									<Pressable
-										style={{...styles.iconButton, opacity: workoutIdRef.current !== null ? 0.5 : 1}}
+										style={{
+											...styles.iconButton,
+											opacity:
+												workoutIdRef.current !== null
+													? 0.5
+													: 1,
+										}}
 										onPress={handleEdit}
 										disabled={workoutIdRef.current !== null}
 									>
@@ -126,11 +141,7 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								}}
 							>
 								<Text style={styles.text}>
-									{selectedWorkout.duration
-										? formatDurationTimeToText(
-												selectedWorkout.duration
-										  )
-										: "No duration"}
+									{formatDate(selectedWorkout.completedAt)}
 								</Text>
 								<Text style={styles.text}>
 									{selectedWorkout.startedAt
@@ -152,25 +163,18 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 							{selectedWorkout.notes !== "" && (
 								<View style={{ marginTop: 10 }}>
 									<Text
-									style={styles.text}
-									numberOfLines={showFullNote ? undefined : 3}
-									ellipsizeMode="tail"
+										style={styles.notes}
+										ellipsizeMode="tail"
 									>
-									<Text style={{ fontWeight: "bold" }}>Notes: </Text>
-									{selectedWorkout.notes}
+										<Text style={{ fontWeight: "bold" }}>
+											Notes:{" "}
+										</Text>
+										{selectedWorkout.notes}
 									</Text>
-
-									{/* Toggle button only if the note has multiple lines */}
-									<TouchableOpacity onPress={() => setShowFullNote(!showFullNote)}>
-									<Text style={{ color: themeStyle.primary, marginTop: 5 }}>
-										{showFullNote ? "Hide full note" : "View full note"}
-									</Text>
-									</TouchableOpacity>
 								</View>
 							)}
 						</View>
 
-						
 						<ScrollView
 							style={styles.scrollView}
 							contentContainerStyle={styles.scrollViewContent}
@@ -178,15 +182,28 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 							showsVerticalScrollIndicator={false}
 						>
 							<View>
-							{selectedWorkout.base64Image && (
-								<View style={{ alignItems: "center", marginVertical: 10 }}>
-									<Image
-									source={{ uri: `data:image/jpeg;base64,${selectedWorkout.base64Image}` }}
-									style={{ width: "100%", aspectRatio: 3 / 4, borderRadius: 12, alignSelf: "center", marginBottom: 10}}
-									resizeMode="contain"
-									/>
-								</View>
-							)}
+								{selectedWorkout.base64Image && (
+									<View
+										style={{
+											alignItems: "center",
+											marginVertical: 10,
+										}}
+									>
+										<Image
+											source={{
+												uri: `data:image/jpeg;base64,${selectedWorkout.base64Image}`,
+											}}
+											style={{
+												width: "100%",
+												aspectRatio: 3 / 4,
+												borderRadius: 12,
+												alignSelf: "center",
+												marginBottom: 10,
+											}}
+											resizeMode="contain"
+										/>
+									</View>
+								)}
 								{selectedWorkout.exercises.map(
 									(exercise, index) => (
 										<ExerciseCard
@@ -288,21 +305,26 @@ const createStyles = (themeStyle) =>
 		scrollView: {
 			width: "100%",
 			padding: 20,
-			paddingVertical: 10,
+			paddingVertical: 0,
+			paddingTop: 10,
 		},
 		scrollViewContent: {
 			paddingBottom: 20,
 		},
 		title: {
-			fontSize: 18,
+			fontSize: 22,
 			fontWeight: "bold",
-			color: themeStyle.primary || "#000",
+			color: themeStyle.textColor || "#000",
 			flex: 2,
 		},
 		text: {
-			fontSize: 16,
-			marginBottom: 15,
-			color: themeStyle.textColor || "#000",
+			fontSize: 14,
+			color: themeStyle.textColorSecondary || "#000",
+		},
+		notes: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary || "#000",
+			marginBottom: 10,
 		},
 		bold: {
 			fontWeight: "bold",
@@ -346,7 +368,7 @@ const createStyles = (themeStyle) =>
 			fontWeight: "bold",
 		},
 		actionButtons: {
-			flex: 1,
+			flex: 1.5,
 			flexDirection: "row",
 			justifyContent: "flex-end",
 			alignItems: "center",

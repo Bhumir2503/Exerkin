@@ -5,13 +5,16 @@ import InfoCard from "../../../components/InfoCard";
 import BlueprintCard from "./BlueprintCard";
 
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
+import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
 
 const BlueprintSection = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { storedBlueprints } = useBlueprintStorage();
+	const { blueprintStart } = useBlueprintSession();
 
 	const handlePress = () => {
+		blueprintStart();
 		navigation.navigate("BlueprintModalScreen");
 		console.log("Blueprint Add Button Pressed");
 	};
@@ -47,7 +50,7 @@ const BlueprintSection = ({ navigation }) => {
 			>
 				<Text style={styles.title}>Blueprint</Text>
 				<Pressable
-					onPress={() => navigation.navigate("Blueprints")}
+					onPress={() => handlePress()}
 					style={{
 						borderRadius: 8,
 						padding: 4,
@@ -57,10 +60,10 @@ const BlueprintSection = ({ navigation }) => {
 					<Ionicons name="add" size={28} color={themeStyle.primary} />
 				</Pressable>
 			</View>
-			{storedBlueprints.map((template) => (
+			{storedBlueprints && storedBlueprints.map((blueprint) => (
 				<BlueprintCard
-					key={template.templateId}
-					template={template}
+					key={blueprint.blueprintId}
+					blueprint={blueprint}
 					navigation={navigation}
 				/>
 			))}

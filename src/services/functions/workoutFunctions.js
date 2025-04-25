@@ -18,7 +18,6 @@ import {
 } from "../database/realmWorkoutFunctions";
 
 // Utility Imports
-import NetInfo from "@react-native-community/netinfo";
 import firestore from "@react-native-firebase/firestore";
 
 const workoutsCollection = firestore().collection("workouts");
@@ -73,7 +72,7 @@ export const listenToDeletedWorkoutChanges = (realm, userId, onUpdate) => {
 		.onSnapshot(
 			(snapshot) => {
 				if (!snapshot || snapshot.empty) {
-					console.log("No deleted workouts found.");
+					console.log("No deleted workouts found. -- 1 Read from firestore");
 					onUpdate();
 					return;
 				}

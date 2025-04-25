@@ -31,7 +31,7 @@ export const WorkoutSchema = {
 	primaryKey: "workoutId",
 	properties: {
 		workoutId: "string",
-		templateId: "string?",
+		blueprintId: "string?",
 		userId: "string",
 		name: "string",
 		notes: "string?",
@@ -44,7 +44,7 @@ export const WorkoutSchema = {
 		unitSystem: "string?", // "metric" or "imperial"
 		imageURL: "string?",
 		base64Image: "string?",
-		isTemplate: "bool?",
+		isBlueprint: "bool?",
 		deleted: "bool?",
 		deletedAt: "date?",
 		syncStatus: "string?", // "synced", "pending", "failed"

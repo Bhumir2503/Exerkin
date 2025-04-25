@@ -10,9 +10,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import BlueprintProvider from "./src/contexts/blueprint/BlueprintProvider";
 import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
-import { TemplateProvider } from "./src/contexts/TemplateContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
-import { NetworkProvider } from "./src/contexts/NetworkContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 
 import { enableScreens } from "react-native-screens";
@@ -57,27 +55,27 @@ export default function App() {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
-			<NetworkProvider>
+
 				<ThemeProvider>
 					<SafeAreaProvider>
 						<MenuProvider>
 							<GestureHandlerRootView style={{ flex: 1 }}>
 								<RealmProvider>
 									<UserProvider>
-										<TemplateProvider>
+
 											<WorkoutProvider>
 												<BlueprintProvider>
 													<AppContent />
 												</BlueprintProvider>
 											</WorkoutProvider>
-										</TemplateProvider>
+
 									</UserProvider>
 								</RealmProvider>
 							</GestureHandlerRootView>
 						</MenuProvider>
 					</SafeAreaProvider>
 				</ThemeProvider>
-			</NetworkProvider>
+
 		</View>
 	);
 }
