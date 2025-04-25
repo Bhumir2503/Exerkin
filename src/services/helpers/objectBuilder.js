@@ -92,36 +92,31 @@ export const buildSetObject = () => {
 	return set;
 };
 
-export const buildTemplateObject = (
-	templateId,
-	userId,
-	name,
-	notes,
-	exercises,
-	unitSystem,
-	status
-) => {
+export const buildBlueprintObject = (blueprint) => {
 	if (name === "") {
 		name = "Untitled Blueprint";
 	}
 
-	const workoutFiltered = exercises;
+	const workoutFiltered = blueprint.blueprintExercises.filter(
+		(exercise) => exercise.sets.length > 0
+	);
+
 
 	const workoutChecked = workoutFiltered.filter(
 		(exercise) => exercise.sets.length > 0
 	);
 
 	const template = {
-		templateId,
-		userId,
-		name,
-		note: notes,
+		templateId: blueprint.templateId,
+		userId: blueprint.userId,
+		name: blueprint.blueprintTitle,
+		note: blueprint.blueprintNotes,
 		exercises: workoutChecked,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		deletedAt: null,
-		unitSystem,
-		syncStatus: status,
+		unitSystem: blueprint.unitSystem,
+		syncStatus: "Pending",
 	};
 	return template;
 };
