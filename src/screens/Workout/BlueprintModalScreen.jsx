@@ -13,7 +13,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import BlueprintHeader from "./components/BlueprintHeader";
 import BlueprintFooter from "./components/BlueprintFooter";
 import BlueprintNotes from "./components/BlueprintNotes";
-import BlueprintDragList from "./components/BlueprintDragList";
+import BlueprintDragList from "./components/BlueprintDraglist";
 
 const BlueprintModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
