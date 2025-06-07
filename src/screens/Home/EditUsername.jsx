@@ -11,14 +11,21 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
+import firestore from '@react-native-firebase/firestore';
+
+
 
 const EditUsername = ({ navigation, route }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	let userObject = useUser();
+
+
 	// You can pass the current username as a parameter from the previous screen
 	const currentUsername = route.params?.username || "";
-
+	console.log("current username is:", userObject.username)
 	const [username, setUsername] = useState(currentUsername);
 	const [isAvailable, setIsAvailable] = useState(true);
 	const [isChecking, setIsChecking] = useState(false);
@@ -46,16 +53,19 @@ const EditUsername = ({ navigation, route }) => {
 		const timer = setTimeout(async () => {
 			if (username.trim() !== "") {
 				setIsChecking(true);
-
-				// Simulate API call to check if username is available
-				// In a real app, you would make an API call to check availability
 				try {
-					await new Promise((resolve) => setTimeout(resolve, 800));
+					async function checkUsernameAvalibility(username) {
+						const documentSnapshot = await firestore().collection('usernames').doc(username).get();
 
-					// Mock check - in a real app, you'd check against your database
-					const mockAvailable =
-						username !== "taken" && username !== "admin";
-					setIsAvailable(mockAvailable);
+						if (documentSnapshot.exists) {
+							return false;
+						} else {
+							return true;
+						}
+					}
+
+					const check = await checkUsernameAvalibility(username);
+					setIsAvailable(check);
 				} catch (error) {
 					console.error(
 						"Error checking username availability",
@@ -104,7 +114,10 @@ const EditUsername = ({ navigation, route }) => {
 			// await updateUsername(username);
 
 			// Simulate API call with timeout
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await firestore().collection('usernames').doc(userObject.username).delete();
+			await firestore().collection('usernames').doc(username).set({"uid": userObject.user.uid});
+			await firestore().collection('users').doc(userObject.user.uid).update({username: username});
+			userObject.updateUsername(username);
 
 			setIsLoading(false);
 			Alert.alert(
@@ -139,7 +152,7 @@ const EditUsername = ({ navigation, route }) => {
 					Your username is visible to other users and is used for
 					tagging and sharing workouts
 				</Text>
-
+				<Text style={styles.subtitle}>Your current username is: {userObject.username}</Text>
 				<View style={styles.inputContainer}>
 					<Text style={styles.inputLabel}>Username</Text>
 					<View style={styles.usernameInputContainer}>

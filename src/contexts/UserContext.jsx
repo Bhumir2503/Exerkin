@@ -152,6 +152,10 @@ export const UserProvider = ({ children }) => {
 		setIsNewUser(false);
 	};
 
+	const updateUsername = (newUsername) => {
+		setUsername(newUsername);
+	}
+
 	const resetUserDocUnsubscribe = () => {
 		if (userDocUnsubscribeRef.current) {
 			userDocUnsubscribeRef.current();
@@ -188,6 +192,7 @@ export const UserProvider = ({ children }) => {
 				setIsNewUser,
 				setupComplete,
 				onSetupComplete,
+				updateUsername,
 			}}
 		>
 			{children}
