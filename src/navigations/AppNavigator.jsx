@@ -36,13 +36,13 @@ export default function AppNavigator() {
 	return (
 		<Tab.Navigator
 			// initialRouteName="Home"
-			initialRouteName="Home"
+			initialRouteName="Workout"
 			screenOptions={({ route }) => ({
 				tabBarIcon: ({ focused, color, size }) => {
 					let iconName;
 
-					if (route.name === "Home") {
-						iconName = focused ? "home" : "home-outline";
+					if (route.name === "Me") {
+						iconName = focused ? "person" : "person-outline";
 					} else if (route.name === "Feed") {
 						iconName = focused ? "people" : "people-outline";
 					} else if (route.name === "Workout") {
@@ -74,10 +74,10 @@ export default function AppNavigator() {
 				},
 			})}
 		>
-			<Tab.Screen name="Home" component={HomeNavigator} />
 			<Tab.Screen name="Workout" component={WorkoutNavigator} />
 			<Tab.Screen name="Stat" component={StatsNavigator} />
 			<Tab.Screen name="Measure" component={MeasurementNavigator} />
+			<Tab.Screen name="Me" component={HomeNavigator} />
 		</Tab.Navigator>
 	);
 }
