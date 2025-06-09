@@ -14,14 +14,11 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
-import firestore from "@react-native-firebase/firestore";
-import uuid from "react-native-uuid";
+
 import {
 	saveUserProfile,
 	isUsernameAvailable,
 } from "../../services/firestore/firestoreUserServices";
-
-import { addMeasurement } from "../../services/firestore/firestoreMeasurementServices";
 
 import { useRealm } from "../../contexts/RealmProvider";
 import { setRealmUser } from "../../services/database/realmUserFunctions";
