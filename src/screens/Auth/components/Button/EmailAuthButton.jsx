@@ -1,27 +1,23 @@
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
-import PopUp from "../PopUp";
+import PopUp from "../../../../components/PopUp";
 import { Ionicons } from "@expo/vector-icons";
 
-import SignInForm from "../../screens/Auth/components/SignInForm";
-import SignUpForm from "../../screens/Auth/components/SignUpForm";
-import ForgotPasswordForm from "../../screens/Auth/components/ForgotPasswordForm";
+import SignInForm from "../SignInForm";
+import SignUpForm from "../SignUpForm";
+import ForgotPasswordForm from "../ForgotPasswordForm";
 
 export default function EmailAuthButton() {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [type, setType] = useState("Log In");
 
 	const CloseModal = () => {
-		// Reset the type to "Log In" when closing the modal
 		setType("Log In");
-		// Close the modal
 		setModalVisible(false);
 	};
 
 	const OpenModal = () => {
-		// Reset the type to "Log In" when opening the modal
 		setType("Log In");
-		// Open the modal
 		setModalVisible(true);
 	};
 

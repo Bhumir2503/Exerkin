@@ -8,12 +8,15 @@ import {
 	View,
 	Image,
 } from "react-native";
-import auth from "@react-native-firebase/auth";
+
+import {
+	AppleAuthProvider,
+	getAuth,
+	signInWithCredential,
+} from "@react-native-firebase/auth";
 import { appleAuth } from "@invertase/react-native-apple-authentication";
-import { useUser } from "../../contexts/UserContext";
 
 export default function AppleAuthButton() {
-	const { setIsNewUser } = useUser();
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -51,22 +54,15 @@ export default function AppleAuthButton() {
 
 			// Create a Firebase credential from the response
 			const { identityToken, nonce } = appleAuthRequestResponse;
-			const appleCredential = auth.AppleAuthProvider.credential(
+			const appleCredential = AppleAuthProvider.credential(
 				identityToken,
 				nonce
 			);
 
 			// Sign the user in with the credential
-			const userCredential = await auth().signInWithCredential(
-				appleCredential
-			);
-
-			// Check if this is a new user
-			setIsNewUser(userCredential.additionalUserInfo?.isNewUser);
-
-			return userCredential;
+			signInWithCredential(getAuth(), appleCredential);
 		} catch (error) {
-			console.error("Apple auth error:", error);
+			console.log("Apple auth error:", error);
 		} finally {
 			setLoading(false);
 		}
@@ -89,7 +85,7 @@ export default function AppleAuthButton() {
 				<>
 					<View style={styles.appleIconContainer}>
 						<Image
-							source={require("../../../assets/apple-icon.png")}
+							source={require("../../../../../assets/apple-icon.png")}
 							style={styles.appleIcon}
 							resizeMode="contain"
 						/>

@@ -7,12 +7,15 @@ import {
 	ActivityIndicator,
 	Image,
 } from "react-native";
-import auth from "@react-native-firebase/auth";
+
+import {
+	GoogleAuthProvider,
+	getAuth,
+	signInWithCredential,
+} from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useUser } from "../../contexts/UserContext";
 
 export default function GoogleAuthButton() {
-	const { setIsNewUser } = useUser();
 	const [loading, setLoading] = useState(false);
 
 	GoogleSignin.configure({
@@ -33,31 +36,24 @@ export default function GoogleAuthButton() {
 			const signInResult = await GoogleSignin.signIn();
 
 			// Try the new style of google-sign in result, from v13+ of that module
-			let idToken = signInResult.idToken;
-			if (!idToken && signInResult.data) {
+			idToken = signInResult.data?.idToken;
+			if (!idToken) {
 				// if you are using older versions of google-signin, try old style result
-				idToken = signInResult.data.idToken;
+				idToken = signInResult.idToken;
 			}
-
 			if (!idToken) {
 				throw new Error("No ID token found");
 			}
 
 			// Create a Google credential with the token
-			const googleCredential =
-				auth.GoogleAuthProvider.credential(idToken);
-
-			// Sign-in the user with the credential
-			const userCredential = await auth().signInWithCredential(
-				googleCredential
+			const googleCredential = GoogleAuthProvider.credential(
+				signInResult.data.idToken
 			);
 
-			// Check if this is a new user
-			setIsNewUser(userCredential.additionalUserInfo?.isNewUser);
-
-			return userCredential;
+			// Sign-in the user with the credential
+			return signInWithCredential(getAuth(), googleCredential);
 		} catch (e) {
-			console.warn(e);
+			console.log("Google Sign-In Error: ", e);
 		} finally {
 			setLoading(false);
 		}
@@ -76,7 +72,7 @@ export default function GoogleAuthButton() {
 				<>
 					<View style={styles.googleIconContainer}>
 						<Image
-							source={require("../../../assets/google-icon.png")}
+							source={require("../../../../../assets/google-icon.png")}
 							style={styles.googleIcon}
 							resizeMode="contain"
 						/>

@@ -2,9 +2,9 @@ import React from "react";
 import { StyleSheet, Text, View, Image, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import EmailAuthButton from "../../components/SignInButtons/EmailAuthButton";
-import GoogleAuthButton from "../../components/SignInButtons/GoogleAuthButton";
-import AppleAuthButton from "../../components/SignInButtons/AppleAuthButton";
+import EmailAuthButton from "./components/Button/EmailAuthButton";
+import GoogleAuthButton from "./components/Button/GoogleAuthButton";
+import AppleAuthButton from "./components/Button/AppleAuthButton";
 
 export default function Onboarding({ navigation }) {
 	return (
