@@ -12,6 +12,9 @@ import TextInputIcon from "../../../components/TextInputIcon";
 
 import { useTheme } from "../../../contexts/ThemeContext";
 
+import { isValidEmail } from "../../../services/helpers/textInputChecker";
+import { getAuth, sendPasswordResetEmail } from "@react-native-firebase/auth";
+
 export default function ForgotPasswordForm({ setType }) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -19,6 +22,32 @@ export default function ForgotPasswordForm({ setType }) {
 	const [email, setEmail] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
+
+	const handleButtonPress = () => {
+		console.log("Reset Password button pressed");
+		setIsLoading(true);
+		setError("");
+		if (!isValidEmail(email)) {
+			setError("Invalid email format");
+			setIsLoading(false);
+			return;
+		}
+
+		const auth = getAuth();
+		sendPasswordResetEmail(auth, email)
+			.then(() => {
+				console.log("Password reset email sent successfully!");
+				setIsLoading(false);
+			})
+			.catch((error) => {
+				console.error("Error sending password reset email:", error);
+				setError("Failed to send reset link. Please try again.");
+			})
+			.finally(() => {
+				setIsLoading(false)
+				setType("Log In"); // Reset type to Log In after sending the email
+			});
+	};
 
 	return (
 		<Pressable
@@ -54,9 +83,7 @@ export default function ForgotPasswordForm({ setType }) {
 					(isLoading || !email) && styles.buttonDisabled,
 				]}
 				disabled={isLoading || !email}
-				onPress={() => {
-					console.log("Reset link sent to:", email);
-				}}
+				onPress={handleButtonPress}
 			>
 				{isLoading ? (
 					<ActivityIndicator

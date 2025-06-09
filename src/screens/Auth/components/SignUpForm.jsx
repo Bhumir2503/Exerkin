@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import {
 	Pressable,
 	View,
@@ -9,44 +8,79 @@ import {
 	StyleSheet,
 } from "react-native";
 import TextInputIcon from "../../../components/TextInputIcon";
-
 import { useTheme } from "../../../contexts/ThemeContext";
+
+import {
+	isValidEmail,
+	isValidPassword,
+	isValidConfirmPassword,
+} from "../../../services/helpers/textInputChecker";
+
+import {
+	getAuth,
+	createUserWithEmailAndPassword,
+} from "@react-native-firebase/auth";
 
 export default function SignUpForm({ setType }) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 
-	const handleButtonPress = () => {
-		setIsLoading(true);
+	const isDisabled = isLoading || !email || !password || !confirmPassword;
 
-		try {
-			console.log("Email:", email);
-		} catch (err) {
-			setError(err.message);
+	const handleButtonPress = () => {
+		console.log("Sign Up button pressed");
+		setIsLoading(true);
+		setError("");
+
+		if (!isValidEmail(email)) {
+			setError("Invalid email format");
+			setIsLoading(false);
+			return;
 		}
-		setIsLoading(false);
+		if (!isValidPassword(password)) {
+			setError(
+				"Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
+			);
+			setIsLoading(false);
+			return;
+		}
+		if (!isValidConfirmPassword(password, confirmPassword)) {
+			setError("Passwords do not match");
+			setIsLoading(false);
+			return;
+		}
+
+		const auth = getAuth();
+		createUserWithEmailAndPassword(auth, email, password)
+			.then(() => {
+				console.log("User account created & signed in!");
+				setEmail("");
+				setPassword("");
+				setConfirmPassword("");
+			})
+			.catch((error) => {
+				setError(error.message);
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
 	};
 
-	// Function to handle the switch to Sign Up form
 	const handleSwitchToLogIn = () => {
 		setType("Log In");
 	};
 
 	return (
-		<Pressable
-			style={styles.formContainer}
-			onPress={() => Keyboard.dismiss()}
-		>
-			{/* Title and Subtext */}
+		<Pressable style={styles.formContainer} onPress={Keyboard.dismiss}>
 			<Text style={styles.title}>Sign Up</Text>
 			<Text style={styles.subText}>Join the Exerkin community</Text>
 
-			{/* Email Fields */}
 			<View style={styles.inputContainer}>
 				<Text style={styles.inputLabel}>Email</Text>
 				<TextInputIcon
@@ -58,42 +92,34 @@ export default function SignUpForm({ setType }) {
 				/>
 			</View>
 
-			{/* Password Fields */}
 			<View style={styles.inputContainer}>
 				<Text style={styles.inputLabel}>Password</Text>
 				<TextInputIcon
 					icon="lock-closed"
 					placeholder="Enter your password"
-					secureTextEntry={true}
+					secureTextEntry
 					setText={setPassword}
 					initalText={password}
 				/>
 			</View>
 
-			{/* Confirm Password Fields */}
 			<View style={styles.inputContainer}>
 				<Text style={styles.inputLabel}>Confirm Password</Text>
 				<TextInputIcon
 					icon="repeat"
 					placeholder="Confirm your password"
-					secureTextEntry={true}
+					secureTextEntry
 					setText={setConfirmPassword}
 					initalText={confirmPassword}
 				/>
 			</View>
 
-			{/* Error Message */}
 			{error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-			{/* Login Button */}
 			<Pressable
-				style={[
-					styles.button,
-					(isLoading || !email || !password || !confirmPassword) &&
-						styles.buttonDisabled,
-				]}
-				onPress={() => handleButtonPress()}
-				disabled={isLoading || !email || !password || !confirmPassword}
+				style={[styles.button, isDisabled && styles.buttonDisabled]}
+				disabled={isDisabled}
+				onPress={handleButtonPress}
 			>
 				{isLoading ? (
 					<ActivityIndicator
@@ -105,7 +131,6 @@ export default function SignUpForm({ setType }) {
 				)}
 			</Pressable>
 
-			{/* Sign Up Link */}
 			<View style={styles.switchContainer}>
 				<Text style={styles.switchText}>Already have an account?</Text>
 				<Pressable
@@ -172,7 +197,6 @@ const createStyles = (themeStyle) =>
 			fontSize: 16,
 			fontWeight: "600",
 		},
-
 		switchContainer: {
 			flexDirection: "row",
 			alignItems: "center",

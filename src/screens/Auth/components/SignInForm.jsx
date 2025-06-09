@@ -12,6 +12,15 @@ import TextInputIcon from "../../../components/TextInputIcon";
 
 import { useTheme } from "../../../contexts/ThemeContext";
 
+import {
+	isValidEmail,
+	isValidPassword,
+} from "../../../services/helpers/textInputChecker";
+import {
+	getAuth,
+	signInWithEmailAndPassword,
+} from "@react-native-firebase/auth";
+
 export default function SignInForm({ setType }) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -21,14 +30,34 @@ export default function SignInForm({ setType }) {
 	const [error, setError] = useState("");
 
 	const handleButtonPress = () => {
+		console.log("Log In button pressed");
 		setIsLoading(true);
-
-		try {
-			console.log("Email:", email);
-		} catch (err) {
-			setError(err.message);
+		setError("");
+		if (!isValidEmail(email)) {
+			setError("Invalid email format");
+			setIsLoading(false);
+			return;
 		}
-		setIsLoading(false);
+		if (!isValidPassword(password)) {
+			setError(
+				"Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
+			);
+			setIsLoading(false);
+			return;
+		}
+
+		const auth = getAuth();
+		signInWithEmailAndPassword(auth, email, password)
+			.then(() => {
+				console.log("User signed in successfully!");
+				setIsLoading(false);
+			})
+			.catch((error) => {
+				setError("Invalid email or password");
+			})
+			.finally(() => {
+				setIsLoading(false);
+			});
 	};
 
 	// Function to handle the switch to Sign Up form

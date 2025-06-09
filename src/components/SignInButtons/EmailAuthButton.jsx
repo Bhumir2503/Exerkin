@@ -11,7 +11,7 @@ export default function EmailAuthButton() {
 	const [modalVisible, setModalVisible] = useState(false);
 	const [type, setType] = useState("Log In");
 
-	const handleClose = () => {
+	const CloseModal = () => {
 		// Reset the type to "Log In" when closing the modal
 		setType("Log In");
 		// Close the modal
@@ -41,7 +41,7 @@ export default function EmailAuthButton() {
 
 			<PopUp
 				visible={modalVisible}
-				onClose={handleClose}
+				onClose={CloseModal}
 				animationType="none"
 			>
 				{type === "Log In" ? (
@@ -80,5 +80,4 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "500",
 	},
-	
 });
