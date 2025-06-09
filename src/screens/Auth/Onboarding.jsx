@@ -1,21 +1,12 @@
 import React from "react";
-import {
-	StyleSheet,
-	Text,
-	View,
-	Dimensions,
-	Image,
-	Platform,
-} from "react-native";
+import { StyleSheet, Text, View, Image, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
 
-import EmailAuthButton from "../../components/SignInButtons/EmailAuthButton";
-import GoogleAuthButton from "../../components/SignInButtons/GoogleAuthButton";
-import AppleAuthButton from "../../components/SignInButtons/AppleAuthButton";
+import EmailAuthButton from "./components/Button/EmailAuthButton";
+import GoogleAuthButton from "./components/Button/GoogleAuthButton";
+import AppleAuthButton from "./components/Button/AppleAuthButton";
 
-export default function Onboarding() {
-
+export default function Onboarding({ navigation }) {
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.headerContainer}>
@@ -45,14 +36,14 @@ export default function Onboarding() {
 					By continuing you agree to Exerkin's{" "}
 					<Text
 						style={styles.termsLink}
-						onPress={() => console.log("Terms of Service")}
+						onPress={() => navigation.navigate("TermsOfService")}
 					>
 						Terms of Service
 					</Text>{" "}
 					and{" "}
 					<Text
 						style={styles.termsLink}
-						onPress={() => console.log("Privacy Policy")}
+						onPress={() => navigation.navigate("PrivacyPolicy")}
 					>
 						Privacy Policy
 					</Text>
