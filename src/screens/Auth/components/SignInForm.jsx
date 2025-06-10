@@ -38,13 +38,7 @@ export default function SignInForm({ setType }) {
 			setIsLoading(false);
 			return;
 		}
-		if (!isValidPassword(password)) {
-			setError(
-				"Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number"
-			);
-			setIsLoading(false);
-			return;
-		}
+
 
 		const auth = getAuth();
 		signInWithEmailAndPassword(auth, email, password)

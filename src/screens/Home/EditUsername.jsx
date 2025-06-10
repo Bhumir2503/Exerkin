@@ -25,7 +25,6 @@ const EditUsername = ({ navigation, route }) => {
 
 	// You can pass the current username as a parameter from the previous screen
 	const currentUsername = route.params?.username || "";
-	console.log("current username is:", userObject.username)
 	const [username, setUsername] = useState(currentUsername);
 	const [isAvailable, setIsAvailable] = useState(true);
 	const [isChecking, setIsChecking] = useState(false);

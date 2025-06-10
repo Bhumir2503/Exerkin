@@ -11,6 +11,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const UpdateEmail = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -21,7 +23,14 @@ const UpdateEmail = ({ navigation }) => {
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 
+	async function reauthenticateUser(email, password) {
+  		const credential = auth.EmailAuthProvider.credential(email, password);
+  		await auth().currentUser.reauthenticateWithCredential(credential);
+	}
+
 	const handleUpdateEmail = async () => {
+		console.log("hi")
+
 		// Validate input fields
 		if (!currentEmail.trim() || !newEmail.trim() || !password.trim()) {
 			Alert.alert("Error", "All fields are required");
@@ -38,18 +47,35 @@ const UpdateEmail = ({ navigation }) => {
 		try {
 			setIsLoading(true);
 
-			// Example API call - replace with your actual authentication logic
-			// await updateUserEmail(currentEmail, newEmail, password);
+			console.log("attempting to reauthenticate");
+			// make sure the user has been recently reauthenticated so firebase doesn't reject it
+			await reauthenticateUser(currentEmail, password);
 
-			// Simulate API call with timeout
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			console.log("user reauthenticated");
+			// check to see if that email is already in use
+			const querySnapshot = await firestore().collection('users').where('email', '==', newEmail).limit(1).get();
+			console.log("hello")
+			if (querySnapshot.empty === false) {
+				Alert.alert("Sorry", "that email is already in use");
+			}
+			else { 
+				setIsLoading(false);
 
-			setIsLoading(false);
-			Alert.alert("Success", "Your email has been updated successfully", [
-				{ text: "OK", onPress: () => navigation.goBack() },
-			]);
+				Alert.alert("Success", "Your email has been updated successfully", [
+					{ text: "OK", onPress: () => navigation.goBack() },
+				]);
+			}
 		} catch (error) {
 			setIsLoading(false);
+
+			if (error.code === 'auth/requires-recent-login') {
+      			console.error('Please re-authenticate to change your email.');
+    		} else if (error.code === 'auth/email-already-in-use') {
+      			console.error('That email is already in use.');
+    		} else {
+      			console.error(error.message);
+    		}
+
 			Alert.alert("Error", error.message || "Failed to update email");
 		}
 	};

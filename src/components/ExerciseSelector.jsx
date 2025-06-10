@@ -20,6 +20,7 @@ import {
 } from "../services/constants/exerciseLibrary";
 
 import { buildExerciseObject } from "../services/helpers/objectBuilder";
+import ExerciseCreator from "./ExerciseCreater";
 
 const ExerciseSelector = ({ type }) => {
 	const { themeStyle } = useTheme();
@@ -40,6 +41,8 @@ const ExerciseSelector = ({ type }) => {
 	// State for filtered exercises
 	const [filteredExercises, setFilteredExercises] = useState(exercises);
 	// Get array of already added exercise IDs
+
+	const [creatingExercise, setCreatingExercise] = useState(false);
 
 	const getAddedExerciseIds = () => {
 		if (type === "workout") {
@@ -160,6 +163,219 @@ const ExerciseSelector = ({ type }) => {
 		);
 	};
 
+	const ExercisePage = () => {
+		return (
+		<View style={styles.modalContent}>
+					{/* Header */}
+					<View style={styles.modalHeader}>
+						<Text style={styles.modalTitle}>
+							Select Exercise
+						</Text>
+						<TouchableOpacity onPress={closeModal}>
+							<Ionicons
+								name="close"
+								size={24}
+								color={themeStyle.textColor}
+							/>
+						</TouchableOpacity>
+					</View>
+					<View style={styles.modalCustomWorkout}>
+						<TouchableOpacity onPress={() => setCreatingExercise(true)}>
+							<Ionicons
+								name="create-outline"
+								size={24}
+								color={"blue"}
+							/>
+						</TouchableOpacity>
+						<Text style={styles.customWorkoutTitle}>Create a custom exercise</Text>
+					</View>
+
+					{/* Search bar */}
+					<View style={styles.searchContainer}>
+						<Ionicons
+							name="search"
+							size={20}
+							color={themeStyle.textColor}
+						/>
+						<TextInput
+							style={styles.searchInput}
+							placeholder="Search exercises..."
+							placeholderTextColor={
+								themeStyle.textColorSecondary
+							}
+							value={searchQuery}
+							onChangeText={setSearchQuery}
+						/>
+						{searchQuery.length > 0 && (
+							<TouchableOpacity
+								onPress={() => setSearchQuery("")}
+							>
+								<Ionicons
+									name="close-circle"
+									size={20}
+									color={themeStyle.textColor}
+								/>
+							</TouchableOpacity>
+						)}
+					</View>
+
+					{/* Category filters */}
+					{renderCategoryChips()}
+
+					{/* Exercise list */}
+					<FlatList
+						showsVerticalScrollIndicator={false}
+						data={filteredExercises}
+						keyExtractor={(item) => item.id}
+						style={styles.exerciseList}
+						renderItem={({ item }) => (
+							<TouchableOpacity
+								style={[
+									styles.exerciseItem,
+									selectedExercise?.id === item.id &&
+										styles.selectedExerciseItem,
+								]}
+								onPress={() => handleSelectExercise(item)}
+							>
+								<View style={styles.exerciseItemMain}>
+									<View style={styles.exerciseCheck}>
+										{selectedExercise?.id ===
+										item.id ? (
+											<Ionicons
+												name="checkmark-circle"
+												size={24}
+												color={themeStyle.primary}
+											/>
+										) : (
+											<Ionicons
+												name="ellipse-outline"
+												size={24}
+												color={
+													themeStyle.textColorSecondary
+												}
+											/>
+										)}
+									</View>
+
+									<View style={styles.exerciseInfo}>
+										<Text style={styles.exerciseName}>
+											{item.name}
+										</Text>
+
+										<View
+											style={styles.exerciseDetails}
+										>
+											<View
+												style={
+													styles.exerciseCategory
+												}
+											>
+												<Text
+													style={
+														styles.categoryLabel
+													}
+												>
+													{item.categoryId}
+												</Text>
+											</View>
+
+											<View
+												style={
+													styles.equipmentContainer
+												}
+											>
+												{item.equipment.map(
+													(eq, index) => (
+														<Text
+															key={index}
+															style={
+																styles.equipmentLabel
+															}
+														>
+															{eq}
+															{index <
+															item.equipment
+																.length -
+																1
+																? ", "
+																: ""}
+														</Text>
+													)
+												)}
+											</View>
+										</View>
+
+										<View
+											style={styles.musclesContainer}
+										>
+											<Text
+												style={styles.muscleLabel}
+											>
+												Primary:{" "}
+												{item.primaryMuscles.join(
+													", "
+												)}
+											</Text>
+										</View>
+									</View>
+								</View>
+							</TouchableOpacity>
+						)}
+						ListEmptyComponent={
+							<View style={styles.emptyContainer}>
+								<Ionicons
+									name="fitness-outline"
+									size={48}
+									color={themeStyle.textColorSecondary}
+								/>
+								<Text style={styles.emptyText}>
+									No exercises found
+								</Text>
+							</View>
+						}
+					/>
+
+					{/* Action buttons */}
+					<View style={styles.actionContainer}>
+						<TouchableOpacity
+							style={[
+								styles.actionButton,
+								styles.cancelButton,
+							]}
+							onPress={closeModal}
+						>
+							<Text style={styles.cancelButtonText}>
+								Cancel
+							</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							style={[
+								styles.actionButton,
+								styles.addButton,
+								!selectedExercise && styles.disabledButton,
+							]}
+							onPress={handleAddExercise}
+							disabled={!selectedExercise}
+						>
+							<Text style={styles.addButtonText}>
+								Add to Workout
+							</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
+		)
+	}
+
+	const ExerciseCreatorPage = () => {
+		return (
+			<View style={styles.modalContent}>
+				<ExerciseCreator cancelCreateWorkout={() => setCreatingExercise(false)}/>
+			</View>
+		)
+	};
+
+
 	return (
 		<>
 			<TouchableOpacity
@@ -178,217 +394,7 @@ const ExerciseSelector = ({ type }) => {
 				statusBarTranslucent={true}
 			>
 				<View style={styles.modalContainer}>
-					<View style={styles.modalContent}>
-						{/* Header */}
-						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>
-								Select Exercise
-							</Text>
-							<TouchableOpacity onPress={closeModal}>
-								<Ionicons
-									name="close"
-									size={24}
-									color={themeStyle.textColor}
-								/>
-							</TouchableOpacity>
-						</View>
-
-						{/* Search bar */}
-						<View style={styles.searchContainer}>
-							<Ionicons
-								name="search"
-								size={20}
-								color={themeStyle.textColor}
-							/>
-							<TextInput
-								style={styles.searchInput}
-								placeholder="Search exercises..."
-								placeholderTextColor={
-									themeStyle.textColorSecondary
-								}
-								value={searchQuery}
-								onChangeText={setSearchQuery}
-							/>
-							{searchQuery.length > 0 && (
-								<TouchableOpacity
-									onPress={() => setSearchQuery("")}
-								>
-									<Ionicons
-										name="close-circle"
-										size={20}
-										color={themeStyle.textColor}
-									/>
-								</TouchableOpacity>
-							)}
-						</View>
-
-						{/* Category filters */}
-						{renderCategoryChips()}
-
-						{/* Exercise list */}
-						<FlatList
-							showsVerticalScrollIndicator={false}
-							data={filteredExercises}
-							keyExtractor={(item) => item.id}
-							style={styles.exerciseList}
-							renderItem={({ item }) => (
-								<TouchableOpacity
-									style={[
-										styles.exerciseItem,
-										selectedExercise?.id === item.id &&
-											styles.selectedExerciseItem,
-									]}
-									onPress={() => handleSelectExercise(item)}
-								>
-									<View style={styles.exerciseItemMain}>
-										<View style={styles.exerciseCheck}>
-											{selectedExercise?.id ===
-											item.id ? (
-												<Ionicons
-													name="checkmark-circle"
-													size={24}
-													color={themeStyle.primary}
-												/>
-											) : (
-												<Ionicons
-													name="ellipse-outline"
-													size={24}
-													color={
-														themeStyle.textColorSecondary
-													}
-												/>
-											)}
-										</View>
-
-										<View style={styles.exerciseInfo}>
-											<Text style={styles.exerciseName}>
-												{item.name}
-											</Text>
-
-											<View
-												style={styles.exerciseDetails}
-											>
-												<View
-													style={
-														styles.exerciseCategory
-													}
-												>
-													<Text
-														style={
-															styles.categoryLabel
-														}
-													>
-														{item.categoryId}
-													</Text>
-												</View>
-
-												<View
-													style={
-														styles.equipmentContainer
-													}
-												>
-													{item.equipment.map(
-														(eq, index) => (
-															<Text
-																key={index}
-																style={
-																	styles.equipmentLabel
-																}
-															>
-																{eq}
-																{index <
-																item.equipment
-																	.length -
-																	1
-																	? ", "
-																	: ""}
-															</Text>
-														)
-													)}
-												</View>
-											</View>
-
-											<View
-												style={styles.musclesContainer}
-											>
-												<Text
-													style={styles.muscleLabel}
-												>
-													Primary:{" "}
-													{item.primaryMuscles.join(
-														", "
-													)}
-												</Text>
-											</View>
-										</View>
-									</View>
-
-									{/* <View style={styles.difficultyContainer}>
-										<Text
-											style={[
-												styles.difficultyLabel,
-												item.difficulty ===
-													"beginner" &&
-													styles.beginnerLabel,
-												item.difficulty ===
-													"intermediate" &&
-													styles.intermediateLabel,
-												item.difficulty ===
-													"advanced" &&
-													styles.advancedLabel,
-												item.difficulty ===
-													"scalable" &&
-													styles.scalableLabel,
-											]}
-										>
-											{item.difficulty}
-										</Text>
-									</View> */}
-								</TouchableOpacity>
-							)}
-							ListEmptyComponent={
-								<View style={styles.emptyContainer}>
-									<Ionicons
-										name="fitness-outline"
-										size={48}
-										color={themeStyle.textColorSecondary}
-									/>
-									<Text style={styles.emptyText}>
-										No exercises found
-									</Text>
-								</View>
-							}
-						/>
-
-						{/* Action buttons */}
-						<View style={styles.actionContainer}>
-							<TouchableOpacity
-								style={[
-									styles.actionButton,
-									styles.cancelButton,
-								]}
-								onPress={closeModal}
-							>
-								<Text style={styles.cancelButtonText}>
-									Cancel
-								</Text>
-							</TouchableOpacity>
-
-							<TouchableOpacity
-								style={[
-									styles.actionButton,
-									styles.addButton,
-									!selectedExercise && styles.disabledButton,
-								]}
-								onPress={handleAddExercise}
-								disabled={!selectedExercise}
-							>
-								<Text style={styles.addButtonText}>
-									Add to Workout
-								</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
+					{ !creatingExercise ? <ExercisePage /> : <ExerciseCreatorPage />}
 				</View>
 			</Modal>
 		</>
@@ -436,11 +442,23 @@ const createStyles = (themeStyle) =>
 			alignItems: "center",
 			marginBottom: 16,
 		},
+		modalCustomWorkout: {
+			flexDirection: "row",
+			justifyContent: "left",
+			alignItems: "center",
+			marginBottom: 16,
+		},
 		modalTitle: {
 			fontSize: 20,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
 		},
+		customWorkoutTitle: {
+			fontSize: 16,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+		},
+
 
 		// Search
 		searchContainer: {
