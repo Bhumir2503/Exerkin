@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Platform } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 
 import TwoActionModal from "../../../components/TwoActionModal";
-import ExerciseSelector from "../../../components/ExerciseSelector";
+import ExerciseSelector from "../../../components/ExerciseSelector/ExerciseSelector";
 
 const BlueprintFooter = ({ navigation }) => {
 	const { themeStyle } = useTheme();

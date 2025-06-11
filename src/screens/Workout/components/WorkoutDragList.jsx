@@ -72,6 +72,7 @@ const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
 			case "cardio-time":
 				return <CardioTimeExercise exercise={exercise} />;
 			default:
+				console.log("error rendering exercise")
 				return null;
 		}
 	};

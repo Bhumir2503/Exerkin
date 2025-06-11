@@ -4,7 +4,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 import TwoActionModal from "../../../components/TwoActionModal";
-import ExerciseSelector from "../../../components/ExerciseSelector";
+import ExerciseManager from "../../../components/ExerciseSelector/ExerciseManager";
 
 const Footer = ({ navigation }) => {
 	const { workoutCancel, formTypeRef } = useWorkoutSession();
@@ -23,7 +23,7 @@ const Footer = ({ navigation }) => {
 
 	return (
 		<View style={styles.footerContainer}>
-			<ExerciseSelector type={"workout"} />
+			<ExerciseManager type={"workout"} />
 			<TwoActionModal
 				title={
 					formTypeRef.current === "workout"
