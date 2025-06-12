@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { buildExerciseObject } from "../../services/helpers/objectBuilder";
 import { useWorkoutExercises } from "../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../contexts/blueprint/BlueprintExercisesContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import {
 	exerciseCategories,
@@ -19,11 +20,12 @@ import {
 import SelectionChips from "./components/SelectionChips";
 
 
-function ExerciseCreator({setCreatingExercise, closeModal}) {
+function ExerciseCreator({setCreatingExercise, closeModal, type}) {
     const { themeStyle } = useTheme();
     const styles = createStyles(themeStyle);
 
     const { workoutExercises, addExercise } = useWorkoutExercises();
+    const { blueprintExercises, addExerciseToBlueprint } = useBlueprintExercises();
 
     const difficulties = [
         { id: "beginner", name: "beginner"}, 
@@ -33,7 +35,7 @@ function ExerciseCreator({setCreatingExercise, closeModal}) {
     ];
 
     const category = useRef([]);
-    const type = useRef([]);
+    const exerciseType = useRef([]);
     const difficulty = useRef([]);
     const equipment = useRef([]);
     const primaryMuscle = useRef([]);
@@ -41,8 +43,8 @@ function ExerciseCreator({setCreatingExercise, closeModal}) {
 
     const exerciseTitle = useRef("");
 
+
     const handleAddExercise = () => {
-            console.log(difficulty.current);
             let selectedExercise = {
                 categoryId: category.current,
                 difficulty: difficulty.current,
@@ -52,11 +54,16 @@ function ExerciseCreator({setCreatingExercise, closeModal}) {
                 name: exerciseTitle.current,
                 primaryMuscles: primaryMuscle.current,
                 secondaryMuscles: secondaryMuscle.current,
-                type: type.current[0],
+                type: exerciseType.current[0],
             }
-            const exercise = buildExerciseObject(selectedExercise);
-            console.log("exercise creator:", exercise);
-            addExercise(exercise);
+
+            if (type === "workout") {
+                const exercise = buildExerciseObject(selectedExercise);
+                addExercise(exercise);
+            } else if (type === "blueprint") {
+                const exercise = buildExerciseObject(selectedExercise);
+                addExerciseToBlueprint(exercise);
+            }
             setCreatingExercise(false);
             closeModal();
     };
@@ -108,7 +115,7 @@ function ExerciseCreator({setCreatingExercise, closeModal}) {
                     all={false}
                     wrap={true}
                     values={exerciseTypes} 
-                    selectedRef={type}
+                    selectedRef={exerciseType}
                 />
 
                 <Text style={styles.categorySeperator}>Equipment</Text>

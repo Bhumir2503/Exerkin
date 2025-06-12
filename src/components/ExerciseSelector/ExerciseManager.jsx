@@ -53,7 +53,8 @@ function ExerciseManager({type}) {
                         setCreatingExercise={setCreatingExercise}
                     /> 
                     : 
-                    <ExerciseCreator 
+                    <ExerciseCreator
+                        type={type}
                         closeModal={closeModal}
                         setCreatingExercise={setCreatingExercise}
                     />}
