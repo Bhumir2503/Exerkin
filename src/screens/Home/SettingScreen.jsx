@@ -11,6 +11,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
 
+import auth from '@react-native-firebase/auth'; 
+import { EmailAuthProvider } from 'firebase/auth';
+
 const CARD_PADDING = 16;
 
 const SettingScreen = ({ navigation }) => {
@@ -26,6 +29,10 @@ const SettingScreen = ({ navigation }) => {
 		}
 		return "U"; // Default if no name is available
 	};
+
+	const isUsingGoogle = user.providerData.some(
+		(provider) => provider.providerId === 'google.com'
+	);
 
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -63,11 +70,7 @@ const SettingScreen = ({ navigation }) => {
 					title="Your Account"
 					themeStyle={themeStyle}
 					items={[
-						{
-							name: "Update Email",
-							icon: "mail-outline",
-							location: "UpdateEmail",
-						},
+						!isUsingGoogle &&
 						{
 							name: "Change Password",
 							icon: "lock-closed-outline",
@@ -160,7 +163,7 @@ function SettingsCategory({ title, items, navigation, themeStyle }) {
 		<View style={styles.categoryContainer}>
 			<Text style={styles.categoryTitle}>{title}</Text>
 			<View style={styles.cardContainer}>
-				{items.map((item, index) => (
+				{items.map((item, index) => item && (
 					<SettingsItem
 						key={index}
 						item={item}

@@ -11,6 +11,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useUser } from "../../contexts/UserContext";
+import auth from '@react-native-firebase/auth';
 
 const ChangePassword = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -23,6 +25,9 @@ const ChangePassword = ({ navigation }) => {
 	const [showCurrentPassword, setShowCurrentPassword] = useState(false);
 	const [showNewPassword, setShowNewPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+	const { user, onLogout } = useUser();
+
 
 	const validatePassword = (password) => {
 		// Password must be at least 8 characters with at least one number and one letter
@@ -54,12 +59,28 @@ const ChangePassword = ({ navigation }) => {
 
 		try {
 			setIsLoading(true);
+			const user = auth().currentUser;
+			
 
-			// Example API call - replace with your actual authentication logic
-			// await updateUserPassword(currentPassword, newPassword);
+			async function reauthenticateUserAndUpdate(email, currentPassword, newPassword) {
+				const credential = auth.EmailAuthProvider.credential(email, currentPassword);
+				console.log("logging in with:",email, currentPassword);
+				try {
+					await user.reauthenticateWithCredential(credential);
+				} catch (error) {
+					console.log("Error reauthenticating:", error);
+				}
 
-			// Simulate API call with timeout
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+				try {
+					console.log("updating password to:", newPassword)
+					await user.updatePassword(newPassword);
+				} catch (error) {
+					console.log("Error updating password:", error);
+				}
+			}
+
+
+			await reauthenticateUserAndUpdate(user.email, currentPassword, newPassword);
 
 			setIsLoading(false);
 			Alert.alert(
@@ -67,6 +88,7 @@ const ChangePassword = ({ navigation }) => {
 				"Your password has been updated successfully",
 				[{ text: "OK", onPress: () => navigation.goBack() }]
 			);
+			onLogout();
 		} catch (error) {
 			setIsLoading(false);
 			Alert.alert("Error", error.message || "Failed to change password");
