@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, Platform } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 
 import TwoActionModal from "../../../components/TwoActionModal";
-import ExerciseSelector from "../../../components/ExerciseSelector/ExerciseSelector";
+import ExerciseManager from "../../../components/ExerciseSelector/ExerciseManager";
 
 const BlueprintFooter = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -20,7 +20,7 @@ const BlueprintFooter = ({ navigation }) => {
 
 	return (
 		<View style={styles.footerContainer}>
-			<ExerciseSelector type={"blueprint"} />
+			<ExerciseManager type={"blueprint"} />
 			<TwoActionModal
 				title={"Discard Blueprint?"}
 				subText={
