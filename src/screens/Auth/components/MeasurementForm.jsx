@@ -10,10 +10,9 @@ import {
 import { useTheme } from "../../../contexts/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { calculateBodyFatNavyMethod } from "../../../services/functions/measurementFucntions";
-
 export default function MeasurementForm({
 	unitSystem,
+	gender,
 	measurements,
 	setMeasurements,
 }) {
@@ -182,7 +181,9 @@ export default function MeasurementForm({
 					<Text style={styles.bodyFatNote}>
 						{measurements.bodyFat
 							? "Calculated using Navy method"
-							: "Enter neck, waist, and height to calculate"}
+							: `Enter neck${
+									gender === "Female" ? ", hips, " : " "
+							  }and waist to calculate`}
 					</Text>
 				</View>
 			</View>
@@ -362,17 +363,15 @@ const createStyles = (themeStyle) =>
 
 		// Body fat result display
 		bodyFatContainer: {
-			backgroundColor: "#2d2d3a",
+			backgroundColor: themeStyle.inputBackground,
 			borderRadius: 8,
 			padding: 16,
 			marginVertical: 24,
-			borderLeftWidth: 4,
-			borderLeftColor: "#7f2af0",
 		},
 		bodyFatLabel: {
 			fontSize: 16,
 			fontWeight: "600",
-			color: "#fffffe",
+			color: themeStyle.textColor,
 			marginBottom: 8,
 		},
 		bodyFatResult: {
@@ -383,17 +382,17 @@ const createStyles = (themeStyle) =>
 		bodyFatValue: {
 			fontSize: 24,
 			fontWeight: "bold",
-			color: "#7f2af0",
+			color: themeStyle.primary, // midnightPurple.primary
 		},
 		bodyFatNote: {
 			fontSize: 12,
-			color: "#94a1b2",
+			color: themeStyle.textColorSecondary, // midnightPurple.textColorSecondary
 			flex: 1,
 			marginLeft: 12,
 			fontStyle: "italic",
 		},
 		privacyNote: {
-			color: "#94a1b2", // midnightPurple.textColorSecondary
+			color: themeStyle.textColorSecondary, // midnightPurple.textColorSecondary
 			fontSize: 13,
 			fontStyle: "italic",
 			textAlign: "center",
