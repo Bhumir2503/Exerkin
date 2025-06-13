@@ -1,50 +1,50 @@
 {
-  "expo": {
-    "name": "Exerkin",
-    "slug": "exerkin",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#16161a"
-    },
-    "ios": {
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "supportsTablet": true,
-      "bundleIdentifier": "com.bhumir2503.ExerKin",
-      "usesAppleSignIn": true
-    },
-    "android": {
-      "googleServicesFile": "./google-services.json",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#16161a"
-      },
-      "package": "com.bhumir2503.ExerKin"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "@react-native-firebase/app",
-      "@react-native-google-signin/google-signin",
-      "expo-secure-store",
-      [
-        "expo-build-properties",
-        {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
-      ],
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "253401e6-1ee5-4542-b731-14ba375df28b"
-      }
-    }
-  }
+	"expo": {
+		"name": "Exerkin",
+		"slug": "exerkin",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"resizeMode": "contain",
+			"backgroundColor": "#16161a"
+		},
+		"ios": {
+			"googleServicesFile": "./GoogleService-Info.plist",
+			"supportsTablet": false,
+			"bundleIdentifier": "com.bhumir2503.ExerKin",
+			"usesAppleSignIn": true
+		},
+		"android": {
+			"googleServicesFile": "./google-services.json",
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#16161a"
+			},
+			"package": "com.bhumir2503.ExerKin"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"plugins": [
+			"@react-native-firebase/app",
+			"@react-native-google-signin/google-signin",
+			"expo-secure-store",
+			[
+				"expo-build-properties",
+				{
+					"ios": {
+						"useFrameworks": "static"
+					}
+				}
+			]
+		],
+		"extra": {
+			"eas": {
+				"projectId": "253401e6-1ee5-4542-b731-14ba375df28b"
+			}
+		}
+	}
 }

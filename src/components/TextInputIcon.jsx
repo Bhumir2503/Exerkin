@@ -7,9 +7,10 @@ export default function TextInputIcon({
 	icon,
 	placeholder,
 	keyboardType,
-	secureTextEntry = false,
 	setText,
-
+	secureTextEntry = false,
+	error = false,
+	...props
 }) {
 	const { themeStyle } = useTheme();
 	return (
@@ -19,7 +20,7 @@ export default function TextInputIcon({
 				alignItems: "center",
 				paddingHorizontal: 18,
 				backgroundColor: themeStyle.inputBackground,
-				borderColor: themeStyle.inputBorder,
+				borderColor: error ? themeStyle.error : themeStyle.inputBorder,
 				borderWidth: 1,
 				borderRadius: 8,
 			}}
@@ -40,8 +41,9 @@ export default function TextInputIcon({
 				placeholder={placeholder}
 				placeholderTextColor={themeStyle.textColorSecondary}
 				keyboardType={keyboardType}
-				secureTextEntry={secureTextEntry}
 				onChangeText={setText}
+				secureTextEntry={secureTextEntry}
+				{...props}
 			/>
 		</View>
 	);
