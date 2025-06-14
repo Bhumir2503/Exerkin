@@ -25,6 +25,10 @@ import { setRealmUser } from "../../services/database/realmUserFunctions";
 
 import { Ionicons } from "@expo/vector-icons";
 
+import UsernameForm from "./components/UsernameForm";
+import UserInfoForm from "./components/UserInfoForm";
+import MeasurementForm from "./components/MeasurementForm";
+
 export default function SetUsername() {
 	const {
 		user,
@@ -32,11 +36,16 @@ export default function SetUsername() {
 		onSetupComplete,
 	} = useUser();
 	const realm = useRealm();
+	// Step 1
 	const [username, setUsername] = useState("");
+
+	// Step 2
+	const [motivation, setMotivation] = useState("");
+	const [gender, setGender] = useState("Male");
+	const [unitSystem, setUnitSystem] = useState("Imperial");
+
 	const [bio, setBio] = useState("");
 	// Add gender and unit system
-	const [gender, setGender] = useState("male"); // default to male
-	const [unitSystem, setUnitSystem] = useState("imperial"); // default to imperial
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [step, setStep] = useState(1); // Step 1: Username, Step 2: Basic Info, Step 3: Measurements
@@ -62,186 +71,68 @@ export default function SetUsername() {
 		bodyFat: "", // Will be calculated
 	});
 
-	// Modal for measurement help
-	const [modalVisible, setModalVisible] = useState(false);
-	const [modalContent, setModalContent] = useState({
-		title: "",
-		description: "",
-		image: null,
-	});
-
 	// Calculate body fat percentage using Navy method
 	useEffect(() => {
 		if (
-			measurements.neck &&
-			measurements.waist &&
-			measurements.height &&
-			(measurements.hips || !isFemale())
-		) {
-			const bodyFat = calculateBodyFat();
-			setMeasurements((prev) => ({
-				...prev,
-				bodyFat: bodyFat.toFixed(1),
-			}));
-		}
+			!gender ||
+			!measurements.height ||
+			!measurements.neck ||
+			!measurements.waist
+		)
+			return;
+
+		const isFemale = gender === "Female";
+		if (isFemale && !measurements.hips) return;
+
+		const bodyFat = calculateBodyFat();
+		setMeasurements((prev) => ({
+			...prev,
+			bodyFat: bodyFat.toFixed(1),
+		}));
 	}, [
+		gender,
+		measurements.height,
 		measurements.neck,
 		measurements.waist,
 		measurements.hips,
-		measurements.height,
+		unitSystem,
 	]);
-
-	// Helper function to determine if user is female based on selected gender
-	const isFemale = () => {
-		return gender === "female";
-	};
 
 	// Navy method body fat calculation
 	const calculateBodyFat = () => {
-		// Convert measurements from string to number
-		const neckCm = parseFloat(measurements.neck) * 2.54;
-		const waistCm = parseFloat(measurements.waist) * 2.54;
-		const heightCm = parseFloat(measurements.height) * 2.54;
+		let { height, neck, waist, hips } = measurements;
+		console.log("Calculating body fat with measurements:");
 
-		if (isFemale()) {
-			// Female formula (requires hips)
-			const hipsCm = parseFloat(measurements.hips) * 2.54;
-			return (
-				495 /
-					(1.29579 -
-						0.35004 * Math.log10(waistCm + hipsCm - neckCm) +
-						0.221 * Math.log10(heightCm)) -
-				450
-			);
+		// Convert from metric to inches if needed
+		if (unitSystem === "Metric") {
+			height *= 0.393701;
+			neck *= 0.393701;
+			waist *= 0.393701;
+			hips = hips ? hips * 0.393701 : undefined;
+		}
+
+		let bodyFatPercentage;
+
+		if (gender === "Female") {
+			// Female formula
+			bodyFatPercentage =
+				163.205 * Math.log10(waist + hips - neck) -
+				97.684 * Math.log10(height) -
+				78.387;
 		} else {
 			// Male formula
-			return (
-				495 /
-					(1.0324 -
-						0.19077 * Math.log10(waistCm - neckCm) +
-						0.15456 * Math.log10(heightCm)) -
-				450
-			);
-		}
-	};
-
-	// Check if username meets all requirements
-	const isUsernameValid = () => {
-		return /^[a-zA-Z0-9_-]{3,20}$/.test(username);
-	};
-
-	// Show measurement guidance modal
-	const showMeasurementHelp = (measurement) => {
-		const helpContent = {
-			neck: {
-				title: "Neck Measurement",
-				description:
-					"Measure around the middle of your neck, below your Adam's apple, keeping the tape measure level.",
-			},
-			chest: {
-				title: "Chest Measurement",
-				description:
-					"Measure around the chest at the widest part, typically at the nipple line, keeping the tape measure level.",
-			},
-			waist: {
-				title: "Waist Measurement",
-				description:
-					"Measure around your natural waistline, located above your belly button and below your rib cage.",
-			},
-			hips: {
-				title: "Hips Measurement",
-				description:
-					"Measure around the widest part of your hips/buttocks, keeping the tape measure level.",
-			},
-			shoulder: {
-				title: "Shoulder Measurement",
-				description:
-					"Measure from the tip of one shoulder across to the tip of the other shoulder.",
-			},
-			bicep: {
-				title: "Bicep Measurement",
-				description:
-					"Measure around the widest part of your bicep with your arm relaxed at your side.",
-			},
-			forearm: {
-				title: "Forearm Measurement",
-				description:
-					"Measure around the widest part of your forearm with your arm relaxed.",
-			},
-			thigh: {
-				title: "Thigh Measurement",
-				description:
-					"Measure around the widest part of your thigh, typically right below where your thigh meets your buttocks.",
-			},
-			calf: {
-				title: "Calf Measurement",
-				description:
-					"Measure around the widest part of your calf with your leg relaxed.",
-			},
-		};
-
-		let content = helpContent[measurement] || {
-			title: "Measurement Help",
-			description:
-				"Take this measurement at the widest point, keeping the tape measure level.",
-		};
-
-		setModalContent(content);
-		setModalVisible(true);
-	};
-
-	// Update a specific measurement
-	const handleMeasurementChange = (name, value) => {
-		setMeasurements((prevState) => ({
-			...prevState,
-			[name]: value.replace(/[^0-9.]/g, ""),
-		}));
-	};
-
-	const validateUsername = () => {
-		if (!username.trim()) {
-			setError("Username cannot be empty");
-			return false;
+			bodyFatPercentage =
+				86.01 * Math.log10(waist - neck) -
+				70.041 * Math.log10(height) +
+				36.76;
 		}
 
-		if (username.length < 3) {
-			setError("Username must be at least 3 characters");
-			return false;
-		}
-
-		if (username.length > 20) {
-			setError("Username must be no more than 20 characters");
-			return false;
-		}
-
-		// Check for special characters except underscore and hyphen
-		const specialCharsRegex = /[^a-zA-Z0-9_-]/;
-		if (specialCharsRegex.test(username)) {
-			setError(
-				"Username can only contain letters, numbers, underscores, and hyphens"
-			);
-			return false;
-		}
-
-		// Combined regex to check the entire pattern in one go
-		// Username should be 3-20 characters and contain only letters, numbers, underscores, and hyphens
-		const fullRegex = /^[a-zA-Z0-9_-]{3,20}$/;
-		if (!fullRegex.test(username)) {
-			setError(
-				"Username must be 3-20 characters and may only contain letters, numbers, underscores, and hyphens"
-			);
-			return false;
-		}
-
-		return true;
+		return bodyFatPercentage;
 	};
 
 	const handleNextStep = () => {
 		if (step === 1) {
-			if (validateUsername()) {
-				setError("");
-				setStep(2);
-			}
+			setStep(2);
 		} else if (step === 2) {
 			setStep(3);
 		}
@@ -254,11 +145,6 @@ export default function SetUsername() {
 	};
 
 	const handleSubmit = async () => {
-		if (!validateUsername()) {
-			setStep(1);
-			return;
-		}
-
 		setLoading(true);
 		setError("");
 
@@ -316,42 +202,6 @@ export default function SetUsername() {
 		}
 	};
 
-	// Render a single measurement input field
-	const renderMeasurementInput = (label, name, helpType = name) => {
-		return (
-			<View style={styles.measurementInputContainer}>
-				<View style={styles.labelContainer}>
-					<Text style={styles.label}>{label}</Text>
-					<TouchableOpacity
-						onPress={() => showMeasurementHelp(helpType)}
-					>
-						<Ionicons
-							name="information-circle-outline"
-							size={16}
-							color="#94a1b2"
-						/>
-					</TouchableOpacity>
-				</View>
-				<View style={styles.statInputWrapper}>
-					<TextInput
-						style={styles.statInput}
-						placeholder="0"
-						placeholderTextColor="#72757e"
-						value={measurements[name]}
-						onChangeText={(text) =>
-							handleMeasurementChange(name, text)
-						}
-						keyboardType="numeric"
-						maxLength={5}
-					/>
-					<Text style={styles.statUnit}>
-						{unitSystem === "imperial" ? "in" : "cm"}
-					</Text>
-				</View>
-			</View>
-		);
-	};
-
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar barStyle="light-content" backgroundColor="#16161a" />
@@ -362,689 +212,160 @@ export default function SetUsername() {
 				<ScrollView
 					contentContainerStyle={styles.scrollContent}
 					showsVerticalScrollIndicator={false}
+					bounces={false}
 				>
-					<View style={styles.header}>
-						<Text style={styles.title}>
-							{step === 1
-								? "Create Your Profile"
-								: step === 2
-								? "Basic Information"
-								: "Body Measurements"}
-						</Text>
-						<Text style={styles.subtitle}>
-							{step === 1
-								? "Choose a unique username to get started"
-								: step === 2
-								? "Tell us a bit more about yourself"
-								: "Track your fitness progress with body measurements"}
-						</Text>
-					</View>
-
-					{/* Progress indicator */}
-					<View style={styles.progressContainer}>
-						<View style={styles.progressStep}>
-							<View
-								style={[styles.progressDot, styles.activeStep]}
-							/>
-							<Text
-								style={[
-									styles.progressText,
-									styles.activeStepText,
-								]}
-							>
-								Username
+					<KeyboardAvoidingView>
+						<View style={styles.header}>
+							<Text style={styles.title}>
+								{step === 1
+									? "Create Your Profile"
+									: step === 2
+									? "Basic Information"
+									: "Body Measurements"}
+							</Text>
+							<Text style={styles.subtitle}>
+								{step === 1
+									? "Choose a unique username to get started"
+									: step === 2
+									? "Tell us a bit more about yourself"
+									: "Track your fitness progress with body measurements"}
 							</Text>
 						</View>
-						<View style={styles.progressLine} />
-						<View style={styles.progressStep}>
-							<View
-								style={[
-									styles.progressDot,
-									step >= 2 && styles.activeStep,
-								]}
-							/>
-							<Text
-								style={[
-									styles.progressText,
-									step >= 2 && styles.activeStepText,
-								]}
-							>
-								Basic Info
-							</Text>
-						</View>
-						<View style={styles.progressLine} />
-						<View style={styles.progressStep}>
-							<View
-								style={[
-									styles.progressDot,
-									step >= 3 && styles.activeStep,
-								]}
-							/>
-							<Text
-								style={[
-									styles.progressText,
-									step >= 3 && styles.activeStepText,
-								]}
-							>
-								Advance Info
-							</Text>
-						</View>
-					</View>
-
-					{step === 1 ? (
-						// Step 1: Username with visual validation indicators
-						<View style={styles.formContainer}>
-							<View style={styles.inputContainer}>
-								<Text style={styles.label}>Username</Text>
+						{/* Progress indicator */}
+						<View style={styles.progressContainer}>
+							<View style={styles.progressStep}>
 								<View
 									style={[
-										styles.inputWrapper,
-										error ? styles.inputError : null,
+										styles.progressDot,
+										styles.activeStep,
 									]}
-								>
-									<Ionicons
-										name="at"
-										size={20}
-										color="#94a1b2"
-										style={styles.inputIcon}
-									/>
-									<TextInput
-										style={styles.input}
-										placeholder="Enter your username"
-										placeholderTextColor="#72757e"
-										value={username}
-										onChangeText={(text) => {
-											setUsername(text.trim());
-											setError("");
-										}}
-										autoCapitalize="none"
-										autoCorrect={false}
-										maxLength={20}
-										returnKeyType="next"
-										onSubmitEditing={() => {
-											if (isUsernameValid()) {
-												handleNextStep();
-											}
-										}}
-									/>
-								</View>
-								{error ? (
-									<Text style={styles.errorText}>
-										{error}
-									</Text>
-								) : null}
-
-								<Text style={styles.helperText}>
-									This will be your public identity on Exerkin
-								</Text>
-
-								{/* Username validation rules with indicators */}
-								<View style={styles.validationRulesContainer}>
-									<Text style={styles.validationTitle}>
-										Username requirements:
-									</Text>
-
-									<View style={styles.validationRule}>
-										<Ionicons
-											name={
-												username.length >= 3
-													? "checkmark-circle"
-													: "ellipse-outline"
-											}
-											size={16}
-											color={
-												username.length >= 3
-													? "#4CAF50"
-													: "#94a1b2"
-											}
-										/>
-										<Text
-											style={[
-												styles.validationText,
-												username.length >= 3 &&
-													styles.validationTextSuccess,
-											]}
-										>
-											At least 3 characters long
-										</Text>
-									</View>
-
-									<View style={styles.validationRule}>
-										<Ionicons
-											name={
-												username.length <= 20
-													? "checkmark-circle"
-													: "ellipse-outline"
-											}
-											size={16}
-											color={
-												username.length <= 20
-													? "#4CAF50"
-													: "#94a1b2"
-											}
-										/>
-										<Text
-											style={[
-												styles.validationText,
-												username.length <= 20 &&
-													styles.validationTextSuccess,
-											]}
-										>
-											Maximum 20 characters
-										</Text>
-									</View>
-
-									<View style={styles.validationRule}>
-										<Ionicons
-											name={
-												!/[^a-zA-Z0-9_-]/.test(username)
-													? "checkmark-circle"
-													: "ellipse-outline"
-											}
-											size={16}
-											color={
-												!/[^a-zA-Z0-9_-]/.test(username)
-													? "#4CAF50"
-													: "#94a1b2"
-											}
-										/>
-										<Text
-											style={[
-												styles.validationText,
-												!/[^a-zA-Z0-9_-]/.test(
-													username
-												) &&
-													styles.validationTextSuccess,
-											]}
-										>
-											Only letters, numbers, underscores,
-											and hyphens
-										</Text>
-									</View>
-
-									<View style={styles.validationRule}>
-										<Ionicons
-											name={
-												/^[a-zA-Z0-9_-]{3,20}$/.test(
-													username
-												)
-													? "checkmark-circle"
-													: "ellipse-outline"
-											}
-											size={18}
-											color={
-												/^[a-zA-Z0-9_-]{3,20}$/.test(
-													username
-												)
-													? "#4CAF50"
-													: "#94a1b2"
-											}
-										/>
-										<Text
-											style={[
-												styles.validationText,
-												/^[a-zA-Z0-9_-]{3,20}$/.test(
-													username
-												) &&
-													styles.validationTextSuccess,
-												{ fontWeight: "600" },
-											]}
-										>
-											All requirements met
-										</Text>
-									</View>
-								</View>
-							</View>
-
-							<View style={styles.buttonContainer}>
-								<TouchableOpacity
+								/>
+								<Text
 									style={[
-										styles.button,
-										!isUsernameValid() &&
-											styles.buttonDisabled,
+										styles.progressText,
+										styles.activeStepText,
 									]}
-									onPress={handleNextStep}
-									disabled={!isUsernameValid()}
 								>
-									<Text style={styles.buttonText}>
-										Continue
-									</Text>
-									<Ionicons
-										name="arrow-forward"
-										size={20}
-										color="#fffffe"
-									/>
-								</TouchableOpacity>
+									Username
+								</Text>
+							</View>
+							<View style={styles.progressLine} />
+							<View style={styles.progressStep}>
+								<View
+									style={[
+										styles.progressDot,
+										step >= 2 && styles.activeStep,
+									]}
+								/>
+								<Text
+									style={[
+										styles.progressText,
+										step >= 2 && styles.activeStepText,
+									]}
+								>
+									Basic Info
+								</Text>
+							</View>
+							<View style={styles.progressLine} />
+							<View style={styles.progressStep}>
+								<View
+									style={[
+										styles.progressDot,
+										step >= 3 && styles.activeStep,
+									]}
+								/>
+								<Text
+									style={[
+										styles.progressText,
+										step >= 3 && styles.activeStepText,
+									]}
+								>
+									Advance Info
+								</Text>
 							</View>
 						</View>
-					) : step === 2 ? (
-						// Step 2: Basic Info
-						<View style={styles.formContainer}>
-							<View style={styles.inputContainer}>
-								<Text style={styles.label}>Bio</Text>
-								<View style={styles.inputWrapper}>
-									<TextInput
-										style={[
-											styles.input,
-											styles.multilineInput,
-										]}
-										placeholder="Tell others about yourself..."
-										placeholderTextColor="#72757e"
-										value={bio}
-										onChangeText={setBio}
-										multiline
-										maxLength={512}
-									/>
-								</View>
-								<Text style={styles.helperText}>
-									Share a bit about yourself, your fitness
-									goals, or what motivates you
-								</Text>
-							</View>
-
-							<Text style={styles.sectionTitleText}>
-								Basic Information
-							</Text>
-
-							{/* Gender Selection */}
-
-							<Text style={styles.label}>Gender</Text>
-							<View
-								style={{
-									...styles.radioContainer,
-									marginBottom: 16,
-								}}
-							>
-								<TouchableOpacity
-									style={[
-										styles.radioButton,
-										gender === "male" &&
-											styles.radioButtonSelected,
-									]}
-									onPress={() => setGender("male")}
-								>
-									<Text
-										style={[
-											styles.radioText,
-											gender === "male" &&
-												styles.radioTextSelected,
-										]}
-									>
-										Male
-									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={[
-										styles.radioButton,
-										gender === "female" &&
-											styles.radioButtonSelected,
-									]}
-									onPress={() => setGender("female")}
-								>
-									<Text
-										style={[
-											styles.radioText,
-											gender === "female" &&
-												styles.radioTextSelected,
-										]}
-									>
-										Female
-									</Text>
-								</TouchableOpacity>
-							</View>
-
-							{/* Unit System Selection */}
-							<View style={styles.unitSystemContainer}>
-								<Text style={styles.label}>Unit System</Text>
-								<View style={styles.radioContainer}>
-									<TouchableOpacity
-										style={[
-											styles.radioButton,
-											unitSystem === "imperial" &&
-												styles.radioButtonSelected,
-										]}
-										onPress={() =>
-											setUnitSystem("imperial")
-										}
-									>
-										<Text
-											style={[
-												styles.radioText,
-												unitSystem === "imperial" &&
-													styles.radioTextSelected,
-											]}
+						{step === 1 ? (
+							// Step 1: Username with visual validation indicators
+							<UsernameForm
+								onSubmit={handleNextStep}
+								username={username}
+								setUsername={setUsername}
+							/>
+						) : step === 2 ? (
+							// Step 2: Basic Info
+							<>
+								<UserInfoForm
+									motivation={motivation}
+									setMotivation={setMotivation}
+									measurements={measurements}
+									setMeasurements={setMeasurements}
+									gender={gender}
+									setGender={setGender}
+									unitSystem={unitSystem}
+									setUnitSystem={setUnitSystem}
+									handleNextPress={handleNextStep}
+									handlePrevPress={handlePrevStep}
+								/>
+							</>
+						) : (
+							// Step 3: Measurements
+							<>
+								<MeasurementForm
+									unitSystem={unitSystem}
+									gender={gender}
+									measurements={measurements}
+									setMeasurements={setMeasurements}
+								/>
+								<View style={styles.formContainer}>
+									{/* Primary measurements used for body fat calculation */}
+									<View style={styles.buttonContainer}>
+										<TouchableOpacity
+											style={styles.backButton}
+											onPress={handlePrevStep}
 										>
-											Imperial (in/lbs)
-										</Text>
-									</TouchableOpacity>
-									<TouchableOpacity
-										style={[
-											styles.radioButton,
-											unitSystem === "metric" &&
-												styles.radioButtonSelected,
-										]}
-										onPress={() => setUnitSystem("metric")}
-									>
-										<Text
-											style={[
-												styles.radioText,
-												unitSystem === "metric" &&
-													styles.radioTextSelected,
-											]}
-										>
-											Metric (cm/kg)
-										</Text>
-									</TouchableOpacity>
-								</View>
-							</View>
-
-							<View style={styles.buttonContainer}>
-								<TouchableOpacity
-									style={styles.backButton}
-									onPress={handlePrevStep}
-								>
-									<Ionicons
-										name="arrow-back"
-										size={20}
-										color="#7f2af0"
-									/>
-									<Text style={styles.backButtonText}>
-										Back
-									</Text>
-								</TouchableOpacity>
-
-								<TouchableOpacity
-									style={styles.button}
-									onPress={handleNextStep}
-								>
-									<Text style={styles.buttonText}>
-										Continue
-									</Text>
-									<Ionicons
-										name="arrow-forward"
-										size={20}
-										color="#fffffe"
-									/>
-								</TouchableOpacity>
-							</View>
-						</View>
-					) : (
-						// Step 3: Measurements
-						<View style={styles.formContainer}>
-							<Text style={styles.measurementHeader}>
-								Body Measurements
-							</Text>
-							<Text style={styles.measurementSubtitle}>
-								All measurements are optional. These will help
-								track your fitness progress.
-							</Text>
-
-							<View style={styles.statsContainer}>
-								<View style={styles.statInputContainer}>
-									<Text style={styles.label}>Weight</Text>
-									<View style={styles.statInputWrapper}>
-										<TextInput
-											style={styles.statInput}
-											placeholder="0"
-											placeholderTextColor="#72757e"
-											value={measurements.weight}
-											onChangeText={(text) =>
-												handleMeasurementChange(
-													"weight",
-													text.replace(/[^0-9.]/g, "")
-												)
-											}
-											keyboardType="numeric"
-											maxLength={5}
-										/>
-										<Text style={styles.statUnit}>
-											{unitSystem === "imperial"
-												? "lbs"
-												: "kg"}
-										</Text>
-									</View>
-								</View>
-
-								<View style={styles.statInputContainer}>
-									<Text style={styles.label}>Height</Text>
-									<View style={styles.statInputWrapper}>
-										<TextInput
-											style={styles.statInput}
-											placeholder="0"
-											placeholderTextColor="#72757e"
-											value={measurements.height}
-											onChangeText={(text) =>
-												handleMeasurementChange(
-													"height",
-													text.replace(/[^0-9.]/g, "")
-												)
-											}
-											keyboardType="numeric"
-											maxLength={5}
-										/>
-										<Text style={styles.statUnit}>
-											{unitSystem === "imperial"
-												? "in"
-												: "cm"}
-										</Text>
-									</View>
-								</View>
-
-								<View style={styles.statInputContainer}>
-									<Text style={styles.label}>Age</Text>
-									<View style={styles.statInputWrapper}>
-										<TextInput
-											style={styles.statInput}
-											placeholder="0"
-											placeholderTextColor="#72757e"
-											value={measurements.age}
-											onChangeText={(text) =>
-												handleMeasurementChange(
-													"age",
-													text.replace(/[^0-9]/g, "")
-												)
-											}
-											keyboardType="numeric"
-											maxLength={3}
-										/>
-										<Text style={styles.statUnit}>yrs</Text>
-									</View>
-								</View>
-							</View>
-
-							{/* Primary measurements used for body fat calculation */}
-							<View style={styles.sectionTitle}>
-								<Text style={styles.sectionTitleText}>
-									Primary Measurements
-								</Text>
-								<Text style={styles.sectionSubtitle}>
-									Required for body fat calculation
-								</Text>
-							</View>
-
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput("Neck", "neck")}
-								{renderMeasurementInput("Waist", "waist")}
-							</View>
-
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput("Hips", "hips")}
-								{renderMeasurementInput("Shoulder", "shoulder")}
-							</View>
-
-							{/* Auto-calculated body fat */}
-							<View style={styles.bodyFatContainer}>
-								<Text style={styles.bodyFatLabel}>
-									Estimated Body Fat
-								</Text>
-								<View style={styles.bodyFatResult}>
-									<Text style={styles.bodyFatValue}>
-										{measurements.bodyFat
-											? `${measurements.bodyFat}%`
-											: "N/A"}
-									</Text>
-									<Text style={styles.bodyFatNote}>
-										{measurements.bodyFat
-											? "Calculated using Navy method"
-											: "Enter neck, waist, and height to calculate"}
-									</Text>
-								</View>
-							</View>
-
-							<Text style={styles.sectionTitleText}>
-								Upper Body
-							</Text>
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput("Chest", "chest")}
-								{renderMeasurementInput(
-									"Left Bicep",
-									"leftBicep",
-									"bicep"
-								)}
-							</View>
-
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput(
-									"Right Bicep",
-									"rightBicep",
-									"bicep"
-								)}
-								{renderMeasurementInput(
-									"Left Forearm",
-									"leftForearm",
-									"forearm"
-								)}
-							</View>
-
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput(
-									"Right Forearm",
-									"rightForearm",
-									"forearm"
-								)}
-								<View style={styles.emptyMeasurement} />
-							</View>
-
-							<Text style={styles.sectionTitleText}>
-								Lower Body
-							</Text>
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput(
-									"Left Thigh",
-									"leftThigh",
-									"thigh"
-								)}
-								{renderMeasurementInput(
-									"Right Thigh",
-									"rightThigh",
-									"thigh"
-								)}
-							</View>
-
-							<View style={styles.measurementsRow}>
-								{renderMeasurementInput(
-									"Left Calf",
-									"leftCalf",
-									"calf"
-								)}
-								{renderMeasurementInput(
-									"Right Calf",
-									"rightCalf",
-									"calf"
-								)}
-							</View>
-
-							<Text style={styles.privacyNote}>
-								Your measurements are private by default and
-								only shared when you choose to
-							</Text>
-
-							<View style={styles.buttonContainer}>
-								<TouchableOpacity
-									style={styles.backButton}
-									onPress={handlePrevStep}
-								>
-									<Ionicons
-										name="arrow-back"
-										size={20}
-										color="#7f2af0"
-									/>
-									<Text style={styles.backButtonText}>
-										Back
-									</Text>
-								</TouchableOpacity>
-
-								<TouchableOpacity
-									style={styles.button}
-									onPress={handleSubmit}
-									disabled={loading}
-								>
-									{loading ? (
-										<ActivityIndicator
-											color="#fffffe"
-											size="small"
-										/>
-									) : (
-										<>
-											<Text style={styles.buttonText}>
-												Finish Setup
-											</Text>
 											<Ionicons
-												name="checkmark"
+												name="arrow-back"
 												size={20}
-												color="#fffffe"
+												color="#7f2af0"
 											/>
-										</>
-									)}
-								</TouchableOpacity>
-							</View>
-						</View>
-					)}
+											<Text style={styles.backButtonText}>
+												Back
+											</Text>
+										</TouchableOpacity>
+										<TouchableOpacity
+											style={styles.button}
+											onPress={handleSubmit}
+											disabled={loading}
+										>
+											{loading ? (
+												<ActivityIndicator
+													color="#fffffe"
+													size="small"
+												/>
+											) : (
+												<>
+													<Text
+														style={
+															styles.buttonText
+														}
+													>
+														Finish Setup
+													</Text>
+													<Ionicons
+														name="checkmark"
+														size={20}
+														color="#fffffe"
+													/>
+												</>
+											)}
+										</TouchableOpacity>
+									</View>
+								</View>
+							</>
+						)}
+					</KeyboardAvoidingView>
 				</ScrollView>
 			</KeyboardAvoidingView>
-
-			{/* Measurement help modal */}
-			<Modal
-				animationType="fade"
-				transparent={true}
-				visible={modalVisible}
-				onRequestClose={() => setModalVisible(false)}
-			>
-				<View style={styles.modalOverlay}>
-					<View style={styles.modalContent}>
-						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>
-								{modalContent.title}
-							</Text>
-							<TouchableOpacity
-								onPress={() => setModalVisible(false)}
-							>
-								<Ionicons
-									name="close"
-									size={24}
-									color="#fffffe"
-								/>
-							</TouchableOpacity>
-						</View>
-						<View style={styles.modalBody}>
-							<Text style={styles.modalDescription}>
-								{modalContent.description}
-							</Text>
-							{modalContent.image && (
-								<View style={styles.modalImageContainer}>
-									{/* Placeholder for measurement images if you have them */}
-								</View>
-							)}
-						</View>
-						<TouchableOpacity
-							style={styles.modalButton}
-							onPress={() => setModalVisible(false)}
-						>
-							<Text style={styles.modalButtonText}>Got it</Text>
-						</TouchableOpacity>
-					</View>
-				</View>
-			</Modal>
 		</SafeAreaView>
 	);
 }
@@ -1060,6 +381,7 @@ const styles = StyleSheet.create({
 	scrollContent: {
 		flexGrow: 1,
 		padding: 24,
+		paddingVertical: 0,
 	},
 	header: {
 		marginBottom: 24,
@@ -1079,7 +401,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "center",
-		marginBottom: 32,
+		marginBottom: 24,
 		paddingHorizontal: 20,
 	},
 	progressStep: {
@@ -1126,7 +448,6 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		borderWidth: 1,
 		borderColor: "#383844", // midnightPurple.inputBorder
-		paddingHorizontal: 16,
 		height: 56,
 	},
 	inputError: {
@@ -1272,10 +593,11 @@ const styles = StyleSheet.create({
 	measurementsRow: {
 		flexDirection: "row",
 		justifyContent: "space-between",
+		gap: 16,
 		marginBottom: 16,
 	},
 	measurementInputContainer: {
-		width: "48%",
+		flex: 1,
 	},
 	emptyMeasurement: {
 		width: "48%",
@@ -1397,33 +719,5 @@ const styles = StyleSheet.create({
 	},
 	unitSystemContainer: {
 		marginBottom: 24,
-	},
-	// New styles for validation rules
-	validationRulesContainer: {
-		marginTop: 16,
-		backgroundColor: "#1e1e24",
-		borderRadius: 8,
-		padding: 16,
-		borderLeftWidth: 3,
-		borderLeftColor: "#7f2af0",
-	},
-	validationTitle: {
-		fontSize: 14,
-		fontWeight: "600",
-		color: "#fffffe",
-		marginBottom: 10,
-	},
-	validationRule: {
-		flexDirection: "row",
-		alignItems: "center",
-		marginBottom: 8,
-	},
-	validationText: {
-		marginLeft: 8,
-		fontSize: 14,
-		color: "#94a1b2",
-	},
-	validationTextSuccess: {
-		color: "#4CAF50",
 	},
 });
