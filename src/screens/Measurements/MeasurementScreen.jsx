@@ -14,6 +14,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
 
+import HeightModal from "./HeightModal";
+
 
 import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
@@ -253,8 +255,11 @@ const MeasurementScreen = ({ navigation }) => {
 		);
 	};
 
+	const [showModal, setShowModal] = useState(false);
+
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+			{showModal && <HeightModal setShowModal={setShowModal} />}
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={styles.scrollContent}
@@ -315,6 +320,7 @@ const MeasurementScreen = ({ navigation }) => {
 								}
 								keyboardType="decimal-pad"
 								maxLength={5}
+								onFocus={() => {setShowModal(true)}}
 							/>
 							<Text style={styles.statUnit}>in</Text>
 						</View>

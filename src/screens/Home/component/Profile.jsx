@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useUser } from "../../../contexts/UserContext";
 import { useTheme } from "../../../contexts/ThemeContext";
+import MaskedView from '@react-native-masked-view/masked-view';
+import LinearGradient from 'react-native-linear-gradient';
 
 const Profile = () => {
 	const { themeStyle } = useTheme();
@@ -18,7 +20,20 @@ const Profile = () => {
 			</View>
 			<View style={styles.profileInfo}>
 				<Text style={styles.username}>{username}</Text>
-				<Text style={styles.userBio}>Fitness Enthusiast</Text>
+				
+				<MaskedView maskElement={
+				(<Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
+
+					Developer
+				</Text>)
+				}>
+				<LinearGradient
+					colors={['#FFD700', '#FFC200', '#FFB300']}
+					start={{ x: 0, y: 0 }}
+					end={{ x: 1, y: 0 }}
+					style={{width: "35%", height: 30, marginTop: 0}}
+				/>
+				</MaskedView>
 			</View>
 		</View>
 	);

@@ -6,6 +6,7 @@ import {
 	Text,
 	TouchableOpacity,
 	ScrollView,
+    Alert,
 } from "react-native";
 import { buildExerciseObject } from "../../services/helpers/objectBuilder";
 import { useWorkoutExercises } from "../../contexts/workout/WorkoutExercisesContext";
@@ -55,6 +56,13 @@ function ExerciseCreator({setCreatingExercise, closeModal, type}) {
                 primaryMuscles: primaryMuscle.current,
                 secondaryMuscles: secondaryMuscle.current,
                 type: exerciseType.current[0],
+            }
+            
+            if (!category.current.length || !exerciseType.current.length || !difficulty.current.length || 
+                !equipment.current.length || !primaryMuscle.current.length || !secondaryMuscle.current.length) {
+
+                Alert.alert("Empty Field", "Please fill out all fields before creating the exercise");
+                return
             }
 
             if (type === "workout") {
