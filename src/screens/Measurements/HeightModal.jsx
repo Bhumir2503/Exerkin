@@ -118,7 +118,7 @@ function DynamicPersonIcon({topOffset, width, height}) {
 
 
 
-function HeightModal({setShowModal}) {
+function HeightModal({setShowModal, handleInputChange}) {
     const { themeStyle } = useTheme();
     const styles = createStyles(themeStyle);
     const { width, height } = Dimensions.get("window");
@@ -128,8 +128,14 @@ function HeightModal({setShowModal}) {
         setTopOffset(10 + newY);
     }
 
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+        const clamped = Math.max(inMin, Math.min(value, inMax));
+        return outMin + ((clamped - inMin) * (outMax - outMin)) / (inMax - inMin);
+    }
+    // 10 196
+
     return (
-        <Modal
+        <View
             transparent={true}
             onRequestClose={() => {setShowModal(false)}}
         >
@@ -138,11 +144,18 @@ function HeightModal({setShowModal}) {
                     <TouchableOpacity onPress={() => {setShowModal(false)}}>
                         <Text style={styles.navText}>Cancel</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {setShowModal(false)}}>
+                    <TouchableOpacity onPress={() => {
+                        handleInputChange("height", 
+                            parseInt(mapRange(196 - topOffset, 10, 196, 47, 87)));
+                            setShowModal(false);
+                        }}>
                         <Text style={styles.navText}>Save</Text>
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.titleText}>How tall are you?</Text>
+                <Text style={styles.titleText}>Height: {" "}
+                    {parseInt(mapRange(196 - topOffset, 10, 196, 47, 87) / 12)}ft {" "}
+                    {parseInt(mapRange(196 - topOffset, 10, 196, 47, 87) % 12)}in</Text>
                 <View style={styles.sizeBox}>
                     <GestureHandlerRootView>
                         <DraggableBox 
@@ -150,9 +163,6 @@ function HeightModal({setShowModal}) {
                             height={height * 0.7} 
                             onPositionChange={handleBarMovement}
                         />
-                        <View style={[styles.heightResult, {top: topOffset - 25}]}>
-                            <Text style={styles.heightsResultText}>{parseInt(topOffset - 10)}</Text>
-                        </View>
                         <DynamicPersonIcon 
                             topOffset={topOffset} 
                             width={width * 0.9} 
@@ -161,7 +171,7 @@ function HeightModal({setShowModal}) {
                     </GestureHandlerRootView>
                 </View>
             </View>
-        </Modal>
+        </View>
     );
 }
 

@@ -259,7 +259,11 @@ const MeasurementScreen = ({ navigation }) => {
 
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-			{showModal && <HeightModal setShowModal={setShowModal} />}
+			{showModal && 
+				<HeightModal 
+					setShowModal={setShowModal} 
+					handleInputChange={handleInputChange} 
+			/>}
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={styles.scrollContent}
@@ -308,21 +312,20 @@ const MeasurementScreen = ({ navigation }) => {
 					<View style={styles.statInputContainer}>
 						<Text style={styles.label}>Height</Text>
 						<View style={styles.statInputWrapper}>
-							<TextInput
-								style={styles.statInput}
-								placeholder="0"
+							<TouchableOpacity
+								style={[styles.statInput,
+									{display: "flex", 
+									justifyContent: "flex-end",
+									flexDirection: "row"}
+								]}
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
-								value={measurements.height}
-								onChangeText={(text) =>
-									handleInputChange("height", text)
-								}
-								keyboardType="decimal-pad"
-								maxLength={5}
-								onFocus={() => {setShowModal(true)}}
-							/>
+								onPress={() => {setShowModal(true)}}
+							>
+								<Text style={styles.statUnit}>{measurements.height}</Text>
 							<Text style={styles.statUnit}>in</Text>
+							</TouchableOpacity>
 						</View>
 					</View>
 
