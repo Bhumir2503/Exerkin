@@ -21,6 +21,7 @@ export default function GoogleAuthButton() {
 	GoogleSignin.configure({
 		webClientId:
 			"708843610331-7qiliqg56itfq53apdt3rm7lltsd52sn.apps.googleusercontent.com",
+			offlineAccess: true,
 	});
 
 	const signIn = async () => {

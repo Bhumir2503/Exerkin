@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "708843610331-8b2st5c2iupf24fskkbg2bvtp2r9qqlm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bhumir2503.ExerKin",
+            "certificate_hash": "694cb628fe855c05da53ed1caa83ffe3dc25f309"
+          }
+        },
+        {
           "client_id": "708843610331-7qiliqg56itfq53apdt3rm7lltsd52sn.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -39,10 +47,10 @@
               "client_type": 3
             },
             {
-              "client_id": "708843610331-uku1hdg5kg9mjd8q0v3f2kl314vmjbo1.apps.googleusercontent.com",
+              "client_id": "708843610331-s87u7s2ut609gk5dumq6md8raacu8m80.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.bhumir2503.ExerKin"
+                "bundle_id": "com.brianmerino.ExerKin"
               }
             }
           ]
