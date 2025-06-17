@@ -1,13 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useUser } from "../../../contexts/UserContext";
 import { useTheme } from "../../../contexts/ThemeContext";
-import MaskedView from '@react-native-masked-view/masked-view';
-import LinearGradient from 'react-native-linear-gradient';
 
 const Profile = () => {
 	const { themeStyle } = useTheme();
 	const { username } = useUser();
 	const styles = createStyles(themeStyle);
+
+	const developerNames = ["Bhumir2503", "GradySenpai"];
 
 	return (
 		<View style={styles.profileSection}>
@@ -20,20 +20,18 @@ const Profile = () => {
 			</View>
 			<View style={styles.profileInfo}>
 				<Text style={styles.username}>{username}</Text>
-				
-				<MaskedView maskElement={
-				(<Text style={{ fontSize: 20, fontWeight: 'bold', color: 'black' }}>
-
-					Developer
-				</Text>)
-				}>
-				<LinearGradient
-					colors={['#FFD700', '#FFC200', '#FFB300']}
-					start={{ x: 0, y: 0 }}
-					end={{ x: 1, y: 0 }}
-					style={{width: "35%", height: 30, marginTop: 0}}
-				/>
-				</MaskedView>
+				<Text
+					style={{
+						...styles.userBio,
+						color: developerNames.includes(username)
+							? "#efbf04"
+							: themeStyle.textColorSecondary,
+					}}
+				>
+					{developerNames.includes(username)
+						? "Developer"
+						: "Fitness Enthusiast"}
+				</Text>
 			</View>
 		</View>
 	);
