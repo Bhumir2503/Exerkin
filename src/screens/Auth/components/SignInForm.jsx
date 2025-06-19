@@ -15,7 +15,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import {
 	isValidEmail,
 	isValidPassword,
-} from "../../../services/helpers/textInputChecker";
+} from "../../../services/helpers/textInputFunctions";
 import {
 	getAuth,
 	signInWithEmailAndPassword,

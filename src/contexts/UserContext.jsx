@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
 	const [init, setInit] = useState(true);
 	const [username, setUsername] = useState("");
 	const [bio, setBio] = useState("");
+	const [motivation, setMotivation] = useState("");
 	const [gender, setGender] = useState("male");
 	const [unitSystem, setUnitSystem] = useState("imperial");
 	const [isNewUser, setIsNewUser] = useState(false);
@@ -69,8 +70,7 @@ export const UserProvider = ({ children }) => {
 				} catch (e) {
 					console.error("(UserContext) - Failed to setRealmUser:", e);
 				}
-			}
-			else{
+			} else {
 				console.log("(UserContext) - User doc does not exist");
 				setIsNewUser(true);
 				setSetupComplete(false);
@@ -94,7 +94,8 @@ export const UserProvider = ({ children }) => {
 
 		try {
 			console.log(
-				"(UserContext) - Checking if user has completed setup...")
+				"(UserContext) - Checking if user has completed setup..."
+			);
 			listenToUserDocChanges(authUser.uid);
 		} catch (error) {
 			console.error(
@@ -154,7 +155,7 @@ export const UserProvider = ({ children }) => {
 
 	const updateUsername = (newUsername) => {
 		setUsername(newUsername);
-	}
+	};
 
 	const resetUserDocUnsubscribe = () => {
 		if (userDocUnsubscribeRef.current) {
@@ -165,12 +166,12 @@ export const UserProvider = ({ children }) => {
 
 	const resetUserState = () => {
 		setUser(null);
-		setUsername("");
-		setBio("");
-		setGender("male");
-		setUnitSystem("imperial");
 		setIsNewUser(false);
 		setSetupComplete(false);
+		setUsername("");
+		setMotivation("");
+		setGender("male");
+		setUnitSystem("imperial");
 	};
 
 	return (

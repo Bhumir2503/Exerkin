@@ -37,7 +37,9 @@ export default function UsernameForm({ onSubmit, username, setUsername }) {
 		if (usernameCheck) {
 			onSubmit();
 		} else {
-			setError("Username is already taken. Please choose another.");
+			setError(
+				"Username already taken or Network error. Please try again."
+			);
 		}
 	};
 

@@ -3,29 +3,34 @@ export const getRealmUser = async (realm, userId) => {
 	return user;
 };
 
+/*
+ * Function to set user data in Realm database
+ *
+ * @param {Realm} realm - The Realm instance
+ * @param {Object} userData - The user data object containing user details
+ * @returns {Promise<void>} - A promise that resolves when the user data is set
+ */
 export const setRealmUser = async (realm, userData) => {
-try {
-	realm.write(() => {
-		realm.create(
-			"User",
-			{
-				userId: userData.userId,
-				username: userData.username,
-				email: userData.email,
-				bio: userData.bio || "",
-				gender: userData.gender || "male",
-				unitSystem: userData.unitSystem || "imperial",
-				createdAt: userData.createdAt?.toDate?.() || new Date(),
-				updatedAt: userData.updatedAt?.toDate?.() || new Date(),
-				setupComplete: userData.setupComplete || false,
-			},
-			"modified"
-		);
-		console.log("User Update written to Realm!");
-	});
-} catch (error) {
-	console.error("(setRealmUser) - Realm write failed:", error);
-}
+	try {
+		realm.write(() => {
+			realm.create(
+				"User",
+				{
+					userId: userData.userId,
+					username: userData.username,
+					email: userData.email,
+					gender: userData.gender,
+					motivation: userData.motivation,
+					unitSystem: userData.unitSystem,
+					createdAt: userData.createdAt?.toDate?.(),
+					updatedAt: userData.updatedAt?.toDate?.(),
+				},
+				"modified"
+			);
+		});
+	} catch (error) {
+		throw new Error("Failed to set user in Realm");
+	}
 };
 
 export const removeRealmUser = async (realm, userId) => {

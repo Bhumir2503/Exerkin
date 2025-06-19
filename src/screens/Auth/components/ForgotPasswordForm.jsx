@@ -12,7 +12,7 @@ import TextInputIcon from "../../../components/TextInputIcon";
 
 import { useTheme } from "../../../contexts/ThemeContext";
 
-import { isValidEmail } from "../../../services/helpers/textInputChecker";
+import { isValidEmail } from "../../../services/helpers/textInputFunctions";
 import { getAuth, sendPasswordResetEmail } from "@react-native-firebase/auth";
 
 export default function ForgotPasswordForm({ setType }) {
@@ -44,7 +44,7 @@ export default function ForgotPasswordForm({ setType }) {
 				setError("Failed to send reset link. Please try again.");
 			})
 			.finally(() => {
-				setIsLoading(false)
+				setIsLoading(false);
 				setType("Log In"); // Reset type to Log In after sending the email
 			});
 	};
