@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Realm from "realm";
 import { realmSchemas } from "../services/schemas/realmSchemas";
 import { ActivityIndicator, View } from "react-native";
@@ -6,51 +6,43 @@ import { ActivityIndicator, View } from "react-native";
 const RealmContext = createContext(null);
 
 const realmConfig = {
-	path: "ExerkinDB.realm",
+	path: "ExerkinDBTest4.realm",
 	schema: realmSchemas,
 	schemaVersion: 2,
 };
 
-let realmInstance;
-
 export const RealmProvider = ({ children }) => {
 	const [realm, setRealm] = useState(null);
-	const [loading, setLoading] = useState(true); // 🔐 add loading state
+	const [loading, setLoading] = useState(true);
+	const realmRef = useRef(null);
 
 	useEffect(() => {
 		const openRealm = async () => {
 			try {
-				if (!realmInstance || realmInstance.isClosed) {
-					realmInstance = await Realm.open(realmConfig);
+				if (!realmRef.current || realmRef.current.isClosed) {
+					const openedRealm = await Realm.open(realmConfig);
+					console.log("Realm File Path:", openedRealm.path);
+					realmRef.current = openedRealm;
+					setRealm(openedRealm);
 				}
-
-				console.log("Realm File Path:", realmInstance.path);
-				setRealm(realmInstance);
-			} catch (error) {
-				// Handle any errors that occurred during opening the Realm
-
-				// TODO: Change this to a full migration 
-				//erase all data in the realm
-				Realm.deleteFile(realmConfig);
-
-
-				console.error("Error opening Realm:", error);
+			} catch (err) {
+				console.error("Error opening Realm:", err);
 			} finally {
-				setLoading(false); // ✅ done initializing
+				setLoading(false);
 			}
 		};
 
 		openRealm();
 
 		return () => {
-			if (realmInstance && !realmInstance.isClosed) {
-				realmInstance.close();
-				realmInstance = null;
+			if (realmRef.current && !realmRef.current.isClosed) {
+				console.log("RealmProvider: Closing Realm...");
+				realmRef.current.close();
+				realmRef.current = null;
 			}
 		};
 	}, []);
 
-	// 🔒 Block everything until Realm is ready
 	if (loading || !realm) {
 		return (
 			<View

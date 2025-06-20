@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRealm } from "./RealmProvider";
 import {
 	getRealmUser,
-	setRealmUser,
+	saveUserInRealm,
 } from "../services/database/realmUserFunctions";
 
 const UserContext = createContext();
@@ -14,8 +14,8 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [init, setInit] = useState(true);
+	const [userId, setUserId] = useState(null);
 	const [username, setUsername] = useState("");
-	const [bio, setBio] = useState("");
 	const [motivation, setMotivation] = useState("");
 	const [gender, setGender] = useState("male");
 	const [unitSystem, setUnitSystem] = useState("imperial");
@@ -25,28 +25,23 @@ export const UserProvider = ({ children }) => {
 	const realm = useRealm();
 	const userDocUnsubscribeRef = useRef(null);
 
-	// Listen for Firebase auth state changes
 	useEffect(() => {
-		let isMounted = true;
 		const subscriber = auth().onAuthStateChanged((authUser) => {
-			if (isMounted) handleAuthStateChanged(authUser);
+			handleAuthStateChanged(authUser);
 		});
 
 		return () => {
-			console.log(
-				"(UserContext) - Unsubscribing from auth state changes"
-			);
-			isMounted = false;
+			console.log("(UserContext) - Cleaning up auth listener");
 			subscriber();
 			resetUserDocUnsubscribe();
 		};
 	}, []);
 
-	const listenToUserDocChanges = (uid) => {
-		if (!uid) return;
+	const listenToUserDocChanges = (userId) => {
+		if (!userId) return;
 		resetUserDocUnsubscribe();
 
-		const userDocRef = firestore().collection("users").doc(uid);
+		const userDocRef = firestore().collection("users").doc(userId);
 		const unsubscribe = userDocRef.onSnapshot((doc) => {
 			if (doc.exists) {
 				const userData = {
@@ -59,16 +54,19 @@ export const UserProvider = ({ children }) => {
 				);
 
 				setUsername(userData.username || "");
-				setBio(userData.bio || "");
+				setMotivation(userData.motivation || "");
 				setGender(userData.gender || "male");
 				setUnitSystem(userData.unitSystem || "imperial");
 				setSetupComplete(true);
 				setIsNewUser(false);
 
 				try {
-					setRealmUser(realm, userData);
+					saveUserInRealm(realm, userData);
 				} catch (e) {
-					console.error("(UserContext) - Failed to setRealmUser:", e);
+					console.error(
+						"(UserContext) - Failed to saveUserInRealm:",
+						e
+					);
 				}
 			} else {
 				console.log("(UserContext) - User doc does not exist");
@@ -107,7 +105,7 @@ export const UserProvider = ({ children }) => {
 				const cachedUser = await getRealmUser(realm, authUser.uid);
 				if (cachedUser && cachedUser.username) {
 					setUsername(cachedUser.username);
-					setBio(cachedUser.bio || "");
+
 					setGender(cachedUser.gender || "male");
 					setUnitSystem(cachedUser.unitSystem || "imperial");
 					setSetupComplete(true);
@@ -182,8 +180,6 @@ export const UserProvider = ({ children }) => {
 				init,
 				username,
 				setUsername,
-				bio,
-				setBio,
 				gender,
 				setGender,
 				unitSystem,

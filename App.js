@@ -45,7 +45,6 @@ export const midnightPurpleTheme = {
 };
 
 export default function App() {
-	const [init, setInit] = useState(true);
 	console.log("App.js: Starting app..."); // For debugging purposes
 	if (Platform.OS === "android") {
 		NavigationBar.setBackgroundColorAsync(
@@ -55,27 +54,23 @@ export default function App() {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: "#16161a" }}>
-
-				<ThemeProvider>
-					<SafeAreaProvider>
-						<MenuProvider>
-							<GestureHandlerRootView style={{ flex: 1 }}>
-								<RealmProvider>
-									<UserProvider>
-
-											<WorkoutProvider>
-												<BlueprintProvider>
-													<AppContent />
-												</BlueprintProvider>
-											</WorkoutProvider>
-
-									</UserProvider>
-								</RealmProvider>
-							</GestureHandlerRootView>
-						</MenuProvider>
-					</SafeAreaProvider>
-				</ThemeProvider>
-
+			<ThemeProvider>
+				<SafeAreaProvider>
+					<MenuProvider>
+						<GestureHandlerRootView style={{ flex: 1 }}>
+							<RealmProvider>
+								<UserProvider>
+									<WorkoutProvider>
+										<BlueprintProvider>
+											<AppContent />
+										</BlueprintProvider>
+									</WorkoutProvider>
+								</UserProvider>
+							</RealmProvider>
+						</GestureHandlerRootView>
+					</MenuProvider>
+				</SafeAreaProvider>
+			</ThemeProvider>
 		</View>
 	);
 }

@@ -3,7 +3,7 @@ import {
 	WorkoutExerciseSchema,
 	ExerciseSetSchema,
 } from "./workoutSchema";
-import { UserSchema } from "./userSchema";
+import { UserSchema, UserPreferencesSchema } from "./userSchema";
 import { MeasurementSchema } from "./measurementSchema";
 import { SyncStatusSchema } from "./syncStatusSchema";
 
@@ -18,6 +18,7 @@ export const realmSchemas = [
 	WorkoutExerciseSchema,
 	ExerciseSetSchema,
 	UserSchema,
+	UserPreferencesSchema,
 	MeasurementSchema,
 	SyncStatusSchema,
 	BlueprintSchema,

@@ -3,25 +3,20 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	TextInput,
 	TouchableOpacity,
 	ActivityIndicator,
 	KeyboardAvoidingView,
 	Platform,
 	ScrollView,
 	StatusBar,
-	Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 
-import {
-	saveUserProfile,
-	isUsernameAvailable,
-} from "../../services/firestore/firestoreUserServices";
-
 import { useRealm } from "../../contexts/RealmProvider";
-import { setRealmUser } from "../../services/database/realmUserFunctions";
+import { saveUserInRealm } from "../../services/database/realmUserFunctions";
+
+import { saveUserInFirestore } from "../../services/firestore/firestoreUserServices";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -116,12 +111,16 @@ export default function SetUsername() {
 
 	const handleUserData = () => {
 		return {
+			userId: user.uid,
 			username: username,
 			email: user.email,
-			userId: user.uid,
-			unitSystem: unitSystem.toLowerCase(),
-			gender: gender.toLowerCase(),
 			motivation: motivation,
+			preferences: {
+				theme: "midnightPurple", // Default
+				gender: gender.toLowerCase(),
+				unitSystem: unitSystem.toLowerCase(),
+				notificationsEnabled: false, // Default
+			},
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -130,25 +129,12 @@ export default function SetUsername() {
 	const handleSubmit = async () => {
 		setLoading(true);
 		let userData = handleUserData();
-
-		setRealmUser(realm, userData)
-			.then(() => {
-				// Save the user profile to Firestore
-				return saveUserProfile(user.uid, userData);
-			})
-			.then(() => {
-				console.log("User setup complete!");
-				// Save the username to local cache
-				// Update the context
-				setContextUsername(username);
-				// Complete setup
-				onSetupComplete();
-			})
-			.catch((error) => {
-				console.log("Error saving user data:", error);
-				setLoading(false);
-			});
-
+		try {
+			await saveUserInFirestore(userData); // Save to Firestore
+			await saveUserInRealm(realm, userData); // Save to Realm
+		} catch (error) {
+			console.error("Error saving user data:", error);
+		}
 		setLoading(false);
 	};
 
