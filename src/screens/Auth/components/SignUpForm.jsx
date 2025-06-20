@@ -14,7 +14,7 @@ import {
 	isValidEmail,
 	isValidPassword,
 	isValidConfirmPassword,
-} from "../../../services/helpers/textInputChecker";
+} from "../../../services/helpers/textInputFunctions";
 
 import {
 	getAuth,

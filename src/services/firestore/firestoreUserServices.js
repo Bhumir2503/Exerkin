@@ -1,29 +1,46 @@
 import firestore from "@react-native-firebase/firestore";
-import auth from "@react-native-firebase/auth";
+import { auth } from "@react-native-firebase/auth";
 
 // Collection references
 const usersCollection = firestore().collection("users");
 const usernamesCollection = firestore().collection("usernames");
 
-// Save user profile to Firestore
-// parameter: uid (string), userData (object)
-// sets user document with the provided data in the users collection
-// return: true
-export const saveUserProfile = async (uid, userData) => {
+/*
+ * Function to save user data in Firestore
+ *
+ * @param {Object} userData - The user data object containing user details
+ * @returns {Promise<void>} - A promise that resolves when the user data is saved
+ * @throws {Error} - Throws an error if the user ID is not provided or if
+ */
+export const saveUserInFirestore = async (userData) => {
 	try {
-		const userDocRef = usersCollection.doc(uid || auth().currentUser.uid);
+		const resolvedUid = userData.userId || auth().currentUser?.uid;
+		if (!resolvedUid)
+			throw new Error("User ID not provided or authenticated");
 
-		// Set or update the user document
-		await userDocRef.set(userData, { merge: true });
+		const userDocRef = usersCollection.doc(resolvedUid);
 
-		// If username is included, reserve it in the usernames collection
-		if (userData.username) {
-			await usernamesCollection.doc(userData.username.toLowerCase()).set({
-				userId: uid || auth().currentUser.uid,
-			});
-		}
+		const username = userData.username.toLowerCase();
+
+		console.log("Saving user profile with UID:", resolvedUid);
+		console.log("Username:", username);
+		console.log("User Data:", userData);
+
+		const usernameDocRef = firestore()
+			.collection("usernames")
+			.doc(username);
+
+		const batch = firestore().batch();
+
+		batch.set(userDocRef, userData);
+		batch.set(usernameDocRef, { userId: resolvedUid });
+
+		// Commit the batch
+		await batch.commit();
+
+		console.log("Batch commit successful");
 	} catch (error) {
-		console.error("Error saving user profile:", error);
+		console.error("Error saving user profile (batch):", error);
 		throw error;
 	}
 };
@@ -51,17 +68,17 @@ export const getUserProfile = async (uid) => {
 // checks to see if the user has a complete profile
 // return: boolean, and object
 export const hasCompleteProfile = async () => {
-    if (!auth().currentUser) {
-        return false;
-    }
+	if (!auth().currentUser) {
+		return false;
+	}
 
-    try {
-        const userDocData = await getUserProfile();
-        return [!!userDocData, userDocData];
-    } catch (error) {
-        console.error("Error checking user setup:", error);
-        return [false, "error"];
-    }
+	try {
+		const userDocData = await getUserProfile();
+		return [!!userDocData, userDocData];
+	} catch (error) {
+		console.error("Error checking user setup:", error);
+		return [false, "error"];
+	}
 };
 
 // Check if username is available
@@ -78,7 +95,6 @@ export const isUsernameAvailable = async (username) => {
 		throw error;
 	}
 };
-
 
 export const fetchUserData = async (userId, lastSynced) => {
 	try {
@@ -103,4 +119,4 @@ export const fetchUserData = async (userId, lastSynced) => {
 		);
 		return [];
 	}
-}
+};

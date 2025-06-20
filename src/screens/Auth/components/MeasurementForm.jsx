@@ -10,6 +10,8 @@ import {
 import { useTheme } from "../../../contexts/ThemeContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+import { handleDecimalNumberText } from "../../../services/helpers/textInputFunctions";
+
 export default function MeasurementForm({
 	unitSystem,
 	gender,
@@ -36,6 +38,11 @@ export default function MeasurementForm({
 				title: "Chest Measurement",
 				description:
 					"Measure around the chest at the widest part, typically at the nipple line, keeping the tape measure level.",
+			},
+			abs: {
+				title: "Abdomen Measurement",
+				description:
+					"Measure around your abdomen at the level of your navel, keeping the tape measure level.",
 			},
 			waist: {
 				title: "Waist Measurement",
@@ -119,10 +126,8 @@ export default function MeasurementForm({
 								onChangeText={(text) =>
 									setMeasurements((prev) => ({
 										...prev,
-										[item.name]: text.replace(
-											/[^0-9]/g,
-											""
-										),
+										[item.name]:
+											handleDecimalNumberText(text),
 									}))
 								}
 								keyboardType="number-pad"
@@ -181,7 +186,7 @@ export default function MeasurementForm({
 					<Text style={styles.bodyFatNote}>
 						{measurements.bodyFat
 							? "Calculated using Navy method"
-							: `Enter neck${
+							: `Enter height, neck${
 									gender === "Female" ? ", hips, " : " "
 							  }and waist to calculate`}
 					</Text>
@@ -194,6 +199,11 @@ export default function MeasurementForm({
 					label: "Chest",
 					name: "chest",
 					helpType: "chest",
+				},
+				{
+					label: "Abdomen",
+					name: "abdomen",
+					helpType: "abs",
 				},
 			])}
 			{renderMeasurementInput([
@@ -425,14 +435,14 @@ const createStyles = (themeStyle) =>
 		modalTitle: {
 			fontSize: 20,
 			fontWeight: "bold",
-			color: themeStyle.primary,
+			color: themeStyle.textColor,
 		},
 		modalBody: {
 			marginBottom: 24,
 		},
 		modalDescription: {
 			fontSize: 16,
-			color: themeStyle.textColor,
+			color: themeStyle.textColorSecondary,
 			lineHeight: 24,
 		},
 		modalImageContainer: {

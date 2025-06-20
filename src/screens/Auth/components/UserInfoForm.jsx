@@ -4,6 +4,11 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import TextInputIcon from "../../../components/TextInputIcon";
 import TextInputUnit from "../../../components/TextInputUnit";
 
+import {
+	handleNumberText,
+	handleDecimalNumberText,
+} from "../../../services/helpers/textInputFunctions";
+
 export default function UserInfoForm({
 	motivation,
 	setMotivation,
@@ -48,12 +53,12 @@ export default function UserInfoForm({
 					onChangeText={(e) => {
 						setMeasurements((prev) => ({
 							...prev,
-							age: e.replace(/[^0-9]/g, ""),
+							age: handleNumberText(e),
 						}));
 					}}
 					placeholder={measurements.age || "0"}
 					unit="yrs"
-					keyboardType="number-pad"
+					keyboardType="numeric"
 					maxLength={3}
 					header="Age"
 				/>
@@ -62,12 +67,12 @@ export default function UserInfoForm({
 					onChangeText={(e) => {
 						setMeasurements((prev) => ({
 							...prev,
-							height: e.replace(/[^0-9]/g, ""),
+							height: handleNumberText(e),
 						}));
 					}}
 					placeholder={measurements.height || "0"}
 					unit={unitSystem === "Imperial" ? "in" : "cm"}
-					keyboardType="number-pad"
+					keyboardType="numeric"
 					maxLength={3}
 					header="Height"
 				/>
@@ -76,13 +81,13 @@ export default function UserInfoForm({
 					onChangeText={(e) => {
 						setMeasurements((prev) => ({
 							...prev,
-							weight: e.replace(/[^0-9]/g, ""),
+							weight: handleDecimalNumberText(e),
 						}));
 					}}
 					placeholder={measurements.weight || "0"}
 					unit={unitSystem === "Imperial" ? "lbs" : "kg"}
-					keyboardType="number-pad"
-					maxLength={3}
+					keyboardType="numeric"
+					maxLength={5}
 					header="Weight"
 				/>
 			</View>
