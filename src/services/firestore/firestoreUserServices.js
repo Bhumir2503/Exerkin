@@ -6,6 +6,28 @@ const usersCollection = firestore().collection("users");
 const usernamesCollection = firestore().collection("usernames");
 
 /*
+ * Function to get the current user's profile from Firestore
+ *
+ * @returns {Promise<Object|null>} - A promise that resolves to the user profile data or null if not found
+ * @throws {Error} - Throws an error if there is an issue retrieving the user profile
+ */
+export const getUserFromFirestore = async (userId) => {
+	try {
+		const resolvedUid = userId || auth().currentUser?.uid;
+		const userDoc = await usersCollection.doc(resolvedUid).get();
+
+		if (!userDoc.exists) {
+			return null;
+		}
+
+		return userDoc.data();
+	} catch (error) {
+		console.error("Error getting user profile:", error);
+		throw error;
+	}
+};
+
+/*
  * Function to save user data in Firestore
  *
  * @param {Object} userData - The user data object containing user details
@@ -37,28 +59,6 @@ export const saveUserInFirestore = async (userData) => {
 		console.log("Batch commit successful");
 	} catch (error) {
 		console.error("Error saving user profile (batch):", error);
-		throw error;
-	}
-};
-
-/*
- * Function to get the current user's profile from Firestore
- *
- * @returns {Promise<Object|null>} - A promise that resolves to the user profile data or null if not found
- * @throws {Error} - Throws an error if there is an issue retrieving the user profile
- */
-export const getUserFromFirestore = async (userId) => {
-	try {
-		const resolvedUid = userId || auth().currentUser?.uid;
-		const userDoc = await usersCollection.doc(resolvedUid).get();
-
-		if (!userDoc.exists) {
-			return null;
-		}
-
-		return userDoc.data();
-	} catch (error) {
-		console.error("Error getting user profile:", error);
 		throw error;
 	}
 };

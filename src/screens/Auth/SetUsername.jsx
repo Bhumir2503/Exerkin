@@ -16,7 +16,6 @@ import { useUser } from "../../contexts/UserContext";
 import { useRealm } from "../../contexts/RealmProvider";
 import {
 	saveUserInRealm,
-	updateLastUserSyncTime,
 } from "../../services/database/realmUserFunctions";
 
 import { saveUserInFirestore } from "../../services/firestore/firestoreUserServices";

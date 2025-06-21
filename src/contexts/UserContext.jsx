@@ -4,10 +4,10 @@ import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useRealm } from "./RealmProvider";
-import {
-	getUserFromRealm,
-	saveUserInRealm,
-} from "../services/database/realmUserFunctions";
+// import {
+// 	getUserFromRealm,
+// 	saveUserInRealm,
+// } from "../services/database/realmUserFunctions";
 
 const UserContext = createContext();
 
@@ -39,27 +39,14 @@ export const UserProvider = ({ children }) => {
 		if (!userId) return;
 
 		const userDocRef = firestore().collection("users").doc(userId);
-		const unsubscribe = userDocRef.onSnapshot(async (doc) => {
+		const unsubscribe = userDocRef.onSnapshot((doc) => {
 			if (doc.exists) {
-				console.log(
-					"(UserContext) - User document exists in Firestore"
-				);
+				console.log(`(UserContext) - User document exists`);
 				handleData(doc.data());
 			} else {
-				const storedUser = await getUserFromRealm(realm, userId);
-				if (storedUser) {
-					console.log(
-						"(UserContext) - User found in Realm:",
-						storedUser
-					);
-					handleData(storedUser);
-				} else {
-					console.log(
-						"(UserContext) - No user data found in Firestore or Realm"
-					);
-					setIsNewUser(true);
-					setSetupComplete(false);
-				}
+				console.log("(UserContext) - User document does not exist");
+				setIsNewUser(true);
+				setSetupComplete(false);
 			}
 		});
 		return () => {
@@ -83,12 +70,12 @@ export const UserProvider = ({ children }) => {
 		setSetupComplete(true);
 		setIsNewUser(false);
 
-		try {
-			await saveUserInRealm(realm, userData);
-			console.log("(UserContext) - User saved in Realm successfully");
-		} catch (error) {
-			console.error("(UserContext) - Error saving user in Realm:", error);
-		}
+		// try {
+		// 	await saveUserInRealm(realm, userData);
+		// 	console.log("(UserContext) - User saved in Realm successfully");
+		// } catch (error) {
+		// 	console.error("(UserContext) - Error saving user in Realm:", error);
+		// }
 	};
 
 	const handleAuthStateChanged = async (authUser) => {
@@ -110,6 +97,20 @@ export const UserProvider = ({ children }) => {
 			await auth().signOut();
 
 			resetUserState();
+
+			firestore()
+				.clearPersistence()
+				.then(() => {
+					console.log(
+						"(UserContext) - Firestore persistence cleared"
+					);
+				})
+				.catch((error) => {
+					console.error(
+						"(UserContext) - Error clearing Firestore persistence:",
+						error
+					);
+				});
 
 			if (realm) {
 				realm.write(() => {
