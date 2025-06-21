@@ -24,8 +24,6 @@ import SplashScreen from "./src/screens/Auth/SplashScreen"; // Create this compo
 
 enableScreens();
 
-globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-
 // Define the theme object that will be used consistently throughout the app
 export const midnightPurpleTheme = {
 	backgroundColor: "#16161a",
@@ -46,6 +44,7 @@ export const midnightPurpleTheme = {
 
 export default function App() {
 	console.log("App.js: Starting app..."); // For debugging purposes
+	globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
 	if (Platform.OS === "android") {
 		NavigationBar.setBackgroundColorAsync(
 			midnightPurpleTheme.backgroundColor
@@ -76,7 +75,7 @@ export default function App() {
 }
 
 function AppContent() {
-	const { user, init, isNewUser, setupComplete } = useUser();
+	const { user, isNewUser, setupComplete } = useUser();
 	const [splashFinished, setSplashFinished] = useState(false);
 	const { theme } = useTheme();
 	const lightTheme = [
@@ -88,8 +87,8 @@ function AppContent() {
 		"skyBlossom",
 	];
 
-	// Show splash screen if we're initializing or if splash animation isn't finished
-	if (init || !splashFinished) {
+	// Show splash screen until it's finished
+	if (!splashFinished) {
 		return (
 			<SplashScreen onAnimationComplete={() => setSplashFinished(true)} />
 		);

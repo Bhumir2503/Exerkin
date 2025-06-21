@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useRealm } from "./RealmProvider";
 import {
-	getRealmUser,
+	getUserFromRealm,
 	saveUserInRealm,
 } from "../services/database/realmUserFunctions";
 
@@ -13,123 +13,101 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
-	const [init, setInit] = useState(true);
 	const [userId, setUserId] = useState(null);
 	const [username, setUsername] = useState("");
 	const [motivation, setMotivation] = useState("");
 	const [gender, setGender] = useState("male");
 	const [unitSystem, setUnitSystem] = useState("imperial");
-	const [isNewUser, setIsNewUser] = useState(false);
+	const [isNewUser, setIsNewUser] = useState(true);
 	const [setupComplete, setSetupComplete] = useState(false);
 
 	const realm = useRealm();
-	const userDocUnsubscribeRef = useRef(null);
 
 	useEffect(() => {
-		const subscriber = auth().onAuthStateChanged((authUser) => {
+		const unsubscribe = auth().onAuthStateChanged((authUser) => {
 			handleAuthStateChanged(authUser);
 		});
 
 		return () => {
-			console.log("(UserContext) - Cleaning up auth listener");
-			subscriber();
-			resetUserDocUnsubscribe();
+			unsubscribe();
+			console.log("(UserContext) - Auth state listener unsubscribed");
 		};
 	}, []);
 
-	const listenToUserDocChanges = (userId) => {
+	// Listen for changes in the user document when the user is logged in
+	useEffect(() => {
 		if (!userId) return;
-		resetUserDocUnsubscribe();
 
 		const userDocRef = firestore().collection("users").doc(userId);
-		const unsubscribe = userDocRef.onSnapshot((doc) => {
+		const unsubscribe = userDocRef.onSnapshot(async (doc) => {
 			if (doc.exists) {
-				const userData = {
-					...doc.data(),
-					userId: doc.data().userId || doc.id,
-				};
 				console.log(
-					"(UserContext) - User doc updated:",
-					userData.username
+					"(UserContext) - User document exists in Firestore"
 				);
-
-				setUsername(userData.username || "");
-				setMotivation(userData.motivation || "");
-				setGender(userData.gender || "male");
-				setUnitSystem(userData.unitSystem || "imperial");
-				setSetupComplete(true);
-				setIsNewUser(false);
-
-				try {
-					saveUserInRealm(realm, userData);
-				} catch (e) {
-					console.error(
-						"(UserContext) - Failed to saveUserInRealm:",
-						e
-					);
-				}
+				handleData(doc.data());
 			} else {
-				console.log("(UserContext) - User doc does not exist");
-				setIsNewUser(true);
-				setSetupComplete(false);
+				const storedUser = await getUserFromRealm(realm, userId);
+				if (storedUser) {
+					console.log(
+						"(UserContext) - User found in Realm:",
+						storedUser
+					);
+					handleData(storedUser);
+				} else {
+					console.log(
+						"(UserContext) - No user data found in Firestore or Realm"
+					);
+					setIsNewUser(true);
+					setSetupComplete(false);
+				}
 			}
 		});
+		return () => {
+			unsubscribe();
+			console.log("(UserContext) - User document listener unsubscribed");
+		};
+	}, [userId]);
 
-		userDocUnsubscribeRef.current = unsubscribe;
-	};
-
-	const handleAuthStateChanged = async (authUser) => {
-		console.log("(UserContext) - ", authUser ? "logged in" : "logged out");
-
-		if (!authUser) {
-			resetUserState();
-			resetUserDocUnsubscribe();
-			if (init) setInit(false);
+	const handleData = async (userData) => {
+		if (!userData || !userData.userId) {
+			console.log("(UserContext) - No user data found in Firestore");
+			setIsNewUser(true);
+			setSetupComplete(false);
 			return;
 		}
 
-		setUser(authUser);
+		setUsername(userData.username);
+		setMotivation(userData.motivation);
+		setGender(userData.gender);
+		setUnitSystem(userData.unitSystem);
+		setSetupComplete(true);
+		setIsNewUser(false);
 
 		try {
-			console.log(
-				"(UserContext) - Checking if user has completed setup..."
-			);
-			listenToUserDocChanges(authUser.uid);
+			await saveUserInRealm(realm, userData);
+			console.log("(UserContext) - User saved in Realm successfully");
 		} catch (error) {
-			console.error(
-				"(UserContext) - Error during user setup check:",
-				error
-			);
-
-			try {
-				const cachedUser = await getRealmUser(realm, authUser.uid);
-				if (cachedUser && cachedUser.username) {
-					setUsername(cachedUser.username);
-
-					setGender(cachedUser.gender || "male");
-					setUnitSystem(cachedUser.unitSystem || "imperial");
-					setSetupComplete(true);
-					setIsNewUser(false);
-				} else {
-					setSetupComplete(false);
-					setIsNewUser(true);
-				}
-			} catch (realmError) {
-				console.error("(UserContext) - Realm error:", realmError);
-				await onLogout();
-				setIsNewUser(true);
-				setSetupComplete(false);
-			}
+			console.error("(UserContext) - Error saving user in Realm:", error);
 		}
+	};
 
-		if (init) setInit(false);
+	const handleAuthStateChanged = async (authUser) => {
+		console.log(
+			"(UserContext) - ",
+			authUser ? "User is logged in" : "User is logged out"
+		);
+
+		if (!authUser) {
+			resetUserState();
+			return;
+		}
+		setUser(authUser);
+		setUserId(authUser.uid);
 	};
 
 	const onLogout = async () => {
 		try {
 			await auth().signOut();
-
-			resetUserDocUnsubscribe();
 
 			resetUserState();
 
@@ -146,25 +124,14 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const onSetupComplete = () => {
-		setSetupComplete(true);
-		setIsNewUser(false);
-	};
-
 	const updateUsername = (newUsername) => {
 		setUsername(newUsername);
 	};
 
-	const resetUserDocUnsubscribe = () => {
-		if (userDocUnsubscribeRef.current) {
-			userDocUnsubscribeRef.current();
-			userDocUnsubscribeRef.current = null;
-		}
-	};
-
 	const resetUserState = () => {
 		setUser(null);
-		setIsNewUser(false);
+		setUserId(null);
+		setIsNewUser(true);
 		setSetupComplete(false);
 		setUsername("");
 		setMotivation("");
@@ -177,7 +144,6 @@ export const UserProvider = ({ children }) => {
 			value={{
 				user,
 				setUser,
-				init,
 				username,
 				setUsername,
 				gender,
@@ -188,7 +154,7 @@ export const UserProvider = ({ children }) => {
 				isNewUser,
 				setIsNewUser,
 				setupComplete,
-				onSetupComplete,
+
 				updateUsername,
 			}}
 		>
