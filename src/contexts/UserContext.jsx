@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
 
 		const userDocRef = firestore().collection("users").doc(userId);
 		const unsubscribe = userDocRef.onSnapshot((doc) => {
-			if (doc.exists) {
+			if (doc.exists()) {
 				console.log(`(UserContext) - User document exists`);
 				handleData(doc.data());
 			} else {
@@ -69,13 +69,6 @@ export const UserProvider = ({ children }) => {
 		setUnitSystem(userData.unitSystem);
 		setSetupComplete(true);
 		setIsNewUser(false);
-
-		// try {
-		// 	await saveUserInRealm(realm, userData);
-		// 	console.log("(UserContext) - User saved in Realm successfully");
-		// } catch (error) {
-		// 	console.error("(UserContext) - Error saving user in Realm:", error);
-		// }
 	};
 
 	const handleAuthStateChanged = async (authUser) => {
@@ -94,30 +87,24 @@ export const UserProvider = ({ children }) => {
 
 	const onLogout = async () => {
 		try {
+			// Sign out from Firebase Auth
 			await auth().signOut();
+			resetUserState(); // Reset user state (assuming this function resets local state)
 
-			resetUserState();
+			firestore().terminate(); // Terminate Firestore connection
+			console.log("(UserContext) - Firestore connection terminated");
 
-			firestore()
-				.clearPersistence()
-				.then(() => {
-					console.log(
-						"(UserContext) - Firestore persistence cleared"
-					);
-				})
-				.catch((error) => {
-					console.error(
-						"(UserContext) - Error clearing Firestore persistence:",
-						error
-					);
-				});
+			firestore().clearPersistence(); // Clear Firestore persistence
+			console.log("(UserContext) - Firestore persistence cleared");
 
+			// Delete all data in Realm
 			if (realm) {
 				realm.write(() => {
-					realm.deleteAll();
+					realm.deleteAll(); // Delete all objects in Realm
 				});
 			}
 
+			// Clear AsyncStorage
 			await AsyncStorage.clear();
 			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {

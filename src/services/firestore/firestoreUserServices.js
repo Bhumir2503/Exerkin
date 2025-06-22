@@ -94,7 +94,7 @@ export const isUsernameAvailable = async (username) => {
 		const usernameDoc = await usernamesCollection
 			.doc(username.toLowerCase())
 			.get();
-		return !usernameDoc.exists;
+		return !usernameDoc.exists();
 	} catch (error) {
 		console.error("Error checking username availability:", error);
 		throw error;
