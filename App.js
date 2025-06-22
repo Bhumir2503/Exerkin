@@ -22,8 +22,6 @@ import AppNavigator from "./src/navigations/AppNavigator";
 import SetUsername from "./src/screens/Auth/SetUsername";
 import SplashScreen from "./src/screens/Auth/SplashScreen"; // Create this component for better UX
 
-import firebase from "@react-native-firebase/app";
-
 enableScreens();
 
 // Define the theme object that will be used consistently throughout the app
@@ -47,11 +45,6 @@ export const midnightPurpleTheme = {
 export default function App() {
 	console.log("App.js: Starting app..."); // For debugging purposes
 	globalThis.RNFB_SILENCE_MODULAR_DEPRECATION_WARNINGS = true;
-
-	// Initialize Firebase if not already initialized
-	if (!firebase.apps.length) {
-		firebase.initializeApp();
-	}
 
 	if (Platform.OS === "android") {
 		NavigationBar.setBackgroundColorAsync(
