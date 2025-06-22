@@ -43,9 +43,10 @@ export const UserProvider = ({ children }) => {
 
 		const userDocRef = firestore().collection("users").doc(userId);
 		const unsubscribe = userDocRef.onSnapshot((doc) => {
-			if (doc.exists) {
+			if (doc._exists) {
 				const userData = {
 					...doc.data(),
+					
 					userId: doc.data().userId || doc.id,
 				};
 				console.log(
@@ -80,6 +81,7 @@ export const UserProvider = ({ children }) => {
 
 	const handleAuthStateChanged = async (authUser) => {
 		console.log("(UserContext) - ", authUser ? "logged in" : "logged out");
+		console.log(authUser.uid);
 
 		if (!authUser) {
 			resetUserState();
