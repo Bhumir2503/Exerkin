@@ -7,7 +7,7 @@ const Profile = () => {
 	const { username } = useUser();
 	const styles = createStyles(themeStyle);
 
-	const developerNames = ["Bhumir2503", "GradySenpai"];
+	const developerNames = ["Bhumir2503", "GradySenpai", "brianmerino"];
 
 	return (
 		<View style={styles.profileSection}>
