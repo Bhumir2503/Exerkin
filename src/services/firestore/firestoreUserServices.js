@@ -6,6 +6,28 @@ const usersCollection = firestore().collection("users");
 const usernamesCollection = firestore().collection("usernames");
 
 /*
+ * Function to get the current user's profile from Firestore
+ *
+ * @returns {Promise<Object|null>} - A promise that resolves to the user profile data or null if not found
+ * @throws {Error} - Throws an error if there is an issue retrieving the user profile
+ */
+export const getUserFromFirestore = async (userId) => {
+	try {
+		const resolvedUid = userId || auth().currentUser?.uid;
+		const userDoc = await usersCollection.doc(resolvedUid).get();
+
+		if (!userDoc.exists) {
+			return null;
+		}
+
+		return userDoc.data();
+	} catch (error) {
+		console.error("Error getting user profile:", error);
+		throw error;
+	}
+};
+
+/*
  * Function to save user data in Firestore
  *
  * @param {Object} userData - The user data object containing user details
@@ -21,10 +43,6 @@ export const saveUserInFirestore = async (userData) => {
 		const userDocRef = usersCollection.doc(resolvedUid);
 
 		const username = userData.username.toLowerCase();
-
-		console.log("Saving user profile with UID:", resolvedUid);
-		console.log("Username:", username);
-		console.log("User Data:", userData);
 
 		const usernameDocRef = firestore()
 			.collection("usernames")
@@ -45,28 +63,12 @@ export const saveUserInFirestore = async (userData) => {
 	}
 };
 
-// Get user profile from Firestore
-// parameter: uid (string)
-// return: user document data or null
-export const getUserProfile = async (uid) => {
-	try {
-		const userDoc = await usersCollection
-			.doc(uid || auth().currentUser.uid)
-			.get();
-
-		if (!userDoc.exists) {
-			return null;
-		}
-
-		return userDoc.data();
-	} catch (error) {
-		console.error("Error getting user profile:", error);
-		throw error;
-	}
-};
-
-// checks to see if the user has a complete profile
-// return: boolean, and object
+/*
+ * Function to get the current user's profile from Firestore
+ *
+ * @returns {Promise<Object|null>} - A promise that resolves to the user profile data or null if not found
+ * @throws {Error} - Throws an error if there is an issue retrieving the user profile
+ */
 export const hasCompleteProfile = async () => {
 	if (!auth().currentUser) {
 		return false;
@@ -81,15 +83,18 @@ export const hasCompleteProfile = async () => {
 	}
 };
 
-// Check if username is available
-// parameter: username (string)
-// return: boolean
+/*
+ * Function to get the current user's profile from Firestore
+ *
+ * @returns {Promise<Object|null>} - A promise that resolves to the user profile data or null if not found
+ * @throws {Error} - Throws an error if there is an issue retrieving the user profile
+ */
 export const isUsernameAvailable = async (username) => {
 	try {
 		const usernameDoc = await usernamesCollection
 			.doc(username.toLowerCase())
 			.get();
-		return !usernameDoc.exists;
+		return !usernameDoc.exists();
 	} catch (error) {
 		console.error("Error checking username availability:", error);
 		throw error;

@@ -14,7 +14,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 
 import { useRealm } from "../../contexts/RealmProvider";
-import { saveUserInRealm } from "../../services/database/realmUserFunctions";
+import {
+	saveUserInRealm,
+} from "../../services/database/realmUserFunctions";
 
 import { saveUserInFirestore } from "../../services/firestore/firestoreUserServices";
 
@@ -25,6 +27,8 @@ import UserInfoForm from "./components/UserInfoForm";
 import MeasurementForm from "./components/MeasurementForm";
 
 import { calculateBodyFat } from "../../services/helpers/measurementFunctions";
+
+import { Timestamp } from "@react-native-firebase/firestore";
 
 export default function SetUsername() {
 	const {
@@ -110,6 +114,8 @@ export default function SetUsername() {
 	};
 
 	const handleUserData = () => {
+		const timestamp = Timestamp.now();
+
 		return {
 			userId: user.uid,
 			username: username,
@@ -121,8 +127,8 @@ export default function SetUsername() {
 				unitSystem: unitSystem.toLowerCase(),
 				notificationsEnabled: false, // Default
 			},
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			createdAt: timestamp,
+			updatedAt: timestamp,
 		};
 	};
 

@@ -4,143 +4,107 @@ import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useRealm } from "./RealmProvider";
-import {
-	getRealmUser,
-	saveUserInRealm,
-} from "../services/database/realmUserFunctions";
+// import {
+// 	getUserFromRealm,
+// 	saveUserInRealm,
+// } from "../services/database/realmUserFunctions";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
-	const [init, setInit] = useState(true);
 	const [userId, setUserId] = useState(null);
 	const [username, setUsername] = useState("");
 	const [motivation, setMotivation] = useState("");
 	const [gender, setGender] = useState("male");
 	const [unitSystem, setUnitSystem] = useState("imperial");
-	const [isNewUser, setIsNewUser] = useState(false);
+	const [isNewUser, setIsNewUser] = useState(true);
 	const [setupComplete, setSetupComplete] = useState(false);
 
 	const realm = useRealm();
-	const userDocUnsubscribeRef = useRef(null);
 
 	useEffect(() => {
-		const subscriber = auth().onAuthStateChanged((authUser) => {
+		const unsubscribe = auth().onAuthStateChanged((authUser) => {
 			handleAuthStateChanged(authUser);
 		});
 
 		return () => {
-			console.log("(UserContext) - Cleaning up auth listener");
-			subscriber();
-			resetUserDocUnsubscribe();
+			unsubscribe();
+			console.log("(UserContext) - Auth state listener unsubscribed");
 		};
 	}, []);
 
-	const listenToUserDocChanges = (userId) => {
+	// Listen for changes in the user document when the user is logged in
+	useEffect(() => {
 		if (!userId) return;
-		resetUserDocUnsubscribe();
 
 		const userDocRef = firestore().collection("users").doc(userId);
 		const unsubscribe = userDocRef.onSnapshot((doc) => {
-			if (doc._exists) {
-				const userData = {
-					...doc.data(),
-					
-					userId: doc.data().userId || doc.id,
-				};
-				console.log(
-					"(UserContext) - User doc updated:",
-					userData.username
-				);
-
-				setUsername(userData.username || "");
-				setMotivation(userData.motivation || "");
-				setGender(userData.gender || "male");
-				setUnitSystem(userData.unitSystem || "imperial");
-				setSetupComplete(true);
-				setIsNewUser(false);
-
-				try {
-					saveUserInRealm(realm, userData);
-				} catch (e) {
-					console.error(
-						"(UserContext) - Failed to saveUserInRealm:",
-						e
-					);
-				}
+			if (doc.exists()) {
+				console.log(`(UserContext) - User document exists`);
+				handleData(doc.data());
 			} else {
-				console.log("(UserContext) - User doc does not exist");
+				console.log("(UserContext) - User document does not exist");
 				setIsNewUser(true);
 				setSetupComplete(false);
 			}
 		});
+		return () => {
+			unsubscribe();
+			console.log("(UserContext) - User document listener unsubscribed");
+		};
+	}, [userId]);
 
-		userDocUnsubscribeRef.current = unsubscribe;
-	};
-
-	const handleAuthStateChanged = async (authUser) => {
-		console.log("(UserContext) - ", authUser ? "logged in" : "logged out");
-		console.log(authUser.uid);
-
-		if (!authUser) {
-			resetUserState();
-			resetUserDocUnsubscribe();
-			if (init) setInit(false);
+	const handleData = async (userData) => {
+		if (!userData || !userData.userId) {
+			console.log("(UserContext) - No user data found in Firestore");
+			setIsNewUser(true);
+			setSetupComplete(false);
 			return;
 		}
 
-		setUser(authUser);
+		setUsername(userData.username);
+		setMotivation(userData.motivation);
+		setGender(userData.gender);
+		setUnitSystem(userData.unitSystem);
+		setSetupComplete(true);
+		setIsNewUser(false);
+	};
 
-		try {
-			console.log(
-				"(UserContext) - Checking if user has completed setup..."
-			);
-			listenToUserDocChanges(authUser.uid);
-		} catch (error) {
-			console.error(
-				"(UserContext) - Error during user setup check:",
-				error
-			);
+	const handleAuthStateChanged = async (authUser) => {
+		console.log(
+			"(UserContext) - ",
+			authUser ? "User is logged in" : "User is logged out"
+		);
 
-			try {
-				const cachedUser = await getRealmUser(realm, authUser.uid);
-				if (cachedUser && cachedUser.username) {
-					setUsername(cachedUser.username);
-
-					setGender(cachedUser.gender || "male");
-					setUnitSystem(cachedUser.unitSystem || "imperial");
-					setSetupComplete(true);
-					setIsNewUser(false);
-				} else {
-					setSetupComplete(false);
-					setIsNewUser(true);
-				}
-			} catch (realmError) {
-				console.error("(UserContext) - Realm error:", realmError);
-				await onLogout();
-				setIsNewUser(true);
-				setSetupComplete(false);
-			}
+		if (!authUser) {
+			resetUserState();
+			return;
 		}
-
-		if (init) setInit(false);
+		setUser(authUser);
+		setUserId(authUser.uid);
 	};
 
 	const onLogout = async () => {
 		try {
+			// Sign out from Firebase Auth
 			await auth().signOut();
+			resetUserState(); // Reset user state (assuming this function resets local state)
 
-			resetUserDocUnsubscribe();
+			firestore().terminate(); // Terminate Firestore connection
+			console.log("(UserContext) - Firestore connection terminated");
 
-			resetUserState();
+			firestore().clearPersistence(); // Clear Firestore persistence
+			console.log("(UserContext) - Firestore persistence cleared");
 
+			// Delete all data in Realm
 			if (realm) {
 				realm.write(() => {
-					realm.deleteAll();
+					realm.deleteAll(); // Delete all objects in Realm
 				});
 			}
 
+			// Clear AsyncStorage
 			await AsyncStorage.clear();
 			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {
@@ -148,25 +112,14 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const onSetupComplete = () => {
-		setSetupComplete(true);
-		setIsNewUser(false);
-	};
-
 	const updateUsername = (newUsername) => {
 		setUsername(newUsername);
 	};
 
-	const resetUserDocUnsubscribe = () => {
-		if (userDocUnsubscribeRef.current) {
-			userDocUnsubscribeRef.current();
-			userDocUnsubscribeRef.current = null;
-		}
-	};
-
 	const resetUserState = () => {
 		setUser(null);
-		setIsNewUser(false);
+		setUserId(null);
+		setIsNewUser(true);
 		setSetupComplete(false);
 		setUsername("");
 		setMotivation("");
@@ -179,7 +132,6 @@ export const UserProvider = ({ children }) => {
 			value={{
 				user,
 				setUser,
-				init,
 				username,
 				setUsername,
 				gender,
@@ -190,7 +142,7 @@ export const UserProvider = ({ children }) => {
 				isNewUser,
 				setIsNewUser,
 				setupComplete,
-				onSetupComplete,
+
 				updateUsername,
 			}}
 		>
