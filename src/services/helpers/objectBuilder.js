@@ -1,4 +1,5 @@
 import { formatDuration } from "./timeFormatter";
+import { FieldValue } from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
 export const buildWorkoutObject = (workout) => {
@@ -61,7 +62,6 @@ export const buildWorkoutEditObject = (workout) => {
 		isBlueprint: workout.isBlueprint,
 		syncStatus: "synced",
 	};
-
 };
 
 export const buildExerciseObject = (selectedExercise) => {
@@ -100,7 +100,6 @@ export const buildBlueprintObject = (blueprint) => {
 		(exercise) => exercise.sets.length > 0
 	);
 
-
 	const workoutChecked = workoutFiltered.filter(
 		(exercise) => exercise.sets.length > 0
 	);
@@ -118,5 +117,4 @@ export const buildBlueprintObject = (blueprint) => {
 		unitSystem: blueprint.unitSystem,
 		syncStatus: "synced",
 	};
-
 };

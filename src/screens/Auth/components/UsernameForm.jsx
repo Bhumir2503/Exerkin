@@ -33,11 +33,17 @@ export default function UsernameForm({ onSubmit, username, setUsername }) {
 
 	const onButtonPress = async () => {
 		setError("");
-		const usernameCheck = await isUsernameAvailable(username);
-		if (usernameCheck) {
-			onSubmit();
-		} else {
-			setError("Username already taken. Please choose another one.");
+		try {
+			const usernameCheck = await isUsernameAvailable(username);
+			if (usernameCheck) {
+				onSubmit();
+			} else {
+				setError("Username already taken. Please choose another one.");
+			}
+		} catch (err) {
+			setError(
+				"An error occurred. Check network connection or try again later."
+			);
 		}
 	};
 

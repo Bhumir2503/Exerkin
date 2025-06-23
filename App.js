@@ -19,7 +19,7 @@ import { useTheme } from "./src/contexts/ThemeContext";
 
 import AuthNavigator from "./src/navigations/AuthNavigator";
 import AppNavigator from "./src/navigations/AppNavigator";
-import SetUsername from "./src/screens/Auth/SetUsername";
+import UserInfoScreen from "./src/screens/Auth/UserInfoScreen";
 import SplashScreen from "./src/screens/Auth/SplashScreen"; // Create this component for better UX
 
 enableScreens();
@@ -122,7 +122,7 @@ function AppContent() {
 					style="light"
 					backgroundColor={midnightPurpleTheme.backgroundColor}
 				/>
-				<SetUsername />
+				<UserInfoScreen />
 			</NavigationContainer>
 		);
 	}
