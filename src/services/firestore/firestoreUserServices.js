@@ -101,27 +101,21 @@ export const isUsernameAvailable = async (username) => {
 	}
 };
 
-export const fetchUserData = async (userId, lastSynced) => {
+/*
+ * Function to update the user profile in Firestore
+ *
+ * @param {string} userId - The ID of the user to update
+ * @param {Object} userData - An object containing the fields to update
+ * @returns {Promise<void>} - A promise that resolves when the update is complete
+ * @throws {Error} - Throws an error if there is an issue updating the user profile
+ * 
+ */
+export const updateUserProfile = async (userId, userData) => {
 	try {
-		const snapshot = await usersCollection
-			.where("userId", "==", userId)
-			.where("updatedAt", ">", lastSynced)
-			.get();
-
-		if (snapshot.empty) {
-			return [];
-		}
-
-		const userData = snapshot.docs.map((doc) => ({
-			...doc.data(),
-		}));
-
-		return userData;
+		const userDocRef = usersCollection.doc(userId);
+		await userDocRef.update(userData);
 	} catch (error) {
-		console.error(
-			"(FirestoreUserServices) - Error fetching user data:",
-			error
-		);
-		return [];
+		console.error("Error updating user profile:", error);
+		throw error;
 	}
 };
