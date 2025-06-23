@@ -14,11 +14,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
 
 import { useRealm } from "../../contexts/RealmProvider";
-import {
-	saveUserInRealm,
-} from "../../services/database/realmUserFunctions";
-
-import { saveUserInFirestore } from "../../services/firestore/firestoreUserServices";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -28,15 +23,10 @@ import MeasurementForm from "./components/MeasurementForm";
 
 import { calculateBodyFat } from "../../services/helpers/measurementFunctions";
 
-import { Timestamp } from "@react-native-firebase/firestore";
+import { FieldValue } from "@react-native-firebase/firestore";
 
-export default function SetUsername() {
-	const {
-		user,
-		setUsername: setContextUsername,
-		onSetupComplete,
-	} = useUser();
-	const realm = useRealm();
+export default function UserInfoScreen() {
+	const { user, userCreation } = useUser();
 	// Step 1
 	const [username, setUsername] = useState("");
 
@@ -45,8 +35,8 @@ export default function SetUsername() {
 	const [gender, setGender] = useState("Male");
 	const [unitSystem, setUnitSystem] = useState("Imperial");
 
-	// Add gender and unit system
 	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
 	const [step, setStep] = useState(1); // Step 1: Username, Step 2: Basic Info, Step 3: Measurements
 
 	// New measurements
@@ -114,8 +104,6 @@ export default function SetUsername() {
 	};
 
 	const handleUserData = () => {
-		const timestamp = Timestamp.now();
-
 		return {
 			userId: user.uid,
 			username: username,
@@ -127,20 +115,14 @@ export default function SetUsername() {
 				unitSystem: unitSystem.toLowerCase(),
 				notificationsEnabled: false, // Default
 			},
-			createdAt: timestamp,
-			updatedAt: timestamp,
+			createdAt: FieldValue.serverTimestamp(),
+			updatedAt: FieldValue.serverTimestamp(),
 		};
 	};
 
 	const handleSubmit = async () => {
 		setLoading(true);
-		let userData = handleUserData();
-		try {
-			await saveUserInFirestore(userData); // Save to Firestore
-			await saveUserInRealm(realm, userData); // Save to Realm
-		} catch (error) {
-			console.error("Error saving user data:", error);
-		}
+		await userCreation(handleUserData());
 		setLoading(false);
 	};
 

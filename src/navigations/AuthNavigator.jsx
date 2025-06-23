@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import Onboarding from "../screens/Auth/Onboarding";
-import SetUsername from "../screens/Auth/SetUsername";
+import UserInfoScreen from "../screens/Auth/UserInfoScreen";
 import TermsOfService from "../screens/Support/TermsOfService";
 import PrivacyPolicy from "../screens/Support/PrivacyPolicy";
 
@@ -21,7 +21,7 @@ export default function AuthNavigator() {
 			}}
 		>
 			<Stack.Screen name="Onboarding" component={Onboarding} />
-			<Stack.Screen name="SetUsername" component={SetUsername} />
+			<Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
 			<Stack.Screen name="TermsOfService" component={TermsOfService} />
 			<Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 		</Stack.Navigator>

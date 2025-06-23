@@ -1,10 +1,17 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { updateUserProfile } from "../services/firestore/firestoreUserServices";
 
+// Contexts
 import { useTheme } from "./ThemeContext";
+
+// Helper Function
+
+// Firestore Service
+import {
+	saveUserInFirestore,
+	updateUserProfile,
+} from "../services/firestore/firestoreUserServices";
 
 const UserContext = createContext();
 
@@ -93,11 +100,20 @@ export const UserProvider = ({ children }) => {
 
 			firestore().clearPersistence(); // Clear Firestore persistence
 			console.log("(UserContext) - Firestore persistence cleared");
-
-			await AsyncStorage.clear(); // Clear AsyncStorage
 			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {
 			console.error("(UserContext) - Error signing out:", error);
+		}
+	};
+
+	const userCreation = async (userdata) => {
+		try {
+			if (!userdata || !userdata.userId) {
+				throw new Error("User data is incomplete or missing userId");
+			}
+			await saveUserInFirestore(userdata);
+		} catch (error) {
+			console.error("(UserContext) - Error in userCreation:", error);
 		}
 	};
 
@@ -109,6 +125,7 @@ export const UserProvider = ({ children }) => {
 		try {
 			await updateUserProfile(userId, {
 				"preferences.theme": themeName,
+				updatedAt: firestore.FieldValue.serverTimestamp(),
 			});
 		} catch (error) {
 			console.error(
@@ -147,6 +164,7 @@ export const UserProvider = ({ children }) => {
 				setupComplete,
 				motivation,
 				setMotivation,
+				userCreation,
 				updateUsername,
 				updateThemePreference,
 			}}
