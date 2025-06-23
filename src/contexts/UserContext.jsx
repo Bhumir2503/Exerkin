@@ -2,6 +2,7 @@ import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateUserProfile } from "../services/firestore/firestoreUserServices";
 
 import { useTheme } from "./ThemeContext";
 
@@ -37,10 +38,8 @@ export const UserProvider = ({ children }) => {
 		const userDocRef = firestore().collection("users").doc(userId);
 		const unsubscribe = userDocRef.onSnapshot((doc) => {
 			if (doc.exists()) {
-				console.log(`(UserContext) - User document exists`);
 				handleData(doc.data());
 			} else {
-				console.log("(UserContext) - User document does not exist");
 				changeTheme("midnightPurple");
 				setIsNewUser(true);
 				setSetupComplete(false);
@@ -106,6 +105,19 @@ export const UserProvider = ({ children }) => {
 		setUsername(newUsername);
 	};
 
+	const updateThemePreference = async (themeName) => {
+		try {
+			await updateUserProfile(userId, {
+				"preferences.theme": themeName,
+			});
+		} catch (error) {
+			console.error(
+				"(UserContext) - Error updating theme preference:",
+				error
+			);
+		}
+	};
+
 	const resetUserState = () => {
 		changeTheme("midnightPurple");
 		setUser(null);
@@ -136,6 +148,7 @@ export const UserProvider = ({ children }) => {
 				motivation,
 				setMotivation,
 				updateUsername,
+				updateThemePreference,
 			}}
 		>
 			{children}

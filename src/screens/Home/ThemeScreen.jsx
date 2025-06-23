@@ -1,8 +1,8 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUser } from "../../contexts/UserContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
-import { setThemeCache } from "../../cache/themeCache";
 
 const ThemeScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -375,10 +375,11 @@ function ColorChoice() {
 
 function ColorBox({ color, themeName, label }) {
 	const { changeTheme, theme, themeStyle } = useTheme();
+	const { updateThemePreference } = useUser();
 
 	const onPressButton = () => {
 		changeTheme(themeName);
-		setThemeCache(themeName);
+		updateThemePreference(themeName);
 	};
 
 	return (
