@@ -1,13 +1,9 @@
-import { createContext, useState, useContext, useEffect, useRef } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { useRealm } from "./RealmProvider";
-// import {
-// 	getUserFromRealm,
-// 	saveUserInRealm,
-// } from "../services/database/realmUserFunctions";
+import { useTheme } from "./ThemeContext";
 
 const UserContext = createContext();
 
@@ -21,7 +17,7 @@ export const UserProvider = ({ children }) => {
 	const [isNewUser, setIsNewUser] = useState(true);
 	const [setupComplete, setSetupComplete] = useState(false);
 
-	const realm = useRealm();
+	const { changeTheme } = useTheme();
 
 	useEffect(() => {
 		const unsubscribe = auth().onAuthStateChanged((authUser) => {
@@ -45,6 +41,7 @@ export const UserProvider = ({ children }) => {
 				handleData(doc.data());
 			} else {
 				console.log("(UserContext) - User document does not exist");
+				changeTheme("midnightPurple");
 				setIsNewUser(true);
 				setSetupComplete(false);
 			}
@@ -58,11 +55,13 @@ export const UserProvider = ({ children }) => {
 	const handleData = async (userData) => {
 		if (!userData || !userData.userId) {
 			console.log("(UserContext) - No user data found in Firestore");
+			changeTheme("midnightPurple");
 			setIsNewUser(true);
 			setSetupComplete(false);
 			return;
 		}
 
+		changeTheme(userData.preferences.theme);
 		setUsername(userData.username);
 		setMotivation(userData.motivation);
 		setGender(userData.gender);
@@ -87,9 +86,8 @@ export const UserProvider = ({ children }) => {
 
 	const onLogout = async () => {
 		try {
-			// Sign out from Firebase Auth
-			await auth().signOut();
-			resetUserState(); // Reset user state (assuming this function resets local state)
+			await auth().signOut(); // Sign out from Firebase Auth
+			resetUserState(); // Reset UserContext state
 
 			firestore().terminate(); // Terminate Firestore connection
 			console.log("(UserContext) - Firestore connection terminated");
@@ -97,15 +95,7 @@ export const UserProvider = ({ children }) => {
 			firestore().clearPersistence(); // Clear Firestore persistence
 			console.log("(UserContext) - Firestore persistence cleared");
 
-			// Delete all data in Realm
-			if (realm) {
-				realm.write(() => {
-					realm.deleteAll(); // Delete all objects in Realm
-				});
-			}
-
-			// Clear AsyncStorage
-			await AsyncStorage.clear();
+			await AsyncStorage.clear(); // Clear AsyncStorage
 			console.log("(UserContext) - User signed out successfully!");
 		} catch (error) {
 			console.error("(UserContext) - Error signing out:", error);
@@ -117,6 +107,7 @@ export const UserProvider = ({ children }) => {
 	};
 
 	const resetUserState = () => {
+		changeTheme("midnightPurple");
 		setUser(null);
 		setUserId(null);
 		setIsNewUser(true);
@@ -142,7 +133,8 @@ export const UserProvider = ({ children }) => {
 				isNewUser,
 				setIsNewUser,
 				setupComplete,
-
+				motivation,
+				setMotivation,
 				updateUsername,
 			}}
 		>
