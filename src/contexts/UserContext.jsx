@@ -106,7 +106,7 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const userCreation = async (userdata) => {
+	const userCreation = async (userdata, measurementData) => {
 		try {
 			if (!userdata || !userdata.userId) {
 				throw new Error("User data is incomplete or missing userId");

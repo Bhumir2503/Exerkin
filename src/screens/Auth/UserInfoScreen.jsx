@@ -12,8 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../contexts/UserContext";
-
-import { useRealm } from "../../contexts/RealmProvider";
+import { useMeasurement } from "../../contexts/MeasurementContext";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -27,6 +26,8 @@ import { FieldValue } from "@react-native-firebase/firestore";
 
 export default function UserInfoScreen() {
 	const { user, userCreation } = useUser();
+	const { measurements, setMeasurements, handleMeasurementSubmit } =
+		useMeasurement();
 	// Step 1
 	const [username, setUsername] = useState("");
 
@@ -38,28 +39,6 @@ export default function UserInfoScreen() {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [step, setStep] = useState(1); // Step 1: Username, Step 2: Basic Info, Step 3: Measurements
-
-	// New measurements
-	const [measurements, setMeasurements] = useState({
-		age: "",
-		weight: "",
-		height: "",
-		chest: "",
-		abdomen: "",
-		waist: "",
-		hips: "",
-		rightBicep: "",
-		leftBicep: "",
-		rightForearm: "",
-		leftForearm: "",
-		rightThigh: "",
-		leftThigh: "",
-		rightCalf: "",
-		leftCalf: "",
-		neck: "",
-		shoulder: "",
-		bodyFat: "", // Will be calculated
-	});
 
 	// Calculate body fat percentage using Navy method
 	useEffect(() => {
@@ -123,6 +102,7 @@ export default function UserInfoScreen() {
 	const handleSubmit = async () => {
 		setLoading(true);
 		await userCreation(handleUserData());
+		await handleMeasurementSubmit();
 		setLoading(false);
 	};
 
