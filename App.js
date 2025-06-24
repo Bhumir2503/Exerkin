@@ -12,6 +12,7 @@ import BlueprintProvider from "./src/contexts/blueprint/BlueprintProvider";
 import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
+import { MeasurementProvider } from "./src/contexts/MeasurementContext";
 
 import { enableScreens } from "react-native-screens";
 import * as NavigationBar from "expo-navigation-bar";
@@ -60,11 +61,13 @@ export default function App() {
 						<GestureHandlerRootView style={{ flex: 1 }}>
 							<RealmProvider>
 								<UserProvider>
-									<WorkoutProvider>
-										<BlueprintProvider>
-											<AppContent />
-										</BlueprintProvider>
-									</WorkoutProvider>
+									<MeasurementProvider>
+										<WorkoutProvider>
+											<BlueprintProvider>
+												<AppContent />
+											</BlueprintProvider>
+										</WorkoutProvider>
+									</MeasurementProvider>
 								</UserProvider>
 							</RealmProvider>
 						</GestureHandlerRootView>
