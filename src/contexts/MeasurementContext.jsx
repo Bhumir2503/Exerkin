@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./UserContext";
 import { saveMeasurementToFirestore } from "../services/firestore/firestoreMeasurementServices";
+import firestore from "@react-native-firebase/firestore";
 
 import { buildMeasurementObject } from "../services/helpers/objectBuilder";
 
@@ -37,9 +38,39 @@ export const MeasurementProvider = ({ children }) => {
 			.collection("measurements")
 			.where("userId", "==", userId)
 			.orderBy("createdAt", "desc");
+
 		const unsubscribe = measurementDocRef.onSnapshot((snapshot) => {
+			if (snapshot.empty) {
+				console.log(
+					"(MeasurementContext) - No measurement history found"
+				);
+				setMeasurementHistory([]);
+				setMeasurements({
+					age: "",
+					weight: "",
+					height: "",
+					chest: "",
+					abdomen: "",
+					waist: "",
+					hips: "",
+					rightBicep: "",
+					leftBicep: "",
+					rightForearm: "",
+					leftForearm: "",
+					rightThigh: "",
+					leftThigh: "",
+					rightCalf: "",
+					leftCalf: "",
+					neck: "",
+					shoulder: "",
+					bodyFat: "",
+				});
+				return;
+			}
+
 			const history = snapshot.docs.map((doc) => doc.data());
 			setMeasurementHistory(history);
+			setMeasurements(history[0]);
 			console.log("(MeasurementContext) - Measurement history updated");
 		});
 
@@ -59,7 +90,7 @@ export const MeasurementProvider = ({ children }) => {
 	};
 
 	const handleMeasurementSubmit = async () => {
-		if (userId) {
+		if (!userId) {
 			console.error("User not authenticated");
 			return;
 		}

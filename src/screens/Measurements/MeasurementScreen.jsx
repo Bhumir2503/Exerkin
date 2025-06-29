@@ -13,9 +13,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
+import { useMeasurement } from "../../contexts/MeasurementContext";
 
 import HeightModal from "./HeightModal";
-
 
 import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
@@ -23,6 +23,7 @@ const MeasurementScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const { user } = useUser();
 	const styles = createStyles(themeStyle);
+	const { handleMeasurementSubmit } = useMeasurement();
 
 	// State for measurements
 	const [measurements, setMeasurements] = useState({
@@ -153,9 +154,7 @@ const MeasurementScreen = ({ navigation }) => {
 	const handleSave = () => {
 		// In a real app, you would save this data to your database
 		// For now, we'll just show an alert
-		Alert.alert("Success", "Your measurements have been saved!", [
-			{ text: "OK" },
-		]);
+		handleMeasurementSubmit()
 	};
 
 	// Show measurement guidance modal
@@ -259,11 +258,12 @@ const MeasurementScreen = ({ navigation }) => {
 
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-			{showModal && 
-				<HeightModal 
-					setShowModal={setShowModal} 
-					handleInputChange={handleInputChange} 
-			/>}
+			{showModal && (
+				<HeightModal
+					setShowModal={setShowModal}
+					handleInputChange={handleInputChange}
+				/>
+			)}
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={styles.scrollContent}
@@ -313,18 +313,25 @@ const MeasurementScreen = ({ navigation }) => {
 						<Text style={styles.label}>Height</Text>
 						<View style={styles.statInputWrapper}>
 							<TouchableOpacity
-								style={[styles.statInput,
-									{display: "flex", 
-									justifyContent: "flex-end",
-									flexDirection: "row"}
+								style={[
+									styles.statInput,
+									{
+										display: "flex",
+										justifyContent: "flex-end",
+										flexDirection: "row",
+									},
 								]}
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
-								onPress={() => {setShowModal(true)}}
+								onPress={() => {
+									setShowModal(true);
+								}}
 							>
-								<Text style={styles.statUnit}>{measurements.height}</Text>
-							<Text style={styles.statUnit}>in</Text>
+								<Text style={styles.statUnit}>
+									{measurements.height}
+								</Text>
+								<Text style={styles.statUnit}>in</Text>
 							</TouchableOpacity>
 						</View>
 					</View>
@@ -531,10 +538,10 @@ const MeasurementScreen = ({ navigation }) => {
 					</View>
 				</View>
 			</Modal>
-            <ActiveWorkoutBar navigate={navigation.navigate} />
+			<ActiveWorkoutBar navigate={navigation.navigate} />
 		</SafeAreaView>
 	);
-}
+};
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({

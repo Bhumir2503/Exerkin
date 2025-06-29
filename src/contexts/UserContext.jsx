@@ -70,8 +70,8 @@ export const UserProvider = ({ children }) => {
 		changeTheme(userData.preferences.theme);
 		setUsername(userData.username);
 		setMotivation(userData.motivation);
-		setGender(userData.gender);
-		setUnitSystem(userData.unitSystem);
+		setGender(userData.preferences.gender);
+		setUnitSystem(userData.preferences.unitSystem);
 		setSetupComplete(true);
 		setIsNewUser(false);
 	};
@@ -88,6 +88,7 @@ export const UserProvider = ({ children }) => {
 		}
 		setUser(authUser);
 		setUserId(authUser.uid);
+		console.log("(UserContext) - User ID set:", authUser.uid);
 	};
 
 	const onLogout = async () => {
@@ -151,6 +152,7 @@ export const UserProvider = ({ children }) => {
 		<UserContext.Provider
 			value={{
 				user,
+				userId,
 				setUser,
 				username,
 				setUsername,
