@@ -5,8 +5,6 @@ import firestore from "@react-native-firebase/firestore";
 // Contexts
 import { useTheme } from "./ThemeContext";
 
-// Helper Function
-
 // Firestore Service
 import {
 	saveUserInFirestore,
