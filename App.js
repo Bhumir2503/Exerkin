@@ -1,8 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Platform, View } from "react-native";
-import React, { use, useEffect, useState } from "react";
+import { useState } from "react";
 
-import { RealmProvider } from "./src/contexts/RealmProvider";
 import { MenuProvider } from "react-native-popup-menu";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -59,17 +58,15 @@ export default function App() {
 				<SafeAreaProvider>
 					<MenuProvider>
 						<GestureHandlerRootView style={{ flex: 1 }}>
-							<RealmProvider>
-								<UserProvider>
-									<MeasurementProvider>
-										<WorkoutProvider>
-											<BlueprintProvider>
-												<AppContent />
-											</BlueprintProvider>
-										</WorkoutProvider>
-									</MeasurementProvider>
-								</UserProvider>
-							</RealmProvider>
+							<UserProvider>
+								<MeasurementProvider>
+									<WorkoutProvider>
+										<BlueprintProvider>
+											<AppContent />
+										</BlueprintProvider>
+									</WorkoutProvider>
+								</MeasurementProvider>
+							</UserProvider>
 						</GestureHandlerRootView>
 					</MenuProvider>
 				</SafeAreaProvider>

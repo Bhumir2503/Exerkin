@@ -1,62 +1,34 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 import { useUser } from "../UserContext";
-import { useRealm } from "../RealmProvider";
-
 import {
-	getBlueprints,
-	deleteBlueprint,
 	listenToBlueprintChanges,
-	listenToDeletedBlueprintChanges,
-} from "../../services/functions/blueprintFunctions";
+	deleteBlueprintFromFirestore,
+} from "../../services/firestore/firestoreBlueprintServices";
 
 const BlueprintStorageContext = createContext();
 
 export const BlueprintStorageProvider = ({ children }) => {
-	const { user } = useUser();
-	const realm = useRealm();
+	const { userId } = useUser();
 
 	const [storedBlueprints, setStoredBlueprints] = useState(null);
 
 	useEffect(() => {
-		if (!user) return;
+		if (!userId) return;
 
 		const unsubscribe = listenToBlueprintChanges(
-			realm,
-			user.uid,
-			async () => {
-				const updatedTemplates = await getBlueprints(realm, user.uid);
-				setStoredBlueprints(updatedTemplates);
-			}
+			userId,
+			setStoredBlueprints
 		);
 
 		return () => {
 			unsubscribe();
 		};
-	}, [user, realm]);
-
-	useEffect(() => {
-		if (!user) return;
-
-		const unsubscribe = listenToDeletedBlueprintChanges(
-			realm,
-			user.uid,
-			async () => {
-				const updatedTemplates = await getBlueprints(realm, user.uid);
-				setStoredBlueprints(updatedTemplates);
-			}
-		);
-		return () => {
-			unsubscribe();
-		};
-	}, [user, realm]);
+	}, [userId]);
 
 	const removeBlueprintFromStorage = async (blueprintId) => {
-		if (!storedBlueprints || !user) return;
 		try {
-			await deleteBlueprint(realm, blueprintId);
-			const updatedBlueprints = await getBlueprints(realm, user.uid);
-			setStoredBlueprints(updatedBlueprints);
+			await deleteBlueprintFromFirestore(blueprintId);
 		} catch (error) {
 			console.error("Error removing blueprint from storage:", error);
 		}

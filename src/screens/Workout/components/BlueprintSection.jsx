@@ -11,10 +11,10 @@ const BlueprintSection = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { storedBlueprints } = useBlueprintStorage();
-	const { blueprintStart } = useBlueprintSession();
+	const { startBlueprint } = useBlueprintSession();
 
 	const handlePress = () => {
-		blueprintStart();
+		startBlueprint();
 		navigation.navigate("BlueprintModalScreen");
 		console.log("Blueprint Add Button Pressed");
 	};
@@ -60,13 +60,14 @@ const BlueprintSection = ({ navigation }) => {
 					<Ionicons name="add" size={28} color={themeStyle.primary} />
 				</Pressable>
 			</View>
-			{storedBlueprints && storedBlueprints.map((blueprint) => (
-				<BlueprintCard
-					key={blueprint.blueprintId}
-					blueprint={blueprint}
-					navigation={navigation}
-				/>
-			))}
+			{storedBlueprints &&
+				storedBlueprints.map((blueprint) => (
+					<BlueprintCard
+						key={blueprint.blueprintId}
+						blueprint={blueprint}
+						navigation={navigation}
+					/>
+				))}
 		</View>
 	);
 };
