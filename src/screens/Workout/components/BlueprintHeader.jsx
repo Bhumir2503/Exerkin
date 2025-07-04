@@ -12,7 +12,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 const BlueprintHeader = ({ navigation }) => {
 	const { blueprintTitle, setBlueprintTitle } = useBlueprintTitle();
 	const { blueprintExercises } = useBlueprintExercises();
-	const {blueprintFinish} = useBlueprintSession();
+	const { finishBlueprint } = useBlueprintSession();
 
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -31,7 +31,7 @@ const BlueprintHeader = ({ navigation }) => {
 	const handleFinishPress = () => {
 		// Handle finish action here
 		navigation.goBack();
-		blueprintFinish();
+		finishBlueprint();
 		console.log("Blueprint Completed");
 	};
 
