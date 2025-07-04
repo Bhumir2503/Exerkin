@@ -1,8 +1,4 @@
-import {
-	WorkoutSchema,
-	WorkoutExerciseSchema,
-	ExerciseSetSchema,
-} from "./workoutSchema";
+
 import { SyncStatusSchema } from "./syncStatusSchema";
 
 import {
@@ -12,10 +8,6 @@ import {
 } from "./blueprintSchema";
 
 export const realmSchemas = [
-	WorkoutSchema,
-	WorkoutExerciseSchema,
-	ExerciseSetSchema,
-
 	SyncStatusSchema,
 	BlueprintSchema,
 	BlueprintExerciseSchema,

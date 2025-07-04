@@ -7,25 +7,21 @@ import { useWorkoutHistory } from "../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutError } from "../contexts/workout/WorkoutErrorContext";
 import { useUser } from "../contexts/UserContext";
 
-import { useCallback } from "react";
 import uuid from "react-native-uuid";
-
-import { buildWorkoutEditObject, buildWorkoutObject } from "../services/helpers/objectBuilder";
+import { Timestamp, serverTimestamp } from "@react-native-firebase/firestore";
 
 import {
-	getWorkouts,
-	addWorkout,
-	editWorkout,
-} from "../services/functions/workoutFunctions";
-import { useRealm } from "../contexts/RealmProvider";
+	saveWorkoutInFirestore,
+	updateWorkoutInFirestore,
+} from "../services/firestore/firestoreWorkoutServices";
 
 export const useWorkoutSession = () => {
-	const { user } = useUser();
-	const realm = useRealm();
+	const { userId, unitSystem } = useUser();
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
 	const { workoutNotes, setWorkoutNotes } = useWorkoutNotes();
-	const { workoutExercises,setWorkoutExercises, clearExercises } = useWorkoutExercises();
-	const { workoutHistory, setWorkoutHistory } = useWorkoutHistory();
+	const { workoutExercises, setWorkoutExercises, clearExercises } =
+		useWorkoutExercises();
+	const { setWorkoutHistory } = useWorkoutHistory();
 	const { workoutTimer, resetTimer } = useWorkoutTimer();
 	const { setWorkoutError } = useWorkoutError();
 	const {
@@ -37,57 +33,64 @@ export const useWorkoutSession = () => {
 		setImageURL,
 		base64Image,
 		setBase64Image,
-		unitSystem,
 		setUnitSystem,
 		blueprintIdRef,
 		isBlueprintRef,
 		formTypeRef,
-
 		resetWorkoutMeta,
 	} = useWorkoutMeta();
 
-	const workoutStart = () => {
-		clearExercises();
-		workoutIdRef.current = uuid.v4();
-		workoutStartTimeRef.current = new Date();
-		formTypeRef.current = "workout";
-	};
-
-	const workoutFinish = async () => {
-		setWorkoutError(null);
-		workoutEndTimeRef.current = new Date();
-
-		const workoutObject = buildWorkoutObject({
-			userId: user.uid,
+	const getCurrentWorkoutObject = () => {
+		return {
+			userId: userId,
 			workoutId: workoutIdRef.current,
-			workoutTitle: workoutTitle,
-			workoutNotes: workoutNotes,
-			workoutExercises: workoutExercises,
+			name: workoutTitle,
+			notes: workoutNotes,
+			exercises: workoutExercises,
 			startedAt: workoutStartTimeRef.current,
 			completedAt: workoutEndTimeRef.current,
 			imageURL: imageURL,
 			base64Image: base64Image,
-			unitSystem: "imperial",
-			blueprintId: blueprintIdRef.current,
+			unitSystem: unitSystem,
 			isBlueprint: isBlueprintRef.current,
-		});
-		console.log("workoutObject", workoutObject);
-		editWorkout(realm, workoutObject);
-		const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
-		setWorkoutHistory(updatedWorkoutHistory);
-		workoutCancel();
+			blueprintId: blueprintIdRef.current,
+			startedAt: workoutStartTimeRef.current,
+			completedAt: workoutEndTimeRef.current,
+			createdAt: workoutCreatedAtRef.current || serverTimestamp(),
+			updatedAt: serverTimestamp(),
+		};
 	};
 
-	const workoutCancel = () => {
-		setWorkoutError(null);
-		setWorkoutTitle("");
-		setWorkoutNotes("");
+	const startWorkout = () => {
 		clearExercises();
-		resetWorkoutMeta();
-		resetTimer();
+		workoutIdRef.current = uuid.v4();
+		workoutStartTimeRef.current = Timestamp.now();
+		workoutEndTimeRef.current = null;
+		formTypeRef.current = "workout";
 	};
 
-	const editStart =(workout) => {
+	const finishWorkout = async () => {
+		setWorkoutError(null);
+		if (workoutExercises.length === 0) {
+			setWorkoutError("Please add at least one exercise to the workout.");
+			return;
+		}
+
+		workoutEndTimeRef.current = Timestamp.now();
+
+		const workoutObject = getCurrentWorkoutObject();
+		try {
+			await saveWorkoutInFirestore(workoutObject);
+		} catch (error) {
+			console.error("Error saving workout:", error);
+			setWorkoutError("Failed to save workout. Please try again.");
+			return;
+		}
+
+		cancelWorkout();
+	};
+
+	const startEditWorkout = (workout) => {
 		setWorkoutError(null);
 		workoutIdRef.current = workout.workoutId;
 		setWorkoutTitle(workout.name);
@@ -102,34 +105,41 @@ export const useWorkoutSession = () => {
 		setUnitSystem(workout.unitSystem);
 		setWorkoutExercises(workout.exercises);
 		formTypeRef.current = "edit";
-	}
+	};
 
-	const editFinish = async () => {
+	const finishEditWorkout = async () => {
 		setWorkoutError(null);
 
-		const workoutObject = buildWorkoutEditObject({
-			userId: user.uid,
-			workoutId: workoutIdRef.current,
-			workoutTitle: workoutTitle,
-			workoutNotes: workoutNotes,
-			workoutExercises: workoutExercises,
-			startedAt: workoutStartTimeRef.current,
-			completedAt: workoutEndTimeRef.current,
-			createdAt: workoutCreatedAtRef.current,
-			imageURL: imageURL,
-			base64Image: base64Image,
-			unitSystem: "imperial",
-			blueprintId: blueprintIdRef.current,
-			isBlueprint: isBlueprintRef.current,
-		});
+		const workoutObject = getCurrentWorkoutObject();
 
-		editWorkout(realm, workoutObject);
-		const updatedWorkoutHistory = await getWorkouts(realm, user.uid);
-		setWorkoutHistory(updatedWorkoutHistory);
-		workoutCancel();
-	}
+		try {
+			await updateWorkoutInFirestore(workoutObject);
+		} catch (error) {
+			console.error("Error updating workout:", error);
+			setWorkoutError("Failed to update workout. Please try again.");
+			return;
+		}
 
-	const blueprintStart = (blueprint) => {
+		setWorkoutHistory((prevHistory) =>
+			prevHistory.map((workout) =>
+				workout.workoutId === workoutIdRef.current
+					? workoutObject
+					: workout
+			)
+		);
+		cancelWorkout();
+	};
+
+	const cancelWorkout = () => {
+		setWorkoutError(null);
+		setWorkoutTitle("");
+		setWorkoutNotes("");
+		clearExercises();
+		resetWorkoutMeta();
+		resetTimer();
+	};
+
+	const startBlueprint = (blueprint) => {
 		setWorkoutError(null);
 		workoutIdRef.current = uuid.v4();
 		isBlueprintRef.current = true;
@@ -140,7 +150,7 @@ export const useWorkoutSession = () => {
 		console.log("blueprint", blueprint);
 		setWorkoutNotes(blueprint.note);
 		setWorkoutExercises(blueprint.exercises);
-	}
+	};
 
 	return {
 		workoutIdRef,
@@ -150,11 +160,14 @@ export const useWorkoutSession = () => {
 		workoutTimer,
 		workoutStartTimeRef,
 		formTypeRef,
-		workoutStart,
-		workoutFinish,
-		workoutCancel,
-		editStart,
-		editFinish,
-		blueprintStart,
+
+		startWorkout,
+		finishWorkout,
+
+		startEditWorkout,
+		finishEditWorkout,
+
+		cancelWorkout,
+		startBlueprint,
 	};
 };

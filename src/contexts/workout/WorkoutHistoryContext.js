@@ -1,85 +1,36 @@
 // WorkoutHistoryContext.js
-import React, {
-	createContext,
-	useContext,
-	useState,
-	useCallback,
-	useEffect,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
-	getWorkouts,
-	deleteWorkout,
-	listenToDeletedWorkoutChanges,
 	listenToWorkoutChanges,
-} from "../../services/functions/workoutFunctions";
-import { useRealm } from "../RealmProvider";
+	deleteWorkoutFromFirestore,
+} from "../../services/firestore/firestoreWorkoutServices";
 import { useUser } from "../UserContext";
 
 const WorkoutHistoryContext = createContext();
 
 export const WorkoutHistoryProvider = ({ children }) => {
 	const [workoutHistory, setWorkoutHistory] = useState([]);
-	const realm = useRealm();
-	const { user } = useUser();
+	const { userId } = useUser();
 
-
-	
 	useEffect(() => {
-		if (!user) return;
+		if (!userId) return;
 		// Subscribe to changes in workout data using Realm
-		const unsubscribe = listenToWorkoutChanges(
-			realm,
-			user.uid,
-			async () => {
-				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
-				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
-			}
-		);
-		
+		const unsubscribe = listenToWorkoutChanges(userId, setWorkoutHistory);
+
 		return () => {
 			unsubscribe(); // Unsubscribe from workout data changes
 		};
-	}, [user, realm]);
-	
-	// Effect hook to listen for changes in deleted workout data
-	useEffect(() => {
-		if (!user) return;
-		
-		// Subscribe to changes in deleted workout data using Realm
-		const unsubscribe = listenToDeletedWorkoutChanges(
-			realm,
-			user.uid,
-			async () => {
-				const updatedWorkouts = await getWorkouts(realm, user.uid); // Fetch updated workouts from Realm
-				setWorkoutHistory(updatedWorkouts); // Update local state with updated workout history
-			}
-		);
-		
-		return () => {
-			unsubscribe(); // Unsubscribe from deleted workout data changes
-		};
-	}, [user, realm]);
-	
-	const removeWorkoutFromHistory = useCallback(
-		async (workout) => {
-			if (!user) return;
-			try {
-				await deleteWorkout(realm, workout.workoutId);
-				const updatedWorkouts = await getWorkouts(realm, user.uid);
-				setWorkoutHistory(updatedWorkouts);
-			} catch (error) {
-				console.error("Failed to delete workout:", error);
-			}
-		},
-		[realm, user]
-	);
+	}, [userId]);
+
+	const removeWorkoutFromHistory = (workout) => {
+		deleteWorkoutFromFirestore(workout.workoutId);
+	};
 
 	return (
 		<WorkoutHistoryContext.Provider
 			value={{
 				workoutHistory,
 				setWorkoutHistory,
-				
 				removeWorkoutFromHistory,
 			}}
 		>
