@@ -18,7 +18,7 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const { removeBlueprintFromStorage } = useBlueprintStorage();
-	const { blueprintStart } = useWorkoutSession();
+	const { startBlueprint } = useWorkoutSession();
 
 	// Format creation date
 	const formatDate = (dateString) => {
@@ -32,9 +32,9 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 
 	const handleStart = () => {
 		closeModal();
-		blueprintStart(blueprint);
+		startBlueprint(blueprint);
 		navigation.navigate("WorkoutModalScreen");
-	}
+	};
 
 	// Count sets in each exercise
 	const getSetCount = (exercise) => {

@@ -7,13 +7,13 @@ import TwoActionModal from "../../../components/TwoActionModal";
 import ExerciseManager from "../../../components/ExerciseSelector/ExerciseManager";
 
 const Footer = ({ navigation }) => {
-	const { workoutCancel, formTypeRef } = useWorkoutSession();
+	const { cancelWorkout, formTypeRef } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	const handleConfirm = () => {
 		console.log("Workout Cancelled");
-		workoutCancel();
+		cancelWorkout();
 		navigation.goBack();
 	};
 

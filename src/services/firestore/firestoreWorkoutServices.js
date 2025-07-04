@@ -3,6 +3,7 @@ const workoutsCollection = firestore().collection("workouts");
 
 /*
  * Function to listen to workout changes in Firestore
+ *
  * @param {string} userId - The ID of the user whose workouts are being listened to
  * @param {function} setWorkoutHistory - Function to update the workout history state
  * @returns {function} - Unsubscribe function to stop listening to changes

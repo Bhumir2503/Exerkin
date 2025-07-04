@@ -1,6 +1,9 @@
 // WorkoutHistoryContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import { listenToWorkoutChanges } from "../../services/firestore/firestoreWorkoutServices";
+import {
+	listenToWorkoutChanges,
+	deleteWorkoutFromFirestore,
+} from "../../services/firestore/firestoreWorkoutServices";
 import { useUser } from "../UserContext";
 
 const WorkoutHistoryContext = createContext();
@@ -19,11 +22,16 @@ export const WorkoutHistoryProvider = ({ children }) => {
 		};
 	}, [userId]);
 
+	const removeWorkoutFromHistory = (workout) => {
+		deleteWorkoutFromFirestore(workout.workoutId);
+	};
+
 	return (
 		<WorkoutHistoryContext.Provider
 			value={{
 				workoutHistory,
 				setWorkoutHistory,
+				removeWorkoutFromHistory,
 			}}
 		>
 			{children}

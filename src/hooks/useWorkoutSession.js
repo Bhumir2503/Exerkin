@@ -61,38 +61,36 @@ export const useWorkoutSession = () => {
 		};
 	};
 
-	const workoutStart = () => {
+	const startWorkout = () => {
 		clearExercises();
 		workoutIdRef.current = uuid.v4();
 		workoutStartTimeRef.current = Timestamp.now();
+		workoutEndTimeRef.current = null;
 		formTypeRef.current = "workout";
 	};
 
-	const workoutFinish = async () => {
+	const finishWorkout = async () => {
 		setWorkoutError(null);
+		if (workoutExercises.length === 0) {
+			setWorkoutError("Please add at least one exercise to the workout.");
+			return;
+		}
+
 		workoutEndTimeRef.current = Timestamp.now();
 
 		const workoutObject = getCurrentWorkoutObject();
 		try {
-			saveWorkoutInFirestore(workoutObject);
+			await saveWorkoutInFirestore(workoutObject);
 		} catch (error) {
 			console.error("Error saving workout:", error);
 			setWorkoutError("Failed to save workout. Please try again.");
 			return;
 		}
-		workoutCancel();
+
+		cancelWorkout();
 	};
 
-	const workoutCancel = () => {
-		setWorkoutError(null);
-		setWorkoutTitle("");
-		setWorkoutNotes("");
-		clearExercises();
-		resetWorkoutMeta();
-		resetTimer();
-	};
-
-	const editStart = (workout) => {
+	const startEditWorkout = (workout) => {
 		setWorkoutError(null);
 		workoutIdRef.current = workout.workoutId;
 		setWorkoutTitle(workout.name);
@@ -109,7 +107,7 @@ export const useWorkoutSession = () => {
 		formTypeRef.current = "edit";
 	};
 
-	const editFinish = async () => {
+	const finishEditWorkout = async () => {
 		setWorkoutError(null);
 
 		const workoutObject = getCurrentWorkoutObject();
@@ -129,10 +127,19 @@ export const useWorkoutSession = () => {
 					: workout
 			)
 		);
-		workoutCancel();
+		cancelWorkout();
 	};
 
-	const blueprintStart = (blueprint) => {
+	const cancelWorkout = () => {
+		setWorkoutError(null);
+		setWorkoutTitle("");
+		setWorkoutNotes("");
+		clearExercises();
+		resetWorkoutMeta();
+		resetTimer();
+	};
+
+	const startBlueprint = (blueprint) => {
 		setWorkoutError(null);
 		workoutIdRef.current = uuid.v4();
 		isBlueprintRef.current = true;
@@ -153,11 +160,14 @@ export const useWorkoutSession = () => {
 		workoutTimer,
 		workoutStartTimeRef,
 		formTypeRef,
-		workoutStart,
-		workoutFinish,
-		workoutCancel,
-		editStart,
-		editFinish,
-		blueprintStart,
+
+		startWorkout,
+		finishWorkout,
+
+		startEditWorkout,
+		finishEditWorkout,
+
+		cancelWorkout,
+		startBlueprint,
 	};
 };

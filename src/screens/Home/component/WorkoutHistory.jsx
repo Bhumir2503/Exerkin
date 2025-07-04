@@ -20,10 +20,8 @@ const WorkoutHistory = ({ navigation }) => {
 	const workoutHistoryLength = workoutHistory.length;
 
 	const truncateTitle = (text, maxLength = 20) => {
-
 		return text;
 	};
-
 
 	const generateNumExercises = (num) => {
 		if (num != 1) {

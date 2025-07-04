@@ -12,13 +12,12 @@ import { useWorkoutSession } from "../../hooks/useWorkoutSession";
 import { useTheme } from "../../contexts/ThemeContext";
 
 const WorkoutScreen = memo(({ navigation }) => {
-	const { workoutStart, workoutIdRef } = useWorkoutSession();
+	const { workoutIdRef, startWorkout } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	const startButtonPressed = () => {
-		console.log("Start Workout Button Pressed");
-		workoutStart();
+		startWorkout();
 		navigation.navigate("WorkoutModalScreen");
 	};
 

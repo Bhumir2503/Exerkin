@@ -11,19 +11,14 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
-import {
-	formatDateObjectToTime,
-	formatDurationTimeToText,
-} from "../../../services/helpers/timeFormatter";
-import { useState } from "react";
+import { formatDateObjectToTime } from "../../../services/helpers/timeFormatter";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
 	const { removeWorkoutFromHistory } = useWorkoutHistory();
-	const { editStart, workoutIdRef } = useWorkoutSession();
-	const [showFullNote, setShowFullNote] = useState(false);
+	const { startEditWorkout, workoutIdRef } = useWorkoutSession();
 
 	const styles = createStyles(themeStyle);
 
@@ -47,12 +42,9 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	};
 
 	const handleEdit = () => {
-		// Add edit functionality here
 		closeModal();
-		editStart(selectedWorkout);
+		startEditWorkout(selectedWorkout);
 		navigation.navigate("WorkoutModalScreen");
-
-		// You would typically navigate to an edit screen or open another modal
 	};
 
 	const handleSaveAsTemplate = () => {

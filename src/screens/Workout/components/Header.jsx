@@ -12,7 +12,8 @@ import TwoActionModal from "../../../components/TwoActionModal";
 const Header = ({ navigation }) => {
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
 	const { workoutExercises } = useWorkoutExercises();
-	const { formTypeRef, workoutFinish, editFinish  } = useWorkoutSession();
+	const { formTypeRef, finishWorkout, finishEditWorkout } =
+		useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
@@ -27,13 +28,11 @@ const Header = ({ navigation }) => {
 	};
 
 	const handleFinishPress = () => {
-		// Handle finish action here
 		navigation.goBack();
-		console.log("Workout Completed");
 		if (formTypeRef.current === "workout") {
-			workoutFinish();
-		}else if(formTypeRef.current === "edit"){
-			editFinish();
+			finishWorkout();
+		} else if (formTypeRef.current === "edit") {
+			finishEditWorkout();
 		}
 	};
 
@@ -45,8 +44,16 @@ const Header = ({ navigation }) => {
 					<Ionicons
 						name="chevron-down"
 						size={32}
-						color={formTypeRef.current === "workout" ? themeStyle.primary: "transparent"}
-						onPress={formTypeRef.current === "workout" ? handleDownArrowPress: null}
+						color={
+							formTypeRef.current === "workout"
+								? themeStyle.primary
+								: "transparent"
+						}
+						onPress={
+							formTypeRef.current === "workout"
+								? handleDownArrowPress
+								: null
+						}
 					/>
 				</View>
 				{/* Center section - always centered */}
@@ -73,12 +80,22 @@ const Header = ({ navigation }) => {
 							actionTwo={() => {
 								handleFinishPress();
 							}}
-							title={formTypeRef.current === "workout" ? "Log Workout as Complete?": "Save Changes?"}
+							title={
+								formTypeRef.current === "workout"
+									? "Log Workout as Complete?"
+									: "Save Changes?"
+							}
 							subText={
-								formTypeRef.current === "workout" ? "Log this workout and view your progress in your training history.": "Save changes to this workout?"
+								formTypeRef.current === "workout"
+									? "Log this workout and view your progress in your training history."
+									: "Save changes to this workout?"
 							}
 							actionOneText={"Cancel"}
-							actionTwoText={formTypeRef.current === "workout" ?"Log It!": "Save Changes"}
+							actionTwoText={
+								formTypeRef.current === "workout"
+									? "Log It!"
+									: "Save Changes"
+							}
 						>
 							<Ionicons
 								name="checkmark"
