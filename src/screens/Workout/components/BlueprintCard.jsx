@@ -8,6 +8,8 @@ import {
 	ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import TextButton from "../../../components/Buttons/TextButton";
+
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useState } from "react";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
@@ -126,9 +128,10 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 			</View>
 
 			<View style={styles.buttonContainer}>
-				<Pressable style={styles.startButton} onPress={openModal}>
+				{/* <Pressable style={styles.startButton} onPress={openModal}>
 					<Text style={styles.startButtonText}>View Blueprint</Text>
-				</Pressable>
+				</Pressable> */}
+				<TextButton text="View Blueprint" onPress={openModal} />
 
 				{/* <View style={styles.iconButtons}>
 					<Pressable

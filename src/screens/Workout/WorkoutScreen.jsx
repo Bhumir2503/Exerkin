@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { memo } from "react";
 
 import PrimaryButton from "../../components/PrimaryButton";
+import IconTextButton from "../../components/Buttons/IconTextButton";
 import InfoCard from "../../components/InfoCard";
 import ActiveWorkoutBar from "./components/ActiveWorkoutBar";
 import BlueprintSection from "./components/BlueprintSection";
@@ -25,13 +26,17 @@ const WorkoutScreen = memo(({ navigation }) => {
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
 			<Text style={styles.title}>Get Started</Text>
 			<Text style={styles.description}>Ready to start your workout?</Text>
-			<PrimaryButton
-				title="Start Workout"
-				onPress={startButtonPressed}
+
+			<IconTextButton
 				icon="fitness"
+				text="Start Workout"
+				onPress={startButtonPressed}
 				disable={workoutIdRef.current ? true : false}
 			/>
-			<ScrollView style={{ flex: 1,marginTop: 20 }} showsVerticalScrollIndicator={false}>
+			<ScrollView
+				style={{ flex: 1, marginTop: 20 }}
+				showsVerticalScrollIndicator={false}
+			>
 				<View style={styles.coach}>
 					<Text style={styles.subTitle}>AI Coach</Text>
 					<InfoCard
@@ -71,9 +76,7 @@ const createStyles = (theme) => {
 			fontSize: 18,
 			marginBottom: 20,
 		},
-		coach: {
-
-		},
+		coach: {},
 		subTitle: {
 			color: theme.textColor,
 			fontSize: 24,
