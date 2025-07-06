@@ -40,13 +40,13 @@ const WorkoutModalScreen = ({ navigation }) => {
 			style={styles.container}
 			edges={["top", "left", "right", "bottom"]}
 		>
-			<Header navigation={navigation} screen={"workout"} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<View style={{ flex: 1 }}>
 					<KeyboardAvoidingView
 						behavior={Platform.OS === "ios" ? "padding" : "height"}
 						style={styles.containerContent}
 					>
+						<Header navigation={navigation} screen={"workout"} />
 						<View style={styles.userInputButtons}>
 							<WorkoutTimer />
 							<View style={{ flexDirection: "row" }}>
@@ -129,7 +129,6 @@ const createStyles = (themeStyle) => {
 		},
 		containerContent: {
 			flex: 1,
-			marginTop: 10,
 		},
 		userInputButtons: {
 			flexDirection: "row",

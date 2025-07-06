@@ -13,7 +13,6 @@ import { useTheme } from "../../contexts/ThemeContext";
 import Header from "./components/Header";
 4;
 import Footer from "./components/Footer";
-import BlueprintFooter from "./components/BlueprintFooter";
 import BlueprintNotes from "./components/BlueprintNotes";
 import BlueprintDragList from "./components/BlueprintDraglist";
 
@@ -30,12 +29,12 @@ const BlueprintModalScreen = ({ navigation }) => {
 			style={styles.container}
 			edges={["top", "left", "right", "bottom"]}
 		>
-			<Header navigation={navigation} screen={"blueprint"} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
 					style={styles.containerContent}
 				>
+				<Header navigation={navigation} screen={"blueprint"} />
 					{/* Add your content here */}
 					<View style={styles.userInputButtons}>
 						<BlueprintNotes />
@@ -58,7 +57,6 @@ const createStyles = (themeStyle) =>
 		containerContent: {
 			flex: 1,
 			backgroundColor: themeStyle.backgroundColor,
-			marginTop: 10,
 		},
 		userInputButtons: {
 			flexDirection: "row",
