@@ -11,7 +11,6 @@ import { useBlueprintExercises } from "../../../contexts/blueprint/BlueprintExer
 
 import { useTheme } from "../../../contexts/ThemeContext";
 
-import TwoActionModal from "../../../components/TwoActionModal";
 import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
 
 const Header = ({ navigation, screen }) => {
@@ -90,7 +89,9 @@ const Header = ({ navigation, screen }) => {
 				<View style={styles.centerSection}>
 					<TextInput
 						style={styles.titleInput}
-						value={workoutTitle}
+						value={
+							screen === "workout" ? workoutTitle : blueprintTitle
+						}
 						placeholder={
 							screen === "workout"
 								? "Untitled Workout"

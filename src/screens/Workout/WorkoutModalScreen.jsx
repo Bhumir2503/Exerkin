@@ -90,7 +90,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 						<WorkoutDragList />
 					</KeyboardAvoidingView>
 
-					<Footer navigation={navigation} />
+					<Footer navigation={navigation} screen={"workout"} />
 					{base64Image && (
 						<Modal
 							visible={showPreview}

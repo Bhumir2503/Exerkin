@@ -1,30 +1,35 @@
 import { View, StyleSheet, Text, Platform } from "react-native";
+import { useState } from "react";
 
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
-import TwoActionModal from "../../../components/TwoActionModal";
+import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
 import ExerciseManager from "../../../components/ExerciseSelector/ExerciseManager";
 
-const Footer = ({ navigation }) => {
+const Footer = ({ navigation, screen }) => {
 	const { cancelWorkout, formTypeRef } = useWorkoutSession();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
+	const [showModal, setShowModal] = useState(false);
+
 	const handleConfirm = () => {
-		console.log("Workout Cancelled");
-		cancelWorkout();
+		setShowModal(false);
+		if (screen === "workout") {
+			cancelWorkout();
+		}
 		navigation.goBack();
 	};
 
 	const handleCancel = () => {
-		console.log("Not Cancelling Workout");
+		setShowModal(false);
 	};
 
 	return (
 		<View style={styles.footerContainer}>
 			<ExerciseManager type={"workout"} />
-			<TwoActionModal
+			{/* <TwoActionModal
 				title={
 					formTypeRef.current === "workout"
 						? "Cancel Workout?"
@@ -45,7 +50,47 @@ const Footer = ({ navigation }) => {
 				) : (
 					<Text style={styles.CancelButton}>Discard Changes</Text>
 				)}
-			</TwoActionModal>
+			</TwoActionModal> */}
+			{screen === "workout" && (
+				<Text
+					style={styles.CancelButton}
+					onPress={() => setShowModal(true)}
+				>
+					{formTypeRef.current === "workout"
+						? "Cancel Workout"
+						: "Discard Changes"}
+				</Text>
+			)}
+			{screen === "blueprint" && (
+				<Text
+					style={styles.CancelButton}
+					onPress={() => setShowModal(true)}
+				>
+					Discard Blueprint
+				</Text>
+			)}
+			<TwoButtonModal
+				visible={showModal}
+				animationType={"fade"}
+				title={
+					screen === "workout"
+						? formTypeRef.current === "workout"
+							? "Cancel Workout?"
+							: "Discard Changes?"
+						: "Discard Blueprint?"
+				}
+				description={
+					screen === "workout"
+						? formTypeRef.current === "workout"
+							? "Your progress will not be saved. Workout session will be lost."
+							: "Your changes will not be saved. Workout session will be lost."
+						: "Your progress will not be saved. Blueprint creation will be lost."
+				}
+				b1OnPress={handleCancel}
+				b2OnPress={handleConfirm}
+				b1Text={"Nah"}
+				b2Text={"Confirm"}
+			/>
 		</View>
 	);
 };
