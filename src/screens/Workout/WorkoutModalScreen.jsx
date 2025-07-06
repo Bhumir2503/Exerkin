@@ -25,12 +25,7 @@ import RestTimer from "./components/RestTimer";
 import ImageButton from "./components/ImageButton";
 import InfoCard from "../../components/InfoCard";
 import { Ionicons } from "@expo/vector-icons";
-// import WorkoutNotes from "../../components/Modals/WorkoutNotes";
-// import RestTimer from "../../components/Modals/RestTimer";
-// import ExerciseDragList from "../../components/ExerciseDragList";
-// import ExerciseSelector from "../../components/Modals/ExerciseSelector";
-// import CancelButton from "../../components/Modals/CancelButton";
-// import AddFirstExerciseCard from ../../components/ExerciseCard/AddFirstExerciseCard";
+
 
 const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
