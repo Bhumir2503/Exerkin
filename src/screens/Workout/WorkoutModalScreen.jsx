@@ -23,9 +23,7 @@ import WorkoutTimer from "./components/WorkoutTimer";
 import Notes from "./components/Notes";
 import RestTimer from "./components/RestTimer";
 import ImageButton from "./components/ImageButton";
-import InfoCard from "../../components/InfoCard";
 import { Ionicons } from "@expo/vector-icons";
-
 
 const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
@@ -33,14 +31,16 @@ const WorkoutModalScreen = ({ navigation }) => {
 	const { base64Image } = useWorkoutMeta();
 	const [showPreview, setShowPreview] = useState(false);
 
-
 	const dismissKeyboard = () => {
 		Keyboard.dismiss();
 	};
 
 	return (
-		<SafeAreaView style={styles.container} edges={["top", "left", "right", "bottom"]}>
-			<Header navigation={navigation} />
+		<SafeAreaView
+			style={styles.container}
+			edges={["top", "left", "right", "bottom"]}
+		>
+			<Header navigation={navigation} screen={"workout"} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<View style={{ flex: 1 }}>
 					<KeyboardAvoidingView
@@ -58,16 +58,32 @@ const WorkoutModalScreen = ({ navigation }) => {
 
 						{base64Image ? (
 							<View style={styles.imageConfirmation}>
-								<TouchableOpacity onPress={() => setShowPreview(true)}>
-									<View style={{ flexDirection: "row", alignItems: "center" }}>
-										<Ionicons name="image" size={20} color={themeStyle.primary} style={{ marginRight: 6 }} />
-										<Text style={styles.imageUploadedText}>Image uploaded! Click to preview.</Text>
+								<TouchableOpacity
+									onPress={() => setShowPreview(true)}
+								>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+										}}
+									>
+										<Ionicons
+											name="image"
+											size={20}
+											color={themeStyle.primary}
+											style={{ marginRight: 6 }}
+										/>
+										<Text style={styles.imageUploadedText}>
+											Image uploaded! Click to preview.
+										</Text>
 									</View>
 								</TouchableOpacity>
 							</View>
 						) : (
 							<View style={styles.imageConfirmation}>
-								<Text style={styles.imageUploadedText}>No image has been chosen yet.</Text>
+								<Text style={styles.imageUploadedText}>
+									No image has been chosen yet.
+								</Text>
 							</View>
 						)}
 
@@ -82,11 +98,15 @@ const WorkoutModalScreen = ({ navigation }) => {
 							animationType="fade"
 							onRequestClose={() => setShowPreview(false)}
 						>
-							<TouchableWithoutFeedback onPress={() => setShowPreview(false)}>
+							<TouchableWithoutFeedback
+								onPress={() => setShowPreview(false)}
+							>
 								<View style={styles.modalOverlay}>
 									<View style={styles.imageWrapper}>
 										<Image
-											source={{ uri: `data:image/jpeg;base64,${base64Image}` }}
+											source={{
+												uri: `data:image/jpeg;base64,${base64Image}`,
+											}}
 											style={styles.fullScreenImage}
 											resizeMode="contain"
 										/>
@@ -125,7 +145,7 @@ const createStyles = (themeStyle) => {
 			padding: 16,
 			marginBottom: 10,
 			marginTop: 10,
-			width: '90%',
+			width: "90%",
 			alignItems: "center",
 			display: "flex",
 		},
@@ -141,18 +161,18 @@ const createStyles = (themeStyle) => {
 			justifyContent: "center",
 			alignItems: "center",
 		},
-		  imageWrapper: {
+		imageWrapper: {
 			width: "90%",
 			height: "90%",
 			justifyContent: "center",
 			alignItems: "center",
-		  },
-		  
-		  fullScreenImage: {
+		},
+
+		fullScreenImage: {
 			width: "100%",
 			height: "100%",
 			borderRadius: 10,
-		  },
+		},
 	});
 };
 

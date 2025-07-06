@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "../../contexts/ThemeContext";
 
-import BlueprintHeader from "./components/BlueprintHeader";
+import Header from "./components/Header";
 import BlueprintFooter from "./components/BlueprintFooter";
 import BlueprintNotes from "./components/BlueprintNotes";
 import BlueprintDragList from "./components/BlueprintDraglist";
@@ -28,7 +28,7 @@ const BlueprintModalScreen = ({ navigation }) => {
 			style={styles.container}
 			edges={["top", "left", "right", "bottom"]}
 		>
-			<BlueprintHeader navigation={navigation} />
+			<Header navigation={navigation} screen={"blueprint"} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
