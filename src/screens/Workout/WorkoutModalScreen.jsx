@@ -50,7 +50,7 @@ const WorkoutModalScreen = ({ navigation }) => {
 						<View style={styles.userInputButtons}>
 							<WorkoutTimer />
 							<View style={{ flexDirection: "row" }}>
-								<Notes />
+								<Notes screen={"workout"} />
 								<RestTimer />
 								<ImageButton />
 							</View>

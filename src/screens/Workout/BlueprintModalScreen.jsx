@@ -13,7 +13,7 @@ import { useTheme } from "../../contexts/ThemeContext";
 import Header from "./components/Header";
 4;
 import Footer from "./components/Footer";
-import BlueprintNotes from "./components/BlueprintNotes";
+import Notes from "./components/Notes";
 import BlueprintDragList from "./components/BlueprintDraglist";
 
 const BlueprintModalScreen = ({ navigation }) => {
@@ -34,10 +34,10 @@ const BlueprintModalScreen = ({ navigation }) => {
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
 					style={styles.containerContent}
 				>
-				<Header navigation={navigation} screen={"blueprint"} />
+					<Header navigation={navigation} screen={"blueprint"} />
 					{/* Add your content here */}
 					<View style={styles.userInputButtons}>
-						<BlueprintNotes />
+						<Notes screen={"blueprint"} />
 					</View>
 					{/* Drag and Drop List */}
 					<BlueprintDragList />

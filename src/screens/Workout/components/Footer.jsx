@@ -5,7 +5,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
-import ExerciseManager from "../../../components/ExerciseSelector/ExerciseManager";
+import ExerciseManager from "./ExerciseSelector/ExerciseManager";
 
 const Footer = ({ navigation, screen }) => {
 	const { cancelWorkout, formTypeRef } = useWorkoutSession();
@@ -28,29 +28,9 @@ const Footer = ({ navigation, screen }) => {
 
 	return (
 		<View style={styles.footerContainer}>
-			<ExerciseManager type={"workout"} />
-			{/* <TwoActionModal
-				title={
-					formTypeRef.current === "workout"
-						? "Cancel Workout?"
-						: "Discard Changes?"
-				}
-				subText={
-					formTypeRef.current === "workout"
-						? "Your progress will not be saved. Workout session will be lost."
-						: "Your changes will not be saved. Workout session will be lost."
-				}
-				actionOne={handleCancel}
-				actionTwo={handleConfirm}
-				actionOneText={"Nah"}
-				actionTwoText={"Confirm"}
-			>
-				{formTypeRef.current === "workout" ? (
-					<Text style={styles.CancelButton}>Cancel Workout</Text>
-				) : (
-					<Text style={styles.CancelButton}>Discard Changes</Text>
-				)}
-			</TwoActionModal> */}
+			<ExerciseManager
+				type={screen === "workout" ? "workout" : "blueprint"}
+			/>
 			{screen === "workout" && (
 				<Text
 					style={styles.CancelButton}

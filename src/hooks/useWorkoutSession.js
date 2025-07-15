@@ -148,7 +148,7 @@ export const useWorkoutSession = () => {
 		formTypeRef.current = "workout";
 		setWorkoutTitle(blueprint.name);
 		console.log("blueprint", blueprint);
-		setWorkoutNotes(blueprint.note);
+		setWorkoutNotes(blueprint.notes);
 		setWorkoutExercises(blueprint.exercises);
 	};
 

@@ -3,7 +3,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { memo } from "react";
 
-import PrimaryButton from "../../components/PrimaryButton";
 import IconTextButton from "../../components/Buttons/IconTextButton";
 import InfoCard from "../../components/InfoCard";
 import ActiveWorkoutBar from "./components/ActiveWorkoutBar";

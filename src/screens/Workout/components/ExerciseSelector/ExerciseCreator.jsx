@@ -8,16 +8,16 @@ import {
 	ScrollView,
     Alert,
 } from "react-native";
-import { buildExerciseObject } from "../../services/helpers/objectBuilder";
-import { useWorkoutExercises } from "../../contexts/workout/WorkoutExercisesContext";
-import { useBlueprintExercises } from "../../contexts/blueprint/BlueprintExercisesContext";
-import { useTheme } from "../../contexts/ThemeContext";
+import { buildExerciseObject } from "../../../../services/helpers/objectBuilder";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
+import { useTheme } from "../../../../contexts/ThemeContext";
 import {
 	exerciseCategories,
     equipmentTypes,
     exerciseTypes,
     muscleTypes,
-} from "../../services/constants/exerciseLibrary";
+} from "../../../../services/constants/exerciseLibrary";
 import SelectionChips from "./components/SelectionChips";
 
 

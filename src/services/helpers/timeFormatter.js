@@ -2,10 +2,20 @@
 // Example: 3/1/2025
 export const formatTimeStamptoDateString = (timestamp) => {
 	if (!timestamp) return "No date";
+
+	const options = {
+		year: "numeric",
+		month: "numeric",
+		day: "numeric",
+	};
+
 	if (timestamp.seconds) {
-		return new Date(timestamp.seconds * 1000).toLocaleDateString();
+		return new Date(timestamp.seconds * 1000).toLocaleDateString(
+			undefined,
+			options
+		);
 	}
-	return new Date(timestamp).toLocaleDateString();
+	return new Date(timestamp).toLocaleDateString(undefined, options);
 };
 
 // Function to format a timestamp to a time string
@@ -28,8 +38,14 @@ export const formatTimeStamptoTimeString = (timestamp) => {
 	return new Date(timestamp).toLocaleTimeString(undefined, options);
 };
 
+export const formatTimeStamptoDateTimeString = (timestamp) => {
+	if (!timestamp) return "No date/time";
+	const date = formatTimeStamptoDateString(timestamp);
+	const time = formatTimeStamptoTimeString(timestamp);
+	return `${date} ${time}`;
+};
+
 export const formatDateObjectToTime = (dateObject) => {
-	
 	if (!dateObject) return "No time";
 
 	// Ensure the dateObject is a valid Date instance
@@ -49,7 +65,7 @@ export const formatDateObjectToTime = (dateObject) => {
 		});
 	}
 	return "Invalid date";
-}
+};
 
 // This function formats a time string in the format HH:MM:SS or MM:SS to a more readable format
 // Example: 1h 30m

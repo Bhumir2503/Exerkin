@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutNotes } from "../../../contexts/workout/WorkoutNotesContext";
+import { useBlueprintNotes } from "../../../contexts/blueprint/BlueprintNotesContext";
 import { Ionicons } from "@expo/vector-icons";
 
 const MAX_CHARACTERS = 256;
 
-const Notes = () => {
+const Notes = ({ screen }) => {
 	const { workoutNotes, setWorkoutNotes } = useWorkoutNotes();
+	const { blueprintNotes, setBlueprintNotes } = useBlueprintNotes();
 	const [modalVisible, setModalVisible] = useState(false);
 	const [tempNotes, setTempNotes] = useState("");
 	const { themeStyle } = useTheme();
@@ -24,7 +26,7 @@ const Notes = () => {
 	// Initialize tempNotes when modal opens
 	useEffect(() => {
 		if (modalVisible) {
-			setTempNotes(workoutNotes);
+			setTempNotes(screen === "workout" ? workoutNotes : blueprintNotes);
 		}
 	}, [modalVisible]);
 
@@ -33,12 +35,16 @@ const Notes = () => {
 	};
 
 	const saveNotes = () => {
-		setWorkoutNotes(tempNotes);
+		if (screen === "workout") {
+			setWorkoutNotes(tempNotes);
+		} else {
+			setBlueprintNotes(tempNotes);
+		}
 		setModalVisible(false);
 	};
 
 	const cancelNotes = () => {
-		setTempNotes(workoutNotes);
+		setTempNotes(screen === "workout" ? workoutNotes : blueprintNotes);
 		setModalVisible(false);
 	};
 
@@ -67,7 +73,7 @@ const Notes = () => {
 
 					<View style={styles.modalView}>
 						<View style={styles.modalHeader}>
-							<Text style={styles.modalTitle}>Workout Notes</Text>
+							<Text style={styles.modalTitle}>Notes</Text>
 							<TouchableOpacity
 								onPress={cancelNotes}
 								style={styles.closeButton}
@@ -83,7 +89,7 @@ const Notes = () => {
 						<View style={styles.inputContainer}>
 							<TextInput
 								style={styles.textInput}
-								placeholder="Add workout notes..."
+								placeholder="Add notes..."
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
