@@ -10,9 +10,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "../../contexts/ThemeContext";
 
-import BlueprintHeader from "./components/BlueprintHeader";
-import BlueprintFooter from "./components/BlueprintFooter";
-import BlueprintNotes from "./components/BlueprintNotes";
+import Header from "./components/Header";
+4;
+import Footer from "./components/Footer";
+import Notes from "./components/Notes";
 import BlueprintDragList from "./components/BlueprintDraglist";
 
 const BlueprintModalScreen = ({ navigation }) => {
@@ -28,21 +29,21 @@ const BlueprintModalScreen = ({ navigation }) => {
 			style={styles.container}
 			edges={["top", "left", "right", "bottom"]}
 		>
-			<BlueprintHeader navigation={navigation} />
 			<TouchableWithoutFeedback onPress={dismissKeyboard}>
 				<KeyboardAvoidingView
 					behavior={Platform.OS === "ios" ? "padding" : "height"}
 					style={styles.containerContent}
 				>
+					<Header navigation={navigation} screen={"blueprint"} />
 					{/* Add your content here */}
 					<View style={styles.userInputButtons}>
-						<BlueprintNotes />
+						<Notes screen={"blueprint"} />
 					</View>
 					{/* Drag and Drop List */}
 					<BlueprintDragList />
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
-			<BlueprintFooter navigation={navigation} />
+			<Footer navigation={navigation} screen={"blueprint"} />
 		</SafeAreaView>
 	);
 };
@@ -56,7 +57,6 @@ const createStyles = (themeStyle) =>
 		containerContent: {
 			flex: 1,
 			backgroundColor: themeStyle.backgroundColor,
-			marginTop: 10,
 		},
 		userInputButtons: {
 			flexDirection: "row",

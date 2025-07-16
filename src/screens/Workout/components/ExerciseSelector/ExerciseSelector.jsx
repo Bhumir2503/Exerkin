@@ -7,17 +7,17 @@ import {
 	TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkoutExercises } from "../../contexts/workout/WorkoutExercisesContext";
-import { useBlueprintExercises } from "../../contexts/blueprint/BlueprintExercisesContext";
+import { useTheme } from "../../../../contexts/ThemeContext";
+import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
 import {
 	exercises,
 	exerciseCategories,
 	getExercisesByCategory,
-} from "../../services/constants/exerciseLibrary";
+} from "../../../../services/constants/exerciseLibrary";
 import SelectionChips from "./components/SelectionChips"
 
-import { buildExerciseObject } from "../../services/helpers/objectBuilder";
+import { buildExerciseObject } from "../../../../services/helpers/objectBuilder";
 import ExerciseList from "./components/ExerciseList";
 
 const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {

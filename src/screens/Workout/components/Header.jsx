@@ -1,38 +1,65 @@
-import React from "react";
 import { StyleSheet, View, TextInput } from "react-native";
+import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useWorkoutTitle } from "../../../contexts/workout/WorkoutTitleContext";
 import { useWorkoutExercises } from "../../../contexts/workout/WorkoutExercisesContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
+import { useBlueprintTitle } from "../../../contexts/blueprint/BlueprintTitleContext";
+import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
+import { useBlueprintExercises } from "../../../contexts/blueprint/BlueprintExercisesContext";
+
 import { useTheme } from "../../../contexts/ThemeContext";
 
-import TwoActionModal from "../../../components/TwoActionModal";
+import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
 
-const Header = ({ navigation }) => {
+const Header = ({ navigation, screen }) => {
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
 	const { workoutExercises } = useWorkoutExercises();
 	const { formTypeRef, finishWorkout, finishEditWorkout } =
 		useWorkoutSession();
+
+	const { blueprintTitle, setBlueprintTitle } = useBlueprintTitle();
+	const { blueprintExercises } = useBlueprintExercises();
+	const { finishBlueprint } = useBlueprintSession();
+
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-	const workoutLength = workoutExercises.length;
+	const [showModal, setShowModal] = useState(false);
+
+	const workoutLength =
+		screen === "workout"
+			? workoutExercises.length
+			: blueprintExercises.length;
 
 	const handleDownArrowPress = () => {
 		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
 
 	const handleTitleChange = (text) => {
-		setWorkoutTitle(text);
+		if (screen === "workout") {
+			setWorkoutTitle(text);
+		} else if (screen === "blueprint") {
+			setBlueprintTitle(text);
+		}
+	};
+
+	const handleModalClose = () => {
+		setShowModal(false);
 	};
 
 	const handleFinishPress = () => {
 		navigation.goBack();
-		if (formTypeRef.current === "workout") {
-			finishWorkout();
-		} else if (formTypeRef.current === "edit") {
-			finishEditWorkout();
+		handleModalClose();
+		if (screen === "workout") {
+			if (formTypeRef.current === "workout") {
+				finishWorkout();
+			} else if (formTypeRef.current === "edit") {
+				finishEditWorkout();
+			}
+		} else if (screen === "blueprint") {
+			finishBlueprint();
 		}
 	};
 
@@ -41,71 +68,83 @@ const Header = ({ navigation }) => {
 			<View style={{ ...styles.container }}>
 				{/* Left section */}
 				<View style={styles.leftSection}>
-					<Ionicons
-						name="chevron-down"
-						size={32}
-						color={
-							formTypeRef.current === "workout"
-								? themeStyle.primary
-								: "transparent"
-						}
-						onPress={
-							formTypeRef.current === "workout"
-								? handleDownArrowPress
-								: null
-						}
-					/>
+					{screen === "workout" && (
+						<Ionicons
+							name="chevron-down"
+							size={32}
+							color={
+								formTypeRef.current === "workout"
+									? themeStyle.primary
+									: "transparent"
+							}
+							onPress={
+								formTypeRef.current === "workout"
+									? handleDownArrowPress
+									: null
+							}
+						/>
+					)}
 				</View>
 				{/* Center section - always centered */}
 				<View style={styles.centerSection}>
 					<TextInput
 						style={styles.titleInput}
-						value={workoutTitle}
-						placeholder={"Untitled Workout"}
+						value={
+							screen === "workout" ? workoutTitle : blueprintTitle
+						}
+						placeholder={
+							screen === "workout"
+								? "Untitled Workout"
+								: "Untitled Blueprint"
+						}
 						onChangeText={(text) => handleTitleChange(text)}
 						maxLength={30}
 						placeholderTextColor={themeStyle.textColorSecondary}
-						cursorColor={themeStyle.primary} // Add primary color to cursor
-						autoCapitalize="words"
-						caretHidden={false}
-						showSoftInputOnFocus={true}
 					/>
 				</View>
 				<View style={styles.rightSection}>
 					{workoutLength !== 0 && (
-						<TwoActionModal
-							actionOne={() => {
-								console.log("Modal closed");
+						<Ionicons
+							name="checkmark"
+							size={32}
+							color={themeStyle.primary}
+							onPress={() => {
+								setShowModal(true);
 							}}
-							actionTwo={() => {
-								handleFinishPress();
-							}}
-							title={
-								formTypeRef.current === "workout"
-									? "Log Workout as Complete?"
-									: "Save Changes?"
-							}
-							subText={
-								formTypeRef.current === "workout"
-									? "Log this workout and view your progress in your training history."
-									: "Save changes to this workout?"
-							}
-							actionOneText={"Cancel"}
-							actionTwoText={
-								formTypeRef.current === "workout"
-									? "Log It!"
-									: "Save Changes"
-							}
-						>
-							<Ionicons
-								name="checkmark"
-								size={32}
-								color={themeStyle.primary}
-							/>
-						</TwoActionModal>
+						/>
 					)}
 				</View>
 			</View>
+			<TwoButtonModal
+				visible={showModal}
+				animationType={"fade"}
+				title={
+					screen === "workout"
+						? formTypeRef.current === "workout"
+							? "Log Workout?"
+							: "Save Changes?"
+						: "Create Blueprint?"
+				}
+				description={
+					screen === "workout"
+						? formTypeRef.current === "workout"
+							? "Log this workout and view your progress in your training history."
+							: "Save changes to this workout?"
+						: `You have ${workoutLength} exercises in this blueprint. Do you want to create it?`
+				}
+				b1Text={"Cancel"}
+				b2Text={
+					screen === "workout"
+						? formTypeRef.current === "workout"
+							? "Log It!"
+							: "Save Changes"
+						: "Create"
+				}
+				b1OnPress={() => {
+					handleModalClose();
+				}}
+				b2OnPress={handleFinishPress}
+			/>
 		</>
 	);
 };

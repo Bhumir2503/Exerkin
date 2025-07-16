@@ -15,22 +15,14 @@ import { useState } from "react";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
+import { formatTimeStamptoDateString } from "../../../services/helpers/timeFormatter";
+
 const BlueprintCard = ({ blueprint, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const [selectedTemplate, setSelectedTemplate] = useState(null);
 	const { removeBlueprintFromStorage } = useBlueprintStorage();
 	const { startBlueprint } = useWorkoutSession();
-
-	// Format creation date
-	const formatDate = (dateString) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString("en-US", {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		});
-	};
 
 	const handleStart = () => {
 		closeModal();
@@ -90,17 +82,10 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 				<View>
 					<Text style={styles.templateName}>{blueprint.name}</Text>
 					<Text style={styles.dateText}>
-						Created: {formatDate(blueprint.createdAt)}
+						Created:{" "}
+						{formatTimeStamptoDateString(blueprint.createdAt)}
 					</Text>
 				</View>
-				{blueprint.syncStatus !== "synced" && (
-					<Ionicons
-						name="cloud-offline-outline"
-						size={18}
-						color={themeStyle.accent}
-						style={{ marginRight: 8, marginTop: 4 }}
-					/>
-				)}
 			</View>
 
 			<View style={styles.contentSection}>
@@ -128,34 +113,7 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 			</View>
 
 			<View style={styles.buttonContainer}>
-				{/* <Pressable style={styles.startButton} onPress={openModal}>
-					<Text style={styles.startButtonText}>View Blueprint</Text>
-				</Pressable> */}
 				<TextButton text="View Blueprint" onPress={openModal} />
-
-				{/* <View style={styles.iconButtons}>
-					<Pressable
-						style={styles.iconButton}
-						onPress={() => console.log("Edit blueprint")}
-					>
-						<Ionicons
-							name="pencil"
-							size={20}
-							color={themeStyle.accent}
-						/>
-					</Pressable>
-
-					<Pressable
-						style={styles.iconButton}
-						onPress={() => removeBlueprintFromStorage(blueprint.blueprintId)}
-					>
-						<Ionicons
-							name="trash-outline"
-							size={20}
-							color={themeStyle.error}
-						/>
-					</Pressable>
-				</View> */}
 			</View>
 
 			{/* Modal for Blueprint Details */}
@@ -202,21 +160,6 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 												}
 											/>
 										</Pressable>
-
-										{/* <Pressable
-											style={styles.iconButton}
-											onPress={() =>
-												console.log("Edit blueprint")
-											}
-										>
-											<Ionicons
-												name="create-outline"
-												size={24}
-												color={
-													themeStyle.accent || "#000"
-												}
-											/>
-										</Pressable> */}
 										<Pressable
 											style={styles.iconButton}
 											onPress={() =>
@@ -243,7 +186,9 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 									}}
 								>
 									<Text style={styles.text}>
-										{formatDate(selectedTemplate.createdAt)}
+										{formatTimeStamptoDateString(
+											selectedTemplate.createdAt
+										)}
 									</Text>
 								</View>
 								{selectedTemplate.note &&
