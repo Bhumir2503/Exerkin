@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
-import { formatDateObjectToTime } from "../../../services/helpers/timeFormatter";
+import {
+	formatTimeStamptoTimeString,
+	formatTimestampToShortDate,
+} from "../../../services/helpers/timestampFormatFunctions";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
@@ -21,16 +24,6 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { startEditWorkout, workoutIdRef } = useWorkoutSession();
 
 	const styles = createStyles(themeStyle);
-
-	// Format creation date
-	const formatDate = (dateString) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString("en-US", {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		});
-	};
 
 	const closeModal = () => {
 		setSelectedWorkout(null);
@@ -82,7 +75,9 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								}}
 							>
 								<Text style={styles.title}>
-									{selectedWorkout.name}
+									{selectedWorkout.name === ""
+										? "Untitled Workout"
+										: selectedWorkout.name}
 								</Text>
 								<View style={styles.actionButtons}>
 									<Pressable
@@ -133,11 +128,13 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 								}}
 							>
 								<Text style={styles.text}>
-									{formatDate(selectedWorkout.completedAt)}
+									{formatTimestampToShortDate(
+										selectedWorkout.completedAt
+									)}
 								</Text>
 								<Text style={styles.text}>
 									{selectedWorkout.startedAt
-										? formatDateObjectToTime(
+										? formatTimeStamptoTimeString(
 												selectedWorkout.startedAt
 										  )
 										: ""}{" "}
@@ -146,7 +143,7 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 										? "-"
 										: ""}{" "}
 									{selectedWorkout.completedAt
-										? formatDateObjectToTime(
+										? formatTimeStamptoTimeString(
 												selectedWorkout.completedAt
 										  )
 										: ""}

@@ -8,7 +8,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import InfoCard from "../../../components/InfoCard";
 import HistoryModal from "./HistoryModal";
 
-import { formatTimeStamptoDateString } from "../../../services/helpers/timeFormatter";
+import { formatTimestampToShortDate } from "../../../services/helpers/timestampFormatFunctions";
 
 const WorkoutHistory = ({ navigation }) => {
 	const { workoutHistory } = useWorkoutHistory();
@@ -29,12 +29,6 @@ const WorkoutHistory = ({ navigation }) => {
 		} else {
 			return `${num} exercise`;
 		}
-	};
-
-	const formatCompletedDate = (timestamp) => {
-		const date = new Date(timestamp);
-		const options = { month: "short", day: "numeric", year: "numeric" };
-		return date.toLocaleDateString("en-US", options);
 	};
 
 	if (workoutHistoryLength === 0) {
@@ -58,9 +52,7 @@ const WorkoutHistory = ({ navigation }) => {
 			</Text>
 			<FlatList
 				keyExtractor={(item) => item.workoutId}
-				data={[...workoutHistory].sort(
-					(a, b) => b.startedAt - a.startedAt
-				)}
+				data={workoutHistory}
 				style={{
 					width: "100%",
 					flex: 1,
@@ -81,7 +73,7 @@ const WorkoutHistory = ({ navigation }) => {
 								<Text style={styles.workoutTitle}>
 									{item.name
 										? truncateTitle(item.name)
-										: "Workout"}
+										: "Untitled Workout"}
 								</Text>
 								{item.syncStatus !== "synced" && (
 									<Ionicons
@@ -93,9 +85,7 @@ const WorkoutHistory = ({ navigation }) => {
 							</View>
 							<Text style={styles.workoutDate}>
 								Completed:{" "}
-								{formatCompletedDate(
-									item.completedAt || item.startedAt
-								)}
+								{formatTimestampToShortDate(item.completedAt)}
 							</Text>
 							{item.notes && (
 								<Text

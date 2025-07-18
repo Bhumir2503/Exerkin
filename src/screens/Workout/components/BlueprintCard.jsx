@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
-import { formatTimeStamptoDateString } from "../../../services/helpers/timeFormatter";
+import { formatTimeStamptoDateString } from "../../../services/helpers/timestampFormatFunctions";
 
 const BlueprintCard = ({ blueprint, navigation }) => {
 	const { themeStyle } = useTheme();
