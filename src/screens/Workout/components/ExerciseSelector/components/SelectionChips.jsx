@@ -180,6 +180,7 @@ const createStyles = (themeStyle) =>
 		},
 		selectedValueText: {
 			color: "white",
+            fontWeight: "500",
 		},
     });
 

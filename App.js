@@ -9,6 +9,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import BlueprintProvider from "./src/contexts/blueprint/BlueprintProvider";
 import WorkoutProvider from "./src/contexts/workout/WorkoutProvider";
+import { CustomExerciseProvider } from "./src/contexts/CustomExerciseContext";
 import { UserProvider, useUser } from "./src/contexts/UserContext";
 import { ThemeProvider } from "./src/contexts/ThemeContext";
 import { MeasurementProvider } from "./src/contexts/MeasurementContext";
@@ -60,11 +61,13 @@ export default function App() {
 						<GestureHandlerRootView style={{ flex: 1 }}>
 							<UserProvider>
 								<MeasurementProvider>
-									<WorkoutProvider>
-										<BlueprintProvider>
-											<AppContent />
-										</BlueprintProvider>
-									</WorkoutProvider>
+									<CustomExerciseProvider>
+										<WorkoutProvider>
+											<BlueprintProvider>
+												<AppContent />
+											</BlueprintProvider>
+										</WorkoutProvider>
+									</CustomExerciseProvider>
 								</MeasurementProvider>
 							</UserProvider>
 						</GestureHandlerRootView>

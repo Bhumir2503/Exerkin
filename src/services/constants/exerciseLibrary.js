@@ -10,20 +10,19 @@ export const exerciseCategories = [
 ];
 
 export const muscleTypes = [
-	{ id: "bicep", name: "bicep" },
-	{ id: "tricep", name: "tricep" },
-	{ id: "shoulder", name: "shoulder" },
-	{ id: "forearm", name: "forearm" },
-	{ id: "chest", name: "chest" },
-	{ id: "abs", name: "abs" },
-	{ id: "lats", name: "lats" },
-	{ id: "traps", name: "traps" },
-	{ id: "lower back", name: "lower back" },
-	{ id: "quads", name: "quads" },
-	{ id: "hamstrings", name: "hamstrings" },
-	{ id: "calfs", name: "calfs" },
+	{ id: "Bicep", name: "Bicep" },
+	{ id: "Tricep", name: "Tricep" },
+	{ id: "Shoulder", name: "Shoulder" },
+	{ id: "Forearm", name: "Forearm" },
+	{ id: "Chest", name: "Chest" },
+	{ id: "Abs", name: "Abs" },
+	{ id: "Lats", name: "Lats" },
+	{ id: "Traps", name: "Traps" },
+	{ id: "Lower Back", name: "Lower Back" },
+	{ id: "Quads", name: "Quads" },
+	{ id: "Hamstrings", name: "Hamstrings" },
+	{ id: "Calfs", name: "Calfs" },
 ];
-
 
 // Equipment types for better filtering
 export const equipmentTypes = [

@@ -16,9 +16,11 @@ const WorkoutProvider = ({ children }) => {
 						<WorkoutExercisesProvider>
 							<WorkoutHistoryProvider>
 								<WorkoutImageProvider>
-									<WorkoutErrorProvider>
-										{children}
-									</WorkoutErrorProvider>
+
+										<WorkoutErrorProvider>
+											{children}
+										</WorkoutErrorProvider>
+
 								</WorkoutImageProvider>
 							</WorkoutHistoryProvider>
 						</WorkoutExercisesProvider>
