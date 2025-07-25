@@ -179,6 +179,7 @@ const createStyles = (themeStyle) =>
 			borderRadius: 8,
 			padding: 10,
 			paddingHorizontal: 15,
+			marginLeft: 10,
 		},
 		backgroundOverlay: {
 			position: "absolute",

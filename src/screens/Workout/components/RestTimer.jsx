@@ -176,7 +176,7 @@ const createStyles = (themeStyle) =>
 			borderRadius: 8,
 			padding: 10,
 			paddingHorizontal: 15,
-			marginHorizontal: 10,
+			marginLeft: 10,
 		},
 		buttonContent: {
 			flexDirection: "row",
