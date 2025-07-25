@@ -12,7 +12,7 @@ import ThemeScreen from "../screens/Home/ThemeScreen";
 import SettingScreen from "../screens/Home/SettingScreen";
 import PrivacyPolicy from "../screens/Support/PrivacyPolicy";
 import TermsOfService from "../screens/Support/TermsOfService";
-import HelpAndSupport from "../screens/Support/HelpAndSupport";
+
 import { CardStyleInterpolators } from "@react-navigation/stack";
 
 const Stack = createStackNavigator();
@@ -55,7 +55,6 @@ export default function HomeNavigator() {
 			<Stack.Screen name={"ThemeScreen"} component={ThemeScreen} />
 			<Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
 			<Stack.Screen name="TermsOfService" component={TermsOfService} />
-			<Stack.Screen name="HelpAndSupport" component={HelpAndSupport} />
 			<Stack.Screen name="UpdateEmail" component={UpdateEmail} />
 			<Stack.Screen name="ChangePassword" component={ChangePassword} />
 			<Stack.Screen name="EditUsername" component={EditUsername} />

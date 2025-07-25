@@ -12,9 +12,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
-import firestore from '@react-native-firebase/firestore';
+import firestore from "@react-native-firebase/firestore";
 
-
+import {
+	isUsernameAvailable,
+	updateUsernameInFirestore,
+} from "../../services/firestore/firestoreUserServices";
 
 const EditUsername = ({ navigation, route }) => {
 	const { themeStyle } = useTheme();
@@ -22,111 +25,54 @@ const EditUsername = ({ navigation, route }) => {
 
 	let userObject = useUser();
 
-
 	// You can pass the current username as a parameter from the previous screen
 	const currentUsername = route.params?.username || "";
 	const [username, setUsername] = useState(currentUsername);
-	const [isAvailable, setIsAvailable] = useState(true);
-	const [isChecking, setIsChecking] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState("");
 
-	// Simple validation for username
-	const isValidUsername = (username) => {
-		// Username should be 3-20 characters and contain only letters, numbers, underscores, and hyphens
-		const regex = /^[a-zA-Z0-9_-]{3,20}$/;
-		return regex.test(username);
-	};
-
-	// Check username availability with debounce
-	useEffect(() => {
-		if (username === currentUsername) {
-			setIsAvailable(true);
-			return;
-		}
-
-		if (!isValidUsername(username)) {
-			setIsAvailable(false);
-			return;
-		}
-
-		const timer = setTimeout(async () => {
-			if (username.trim() !== "") {
-				setIsChecking(true);
-				try {
-					async function checkUsernameAvalibility(username) {
-						const documentSnapshot = await firestore().collection('usernames').doc(username).get();
-
-						if (documentSnapshot.exists) {
-							return false;
-						} else {
-							return true;
-						}
-					}
-
-					const check = await checkUsernameAvalibility(username);
-					setIsAvailable(check);
-				} catch (error) {
-					console.error(
-						"Error checking username availability",
-						error
-					);
-				} finally {
-					setIsChecking(false);
-				}
-			}
-		}, 500); // 500ms debounce
-
-		return () => clearTimeout(timer);
-	}, [username, currentUsername]);
+	const rules = [
+		{
+			text: "At least 8 characters long",
+			isValid: username.length >= 8,
+		},
+		{
+			text: "Maximum 32 characters",
+			isValid: username.length <= 32,
+		},
+		{
+			text: "Only letters, numbers, underscores, and hyphens",
+			isValid: !/[^a-zA-Z0-9_-]/.test(username),
+		},
+	];
 
 	const handleUpdateUsername = async () => {
-		if (!username.trim()) {
-			Alert.alert("Error", "Username cannot be empty");
+		if (!rules.every((rule) => rule.isValid)) {
+			setError("Please fix the errors above.");
 			return;
 		}
 
-		if (!isValidUsername(username)) {
-			Alert.alert(
-				"Error",
-				"Username must be 3-20 characters and may only contain letters, numbers, underscores, and hyphens"
-			);
-			return;
-		}
-
-		if (!isAvailable) {
-			Alert.alert("Error", "This username is not available");
-			return;
-		}
-
-		if (username === currentUsername) {
-			Alert.alert(
-				"No Changes",
-				"The username is the same as your current one"
-			);
-			return;
-		}
+		setLoading(true);
+		setError("");
 
 		try {
-			setIsLoading(true);
-
-			// Example API call - replace with your actual authentication logic
-			// await updateUsername(username);
-
-			// Simulate API call with timeout
-			await firestore().collection('usernames').doc(userObject.username).delete();
-			await firestore().collection('usernames').doc(username).set({"uid": userObject.user.uid});
-			await firestore().collection('users').doc(userObject.user.uid).update({username: username});
-			userObject.updateUsername(username);
-
-			setIsLoading(false);
-			Alert.alert(
-				"Success",
-				"Your username has been updated successfully",
-				[{ text: "OK", onPress: () => navigation.goBack() }]
-			);
+			if (await isUsernameAvailable(username)) {
+				await updateUsernameInFirestore(
+					userObject.userId,
+					username,
+					userObject.username
+				);
+				setLoading(false);
+				navigation.goBack();
+			} else {
+				setError("Username is already taken. Please choose another.");
+				setLoading(false);
+			}
 		} catch (error) {
-			setIsLoading(false);
-			Alert.alert("Error", error.message || "Failed to update username");
+			console.error("Error checking username availability:", error);
+			setError("An error occurred while updating the username.");
+			setLoading(false);
+			return;
 		}
 	};
 
@@ -149,9 +95,11 @@ const EditUsername = ({ navigation, route }) => {
 			<View style={styles.content}>
 				<Text style={styles.subtitle}>
 					Your username is visible to other users and is used for
-					tagging and sharing workouts
+					tagging and sharing workouts. (Future Update)
 				</Text>
-				<Text style={styles.subtitle}>Your current username is: {userObject.username}</Text>
+				<Text style={styles.subtitle}>
+					Your current username is: {userObject.username}
+				</Text>
 				<View style={styles.inputContainer}>
 					<Text style={styles.inputLabel}>Username</Text>
 					<View style={styles.usernameInputContainer}>
@@ -163,96 +111,68 @@ const EditUsername = ({ navigation, route }) => {
 							onChangeText={setUsername}
 							autoCapitalize="none"
 							autoCorrect={false}
-							maxLength={20}
+							maxLength={32}
 						/>
-						{isChecking ? (
-							<ActivityIndicator
-								size="small"
-								color={themeStyle.textColorSecondary}
-								style={styles.inputIcon}
-							/>
-						) : (
-							username.trim() !== "" && (
-								<View style={styles.inputIcon}>
-									{isValidUsername(username) &&
-									isAvailable ? (
-										<Ionicons
-											name="checkmark-circle"
-											size={20}
-											color={
-												themeStyle.success || "#4CAF50"
-											}
-										/>
-									) : (
-										<Ionicons
-											name="close-circle"
-											size={20}
-											color={themeStyle.error}
-										/>
-									)}
-								</View>
-							)
-						)}
 					</View>
+					{error ? (
+						<Text style={styles.errorText}>{error}</Text>
+					) : null}
+				</View>
 
-					{username.trim() !== "" && !isValidUsername(username) && (
-						<Text style={styles.errorText}>
-							Username must be 3-20 characters and may only
-							contain letters, numbers, underscores, and hyphens
-						</Text>
-					)}
-
-					{username.trim() !== "" &&
-						isValidUsername(username) &&
-						!isAvailable &&
-						!isChecking && (
-							<Text style={styles.errorText}>
-								This username is already taken
+				<View style={styles.validationRulesContainer}>
+					<Text style={styles.validationTitle}>
+						Username requirements:
+					</Text>
+					{rules.map((rule, index) => (
+						<View key={index} style={styles.validationRule}>
+							<Ionicons
+								name={
+									rule.isValid
+										? "checkmark-circle"
+										: "ellipse-outline"
+								}
+								size={16}
+								color={
+									rule.isValid
+										? themeStyle.success
+										: themeStyle.textColorSecondary
+								}
+							/>
+							<Text
+								style={[
+									styles.validationText,
+									rule.isValid &&
+										styles.validationTextSuccess,
+								]}
+							>
+								{rule.text}
 							</Text>
-						)}
+						</View>
+					))}
 				</View>
 
 				<View style={styles.buttonContainer}>
 					<TouchableOpacity
 						style={[
 							styles.updateButton,
-							(!isValidUsername(username) ||
-								!isAvailable ||
-								username === currentUsername ||
-								isChecking) &&
+							!rules.every((rule) => rule.isValid) &&
 								styles.disabledButton,
 						]}
-						onPress={handleUpdateUsername}
+						onPress={() => {
+							handleUpdateUsername();
+						}}
 						disabled={
-							!isValidUsername(username) ||
-							!isAvailable ||
-							username === currentUsername ||
-							isLoading ||
-							isChecking
+							!rules.every((rule) => rule.isValid) || loading
 						}
 					>
-						{isLoading ? (
-							<ActivityIndicator color="#FFFFFF" />
+						{loading ? (
+							<ActivityIndicator size="small" color="#FFFFFF" />
 						) : (
 							<Text style={styles.updateButtonText}>
 								Update Username
 							</Text>
 						)}
 					</TouchableOpacity>
-				</View>
-
-				<View style={styles.infoContainer}>
-					<Ionicons
-						name="information-circle-outline"
-						size={20}
-						color={themeStyle.textColorSecondary}
-					/>
-					<Text style={styles.infoText}>
-						Changing your username will not affect your account
-						data, workout history, or friends list. Other users will
-						see your new username in their connections and shared
-						workouts.
-					</Text>
 				</View>
 			</View>
 		</SafeAreaView>
@@ -292,9 +212,7 @@ const createStyles = (themeStyle) =>
 			marginBottom: 24,
 			lineHeight: 22,
 		},
-		inputContainer: {
-			marginBottom: 20,
-		},
+		inputContainer: {},
 		inputLabel: {
 			fontSize: 16,
 			fontWeight: "500",
@@ -361,6 +279,31 @@ const createStyles = (themeStyle) =>
 			color: themeStyle.textColorSecondary,
 			marginLeft: 8,
 			lineHeight: 20,
+		},
+		validationRulesContainer: {
+			marginTop: 18,
+			backgroundColor: themeStyle.inputBackground,
+			borderRadius: 8,
+			padding: 16,
+		},
+		validationTitle: {
+			fontSize: 14,
+			fontWeight: "600",
+			color: themeStyle.textColor,
+			marginBottom: 10,
+		},
+		validationRule: {
+			flexDirection: "row",
+			alignItems: "center",
+			marginBottom: 8,
+		},
+		validationText: {
+			marginLeft: 8,
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+		},
+		validationTextSuccess: {
+			color: themeStyle.success,
 		},
 	});
 

@@ -50,7 +50,7 @@ export const saveUserInFirestore = async (userData) => {
 
 		const batch = firestore().batch();
 
-		batch.set(userDocRef, userData);
+		batch.set(userDocRef, userData, { merge: true });
 		batch.set(usernameDocRef, { userId: resolvedUid });
 
 		// Commit the batch
@@ -108,7 +108,7 @@ export const isUsernameAvailable = async (username) => {
  * @param {Object} userData - An object containing the fields to update
  * @returns {Promise<void>} - A promise that resolves when the update is complete
  * @throws {Error} - Throws an error if there is an issue updating the user profile
- * 
+ *
  */
 export const updateUserProfile = async (userId, userData) => {
 	try {
@@ -116,6 +116,35 @@ export const updateUserProfile = async (userId, userData) => {
 		await userDocRef.update(userData);
 	} catch (error) {
 		console.error("Error updating user profile:", error);
+		throw error;
+	}
+};
+
+export const updateUsernameInFirestore = async (
+	userId,
+	newUsername,
+	oldUsername
+) => {
+	try {
+		const userDocRef = usersCollection.doc(userId);
+		const usernameDocRef = usernamesCollection.doc(
+			newUsername.toLowerCase()
+		);
+
+		const batch = firestore().batch();
+		console.log("Updating username in Firestore:", {
+			userId,
+			newUsername,
+			oldUsername,
+		});
+
+		batch.update(userDocRef, { username: newUsername });
+		batch.set(usernameDocRef, { userId: userId });
+		batch.delete(usernamesCollection.doc(oldUsername.toLowerCase()));
+
+		await batch.commit();
+	} catch (error) {
+		console.error("Error updating username:", error);
 		throw error;
 	}
 };

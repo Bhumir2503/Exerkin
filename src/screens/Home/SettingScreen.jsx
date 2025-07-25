@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
 	View,
 	StyleSheet,
@@ -10,9 +10,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useUser } from "../../contexts/UserContext";
-
-import auth from '@react-native-firebase/auth'; 
-import { EmailAuthProvider } from 'firebase/auth';
 
 const CARD_PADDING = 16;
 
@@ -29,9 +26,12 @@ const SettingScreen = ({ navigation }) => {
 		}
 		return "U"; // Default if no name is available
 	};
-
 	const isUsingGoogle = user.providerData.some(
-		(provider) => provider.providerId === 'google.com'
+		(provider) => provider.providerId === "google.com"
+	);
+
+	const isUsingApple = user.providerData.some(
+		(provider) => provider.providerId === "apple.com"
 	);
 
 	return (
@@ -70,17 +70,17 @@ const SettingScreen = ({ navigation }) => {
 					title="Your Account"
 					themeStyle={themeStyle}
 					items={[
-						!isUsingGoogle &&
-						{
-							name: "Change Password",
-							icon: "lock-closed-outline",
-							location: "ChangePassword",
-						},
 						{
 							name: "Edit Username",
 							icon: "create-outline",
 							location: "EditUsername",
 						},
+						!isUsingGoogle &&
+							!isUsingApple && {
+								name: "Change Password",
+								icon: "lock-closed-outline",
+								location: "ChangePassword",
+							},
 					]}
 					navigation={navigation}
 				/>
@@ -104,11 +104,11 @@ const SettingScreen = ({ navigation }) => {
 							icon: "notifications-outline",
 							location: "",
 						},
-						{
-							name: "Privacy Settings",
-							icon: "shield-outline",
-							location: "",
-						},
+						// {
+						// 	name: "Privacy Settings",
+						// 	icon: "shield-outline",
+						// 	location: "",
+						// },
 					]}
 					navigation={navigation}
 				/>
@@ -126,11 +126,6 @@ const SettingScreen = ({ navigation }) => {
 							name: "Privacy Policy",
 							icon: "lock-closed-outline",
 							location: "PrivacyPolicy",
-						},
-						{
-							name: "Help & Support",
-							icon: "help-circle-outline",
-							location: "HelpAndSupport",
 						},
 					]}
 					navigation={navigation}
@@ -163,15 +158,18 @@ function SettingsCategory({ title, items, navigation, themeStyle }) {
 		<View style={styles.categoryContainer}>
 			<Text style={styles.categoryTitle}>{title}</Text>
 			<View style={styles.cardContainer}>
-				{items.map((item, index) => item && (
-					<SettingsItem
-						key={index}
-						item={item}
-						navigation={navigation}
-						themeStyle={themeStyle}
-						isLast={index === items.length - 1}
-					/>
-				))}
+				{items.map(
+					(item, index) =>
+						item && (
+							<SettingsItem
+								key={index}
+								item={item}
+								navigation={navigation}
+								themeStyle={themeStyle}
+								isLast={index === items.length - 1}
+							/>
+						)
+				)}
 			</View>
 		</View>
 	);
