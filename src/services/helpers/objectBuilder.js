@@ -1,7 +1,6 @@
 import { FieldValue } from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
-
 export const buildExerciseObject = (selectedExercise) => {
 	const exercise = {
 		uniqueId: uuid.v4(),
@@ -56,7 +55,6 @@ export const buildMeasurementObject = (measurements, userId, unitSystem) => {
 		measurementId: uuid.v4(),
 		unitSystem: unitSystem,
 		createdAt: FieldValue.serverTimestamp(),
-		updatedAt: FieldValue.serverTimestamp(),
 	};
 
 	if (isNaN(measurementData.bodyFat)) {

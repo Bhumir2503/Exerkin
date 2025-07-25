@@ -12,39 +12,22 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useUser } from "../../contexts/UserContext";
 import { useMeasurement } from "../../contexts/MeasurementContext";
 
 import HeightModal from "./HeightModal";
 
 import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
+import { formatTimestampToShortDate } from "../../services/helpers/timestampFormatFunctions";
+
 const MeasurementScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
-	const { user } = useUser();
 	const styles = createStyles(themeStyle);
-	const { handleMeasurementSubmit } = useMeasurement();
+	const { handleMeasurementSubmit, measurements, setMeasurements } =
+		useMeasurement();
+
 
 	// State for measurements
-	const [measurements, setMeasurements] = useState({
-		weight: "",
-		height: "",
-		chest: "",
-		waist: "",
-		hips: "",
-		bicepsLeft: "",
-		bicepsRight: "",
-		thighLeft: "",
-		thighRight: "",
-		neckSize: "",
-		bodyFatPercentage: "",
-		age: "",
-		shoulder: "",
-		forearmLeft: "",
-		forearmRight: "",
-		calfLeft: "",
-		calfRight: "",
-	});
 
 	// Modal for measurement help
 	const [modalVisible, setModalVisible] = useState(false);
@@ -53,37 +36,6 @@ const MeasurementScreen = ({ navigation }) => {
 		description: "",
 		image: null,
 	});
-
-	// Mock function to load saved measurements
-	useEffect(() => {
-		// In a real app, you would fetch this data from your database
-		const loadSavedMeasurements = async () => {
-			// Mock data - replace with actual data fetching in your app
-			const savedData = {
-				weight: "180",
-				height: "70",
-				chest: "42",
-				waist: "34",
-				hips: "38",
-				bicepsLeft: "15",
-				bicepsRight: "15.5",
-				thighLeft: "24",
-				thighRight: "24",
-				neckSize: "16",
-				bodyFatPercentage: "18",
-				age: "32",
-				shoulder: "48",
-				forearmLeft: "11",
-				forearmRight: "11.5",
-				calfLeft: "16",
-				calfRight: "16.5",
-			};
-
-			setMeasurements(savedData);
-		};
-
-		loadSavedMeasurements();
-	}, []);
 
 	// Calculate body fat percentage using Navy method
 	useEffect(() => {
@@ -152,9 +104,7 @@ const MeasurementScreen = ({ navigation }) => {
 	};
 
 	const handleSave = () => {
-		// In a real app, you would save this data to your database
-		// For now, we'll just show an alert
-		handleMeasurementSubmit()
+		handleMeasurementSubmit();
 	};
 
 	// Show measurement guidance modal
@@ -241,7 +191,7 @@ const MeasurementScreen = ({ navigation }) => {
 				<View style={styles.inputContainer}>
 					<TextInput
 						style={styles.input}
-						value={measurements[key]}
+						value={measurements[key].toString()}
 						onChangeText={(text) => handleInputChange(key, text)}
 						keyboardType="decimal-pad"
 						maxLength={5}
@@ -298,7 +248,7 @@ const MeasurementScreen = ({ navigation }) => {
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
-								value={measurements.weight}
+								value={measurements.weight.toString()}
 								onChangeText={(text) =>
 									handleInputChange("weight", text)
 								}
@@ -308,31 +258,23 @@ const MeasurementScreen = ({ navigation }) => {
 							<Text style={styles.statUnit}>lbs</Text>
 						</View>
 					</View>
-
 					<View style={styles.statInputContainer}>
 						<Text style={styles.label}>Height</Text>
 						<View style={styles.statInputWrapper}>
-							<TouchableOpacity
-								style={[
-									styles.statInput,
-									{
-										display: "flex",
-										justifyContent: "flex-end",
-										flexDirection: "row",
-									},
-								]}
+							<TextInput
+								style={styles.statInput}
+								placeholder="0"
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
-								onPress={() => {
-									setShowModal(true);
-								}}
-							>
-								<Text style={styles.statUnit}>
-									{measurements.height}
-								</Text>
-								<Text style={styles.statUnit}>in</Text>
-							</TouchableOpacity>
+								value={measurements.height.toString()}
+								onChangeText={(text) =>
+									handleInputChange("height", text)
+								}
+								keyboardType="decimal-pad"
+								maxLength={5}
+							/>
+							<Text style={styles.statUnit}>lbs</Text>
 						</View>
 					</View>
 
@@ -345,7 +287,7 @@ const MeasurementScreen = ({ navigation }) => {
 								placeholderTextColor={
 									themeStyle.textColorSecondary
 								}
-								value={measurements.age}
+								value={measurements.age.toString()}
 								onChangeText={(text) =>
 									handleInputChange(
 										"age",
@@ -373,7 +315,7 @@ const MeasurementScreen = ({ navigation }) => {
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Neck",
-						"neckSize",
+						"neck",
 						"in",
 						"neckSize"
 					)}
@@ -406,37 +348,37 @@ const MeasurementScreen = ({ navigation }) => {
 				<Text style={styles.sectionTitleText}>Upper Body</Text>
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput("Chest", "chest")}
+					{renderMeasurementInput("Abdomen", "abdomen", "in", "abs")}
+				</View>
+
+				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Left Bicep",
-						"bicepsLeft",
+						"leftBicep",
 						"in",
 						"bicep"
 					)}
-				</View>
-
-				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Right Bicep",
-						"bicepsRight",
+						"rightBicep",
 						"in",
 						"bicep"
-					)}
-					{renderMeasurementInput(
-						"Left Forearm",
-						"forearmLeft",
-						"in",
-						"forearm"
 					)}
 				</View>
 
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
-						"Right Forearm",
-						"forearmRight",
+						"Left Forearm",
+						"leftForearm",
 						"in",
 						"forearm"
 					)}
-					<View style={styles.emptyMeasurement} />
+					{renderMeasurementInput(
+						"Right Forearm",
+						"rightForearm",
+						"in",
+						"forearm"
+					)}
 				</View>
 
 				{/* Lower body section */}
@@ -444,13 +386,13 @@ const MeasurementScreen = ({ navigation }) => {
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Left Thigh",
-						"thighLeft",
+						"leftThigh",
 						"in",
 						"thigh"
 					)}
 					{renderMeasurementInput(
 						"Right Thigh",
-						"thighRight",
+						"rightThigh",
 						"in",
 						"thigh"
 					)}
@@ -459,13 +401,13 @@ const MeasurementScreen = ({ navigation }) => {
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Left Calf",
-						"calfLeft",
+						"leftCalf",
 						"in",
 						"calf"
 					)}
 					{renderMeasurementInput(
 						"Right Calf",
-						"calfRight",
+						"rightCalf",
 						"in",
 						"calf"
 					)}
@@ -492,7 +434,8 @@ const MeasurementScreen = ({ navigation }) => {
 
 				{/* Last updated info */}
 				<Text style={styles.lastUpdatedText}>
-					Last updated: {new Date().toLocaleDateString()}
+					Last updated:{" "}
+					{formatTimestampToShortDate(measurements.createdAt)}
 				</Text>
 			</ScrollView>
 
