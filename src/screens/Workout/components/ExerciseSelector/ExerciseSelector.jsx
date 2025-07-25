@@ -200,10 +200,10 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 					style={[
 						styles.actionButton,
 						styles.addButton,
-						!selectedExercise && styles.disabledButton,
+						!selectedExercise.name && styles.disabledButton,
 					]}
 					onPress={handleAddExercise}
-					disabled={!selectedExercise}
+					disabled={!selectedExercise.name}
 				>
 					<Text style={styles.addButtonText}>Add to Workout</Text>
 				</TouchableOpacity>
