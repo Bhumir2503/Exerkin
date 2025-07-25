@@ -1,35 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Modal, TouchableWithoutFeedback } from "react-native";
-import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
+import {
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+	Modal,
+	TouchableWithoutFeedback,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutTimer } from "../../../contexts/workout/WorkoutTimerContext";
 import { useWorkoutMeta } from "../../../contexts/workout/WorkoutMetaContext";
 
-const presetDurations = [30, 60, 120, 180];
-const TIME_ADJUSTMENT = 15; // Amount to add/subtract in seconds
+const presetDurations = [30, 60, 120, 180, 300, 600, 1800];
 
 const RestTimer = () => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const {
-		isResting,
-		remainingRestTime,
-		setRemainingRestTime,
-		startRestTimer,
-		stopRestTimer,
-	} = useWorkoutTimer();
+	const { isResting, remainingRestTime, startRestTimer, stopRestTimer } =
+		useWorkoutTimer();
 	const { formTypeRef } = useWorkoutMeta();
 
 	const [modalVisible, setModalVisible] = useState(false);
 	const [selectedDuration, setSelectedDuration] = useState(60);
-	// Keep track of when the timer was last reset for proper key generation
-	const [timerKey, setTimerKey] = useState(0);
-
-	// Effect to reset the timer key when the timer starts/stops
-	useEffect(() => {
-		setTimerKey((prev) => prev + 1);
-	}, [isResting]);
 
 	const formatTime = (time) => {
 		const minutes = Math.floor(time / 60);
@@ -45,60 +38,22 @@ const RestTimer = () => {
 		return `${mins}m ${secs}s`;
 	};
 
-	// Function to add time to the timer
-	const addTime = () => {
-		if (isResting) {
-			// If timer is running, adjust the remaining time
-			setRemainingRestTime((prev) => prev + TIME_ADJUSTMENT);
-		} else {
-			// If timer is not running, adjust the selected duration
-			setSelectedDuration((prev) => prev + TIME_ADJUSTMENT);
-			setRemainingRestTime(selectedDuration + TIME_ADJUSTMENT);
-		}
-	};
-
-	// Function to subtract time from the timer
-	const subtractTime = () => {
-		if (isResting) {
-			// If timer is running, adjust the remaining time but don't go below 1
-			setRemainingRestTime((prev) => Math.max(1, prev - TIME_ADJUSTMENT));
-		} else {
-			// If timer is not running, adjust the selected duration
-			const newDuration = Math.max(
-				TIME_ADJUSTMENT,
-				selectedDuration - TIME_ADJUSTMENT
-			);
-			setSelectedDuration(newDuration);
-			setRemainingRestTime(newDuration);
-		}
-	};
-
-	// Reset timer when a preset is selected
-	const handlePresetSelection = (preset) => {
-		setSelectedDuration(preset);
-		setRemainingRestTime(preset);
-		setTimerKey((prev) => prev + 1); // Force timer component to reset
-	};
-
-	if (formTypeRef.current === "edit") {
-		return null; // Don't show the rest timer in template mode
-	}
+	if (formTypeRef.current === "edit") return null;
 
 	return (
 		<>
 			<TouchableOpacity
-				style={styles.restButton}
+				style={[styles.restButton, isResting && { width: 80 }]}
 				onPress={() => setModalVisible(true)}
 			>
 				<View style={styles.buttonContent}>
-					{!isResting && (
+					{!isResting ? (
 						<Ionicons
 							name="stopwatch-outline"
 							size={20}
 							color="#fff"
 						/>
-					)}
-					{isResting && (
+					) : (
 						<Text style={styles.restButtonText}>
 							{formatTime(remainingRestTime)}
 						</Text>
@@ -136,81 +91,9 @@ const RestTimer = () => {
 						</View>
 
 						<View style={styles.timerContainer}>
-							<CountdownCircleTimer
-								key={timerKey} // Add a key to properly reset the component
-								isPlaying={isResting}
-								duration={selectedDuration}
-								initialRemainingTime={remainingRestTime}
-								colors={[themeStyle.primary]}
-								trailColor={`${themeStyle.primary}20`}
-								size={200}
-								strokeWidth={15}
-								onComplete={() => {
-									stopRestTimer();
-									return { shouldRepeat: false };
-								}}
-							>
-								{() => (
-									<Text style={styles.timerText}>
-										{formatTime(remainingRestTime)}
-									</Text>
-								)}
-							</CountdownCircleTimer>
-						</View>
-
-						{/* Time adjustment buttons */}
-						<View style={styles.timeAdjustmentContainer}>
-							<TouchableOpacity
-								style={[
-									styles.timeAdjustButton,
-									// Apply disabled style if appropriate
-									isResting &&
-										remainingRestTime <= TIME_ADJUSTMENT &&
-										styles.disabledButton,
-								]}
-								onPress={subtractTime}
-								// Disable the button if we can't subtract any more time
-								disabled={
-									isResting &&
-									remainingRestTime <= TIME_ADJUSTMENT
-								}
-							>
-								<Ionicons
-									name="remove-circle"
-									size={30}
-									color={
-										isResting &&
-										remainingRestTime <= TIME_ADJUSTMENT
-											? themeStyle.disabled || "#666666"
-											: themeStyle.error
-									}
-								/>
-								<Text
-									style={[
-										styles.timeAdjustButtonText,
-										isResting &&
-											remainingRestTime <=
-												TIME_ADJUSTMENT &&
-											styles.disabledText,
-									]}
-								>
-									-{TIME_ADJUSTMENT}s
-								</Text>
-							</TouchableOpacity>
-
-							<TouchableOpacity
-								style={styles.timeAdjustButton}
-								onPress={addTime}
-							>
-								<Ionicons
-									name="add-circle"
-									size={30}
-									color={themeStyle.primary}
-								/>
-								<Text style={styles.timeAdjustButtonText}>
-									+{TIME_ADJUSTMENT}s
-								</Text>
-							</TouchableOpacity>
+							<Text style={styles.timerText}>
+								{formatTime(remainingRestTime)}
+							</Text>
 						</View>
 
 						<View style={styles.durationSelectorContainer}>
@@ -228,9 +111,9 @@ const RestTimer = () => {
 											isResting && styles.disabledButton,
 										]}
 										onPress={() =>
-											handlePresetSelection(preset)
+											setSelectedDuration(preset)
 										}
-										disabled={isResting} // Disable preset buttons when timer is running
+										disabled={isResting}
 									>
 										<Text
 											style={[
@@ -255,11 +138,8 @@ const RestTimer = () => {
 									styles.startButton,
 									isResting && styles.disabledControlButton,
 								]}
-								onPress={() => {
-									startRestTimer(selectedDuration);
-									setTimerKey((prev) => prev + 1); // Force timer reset when starting
-								}}
-								disabled={isResting} // Disable start button when already running
+								onPress={() => startRestTimer(selectedDuration)}
+								disabled={isResting}
 							>
 								<Text style={styles.controlButtonText}>
 									Start
@@ -271,11 +151,8 @@ const RestTimer = () => {
 									styles.resetButton,
 									!isResting && styles.disabledControlButton,
 								]}
-								onPress={() => {
-									stopRestTimer();
-									setTimerKey((prev) => prev + 1); // Force timer reset when stopping
-								}}
-								disabled={!isResting} // Disable stop button when not running
+								onPress={stopRestTimer}
+								disabled={!isResting}
 							>
 								<Text style={styles.controlButtonText}>
 									Stop
@@ -318,7 +195,7 @@ const createStyles = (themeStyle) =>
 			bottom: 0,
 			backgroundColor: "rgba(0, 0, 0, 0.75)",
 		},
-		centeredView: { 
+		centeredView: {
 			flex: 1,
 			justifyContent: "center",
 			alignItems: "center",
