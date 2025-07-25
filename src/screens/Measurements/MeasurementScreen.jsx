@@ -69,7 +69,7 @@ const MeasurementScreen = ({ navigation }) => {
 	// Navy method body fat calculation
 	const calculateBodyFat = () => {
 		// Convert measurements from string to number
-		const neckCm = parseFloat(measurements.neckSize) * 2.54;
+		const neckCm = parseFloat(measurements.neck) * 2.54;
 		const waistCm = parseFloat(measurements.waist) * 2.54;
 		const heightCm = parseFloat(measurements.height) * 2.54;
 
@@ -329,9 +329,7 @@ const MeasurementScreen = ({ navigation }) => {
 					<Text style={styles.bodyFatLabel}>Estimated Body Fat</Text>
 					<View style={styles.bodyFatResult}>
 						<Text style={styles.bodyFatValue}>
-							{measurements.bodyFatPercentage
-								? `${measurements.bodyFatPercentage}%`
-								: "N/A"}
+							{calculateBodyFat().toFixed(1)}%
 						</Text>
 						<Text style={styles.bodyFatNote}>
 							{measurements.bodyFatPercentage
