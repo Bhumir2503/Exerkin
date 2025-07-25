@@ -1,4 +1,4 @@
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet, Text, Image } from "react-native";
 import ReorderableList, {
 	reorderItems,
 	useReorderableDrag,
@@ -12,20 +12,36 @@ import CardioDistanceExercise from "./ExerciseCard/CardioDistanceExercise";
 import CardioTimeExercise from "./ExerciseCard/CardioTimeExercise";
 
 import { useWorkoutExercises } from "../../../contexts/workout/WorkoutExercisesContext";
+import { useWorkoutImage } from "../../../contexts/workout/WorkoutImageContext";
 
 const WorkoutDragList = () => {
 	const { workoutExercises, setWorkoutExercises } = useWorkoutExercises();
+	const { workoutImageURL } = useWorkoutImage();
 	const styles = createStyles();
 
 	if (!workoutExercises || workoutExercises.length === 0) {
+		if (!workoutImageURL) {
+			return (
+				<InfoCard
+					icon={"barbell-outline"}
+					title={"Get Started With Your Workout"}
+					message={
+						"Click the button below to select your first exercise. You can add multiple sets for each exercise and track your progress."
+					}
+				/>
+			);
+		}
 		return (
-			<InfoCard
-				icon={"barbell-outline"}
-				title={"Get Started With Your Workout"}
-				message={
-					"Click the button below to select your first exercise. You can add multiple sets for each exercise and track your progress."
-				}
-			/>
+			<View style={styles.imageConfirmation}>
+				<Image
+					source={{ uri: workoutImageURL }}
+					style={{
+						width: "100%",
+						height: 200,
+						borderRadius: 8,
+					}}
+				/>
+			</View>
 		);
 	}
 
@@ -44,6 +60,22 @@ const WorkoutDragList = () => {
 					renderItem={renderItem}
 					keyExtractor={(item) => item.exerciseId}
 					bounces={false}
+					ListHeaderComponent={
+						workoutImageURL ? (
+							<View style={styles.imageConfirmation}>
+								<Image
+									source={{ uri: workoutImageURL }}
+									style={{
+										width: "100%",
+										height: 200,
+										borderRadius: 8,
+									}}
+								/>
+							</View>
+						) : (
+							<View></View>
+						)
+					}
 				/>
 			</View>
 		</View>
@@ -72,7 +104,7 @@ const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
 			case "cardio-time":
 				return <CardioTimeExercise exercise={exercise} />;
 			default:
-				console.log("error rendering exercise")
+				console.log("error rendering exercise");
 				return null;
 		}
 	};
@@ -84,6 +116,17 @@ const createStyles = () => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
+		},
+		imageConfirmation: {
+			margin: "auto",
+
+			borderRadius: 8,
+
+			marginBottom: 10,
+			marginTop: 10,
+			width: "90%",
+			alignItems: "center",
+			display: "flex",
 		},
 	});
 };

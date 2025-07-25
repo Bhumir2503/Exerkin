@@ -5,6 +5,7 @@ import { WorkoutMetaProvider } from "./WorkoutMetaContext";
 import { WorkoutTimerProvider } from "./WorkoutTimerContext";
 import { WorkoutHistoryProvider } from "./WorkoutHistoryContext";
 import { WorkoutErrorProvider } from "./WorkoutErrorContext";
+import { WorkoutImageProvider } from "./WorkoutImageContext";
 
 const WorkoutProvider = ({ children }) => {
 	return (
@@ -14,7 +15,11 @@ const WorkoutProvider = ({ children }) => {
 					<WorkoutNotesProvider>
 						<WorkoutExercisesProvider>
 							<WorkoutHistoryProvider>
-								<WorkoutErrorProvider>{children}</WorkoutErrorProvider>
+								<WorkoutImageProvider>
+									<WorkoutErrorProvider>
+										{children}
+									</WorkoutErrorProvider>
+								</WorkoutImageProvider>
 							</WorkoutHistoryProvider>
 						</WorkoutExercisesProvider>
 					</WorkoutNotesProvider>

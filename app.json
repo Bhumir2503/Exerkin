@@ -33,7 +33,14 @@
 			"@react-native-firebase/auth",
 			"expo-apple-authentication",
 			"@react-native-google-signin/google-signin",
-			
+			[
+				"expo-image-picker",
+				{
+					"photosPermission": "Allow Exerkin to access your photos. This allows you to select images for your workouts.",
+					"cameraPermission": "Allow Exerkin to access your camera. This allows you to take photos for your workouts.",
+					"microphonePermission": "Allow Exerkin to access your microphone. This allows you to record audio for your workouts."
+				}
+			],
 			[
 				"expo-build-properties",
 				{
