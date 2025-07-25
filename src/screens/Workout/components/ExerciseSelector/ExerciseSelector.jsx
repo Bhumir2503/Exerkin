@@ -15,22 +15,23 @@ import {
 	exerciseCategories,
 	getExercisesByCategory,
 } from "../../../../services/constants/exerciseLibrary";
-import SelectionChips from "./components/SelectionChips"
+import SelectionChips from "./components/SelectionChips";
 
 import { buildExerciseObject } from "../../../../services/helpers/objectBuilder";
 import ExerciseList from "./components/ExerciseList";
 
-const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {
-	console.log("rerendered")
+import { useCustomExercises } from "../../../../contexts/CustomExerciseContext";
+
+const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
+	console.log("rerendered");
 	const { themeStyle } = useTheme();
 	const { workoutExercises, addExercise } = useWorkoutExercises();
-	const { blueprintExercises, addExerciseToBlueprint } = useBlueprintExercises();
+	const { blueprintExercises, addExerciseToBlueprint } =
+		useBlueprintExercises();
 
 	const styles = createStyles(themeStyle);
 
-	const SetSelectedCategory = (value) => {
-		setSelectedCategory(value);
-	}
+	const { customExercises } = useCustomExercises();
 
 	// State for search query
 	const [searchQuery, setSearchQuery] = useState("");
@@ -38,7 +39,7 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {
 	const [selectedCategory, setSelectedCategory] = useState([]);
 	// State for filtered exercises
 	//const [filteredExercises, setFilteredExercises] = useState(exercises);
-	filteredExercises = []
+	filteredExercises = [];
 	// Get array of already added exercise IDs
 
 	// State for selected exercise
@@ -55,37 +56,44 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {
 
 	// Filter exercises based on search, category, and already added exercises
 
-		let result = exercises;
-		const addedExerciseIds = getAddedExerciseIds();
+	let result = [...exercises, ...customExercises];
+	const addedExerciseIds = getAddedExerciseIds();
 
-		// Remove already added exercises from the list
-		result = result.filter(
-			(exercise) => !addedExerciseIds.includes(exercise.id)
-		);
+	// Remove already added exercises from the list
+	result = result.filter(
+		(exercise) => !addedExerciseIds.includes(exercise.id)
+	);
 
-		// Apply category filter
-		if (selectedCategory.length > 0) {
-			result = getExercisesByCategory(selectedCategory[0]).filter(
+	// Apply category filter
+	if (selectedCategory.length > 0) {
+		result = [
+			...getExercisesByCategory(selectedCategory[0]).filter(
 				(exercise) => !addedExerciseIds.includes(exercise.id)
-			);
-		}
-
-		// Apply search filter
-		if (searchQuery.trim()) {
-			const query = searchQuery.toLowerCase();
-			result = result.filter(
+			),
+			...customExercises.filter(
 				(exercise) =>
-					exercise.name.toLowerCase().includes(query) ||
-					exercise.categoryId.toLowerCase().includes(query) ||
-					exercise.equipment.some((eq) =>
-						eq.toLowerCase().includes(query)
-			));
-		}
+					!addedExerciseIds.includes(exercise.id) &&
+					selectedCategory.includes(exercise.categoryId)
+			),
+		];
+	}
 
-		//setFilteredExercises(result);
-		filteredExercises = result;
+	// Apply search filter
+	if (searchQuery.trim()) {
+		const query = searchQuery.toLowerCase();
+		console.log(result[0].categoryId.toLowerCase());
+		result = result.filter(
+			(exercise) =>
+				exercise.name.toLowerCase().includes(query) ||
+				exercise.categoryId.toLowerCase().includes(query) ||
+				exercise.equipment.some((eq) =>
+					eq.toLowerCase().includes(query)
+				)
+		);
+	}
 
-
+	//setFilteredExercises(result);
+	filteredExercises = result;
 
 	const handleAddExercise = () => {
 		if (selectedExercise) {
@@ -103,83 +111,84 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {
 
 	return (
 		<View style={styles.modalContent}>
-
 			{/* Header */}
 			<View style={styles.modalHeader}>
-				<Text style={styles.modalTitle}>
-					Select Exercise
-				</Text>
+				<Text style={styles.modalTitle}>Select Exercise</Text>
 
 				{/* Back button */}
 				<TouchableOpacity onPress={closeModal}>
-					<Ionicons name="close" size={24} color={themeStyle.textColor} />
+					<Ionicons
+						name="close"
+						size={24}
+						color={themeStyle.textColor}
+					/>
 				</TouchableOpacity>
 			</View>
-			
-			<View style={styles.modalCustomWorkout}>
+
+			{/* <View style={styles.modalCustomWorkout}>
 				<TouchableOpacity
 					style={{
 						display: "flex",
 						flexDirection: "row",
 						alignItems: "center",
-						}} 
+					}}
 					onPress={() => setCreatingExercise(true)}
 				>
-					<Ionicons
-						name="create-outline"
-						size={24}
-						color={"blue"}
-					/>
-					<Text style={styles.customWorkoutTitle}>Create a custom exercise</Text>
+					<Ionicons name="create-outline" size={24} color={"blue"} />
+					<Text style={styles.customWorkoutTitle}>
+						Create a custom exercise
+					</Text>
 				</TouchableOpacity>
-			</View>
+			</View> */}
 
 			{/* Search bar */}
 			<View style={styles.searchContainer}>
-				<Ionicons name="search" size={20} color={themeStyle.textColor} />
+				<Ionicons
+					name="search"
+					size={20}
+					color={themeStyle.textColor}
+				/>
 				<TextInput
 					style={styles.searchInput}
 					placeholder="Search exercises..."
-					placeholderTextColor={
-						themeStyle.textColorSecondary
-					}
+					placeholderTextColor={themeStyle.textColorSecondary}
 					value={searchQuery}
 					onChangeText={setSearchQuery}
 				/>
 
-				{searchQuery.length > 0 &&
+				{searchQuery.length > 0 && (
 					<TouchableOpacity onPress={() => setSearchQuery("")}>
-						<Ionicons name="close-circle" size={20} color={themeStyle.textColor} />
+						<Ionicons
+							name="close-circle"
+							size={20}
+							color={themeStyle.textColor}
+						/>
 					</TouchableOpacity>
-				}
+				)}
 			</View>
 
 			{/* Category filters */}
 			<SelectionChips
-				values={exerciseCategories} 
+				values={exerciseCategories}
 				selectedHook={selectedCategory}
 				setSelectedHook={setSelectedCategory}
 			/>
 
 			{/* List of exercises */}
-			<ExerciseList 
+			<ExerciseList
 				filteredExercises={filteredExercises}
-				selectedExercise={selectedExercise} 
+				selectedExercise={selectedExercise}
 				setSelectedExercise={setSelectedExercise}
+				setCreatingExercise={setCreatingExercise}
 			/>
 
 			{/* Action buttons */}
 			<View style={styles.actionContainer}>
 				<TouchableOpacity
-					style={[
-						styles.actionButton,
-						styles.cancelButton,
-					]}
+					style={[styles.actionButton, styles.cancelButton]}
 					onPress={closeModal}
 				>
-					<Text style={styles.cancelButtonText}>
-						Cancel
-					</Text>
+					<Text style={styles.cancelButtonText}>Cancel</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity
@@ -191,13 +200,11 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal}) => {
 					onPress={handleAddExercise}
 					disabled={!selectedExercise}
 				>
-					<Text style={styles.addButtonText}>
-						Add to Workout
-					</Text>
+					<Text style={styles.addButtonText}>Add to Workout</Text>
 				</TouchableOpacity>
 			</View>
 		</View>
-	)
+	);
 };
 
 const createStyles = (themeStyle) =>
