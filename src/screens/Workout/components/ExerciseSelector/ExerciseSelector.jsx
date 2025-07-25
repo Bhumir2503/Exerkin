@@ -21,6 +21,7 @@ import { buildExerciseObject } from "../../../../services/helpers/objectBuilder"
 import ExerciseList from "./components/ExerciseList";
 
 import { useCustomExercises } from "../../../../contexts/CustomExerciseContext";
+import { useWorkoutMeta } from "../../../../contexts/workout/WorkoutMetaContext";
 
 const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 	console.log("rerendered");
@@ -28,6 +29,8 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 	const { workoutExercises, addExercise } = useWorkoutExercises();
 	const { blueprintExercises, addExerciseToBlueprint } =
 		useBlueprintExercises();
+
+	const { isBlueprintRef, blueprintIdRef } = useWorkoutMeta();
 
 	const styles = createStyles(themeStyle);
 
@@ -98,6 +101,8 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 	const handleAddExercise = () => {
 		if (selectedExercise) {
 			if (type === "workout") {
+				isBlueprintRef.current = false;
+				blueprintIdRef.current = null;
 				const exercise = buildExerciseObject(selectedExercise);
 				console.log("exercise selector:", exercise);
 				addExercise(exercise);

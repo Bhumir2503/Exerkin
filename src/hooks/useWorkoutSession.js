@@ -76,6 +76,7 @@ export const useWorkoutSession = () => {
 		workoutEndTimeRef.current = Timestamp.now();
 
 		const workoutObject = getCurrentWorkoutObject();
+		console.log("Workout Object:", workoutObject);
 		try {
 			await saveWorkoutInFirestore(workoutObject);
 		} catch (error) {
@@ -129,7 +130,7 @@ export const useWorkoutSession = () => {
 		setWorkoutError(null);
 		setWorkoutTitle("");
 		setWorkoutNotes("");
-		setWorkoutImageURL("");
+		setWorkoutImageURL(null);
 		clearExercises();
 		resetWorkoutMeta();
 		resetRestTimer();

@@ -7,6 +7,7 @@ import { useUser } from "../contexts/UserContext";
 
 import uuid from "react-native-uuid";
 import { serverTimestamp } from "@react-native-firebase/firestore";
+import { updateWorkoutInFirestore } from "../services/firestore/firestoreWorkoutServices";
 import { saveBlueprintInFirestore } from "../services/firestore/firestoreBlueprintServices";
 
 export const useBlueprintSession = () => {
@@ -47,6 +48,31 @@ export const useBlueprintSession = () => {
 		cancelBlueprint();
 	};
 
+	const createBlueprintFromWorkout = (workout) => {
+		console.log(workout.exercises);
+
+		const blueprintObject = {
+			userId: userId,
+			blueprintId: uuid.v4(),
+			name: workout.name || "Untitled Workout",
+			notes: workout.notes,
+			exercises: workout.exercises || [],
+			unitSystem: unitSystem,
+			createdAt: serverTimestamp(),
+			updatedAt: serverTimestamp(),
+		};
+
+		workout.blueprintId = blueprintObject.blueprintId;
+		workout.isBlueprint = true;
+
+		try {
+			saveBlueprintInFirestore(blueprintObject);
+			updateWorkoutInFirestore(workout);
+		} catch (error) {
+			console.error("Error creating blueprint from workout:", error);
+		}
+	};
+
 	const cancelBlueprint = () => {
 		setBlueprintTitle("");
 		setBlueprintNotes("");
@@ -57,5 +83,6 @@ export const useBlueprintSession = () => {
 		startBlueprint,
 		finishBlueprint,
 		cancelBlueprint,
+		createBlueprintFromWorkout,
 	};
 };

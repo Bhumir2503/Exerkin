@@ -17,11 +17,13 @@ import {
 } from "../../../services/helpers/timestampFormatFunctions";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
+import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
 
 const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
 	const { removeWorkoutFromHistory } = useWorkoutHistory();
 	const { startEditWorkout, workoutIdRef } = useWorkoutSession();
+	const { createBlueprintFromWorkout } = useBlueprintSession();
 
 	const styles = createStyles(themeStyle);
 
@@ -42,7 +44,7 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 
 	const handleSaveAsTemplate = () => {
 		// Add save as template functionality here
-		console.log("Save as template:", selectedWorkout.workoutId);
+		createBlueprintFromWorkout(selectedWorkout);
 		// You would typically save the workout as a template in your app
 	};
 
@@ -80,16 +82,20 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 										: selectedWorkout.name}
 								</Text>
 								<View style={styles.actionButtons}>
-									<Pressable
-										style={styles.iconButton}
-										onPress={handleSaveAsTemplate}
-									>
-										<Ionicons
-											name="bookmark-outline"
-											size={24}
-											color={themeStyle.success || "#000"}
-										/>
-									</Pressable>
+									{!selectedWorkout.isBlueprint && (
+										<Pressable
+											style={styles.iconButton}
+											onPress={handleSaveAsTemplate}
+										>
+											<Ionicons
+												name="bookmark-outline"
+												size={24}
+												color={
+													themeStyle.success || "#000"
+												}
+											/>
+										</Pressable>
+									)}
 
 									<Pressable
 										style={{
