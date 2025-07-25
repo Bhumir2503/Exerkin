@@ -129,6 +129,7 @@ export const useWorkoutSession = () => {
 		setWorkoutError(null);
 		setWorkoutTitle("");
 		setWorkoutNotes("");
+		setWorkoutImageURL("");
 		clearExercises();
 		resetWorkoutMeta();
 		resetTimer();

@@ -75,9 +75,9 @@ const WorkoutHistory = ({ navigation }) => {
 										? truncateTitle(item.name)
 										: "Untitled Workout"}
 								</Text>
-								{item.syncStatus !== "synced" && (
+								{item.imageURL !== null && (
 									<Ionicons
-										name="cloud-offline-outline"
+										name="image-outline"
 										size={20}
 										color={themeStyle.accent}
 									/>

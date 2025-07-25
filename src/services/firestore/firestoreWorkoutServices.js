@@ -1,4 +1,5 @@
 import firestore from "@react-native-firebase/firestore";
+import storage from "@react-native-firebase/storage";
 const workoutsCollection = firestore().collection("workouts");
 
 /*
@@ -52,6 +53,15 @@ export const saveWorkoutInFirestore = async (workout) => {
 	try {
 		if (!workout.workoutId) {
 			throw new Error("Workout ID is required to save the workout.");
+		}
+
+		if (workout.imageURL) {
+			// If an image URL is provided, upload the image to Firebase Storage
+			const imageURL = await uploadWorkoutImage(
+				workout.workoutId,
+				workout.imageURL
+			);
+			workout.imageURL = imageURL; // Update the workout object with the new image URL
 		}
 
 		await workoutsCollection.doc(workout.workoutId).set(workout);
@@ -111,6 +121,8 @@ export const deleteWorkoutFromFirestore = async (workoutId) => {
 			throw new Error("Workout ID is required to delete the workout.");
 		}
 
+		await removeWorkoutImage(workoutId); // Remove the workout image if it exists
+
 		await workoutsCollection.doc(workoutId).delete();
 
 		console.log(
@@ -120,6 +132,62 @@ export const deleteWorkoutFromFirestore = async (workoutId) => {
 	} catch (error) {
 		console.error(
 			"(FirestoreWorkoutServices) - Error deleting workout in Firestore:",
+			error
+		);
+	}
+};
+
+/*
+ * Function to upload a workout image to Firebase Storage
+ *
+ * @param {string} workoutId - The ID of the workout for which the image is being uploaded
+ * @param {string} imageUri - The local URI of the image to be uploaded
+ * @returns {string|null} - Returns the image URL if upload is successful, otherwise null
+ */
+export const uploadWorkoutImage = async (workoutId, imageUri) => {
+	if (!workoutId || !imageUri) {
+		throw new Error("Workout ID and image URI are required for upload.");
+	}
+
+	try {
+		const reference = storage().ref(`workouts/${workoutId}/image.jpg`);
+		await reference.putFile(imageUri);
+		const imageURL = await reference.getDownloadURL();
+		console.log(
+			"(FirestoreWorkoutServices) - Workout image uploaded successfully:",
+			imageURL
+		);
+		return imageURL;
+	} catch (error) {
+		console.error(
+			"(FirestoreWorkoutServices) - Error uploading workout image:",
+			error
+		);
+		return null; // Return null if upload fails
+	}
+};
+
+/*
+ * Function to remove a workout image from Firebase Storage
+ *
+ * @param {string} workoutId - The ID of the workout whose image is being removed
+ * @throws {Error} - Throws an error if the workout ID is not provided or if there is an issue removing the image
+ */
+export const removeWorkoutImage = async (workoutId) => {
+	if (!workoutId) {
+		throw new Error("Workout ID is required to remove the image.");
+	}
+
+	try {
+		const reference = storage().ref(`workouts/${workoutId}/image.jpg`);
+		await reference.delete();
+		console.log(
+			"(FirestoreWorkoutServices) - Workout image removed successfully for workout:",
+			workoutId
+		);
+	} catch (error) {
+		console.error(
+			"(FirestoreWorkoutServices) - Error removing workout image:",
 			error
 		);
 	}
