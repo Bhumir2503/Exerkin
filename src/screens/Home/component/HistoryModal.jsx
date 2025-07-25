@@ -171,25 +171,25 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 							showsVerticalScrollIndicator={false}
 						>
 							<View>
-								{selectedWorkout.base64Image && (
+								{selectedWorkout.imageURL && (
 									<View
 										style={{
 											alignItems: "center",
-											marginVertical: 10,
+											width: "100%",
 										}}
 									>
 										<Image
 											source={{
-												uri: `data:image/jpeg;base64,${selectedWorkout.base64Image}`,
+												uri: selectedWorkout.imageURL,
 											}}
 											style={{
 												width: "100%",
-												aspectRatio: 3 / 4,
-												borderRadius: 12,
-												alignSelf: "center",
-												marginBottom: 10,
+												maxHeight: 400,
+												resizeMode: "stretch",
+												aspectRatio: 4 / 3,
+												marginBottom: 15,
+												borderRadius: 8,
 											}}
-											resizeMode="contain"
 										/>
 									</View>
 								)}

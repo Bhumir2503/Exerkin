@@ -13,8 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkoutMeta } from "../../contexts/workout/WorkoutMetaContext";
-import { pickImageAsBase64 } from "./components/imagePicker";
+import { useWorkoutImage } from "../../contexts/workout/WorkoutImageContext";
 
 import Header from "./components/Header";
 import WorkoutDragList from "./components/WorkoutDragList";
@@ -27,9 +26,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
+	const { workoutImageURL } = useWorkoutImage();
 	const styles = createStyles(themeStyle);
-	const { base64Image } = useWorkoutMeta();
-	const [showPreview, setShowPreview] = useState(false);
 
 	const dismissKeyboard = () => {
 		Keyboard.dismiss();
@@ -55,66 +53,10 @@ const WorkoutModalScreen = ({ navigation }) => {
 								<ImageButton />
 							</View>
 						</View>
-
-						{base64Image ? (
-							<View style={styles.imageConfirmation}>
-								<TouchableOpacity
-									onPress={() => setShowPreview(true)}
-								>
-									<View
-										style={{
-											flexDirection: "row",
-											alignItems: "center",
-										}}
-									>
-										<Ionicons
-											name="image"
-											size={20}
-											color={themeStyle.primary}
-											style={{ marginRight: 6 }}
-										/>
-										<Text style={styles.imageUploadedText}>
-											Image uploaded! Click to preview.
-										</Text>
-									</View>
-								</TouchableOpacity>
-							</View>
-						) : (
-							<View style={styles.imageConfirmation}>
-								<Text style={styles.imageUploadedText}>
-									No image has been chosen yet.
-								</Text>
-							</View>
-						)}
-
 						<WorkoutDragList />
 					</KeyboardAvoidingView>
 
 					<Footer navigation={navigation} screen={"workout"} />
-					{base64Image && (
-						<Modal
-							visible={showPreview}
-							transparent={true}
-							animationType="fade"
-							onRequestClose={() => setShowPreview(false)}
-						>
-							<TouchableWithoutFeedback
-								onPress={() => setShowPreview(false)}
-							>
-								<View style={styles.modalOverlay}>
-									<View style={styles.imageWrapper}>
-										<Image
-											source={{
-												uri: `data:image/jpeg;base64,${base64Image}`,
-											}}
-											style={styles.fullScreenImage}
-											resizeMode="contain"
-										/>
-									</View>
-								</View>
-							</TouchableWithoutFeedback>
-						</Modal>
-					)}
 				</View>
 			</TouchableWithoutFeedback>
 		</SafeAreaView>
@@ -137,17 +79,7 @@ const createStyles = (themeStyle) => {
 			padding: 20,
 			paddingVertical: 10,
 		},
-		imageConfirmation: {
-			margin: "auto",
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 16,
-			marginBottom: 10,
-			marginTop: 10,
-			width: "90%",
-			alignItems: "center",
-			display: "flex",
-		},
+
 		imageUploadedText: {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,

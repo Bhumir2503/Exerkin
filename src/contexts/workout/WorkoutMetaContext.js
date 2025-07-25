@@ -17,8 +17,6 @@ export const WorkoutMetaProvider = ({ children }) => {
     const workoutStartTimeRef = useRef(null);
     const workoutEndTimeRef = useRef(null);
     const workoutCreatedAtRef = useRef(null);
-	const [imageURL, setImageURL] = useState(null);
-    const [base64Image, setBase64Image] = useState(null); //for realm right now
 	const [unitSystem, setUnitSystem] = useState(
         user?.unitSystem || "imperial"
 	);
@@ -31,8 +29,6 @@ export const WorkoutMetaProvider = ({ children }) => {
         workoutStartTimeRef.current = null;
         workoutEndTimeRef.current = null;
         workoutCreatedAtRef.current = null;
-        setImageURL(null);
-        setBase64Image(null);
         setUnitSystem(user?.unitSystem || "imperial");
         blueprintIdRef.current = null;
         isBlueprintRef.current = false;
@@ -47,18 +43,12 @@ export const WorkoutMetaProvider = ({ children }) => {
                 workoutStartTimeRef,
                 workoutEndTimeRef,
                 workoutCreatedAtRef,
-                imageURL,
-                setImageURL,
-                base64Image,
-                setBase64Image,
                 unitSystem,
                 setUnitSystem,
                 blueprintIdRef,
                 isBlueprintRef,
                 formTypeRef,
-
                 resetWorkoutMeta,
-
 			}}
 		>
 			{children}

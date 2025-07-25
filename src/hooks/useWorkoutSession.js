@@ -4,6 +4,7 @@ import { useWorkoutExercises } from "../contexts/workout/WorkoutExercisesContext
 import { useWorkoutTimer } from "../contexts/workout/WorkoutTimerContext";
 import { useWorkoutMeta } from "../contexts/workout/WorkoutMetaContext";
 import { useWorkoutHistory } from "../contexts/workout/WorkoutHistoryContext";
+import { useWorkoutImage } from "../contexts/workout/WorkoutImageContext";
 import { useWorkoutError } from "../contexts/workout/WorkoutErrorContext";
 import { useUser } from "../contexts/UserContext";
 
@@ -21,6 +22,7 @@ export const useWorkoutSession = () => {
 	const { workoutNotes, setWorkoutNotes } = useWorkoutNotes();
 	const { workoutExercises, setWorkoutExercises, clearExercises } =
 		useWorkoutExercises();
+	const { setWorkoutImageURL, workoutImageURL } = useWorkoutImage();
 	const { setWorkoutHistory } = useWorkoutHistory();
 	const { workoutTimer, resetTimer } = useWorkoutTimer();
 	const { setWorkoutError } = useWorkoutError();
@@ -29,10 +31,6 @@ export const useWorkoutSession = () => {
 		workoutStartTimeRef,
 		workoutEndTimeRef,
 		workoutCreatedAtRef,
-		imageURL,
-		setImageURL,
-		base64Image,
-		setBase64Image,
 		setUnitSystem,
 		blueprintIdRef,
 		isBlueprintRef,
@@ -49,9 +47,8 @@ export const useWorkoutSession = () => {
 			exercises: workoutExercises,
 			startedAt: workoutStartTimeRef.current,
 			completedAt: workoutEndTimeRef.current,
-			imageURL: imageURL,
-			base64Image: base64Image,
 			unitSystem: unitSystem,
+			imageURL: workoutImageURL,
 			isBlueprint: isBlueprintRef.current,
 			blueprintId: blueprintIdRef.current,
 			startedAt: workoutStartTimeRef.current,
@@ -100,8 +97,6 @@ export const useWorkoutSession = () => {
 		workoutCreatedAtRef.current = workout.createdAt;
 		blueprintIdRef.current = workout.blueprintId;
 		isBlueprintRef.current = workout.isBlueprint;
-		setImageURL(workout.imageURL);
-		setBase64Image(workout.base64Image);
 		setUnitSystem(workout.unitSystem);
 		setWorkoutExercises(workout.exercises);
 		formTypeRef.current = "edit";
@@ -134,6 +129,7 @@ export const useWorkoutSession = () => {
 		setWorkoutError(null);
 		setWorkoutTitle("");
 		setWorkoutNotes("");
+		setWorkoutImageURL("");
 		clearExercises();
 		resetWorkoutMeta();
 		resetTimer();
