@@ -24,7 +24,7 @@ export const useWorkoutSession = () => {
 		useWorkoutExercises();
 	const { setWorkoutImageURL, workoutImageURL } = useWorkoutImage();
 	const { setWorkoutHistory } = useWorkoutHistory();
-	const { workoutTimer, resetTimer } = useWorkoutTimer();
+	const { workoutTimer, resetRestTimer } = useWorkoutTimer();
 	const { setWorkoutError } = useWorkoutError();
 	const {
 		workoutIdRef,
@@ -132,7 +132,7 @@ export const useWorkoutSession = () => {
 		setWorkoutImageURL("");
 		clearExercises();
 		resetWorkoutMeta();
-		resetTimer();
+		resetRestTimer();
 	};
 
 	const startBlueprint = (blueprint) => {

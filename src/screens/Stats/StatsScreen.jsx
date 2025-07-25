@@ -229,8 +229,8 @@ const StatsScreen = ({ navigation }) => {
 			"Skull Crusher": "Arms",
 
 			"Sit Up": "Core",
-			Crunch: "Core",
-			Plank: "Core",
+			"Crunch": "Core",
+			"Plank": "Core",
 			"Russian Twist": "Core",
 			"Leg Raise": "Core",
 		};
@@ -742,7 +742,7 @@ const StatsScreen = ({ navigation }) => {
 			setViewMode("progress");
 		} else if (viewMode === "progress") {
 			setViewMode("best");
-		} 
+		}
 	};
 
 	const displayTimeRange = () => {
@@ -1533,7 +1533,7 @@ const StatsScreen = ({ navigation }) => {
 				</View>
 				<ScrollView
 					style={styles.scrollContainer}
-                    contentContainerStyle={{ paddingBottom: 75 }}
+					contentContainerStyle={{ paddingBottom: 75 }}
 					showsVerticalScrollIndicator={false}
 				>
 					{activeTab === "overview" && renderOverviewTab()}
@@ -1542,12 +1542,10 @@ const StatsScreen = ({ navigation }) => {
 					{activeTab === "body" && renderBodyFocusTab()}
 				</ScrollView>
 			</SafeAreaView>
-			<ActiveWorkoutBar
-				navigate={navigation.navigate}
-			/>
+			<ActiveWorkoutBar navigate={navigation.navigate} />
 		</View>
 	);
-}
+};
 
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
