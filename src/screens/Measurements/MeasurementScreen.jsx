@@ -18,14 +18,16 @@ import HeightModal from "./HeightModal";
 
 import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
-import { formatTimestampToShortDate } from "../../services/helpers/timestampFormatFunctions";
+import {
+	formatTimestampToShortDate,
+	formatTimeStamptoTimeString,
+} from "../../services/helpers/timestampFormatFunctions";
 
 const MeasurementScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 	const { handleMeasurementSubmit, measurements, setMeasurements } =
 		useMeasurement();
-
 
 	// State for measurements
 
@@ -313,12 +315,7 @@ const MeasurementScreen = ({ navigation }) => {
 				</View>
 
 				<View style={styles.measurementsRow}>
-					{renderMeasurementInput(
-						"Neck",
-						"neck",
-						"in",
-						"neckSize"
-					)}
+					{renderMeasurementInput("Neck", "neck", "in", "neckSize")}
 					{renderMeasurementInput("Waist", "waist")}
 				</View>
 
@@ -414,8 +411,8 @@ const MeasurementScreen = ({ navigation }) => {
 				</View>
 
 				<Text style={styles.privacyNote}>
-					Your measurements are private by default and only shared
-					when you choose to
+					Your measurements are private and not shared with anyone.
+					They are used solely to help you track your progress
 				</Text>
 
 				{/* Save Button */}
@@ -435,7 +432,8 @@ const MeasurementScreen = ({ navigation }) => {
 				{/* Last updated info */}
 				<Text style={styles.lastUpdatedText}>
 					Last updated:{" "}
-					{formatTimestampToShortDate(measurements.createdAt)}
+					{formatTimestampToShortDate(measurements.createdAt)} at{" "}
+					{formatTimeStamptoTimeString(measurements.createdAt)}
 				</Text>
 			</ScrollView>
 
