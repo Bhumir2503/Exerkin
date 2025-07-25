@@ -24,52 +24,37 @@ const CardioTimeExercise = ({ exercise }) => {
 		addSetToExercise(exercise.exerciseId, buildSetObject());
 	};
 
+	const formatTime = (digits) => {
+		if (digits.length <= 2) return digits;
+		if (digits.length <= 4)
+			return `${digits.slice(0, -2)}:${digits.slice(-2)}`;
+		return `${digits.slice(0, -4)}:${digits.slice(-4, -2)}:${digits.slice(
+			-2
+		)}`;
+	};
+
 	const handleTimeChange = (text, index) => {
-		const prevValue = exercise.sets[index]?.time || "";
+		const prevDigits = (exercise.sets[index]?.time || "").replace(
+			/[^0-9]/g,
+			""
+		);
+		const newDigits = text.replace(/[^0-9]/g, "");
 
-		if (text.length < prevValue.length) {
-			if (prevValue.endsWith(":")) {
-				const newValue = prevValue.slice(0, -2);
-				updateSetInExercise(exercise.exerciseId, index, {
-					...exercise.sets[index],
-					time: newValue !== "" ? newValue : null,
-				});
-				return;
-			} else {
-				const newValue = prevValue.slice(0, -1);
-				updateSetInExercise(exercise.exerciseId, index, {
-					...exercise.sets[index],
-					time: newValue !== "" ? newValue : null,
-				});
-				return;
-			}
+		let digitsToUse;
+
+		if (newDigits.length < prevDigits.length) {
+			// Deletion occurred — remove last digit
+			digitsToUse = prevDigits.slice(0, -1);
+		} else {
+			// Addition — add valid digits only
+			digitsToUse = newDigits;
 		}
 
-		let number = text.replace(/[^0-9:]/g, "");
-
-		if (number) {
-			const digits = number.replace(/:/g, "");
-
-			if (digits.length <= 2) {
-				number = digits;
-			} else if (digits.length <= 4) {
-				const minutes = digits.slice(0, digits.length - 2);
-				const seconds = digits.slice(digits.length - 2);
-				number = `${minutes}:${seconds}`;
-			} else {
-				const seconds = digits.slice(digits.length - 2);
-				const minutes = digits.slice(
-					digits.length - 4,
-					digits.length - 2
-				);
-				const hours = digits.slice(0, digits.length - 4);
-				number = `${hours}:${minutes}:${seconds}`;
-			}
-		}
+		const formatted = formatTime(digitsToUse);
 
 		updateSetInExercise(exercise.exerciseId, index, {
 			...exercise.sets[index],
-			time: number !== "" ? number : null,
+			time: formatted !== "" ? formatted : null,
 		});
 	};
 

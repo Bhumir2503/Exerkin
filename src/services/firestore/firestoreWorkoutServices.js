@@ -115,14 +115,15 @@ export const updateWorkoutInFirestore = async (workout) => {
  * @param {string} workoutId - The ID of the workout to be deleted
  * @throws {Error} - Throws an error if the workout ID is not provided or if there is an issue deleting the workout
  */
-export const deleteWorkoutFromFirestore = async (workoutId) => {
+export const deleteWorkoutFromFirestore = async (workoutId, image) => {
 	try {
 		if (!workoutId) {
 			throw new Error("Workout ID is required to delete the workout.");
 		}
 
-		await removeWorkoutImage(workoutId); // Remove the workout image if it exists
-
+		if (image) {
+			await removeWorkoutImage(workoutId); // Remove the workout image if it exists
+		}
 		await workoutsCollection.doc(workoutId).delete();
 
 		console.log(

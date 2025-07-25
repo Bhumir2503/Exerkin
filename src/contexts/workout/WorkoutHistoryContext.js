@@ -23,7 +23,13 @@ export const WorkoutHistoryProvider = ({ children }) => {
 	}, [userId]);
 
 	const removeWorkoutFromHistory = (workout) => {
-		deleteWorkoutFromFirestore(workout.workoutId);
+		let image = false;
+		if (workout.imageURL) {
+			// Optionally, handle image deletion if needed
+			// deleteWorkoutImage(workout.imageURL);
+			image = true;
+		}
+		deleteWorkoutFromFirestore(workout.workoutId, image);
 	};
 
 	return (
