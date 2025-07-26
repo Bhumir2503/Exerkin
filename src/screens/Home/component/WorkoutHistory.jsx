@@ -75,13 +75,23 @@ const WorkoutHistory = ({ navigation }) => {
 										? truncateTitle(item.name)
 										: "Untitled Workout"}
 								</Text>
-								{item.imageURL !== null && (
-									<Ionicons
-										name="image-outline"
-										size={20}
-										color={themeStyle.accent}
-									/>
-								)}
+								<View style={{ flexDirection: "row" }}>
+									{item.imageURL !== null && (
+										<Ionicons
+											name="image"
+											size={20}
+											color={themeStyle.accent}
+										/>
+									)}
+									{item.isBlueprint && (
+										<Ionicons
+											name="bookmark"
+											size={20}
+											color={themeStyle.accent}
+											style={{ marginLeft: 8 }}
+										/>
+									)}
+								</View>
 							</View>
 							<Text style={styles.workoutDate}>
 								Completed:{" "}
