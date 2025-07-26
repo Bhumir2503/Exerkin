@@ -79,7 +79,7 @@ export const MeasurementProvider = ({ children }) => {
 			value={{
 				measurements,
 				setMeasurements,
-				handleMeasurementChange,
+				handleMeasurementChange, 
 				handleMeasurementSubmit,
 			}}
 		>

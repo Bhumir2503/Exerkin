@@ -72,9 +72,14 @@ const MeasurementScreen = ({ navigation }) => {
 	// Navy method body fat calculation
 	const calculateBodyFat = () => {
 		// Convert measurements from string to number
-		const neckCm = parseFloat(measurements.neck) * 2.54;
-		const waistCm = parseFloat(measurements.waist) * 2.54;
-		const heightCm = parseFloat(measurements.height) * 2.54;
+		let neckCm = parseFloat(measurements.neck);
+		let waistCm = parseFloat(measurements.waist);
+		let heightCm = parseFloat(measurements.height);
+		if (unitSystem === "imperial") {
+			neckCm = parseFloat(measurements.neck) * 2.54;
+			waistCm = parseFloat(measurements.waist) * 2.54;
+			heightCm = parseFloat(measurements.height) * 2.54;
+		}
 
 		if (isFemale()) {
 			// Female formula (requires hips)
