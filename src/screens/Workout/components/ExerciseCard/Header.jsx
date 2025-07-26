@@ -24,6 +24,7 @@ const Header = ({ repetitionType, metrics }) => {
 						{metric}
 					</Text>
 				))}
+				<View style={{ marginLeft: 10, width: 30 }}></View>
 			</View>
 		</View>
 	);

@@ -4,6 +4,7 @@ import {
 	TextInput,
 	StyleSheet,
 	TouchableOpacity,
+	Pressable,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../contexts/ThemeContext";
@@ -12,19 +13,22 @@ import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercis
 
 const UserInputSection = ({
 	id,
+	setId,
 	index,
 	inputTypes,
 	placeholders,
 	functions,
 	lengths,
 	values,
+	completed = false,
+	onCompleteSet,
 }) => {
 	const { removeSetFromExercise } = useWorkoutExercises();
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
 	const handleDelete = () => {
-		removeSetFromExercise(id, index); // Call the function to remove the set from the exercise
+		removeSetFromExercise(id, setId); // Call the function to remove the set from the exercise
 	};
 
 	// Render swipe right actions - this is what appears when the user swipes
@@ -56,10 +60,8 @@ const UserInputSection = ({
 			rightThreshold={100} // Adjust this value to set the threshold
 			onSwipeableRightOpen={() => handleDelete()}
 			onSwipeableOpen={(direction) => {
-				if (direction === "right") {
-					// Auto-close the swipeable after deletion
-					if (swipeableRef) swipeableRef.close();
-				}
+				// Auto-close the swipeable after deletion
+				if (swipeableRef) swipeableRef.close();
 			}}
 		>
 			<View style={styles.setRows}>
@@ -93,6 +95,28 @@ const UserInputSection = ({
 							}
 						/>
 					))}
+					<Pressable
+						onPress={() => onCompleteSet(setId)}
+						style={{
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<Ionicons
+							name={completed ? "checkbox" : "checkbox-outline"}
+							size={24}
+							color={
+								completed
+									? themeStyle.success
+									: themeStyle.textColor
+							}
+							style={{
+								marginLeft: 10,
+								width: 30,
+								alignSelf: "center",
+							}}
+						/>
+					</Pressable>
 				</View>
 			</View>
 		</Swipeable>
