@@ -6,6 +6,7 @@ import WorkoutModalScreen from "../screens/Workout/WorkoutModalScreen";
 
 import UpdateEmail from "../screens/Home/UpdateEmail";
 import ChangePassword from "../screens/Home/ChangePassword";
+import ChangeUnitSystem from "../screens/Home/ChangeUnitSystem";
 import EditUsername from "../screens/Home/EditUsername";
 
 import ThemeScreen from "../screens/Home/ThemeScreen";
@@ -57,6 +58,10 @@ export default function HomeNavigator() {
 			<Stack.Screen name="TermsOfService" component={TermsOfService} />
 			<Stack.Screen name="UpdateEmail" component={UpdateEmail} />
 			<Stack.Screen name="ChangePassword" component={ChangePassword} />
+			<Stack.Screen
+				name="ChangeUnitSystem"
+				component={ChangeUnitSystem}
+			/>
 			<Stack.Screen name="EditUsername" component={EditUsername} />
 		</Stack.Navigator>
 	);
