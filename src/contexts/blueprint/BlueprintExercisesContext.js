@@ -62,18 +62,34 @@ export const BlueprintExercisesProvider = ({ children }) => {
 		);
 	}, []);
 
+	const updateUnitSystemInExercise = useCallback(
+		(exerciseId, newUnitSystem) => {
+			setBlueprintExercises((prev) =>
+				prev.map((ex) =>
+					ex.exerciseId === exerciseId
+						? { ...ex, unitSystem: newUnitSystem }
+						: ex
+				)
+			);
+		},
+		[]
+	);
+
 	return (
-		<BlueprintExercisesContext.Provider value={{
-            blueprintExercises,
-            setBlueprintExercises,
-            addExerciseToBlueprint,
-            updateExercise,
-            removeExercise,
-            clearExercises,
-            addSetToExercise,
-            updateSetInExercise,
-            removeSetFromExercise,
-        }}>
+		<BlueprintExercisesContext.Provider
+			value={{
+				blueprintExercises,
+				setBlueprintExercises,
+				addExerciseToBlueprint,
+				updateExercise,
+				removeExercise,
+				clearExercises,
+				addSetToExercise,
+				updateSetInExercise,
+				removeSetFromExercise,
+				updateUnitSystemInExercise,
+			}}
+		>
 			{children}
 		</BlueprintExercisesContext.Provider>
 	);

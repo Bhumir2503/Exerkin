@@ -26,7 +26,7 @@ const BlueprintDragList = () => {
 				message={
 					"Click the button below to select your first exercise. You can add multiple sets for each exercise and track your progress."
 				}
-				width = {"100%"}
+				width={"100%"}
 			/>
 		);
 	}
@@ -52,13 +52,14 @@ const BlueprintDragList = () => {
 	);
 };
 
-const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
+const Card = ({ exerciseId, name, sets, notes, exerciseType, unitSystem }) => {
 	const drag = useReorderableDrag();
 	const exercise = {
 		exerciseId,
 		name,
 		sets,
 		notes,
+		unitSystem,
 	};
 
 	const renderExercise = () => {

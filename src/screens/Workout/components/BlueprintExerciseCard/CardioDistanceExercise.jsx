@@ -16,8 +16,12 @@ import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 const CardioDistanceExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExercise } =
-		useBlueprintExercises();
+	const {
+		addSetToExercise,
+		updateSetInExercise,
+		removeExercise,
+		updateUnitSystemInExercise,
+	} = useBlueprintExercises();
 
 	const addSet = () => {
 		// Add a new set with null values for time and distance
@@ -101,6 +105,19 @@ const CardioDistanceExercise = ({ exercise }) => {
 		removeExercise(exercise.exerciseId);
 	};
 
+	const handleUnitChange = () => {
+		const newUnitSystem =
+			exercise.unitSystem === "imperial" ? "metric" : "imperial";
+		updateUnitSystemInExercise(exercise.exerciseId, newUnitSystem);
+	};
+
+	const getMetrics = () => {
+		if (exercise.unitSystem === "imperial") {
+			return ["time", "mi"];
+		}
+		return ["time", "km"];
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
@@ -121,6 +138,24 @@ const CardioDistanceExercise = ({ exercise }) => {
 						}}
 					>
 						<MenuOption
+							onSelect={handleUnitChange}
+							style={styles.menuOptionContainer}
+						>
+							<Ionicons
+								name="scale-outline"
+								size={18}
+								color={themeStyle.textColorSecondary}
+							/>
+							<Text
+								style={[
+									styles.menuOption,
+									{ color: themeStyle.textColorSecondary },
+								]}
+							>
+								Change Unit System
+							</Text>
+						</MenuOption>
+						<MenuOption
 							onSelect={handleDeleteExercise}
 							style={styles.menuOptionContainer}
 						>
@@ -136,7 +171,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 					</MenuOptions>
 				</Menu>
 			</View>
-			<Header repetitionType={"Round"} metrics={["time", "miles"]} />
+			<Header repetitionType={"Round"} metrics={getMetrics()} />
 			{exercise.sets.map((set, index) => (
 				<UserInputSection
 					key={index}
@@ -203,6 +238,9 @@ const createStyles = (themeStyle) => {
 			alignItems: "center",
 			marginLeft: -25,
 			marginTop: 15,
+			borderRadius: 8,
+			borderWidth: 1,
+			borderColor: themeStyle.textColorSecondary,
 		},
 		menuOptionContainer: {
 			flexDirection: "row",

@@ -21,64 +21,71 @@ export const WorkoutExercisesProvider = ({ children }) => {
 		);
 	}, []);
 
-    const clearExercises = useCallback(() => {
-        setWorkoutExercises([]);
-    }
-    , []);
+	const clearExercises = useCallback(() => {
+		setWorkoutExercises([]);
+	}, []);
 
-    const addSetToExercise = useCallback((exerciseId, set) => {
-        setWorkoutExercises((prev) =>
-            prev.map((ex) =>
-                ex.exerciseId === exerciseId
-                    ? { ...ex, sets: [...ex.sets, set] }
-                    : ex
-            )
-        );
-    }, []);
+	const addSetToExercise = useCallback((exerciseId, set) => {
+		setWorkoutExercises((prev) =>
+			prev.map((ex) =>
+				ex.exerciseId === exerciseId
+					? { ...ex, sets: [...ex.sets, set] }
+					: ex
+			)
+		);
+	}, []);
 
-    const updateSetInExercise = useCallback((exerciseId, setIndex, set) => {
-        setWorkoutExercises((prev) =>
-            prev.map((ex) =>
-                ex.exerciseId === exerciseId
-                    ? {
-                          ...ex,
-                          sets: ex.sets.map((prevSet, index) =>
-                              index === setIndex ? set : prevSet
-                          ),
-                      }
-                    : ex
-            )
-        );
-    }
-    , []);
+	const updateSetInExercise = useCallback((exerciseId, setIndex, set) => {
+		setWorkoutExercises((prev) =>
+			prev.map((ex) =>
+				ex.exerciseId === exerciseId
+					? {
+							...ex,
+							sets: ex.sets.map((prevSet, index) =>
+								index === setIndex ? set : prevSet
+							),
+					  }
+					: ex
+			)
+		);
+	}, []);
 
-    const removeSetFromExercise = useCallback((exerciseId, setIndex) => {
-        setWorkoutExercises((prev) =>
-            prev.map((ex) =>
-                ex.exerciseId === exerciseId
-                    ? {
-                          ...ex,
-                          sets: ex.sets.filter((_, index) => index !== setIndex),
-                      }
-                    : ex
-            )
-        );
-    }
-    , []);
+	const removeSetFromExercise = useCallback((exerciseId, setIndex) => {
+		setWorkoutExercises((prev) =>
+			prev.map((ex) =>
+				ex.exerciseId === exerciseId
+					? {
+							...ex,
+							sets: ex.sets.filter(
+								(_, index) => index !== setIndex
+							),
+					  }
+					: ex
+			)
+		);
+	}, []);
 
+	const updateUnitSystemInExercise = useCallback((exerciseId, unitSystem) => {
+		setWorkoutExercises((prev) =>
+			prev.map((ex) =>
+				ex.exerciseId === exerciseId ? { ...ex, unitSystem } : ex
+			)
+		);
+	}, []);
 
 	return (
 		<WorkoutExercisesContext.Provider
 			value={{
 				workoutExercises,
-                setWorkoutExercises,
+				setWorkoutExercises,
 				addExercise,
 				updateExercise,
 				removeExercise,
-                clearExercises,
-                addSetToExercise,
-                updateSetInExercise,
-                removeSetFromExercise,
+				clearExercises,
+				addSetToExercise,
+				updateSetInExercise,
+				removeSetFromExercise,
+				updateUnitSystemInExercise,
 			}}
 		>
 			{children}

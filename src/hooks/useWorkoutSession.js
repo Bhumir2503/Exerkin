@@ -64,6 +64,7 @@ export const useWorkoutSession = () => {
 		workoutStartTimeRef.current = Timestamp.now();
 		workoutEndTimeRef.current = null;
 		formTypeRef.current = "workout";
+		setUnitSystem(unitSystem);
 	};
 
 	const finishWorkout = async () => {
@@ -100,6 +101,7 @@ export const useWorkoutSession = () => {
 		isBlueprintRef.current = workout.isBlueprint;
 		setUnitSystem(workout.unitSystem);
 		setWorkoutExercises(workout.exercises);
+		setWorkoutImageURL(workout.imageURL);
 		formTypeRef.current = "edit";
 	};
 
