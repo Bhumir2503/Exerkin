@@ -21,9 +21,12 @@ import {
 } from "../../../../services/constants/exerciseLibrary";
 import SelectionChips from "./components/SelectionChips";
 
+import { useUser } from "../../../../contexts/UserContext";
+
 function ExerciseCreator({ setCreatingExercise, closeModal, type }) {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
+	const { unitSystem } = useUser();
 
 	const { workoutExercises, addExercise } = useWorkoutExercises();
 	const { blueprintExercises, addExerciseToBlueprint } =
@@ -82,11 +85,11 @@ function ExerciseCreator({ setCreatingExercise, closeModal, type }) {
 
 		if (type === "workout") {
 			addCustomExercise(selectedExercise);
-			const exercise = buildExerciseObject(selectedExercise);
+			const exercise = buildExerciseObject(selectedExercise, unitSystem);
 			addExercise(exercise);
 		} else if (type === "blueprint") {
 			addCustomExercise(selectedExercise);
-			const exercise = buildExerciseObject(selectedExercise);
+			const exercise = buildExerciseObject(selectedExercise, unitSystem);
 			addExerciseToBlueprint(exercise);
 		}
 		setCreatingExercise(false);

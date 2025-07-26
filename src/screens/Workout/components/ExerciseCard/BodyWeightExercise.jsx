@@ -16,7 +16,8 @@ import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercis
 const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExercise } = useWorkoutExercises();
+	const { addSetToExercise, updateSetInExercise, removeExercise } =
+		useWorkoutExercises();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
@@ -36,7 +37,7 @@ const BodyWeightExercise = ({ exercise }) => {
 
 	const handleDeleteExercise = () => {
 		removeExercise(exercise.exerciseId);
-	}
+	};
 
 	return (
 		<View style={styles.container}>
@@ -140,6 +141,9 @@ const createStyles = (themeStyle) => {
 			alignItems: "center",
 			marginLeft: -25,
 			marginTop: 15,
+			borderRadius: 8,
+			borderWidth: 1,
+			borderColor: themeStyle.textColorSecondary,
 		},
 		menuOptionContainer: {
 			flexDirection: "row",

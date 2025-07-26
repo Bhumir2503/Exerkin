@@ -1,14 +1,15 @@
 import { FieldValue } from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
-export const buildExerciseObject = (selectedExercise) => {
+
+export const buildExerciseObject = (selectedExercise, unitSystem) => {
 	const exercise = {
-		uniqueId: uuid.v4(),
 		exerciseId: selectedExercise.id,
 		name: selectedExercise.name,
 		sets: [buildSetObject()],
 		notes: null,
 		exerciseType: selectedExercise.type,
+		unitSystem: unitSystem,
 	};
 
 	return exercise;
@@ -16,13 +17,11 @@ export const buildExerciseObject = (selectedExercise) => {
 
 export const buildSetObject = () => {
 	const set = {
-		setId: uuid.v4(),
 		weight: null,
 		time: null,
 		distance: null,
 		reps: null,
 		completed: false,
-		notes: null,
 		setType: null,
 	};
 	return set;
@@ -50,7 +49,6 @@ export const buildMeasurementObject = (measurements, userId, unitSystem) => {
 		neck: parseFloat(measurements.neck, 10),
 		shoulder: parseFloat(measurements.shoulder, 10),
 		bodyFat: parseFloat(measurements.bodyFat, 10),
-
 		userId: userId,
 		measurementId: uuid.v4(),
 		unitSystem: unitSystem,

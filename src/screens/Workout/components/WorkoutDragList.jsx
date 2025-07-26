@@ -82,13 +82,14 @@ const WorkoutDragList = () => {
 	);
 };
 
-const Card = ({ exerciseId, name, sets, notes, exerciseType }) => {
+const Card = ({ exerciseId, name, sets, notes, exerciseType, unitSystem }) => {
 	const drag = useReorderableDrag();
 	const exercise = {
 		exerciseId,
 		name,
 		sets,
 		notes,
+		unitSystem,
 	};
 
 	const renderExercise = () => {

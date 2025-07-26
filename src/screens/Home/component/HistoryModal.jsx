@@ -7,7 +7,6 @@ import {
 	Text,
 	Pressable,
 	Image,
-	TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
@@ -229,25 +228,45 @@ const ExerciseCard = ({ exercise }) => {
 	// Function to render set information based on exercise type
 	const renderSetInfo = (set) => {
 		if (exercise.type === "weightlifting") {
-			return `${set.weight || 0} lbs × ${set.reps || 0} reps`;
+			return `${set.weight || 0} ${
+				exercise.unitSystem === "imperial" ? "lbs" : "kgs"
+			} × ${set.reps || 0} reps`;
 		} else if (exercise.type === "bodyweight") {
 			return `${set.reps || 0} reps`;
 		} else if (exercise.type === "cardio-distance") {
-			return `${set.time || "0:00"} - ${set.distance || 0} miles`;
+			return `${set.time || "0:00"} - ${set.distance || 0} ${
+				exercise.unitSystem === "imperial" ? "mi" : "km"
+			}`;
 		} else if (exercise.type === "cardio-time") {
 			return `${set.time || "0:00"}`;
 		} else if (exercise.type === "assisted-weight") {
-			return `-${set.weight || 0} lbs × ${set.reps || 0} reps`;
+			return `-${set.weight || 0} ${
+				exercise.unitSystem === "imperial" ? "-lbs" : "-kgs"
+			} × ${set.reps || 0} reps`;
 		}
 
 		// Default fallback if type is unknown or undefined
 		if (set.weight && set.reps) {
-			return `${set.weight} lbs × ${set.reps} reps`;
+			return `${set.weight} ${
+				exercise.unitSystem === "imperial" ? "lbs" : "kgs"
+			} × ${set.reps} reps`;
 		} else if (set.reps) {
 			return `${set.reps} reps`;
 		} else if (set.time) {
 			return `${set.time}${
-				set.distance ? ` - ${set.distance} miles` : ""
+				set.distance
+					? ` - ${set.distance} ${
+							exercise.unitSystem === "imperial" ? "mi" : "km"
+					  }`
+					: ""
+			}`;
+		} else if (set.distance) {
+			return `${set.distance} ${
+				exercise.unitSystem === "imperial" ? "mi" : "km"
+			}`;
+		} else if (set.weight) {
+			return `${set.weight} ${
+				exercise.unitSystem === "imperial" ? "lbs" : "kgs"
 			}`;
 		}
 

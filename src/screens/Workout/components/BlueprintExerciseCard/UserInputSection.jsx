@@ -23,7 +23,7 @@ const UserInputSection = ({
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-	const handleDelete = (index) => {
+	const handleDelete = () => {
 		removeSetFromExercise(id, index); // Call the function to remove the set from the exercise
 	};
 
@@ -32,7 +32,7 @@ const UserInputSection = ({
 		return (
 			<TouchableOpacity
 				style={styles.deleteAction}
-				onPress={() => handleDelete(id, index)}
+				onPress={() => handleDelete()}
 			>
 				<Ionicons
 					name="trash"

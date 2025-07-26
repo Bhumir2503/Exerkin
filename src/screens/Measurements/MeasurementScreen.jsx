@@ -6,15 +6,13 @@ import {
 	TextInput,
 	TouchableOpacity,
 	ScrollView,
-	Alert,
 	Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useMeasurement } from "../../contexts/MeasurementContext";
-
-import HeightModal from "./HeightModal";
+import { useUser } from "../../contexts/UserContext";
 
 import ActiveWorkoutBar from "../Workout/components/ActiveWorkoutBar";
 
@@ -28,6 +26,8 @@ const MeasurementScreen = ({ navigation }) => {
 	const styles = createStyles(themeStyle);
 	const { handleMeasurementSubmit, measurements, setMeasurements } =
 		useMeasurement();
+
+	const { gender, unitSystem } = useUser();
 
 	// State for measurements
 
@@ -63,15 +63,23 @@ const MeasurementScreen = ({ navigation }) => {
 	// Helper function to determine if user is female
 	const isFemale = () => {
 		// This would be replaced with actual gender from user context
+		if (gender === "female") {
+			return true;
+		}
 		return false;
 	};
 
 	// Navy method body fat calculation
 	const calculateBodyFat = () => {
 		// Convert measurements from string to number
-		const neckCm = parseFloat(measurements.neck) * 2.54;
-		const waistCm = parseFloat(measurements.waist) * 2.54;
-		const heightCm = parseFloat(measurements.height) * 2.54;
+		let neckCm = parseFloat(measurements.neck);
+		let waistCm = parseFloat(measurements.waist);
+		let heightCm = parseFloat(measurements.height);
+		if (unitSystem === "imperial") {
+			neckCm = parseFloat(measurements.neck) * 2.54;
+			waistCm = parseFloat(measurements.waist) * 2.54;
+			heightCm = parseFloat(measurements.height) * 2.54;
+		}
 
 		if (isFemale()) {
 			// Female formula (requires hips)
@@ -173,7 +181,7 @@ const MeasurementScreen = ({ navigation }) => {
 	const renderMeasurementInput = (
 		label,
 		key,
-		unit = "in",
+		unit = unitSystem === "imperial" ? "in" : "cm",
 		helpType = key
 	) => {
 		return (
@@ -206,16 +214,8 @@ const MeasurementScreen = ({ navigation }) => {
 		);
 	};
 
-	const [showModal, setShowModal] = useState(false);
-
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
-			{showModal && (
-				<HeightModal
-					setShowModal={setShowModal}
-					handleInputChange={handleInputChange}
-				/>
-			)}
 			<ScrollView
 				showsVerticalScrollIndicator={false}
 				contentContainerStyle={styles.scrollContent}
@@ -257,7 +257,9 @@ const MeasurementScreen = ({ navigation }) => {
 								keyboardType="decimal-pad"
 								maxLength={5}
 							/>
-							<Text style={styles.statUnit}>lbs</Text>
+							<Text style={styles.statUnit}>
+								{unitSystem === "imperial" ? "lbs" : "kg"}
+							</Text>
 						</View>
 					</View>
 					<View style={styles.statInputContainer}>
@@ -276,7 +278,9 @@ const MeasurementScreen = ({ navigation }) => {
 								keyboardType="decimal-pad"
 								maxLength={5}
 							/>
-							<Text style={styles.statUnit}>lbs</Text>
+							<Text style={styles.statUnit}>
+								{unitSystem === "imperial" ? "in" : "cm"}
+							</Text>
 						</View>
 					</View>
 
@@ -315,13 +319,33 @@ const MeasurementScreen = ({ navigation }) => {
 				</View>
 
 				<View style={styles.measurementsRow}>
-					{renderMeasurementInput("Neck", "neck", "in", "neckSize")}
-					{renderMeasurementInput("Waist", "waist")}
+					{renderMeasurementInput(
+						"Neck",
+						"neck",
+						unitSystem === "imperial" ? "in" : "cm",
+						"neckSize"
+					)}
+					{renderMeasurementInput(
+						"Waist",
+						"waist",
+						unitSystem === "imperial" ? "in" : "cm",
+						"waist"
+					)}
 				</View>
 
 				<View style={styles.measurementsRow}>
-					{renderMeasurementInput("Hips", "hips")}
-					{renderMeasurementInput("Shoulder", "shoulder")}
+					{renderMeasurementInput(
+						"Hips",
+						"hips",
+						unitSystem === "imperial" ? "in" : "cm",
+						"hips"
+					)}
+					{renderMeasurementInput(
+						"Shoulder",
+						"shoulder",
+						unitSystem === "imperial" ? "in" : "cm",
+						"shoulder"
+					)}
 				</View>
 
 				{/* Auto-calculated body fat */}
@@ -343,20 +367,25 @@ const MeasurementScreen = ({ navigation }) => {
 				<Text style={styles.sectionTitleText}>Upper Body</Text>
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput("Chest", "chest")}
-					{renderMeasurementInput("Abdomen", "abdomen", "in", "abs")}
+					{renderMeasurementInput(
+						"Abdomen",
+						"abdomen",
+						unitSystem === "imperial" ? "in" : "cm",
+						"abs"
+					)}
 				</View>
 
 				<View style={styles.measurementsRow}>
 					{renderMeasurementInput(
 						"Left Bicep",
 						"leftBicep",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"bicep"
 					)}
 					{renderMeasurementInput(
 						"Right Bicep",
 						"rightBicep",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"bicep"
 					)}
 				</View>
@@ -365,13 +394,13 @@ const MeasurementScreen = ({ navigation }) => {
 					{renderMeasurementInput(
 						"Left Forearm",
 						"leftForearm",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"forearm"
 					)}
 					{renderMeasurementInput(
 						"Right Forearm",
 						"rightForearm",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"forearm"
 					)}
 				</View>
@@ -382,13 +411,13 @@ const MeasurementScreen = ({ navigation }) => {
 					{renderMeasurementInput(
 						"Left Thigh",
 						"leftThigh",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"thigh"
 					)}
 					{renderMeasurementInput(
 						"Right Thigh",
 						"rightThigh",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"thigh"
 					)}
 				</View>
@@ -397,13 +426,13 @@ const MeasurementScreen = ({ navigation }) => {
 					{renderMeasurementInput(
 						"Left Calf",
 						"leftCalf",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"calf"
 					)}
 					{renderMeasurementInput(
 						"Right Calf",
 						"rightCalf",
-						"in",
+						unitSystem === "imperial" ? "in" : "cm",
 						"calf"
 					)}
 				</View>

@@ -22,15 +22,16 @@ import ExerciseList from "./components/ExerciseList";
 
 import { useCustomExercises } from "../../../../contexts/CustomExerciseContext";
 import { useWorkoutMeta } from "../../../../contexts/workout/WorkoutMetaContext";
+import { useUser } from "../../../../contexts/UserContext";
 
 const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
-	console.log("rerendered");
 	const { themeStyle } = useTheme();
 	const { workoutExercises, addExercise } = useWorkoutExercises();
 	const { blueprintExercises, addExerciseToBlueprint } =
 		useBlueprintExercises();
 
 	const { isBlueprintRef, blueprintIdRef } = useWorkoutMeta();
+	const { unitSystem } = useUser();
 
 	const styles = createStyles(themeStyle);
 
@@ -103,11 +104,17 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 			if (type === "workout") {
 				isBlueprintRef.current = false;
 				blueprintIdRef.current = null;
-				const exercise = buildExerciseObject(selectedExercise);
-				console.log("exercise selector:", exercise);
+				const exercise = buildExerciseObject(
+					selectedExercise,
+					unitSystem
+				);
 				addExercise(exercise);
 			} else if (type === "blueprint") {
-				const exercise = buildExerciseObject(selectedExercise);
+				const exercise = buildExerciseObject(
+					selectedExercise,
+					unitSystem
+				);
+
 				addExerciseToBlueprint(exercise);
 			}
 			closeModal();
@@ -129,22 +136,6 @@ const ExerciseSelector = ({ type, setCreatingExercise, closeModal }) => {
 					/>
 				</TouchableOpacity>
 			</View>
-
-			{/* <View style={styles.modalCustomWorkout}>
-				<TouchableOpacity
-					style={{
-						display: "flex",
-						flexDirection: "row",
-						alignItems: "center",
-					}}
-					onPress={() => setCreatingExercise(true)}
-				>
-					<Ionicons name="create-outline" size={24} color={"blue"} />
-					<Text style={styles.customWorkoutTitle}>
-						Create a custom exercise
-					</Text>
-				</TouchableOpacity>
-			</View> */}
 
 			{/* Search bar */}
 			<View style={styles.searchContainer}>

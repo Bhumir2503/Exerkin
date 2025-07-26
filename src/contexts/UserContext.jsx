@@ -134,6 +134,20 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	const updateUnitSystemPreference = async (unitSystem) => {
+		try {
+			await updateUserProfile(userId, {
+				"preferences.unitSystem": unitSystem,
+				updatedAt: firestore.FieldValue.serverTimestamp(),
+			});
+		} catch (error) {
+			console.error(
+				"(UserContext) - Error updating unit system preference:",
+				error
+			);
+		}
+	};
+
 	const resetUserState = () => {
 		changeTheme("midnightPurple");
 		setUser(null);
@@ -167,6 +181,7 @@ export const UserProvider = ({ children }) => {
 				userCreation,
 				updateUsername,
 				updateThemePreference,
+				updateUnitSystemPreference,
 			}}
 		>
 			{children}

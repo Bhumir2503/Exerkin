@@ -23,7 +23,7 @@ const IconTextButton = ({
 			alignItems: "center",
 		},
 		text: {
-			color: themeStyle.textColor,
+			color: "white",
 			fontSize: 18,
 			fontWeight: "bold",
 			textAlign: "center",
@@ -44,8 +44,8 @@ const IconTextButton = ({
 			<Ionicons
 				name={icon}
 				size={24}
-				color={iconColor || themeStyle.textColor}
-				style={{...iconStyle }}
+				color={iconColor || "white"}
+				style={{ ...iconStyle }}
 			/>
 			<Text style={[styles.text, textStyle]}>{text}</Text>
 		</Pressable>

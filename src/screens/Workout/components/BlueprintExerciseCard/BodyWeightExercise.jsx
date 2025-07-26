@@ -140,6 +140,9 @@ const createStyles = (themeStyle) => {
 			alignItems: "center",
 			marginLeft: -25,
 			marginTop: 15,
+			borderRadius: 8,
+			borderWidth: 1,
+			borderColor: themeStyle.textColorSecondary,
 		},
 		menuOptionContainer: {
 			flexDirection: "row",

@@ -12,7 +12,7 @@ const TextButton = ({ text, onPress, disable, buttonStyle, textStyle }) => {
 			alignItems: "center",
 		},
 		text: {
-			color: themeStyle.textColor,
+			color: "white",
 			fontSize: 14,
 			fontWeight: "bold",
 			textAlign: "center",
