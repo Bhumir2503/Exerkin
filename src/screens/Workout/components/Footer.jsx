@@ -6,6 +6,7 @@ import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
 import ExerciseManager from "./ExerciseSelector/ExerciseManager";
+import { trigger } from "react-native-haptic-feedback";
 
 const Footer = ({ navigation, screen }) => {
 	const { cancelWorkout, formTypeRef } = useWorkoutSession();
@@ -16,6 +17,7 @@ const Footer = ({ navigation, screen }) => {
 
 	const handleConfirm = () => {
 		setShowModal(false);
+		trigger("soft");
 		if (screen === "workout") {
 			cancelWorkout();
 		}

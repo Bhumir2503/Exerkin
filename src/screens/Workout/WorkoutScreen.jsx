@@ -2,6 +2,7 @@ import { Text, StyleSheet, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { memo } from "react";
+import { trigger } from "react-native-haptic-feedback";
 
 import IconTextButton from "../../components/Buttons/IconTextButton";
 import InfoCard from "../../components/InfoCard";
@@ -18,6 +19,7 @@ const WorkoutScreen = memo(({ navigation }) => {
 
 	const startButtonPressed = () => {
 		startWorkout();
+		trigger("soft");
 		navigation.navigate("WorkoutModalScreen");
 	};
 

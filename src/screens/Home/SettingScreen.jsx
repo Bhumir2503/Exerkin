@@ -1,4 +1,4 @@
-import React, { use } from "react";
+
 import {
 	View,
 	StyleSheet,
@@ -33,6 +33,30 @@ const SettingScreen = ({ navigation }) => {
 	const isUsingApple = user.providerData.some(
 		(provider) => provider.providerId === "apple.com"
 	);
+
+	const getCategoryItems = () => {
+		if (isUsingGoogle || isUsingApple) {
+			return [
+				{
+					name: "Edit Username",
+					icon: "create-outline",
+					location: "EditUsername",
+				},
+			];
+		}
+		return [
+			{
+				name: "Edit Username",
+				icon: "create-outline",
+				location: "EditUsername",
+			},
+			{
+				name: "Change Password",
+				icon: "lock-closed-outline",
+				location: "ChangePassword",
+			},
+		];
+	};
 
 	return (
 		<SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
@@ -69,19 +93,7 @@ const SettingScreen = ({ navigation }) => {
 				<SettingsCategory
 					title="Your Account"
 					themeStyle={themeStyle}
-					items={[
-						{
-							name: "Edit Username",
-							icon: "create-outline",
-							location: "EditUsername",
-						},
-						!isUsingGoogle &&
-							!isUsingApple && {
-								name: "Change Password",
-								icon: "lock-closed-outline",
-								location: "ChangePassword",
-							},
-					]}
+					items={getCategoryItems()}
 					navigation={navigation}
 				/>
 

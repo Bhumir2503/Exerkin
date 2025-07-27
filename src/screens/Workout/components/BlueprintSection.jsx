@@ -7,6 +7,8 @@ import BlueprintCard from "./BlueprintCard";
 import { useBlueprintStorage } from "../../../contexts/blueprint/BlueprintStorageContext";
 import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
 
+import { trigger } from "react-native-haptic-feedback";
+
 const BlueprintSection = ({ navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -14,6 +16,7 @@ const BlueprintSection = ({ navigation }) => {
 	const { startBlueprint } = useBlueprintSession();
 
 	const handlePress = () => {
+		trigger("impactLight");
 		startBlueprint();
 		navigation.navigate("BlueprintModalScreen");
 		console.log("Blueprint Add Button Pressed");

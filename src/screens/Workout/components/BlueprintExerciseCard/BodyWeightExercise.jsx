@@ -12,11 +12,13 @@ import {
 
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
+import { trigger } from "react-native-haptic-feedback";
 
 const BodyWeightExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
-	const { addSetToExercise, updateSetInExercise, removeExercise } = useBlueprintExercises();
+	const { addSetToExercise, updateSetInExercise, removeExercise } =
+		useBlueprintExercises();
 
 	const addSet = () => {
 		// Add a new set with null values for reps
@@ -36,14 +38,14 @@ const BodyWeightExercise = ({ exercise }) => {
 
 	const handleDeleteExercise = () => {
 		removeExercise(exercise.exerciseId);
-	}
+	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>
 				<Menu style={styles.menu}>
-					<MenuTrigger>
+					<MenuTrigger onPress={() => trigger("impactLight")}>
 						<Ionicons
 							name="ellipsis-horizontal"
 							size={24}

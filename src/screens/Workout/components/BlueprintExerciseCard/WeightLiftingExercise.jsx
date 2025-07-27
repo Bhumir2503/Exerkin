@@ -12,6 +12,8 @@ import {
 
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 import { useBlueprintExercises } from "../../../../contexts/blueprint/BlueprintExercisesContext";
+
+import { trigger } from "react-native-haptic-feedback";
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -71,7 +73,7 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>
 				<Menu style={styles.menu}>
-					<MenuTrigger>
+					<MenuTrigger onPress={() => trigger("impactLight")}>
 						<Ionicons
 							name="ellipsis-horizontal"
 							size={24}

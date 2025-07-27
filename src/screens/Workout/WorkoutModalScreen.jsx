@@ -11,9 +11,7 @@ import {
 	Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
 import { useTheme } from "../../contexts/ThemeContext";
-import { useWorkoutImage } from "../../contexts/workout/WorkoutImageContext";
 
 import Header from "./components/Header";
 import WorkoutDragList from "./components/WorkoutDragList";
@@ -22,11 +20,9 @@ import WorkoutTimer from "./components/WorkoutTimer";
 import Notes from "./components/Notes";
 import RestTimer from "./components/RestTimer";
 import ImageButton from "./components/ImageButton";
-import { Ionicons } from "@expo/vector-icons";
 
 const WorkoutModalScreen = ({ navigation }) => {
 	const { themeStyle } = useTheme();
-	const { workoutImageURL } = useWorkoutImage();
 	const styles = createStyles(themeStyle);
 
 	const dismissKeyboard = () => {

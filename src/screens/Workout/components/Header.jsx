@@ -1,4 +1,4 @@
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, View, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -12,6 +12,7 @@ import { useBlueprintExercises } from "../../../contexts/blueprint/BlueprintExer
 import { useTheme } from "../../../contexts/ThemeContext";
 
 import TwoButtonModal from "../../../components/Modals/TwoButtonModal";
+import { trigger } from "react-native-haptic-feedback";
 
 const Header = ({ navigation, screen }) => {
 	const { workoutTitle, setWorkoutTitle } = useWorkoutTitle();
@@ -34,6 +35,7 @@ const Header = ({ navigation, screen }) => {
 			: blueprintExercises.length;
 
 	const handleDownArrowPress = () => {
+		trigger("soft");
 		navigation.goBack(); // This will close the modal and return to the previous screen in the stack navigator
 	};
 
@@ -50,6 +52,7 @@ const Header = ({ navigation, screen }) => {
 	};
 
 	const handleFinishPress = () => {
+		trigger("soft");
 		navigation.goBack();
 		handleModalClose();
 		if (screen === "workout") {
@@ -69,20 +72,23 @@ const Header = ({ navigation, screen }) => {
 				{/* Left section */}
 				<View style={styles.leftSection}>
 					{screen === "workout" && (
-						<Ionicons
-							name="chevron-down"
-							size={32}
-							color={
-								formTypeRef.current === "workout"
-									? themeStyle.primary
-									: "transparent"
-							}
+						<Pressable
 							onPress={
 								formTypeRef.current === "workout"
 									? handleDownArrowPress
 									: null
 							}
-						/>
+						>
+							<Ionicons
+								name="chevron-down"
+								size={32}
+								color={
+									formTypeRef.current === "workout"
+										? themeStyle.primary
+										: "transparent"
+								}
+							/>
+						</Pressable>
 					)}
 				</View>
 				{/* Center section - always centered */}

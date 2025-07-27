@@ -6,16 +6,22 @@ import { useWorkoutTimer } from "../contexts/workout/WorkoutTimerContext";
 import { useWorkoutMeta } from "../contexts/workout/WorkoutMetaContext";
 import Timer from "./Timer";
 
+import { trigger } from "react-native-haptic-feedback";
+
 const DynamicBottomBar = ({ onPress, title, subtitle, iconName }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
 
-    const { workoutTimer } = useWorkoutTimer();
-    const { workoutStartTimeRef } = useWorkoutMeta();
-    
+	const { workoutTimer } = useWorkoutTimer();
+	const { workoutStartTimeRef } = useWorkoutMeta();
+
+	const handlePress = () => {
+		trigger("impactLight");
+		onPress();
+	};
 
 	return (
-		<Pressable style={styles.container} onPress={onPress}>
+		<Pressable style={styles.container} onPress={handlePress}>
 			<View style={styles.iconContainer}>
 				<Ionicons
 					name={iconName}

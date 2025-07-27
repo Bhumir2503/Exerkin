@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
 			<Header navigation={navigation} />
 			<Profile />
 			<Stats />
-			<QuoteCard />
+			
             <WorkoutHistory navigation={navigation} />
 			<ActiveWorkoutBar navigate={navigation.navigate} />
 		</SafeAreaView>

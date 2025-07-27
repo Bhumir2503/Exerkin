@@ -17,6 +17,7 @@ import {
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 import { useBlueprintSession } from "../../../hooks/useBlueprintSession";
+import { trigger } from "react-native-haptic-feedback";
 
 const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	const { themeStyle } = useTheme();
@@ -36,6 +37,8 @@ const HistoryModal = ({ selectedWorkout, setSelectedWorkout, navigation }) => {
 	};
 
 	const handleEdit = () => {
+		trigger("impactLight");
+		
 		closeModal();
 		startEditWorkout(selectedWorkout);
 		navigation.navigate("WorkoutModalScreen");

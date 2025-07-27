@@ -17,6 +17,8 @@ import { useWorkoutSession } from "../../../hooks/useWorkoutSession";
 
 import { formatTimeStamptoDateString } from "../../../services/helpers/timestampFormatFunctions";
 
+import { trigger } from "react-native-haptic-feedback";
+
 const BlueprintCard = ({ blueprint, navigation }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -25,6 +27,7 @@ const BlueprintCard = ({ blueprint, navigation }) => {
 	const { startBlueprint } = useWorkoutSession();
 
 	const handleStart = () => {
+		trigger("impactLight");
 		closeModal();
 		startBlueprint(blueprint);
 		navigation.navigate("WorkoutModalScreen");

@@ -14,6 +14,7 @@ import {
 import { buildSetObject } from "../../../../services/helpers/objectBuilder";
 
 import { useUser } from "../../../../contexts/UserContext";
+import { trigger } from "react-native-haptic-feedback";
 
 const CardioDistanceExercise = ({ exercise }) => {
 	const { themeStyle } = useTheme();
@@ -109,7 +110,7 @@ const CardioDistanceExercise = ({ exercise }) => {
 			<View style={styles.headerRow}>
 				<Text style={styles.workoutName}>{exercise.name}</Text>
 				<Menu style={styles.menu}>
-					<MenuTrigger>
+					<MenuTrigger onPress={() => trigger("impactLight")}>
 						<Ionicons
 							name="ellipsis-horizontal"
 							size={24}
