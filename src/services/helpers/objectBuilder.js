@@ -1,7 +1,6 @@
 import { FieldValue } from "@react-native-firebase/firestore";
 import uuid from "react-native-uuid";
 
-
 export const buildExerciseObject = (selectedExercise, unitSystem) => {
 	const exercise = {
 		exerciseId: selectedExercise.id,
@@ -17,6 +16,7 @@ export const buildExerciseObject = (selectedExercise, unitSystem) => {
 
 export const buildSetObject = () => {
 	const set = {
+		setId: uuid.v4(),
 		weight: null,
 		time: null,
 		distance: null,

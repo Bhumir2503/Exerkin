@@ -66,18 +66,27 @@ export const useWorkoutSession = () => {
 		formTypeRef.current = "workout";
 		setUnitSystem(unitSystem);
 	};
-
 	const finishWorkout = async () => {
 		setWorkoutError(null);
-		if (workoutExercises.length === 0) {
-			setWorkoutError("Please add at least one exercise to the workout.");
-			return;
-		}
-
 		workoutEndTimeRef.current = Timestamp.now();
 
-		const workoutObject = getCurrentWorkoutObject();
-		console.log("Workout Object:", workoutObject);
+		// Filter sets that are completed
+		const completedExercises = workoutExercises
+			.map((exercise) => ({
+				...exercise,
+				sets: exercise.sets.filter((set) => set.completed),
+			}))
+			.filter((exercise) => exercise.sets.length > 0); // remove exercises with no completed sets
+
+		// Save to state
+		setWorkoutExercises(completedExercises);
+
+		// Build and save workout object using the filtered version
+		const workoutObject = {
+			...getCurrentWorkoutObject(),
+			exercises: completedExercises,
+		};
+
 		try {
 			await saveWorkoutInFirestore(workoutObject);
 		} catch (error) {
@@ -108,7 +117,22 @@ export const useWorkoutSession = () => {
 	const finishEditWorkout = async () => {
 		setWorkoutError(null);
 
-		const workoutObject = getCurrentWorkoutObject();
+		// Filter sets that are completed and exclude exercises without any sets
+		const completedExercises = workoutExercises
+			.map((exercise) => ({
+				...exercise,
+				sets: exercise.sets.filter((set) => set.completed),
+			}))
+			.filter((exercise) => exercise.sets.length > 0);
+
+		// Update state
+		setWorkoutExercises(completedExercises);
+
+		// Build workout object with filtered sets
+		const workoutObject = {
+			...getCurrentWorkoutObject(),
+			exercises: completedExercises,
+		};
 
 		try {
 			await updateWorkoutInFirestore(workoutObject);
@@ -118,13 +142,6 @@ export const useWorkoutSession = () => {
 			return;
 		}
 
-		setWorkoutHistory((prevHistory) =>
-			prevHistory.map((workout) =>
-				workout.workoutId === workoutIdRef.current
-					? workoutObject
-					: workout
-			)
-		);
 		cancelWorkout();
 	};
 

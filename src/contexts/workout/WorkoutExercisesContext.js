@@ -50,15 +50,13 @@ export const WorkoutExercisesProvider = ({ children }) => {
 		);
 	}, []);
 
-	const removeSetFromExercise = useCallback((exerciseId, setIndex) => {
+	const removeSetFromExercise = useCallback((exerciseId, setId) => {
 		setWorkoutExercises((prev) =>
 			prev.map((ex) =>
 				ex.exerciseId === exerciseId
 					? {
 							...ex,
-							sets: ex.sets.filter(
-								(_, index) => index !== setIndex
-							),
+							sets: ex.sets.filter((set) => set.setId !== setId),
 					  }
 					: ex
 			)

@@ -128,7 +128,7 @@ const Header = ({ navigation, screen }) => {
 				description={
 					screen === "workout"
 						? formTypeRef.current === "workout"
-							? "Log this workout and view your progress in your training history."
+							? "Track this workout and review your training history. Remember to mark your completed sets."
 							: "Save changes to this workout?"
 						: `You have ${workoutLength} exercises in this blueprint. Do you want to create it?`
 				}

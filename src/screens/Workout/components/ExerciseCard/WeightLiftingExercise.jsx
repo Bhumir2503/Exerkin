@@ -15,7 +15,6 @@ import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercis
 
 import { useUser } from "../../../../contexts/UserContext";
 
-
 const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 	const { themeStyle } = useTheme();
 	const styles = createStyles(themeStyle);
@@ -53,6 +52,18 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 			...exercise.sets[index],
 			reps: number !== "" ? number : null,
 		});
+	};
+
+	const handleCompleteSet = (setId) => {
+		// Find the index of the set to update
+		const setIndex = exercise.sets.findIndex((set) => set.setId === setId);
+		if (setIndex !== -1) {
+			// Update the completed status of the set
+			updateSetInExercise(exercise.exerciseId, setIndex, {
+				...exercise.sets[setIndex],
+				completed: !exercise.sets[setIndex].completed,
+			});
+		}
 	};
 
 	const handleDeleteExercise = () => {
@@ -130,12 +141,15 @@ const WeightLiftingExercise = ({ exercise, dragEnabled }) => {
 				<UserInputSection
 					key={index}
 					id={exercise.exerciseId}
+					setId={set.setId}
 					index={index}
 					inputTypes={["decimal", "numeric"]}
 					placeholders={["135", "12"]}
 					functions={[handleWeightChange, handleRepsChange]}
 					lengths={[4, 3]}
 					values={[set.weight, set.reps]}
+					completed={set.completed}
+					onCompleteSet={handleCompleteSet}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

@@ -75,6 +75,18 @@ const CardioDistanceExercise = ({ exercise }) => {
 		});
 	};
 
+	const handleCompleteSet = (setId) => {
+		// Find the index of the set to update
+		const setIndex = exercise.sets.findIndex((set) => set.setId === setId);
+		if (setIndex !== -1) {
+			// Update the completed status of the set
+			updateSetInExercise(exercise.exerciseId, setIndex, {
+				...exercise.sets[setIndex],
+				completed: !exercise.sets[setIndex].completed,
+			});
+		}
+	};
+
 	const handleDeleteExercise = () => {
 		removeExercise(exercise.exerciseId);
 	};
@@ -150,12 +162,15 @@ const CardioDistanceExercise = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					id={exercise.exerciseId}
+					setId={set.setId}
 					index={index}
 					inputTypes={["numeric", "decimal"]}
 					placeholders={["30:00", "1.5"]}
 					functions={[handleTimeChange, handleDistanceChange]}
 					lengths={[7, 5]}
 					values={[set.time, set.distance]}
+					completed={set.completed}
+					onCompleteSet={handleCompleteSet}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>

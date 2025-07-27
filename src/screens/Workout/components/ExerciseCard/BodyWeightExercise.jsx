@@ -35,6 +35,18 @@ const BodyWeightExercise = ({ exercise }) => {
 		});
 	};
 
+	const handleCompleteSet = (setId) => {
+		// Find the index of the set to update
+		const setIndex = exercise.sets.findIndex((set) => set.setId === setId);
+		if (setIndex !== -1) {
+			// Update the completed status of the set
+			updateSetInExercise(exercise.exerciseId, setIndex, {
+				...exercise.sets[setIndex],
+				completed: !exercise.sets[setIndex].completed,
+			});
+		}
+	};
+
 	const handleDeleteExercise = () => {
 		removeExercise(exercise.exerciseId);
 	};
@@ -79,12 +91,15 @@ const BodyWeightExercise = ({ exercise }) => {
 				<UserInputSection
 					key={index}
 					id={exercise.exerciseId}
+					setId={set.setId}
 					index={index}
 					inputTypes={["numeric"]}
 					placeholders={["12"]}
 					functions={[handleRepsChange]}
 					lengths={[3]}
 					values={[set.reps]}
+					completed={set.completed}
+					onCompleteSet={handleCompleteSet}
 				/>
 			))}
 			<Pressable style={styles.setButton} onPress={addSet}>
