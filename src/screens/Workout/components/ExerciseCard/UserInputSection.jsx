@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../../contexts/ThemeContext";
 import { Swipeable } from "react-native-gesture-handler";
 import { useWorkoutExercises } from "../../../../contexts/workout/WorkoutExercisesContext";
+import { trigger } from "react-native-haptic-feedback";
 
 const UserInputSection = ({
 	id,
@@ -29,6 +30,11 @@ const UserInputSection = ({
 
 	const handleDelete = () => {
 		removeSetFromExercise(id, setId); // Call the function to remove the set from the exercise
+	};
+
+	const handleComplete = () => {
+		trigger("impactLight");
+		onCompleteSet(setId);
 	};
 
 	// Render swipe right actions - this is what appears when the user swipes
@@ -96,7 +102,7 @@ const UserInputSection = ({
 						/>
 					))}
 					<Pressable
-						onPress={() => onCompleteSet(setId)}
+						onPress={() => handleComplete(setId)}
 						style={{
 							alignItems: "center",
 							justifyContent: "center",

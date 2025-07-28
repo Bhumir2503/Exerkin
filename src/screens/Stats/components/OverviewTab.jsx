@@ -11,7 +11,7 @@ const OverviewTab = () => {
 	const { themeStyle } = useTheme();
 	const { workoutHistory } = useWorkoutHistory();
 	const styles = createStyles(themeStyle);
-	const { statsSummary, weeklyActivity, } =
+	const { statsSummary, weeklyActivity } =
 		useStatsCalculations(workoutHistory);
 
 	const renderSummaryItem = (icon, value, label, iconColor) => (
@@ -175,14 +175,11 @@ const OverviewTab = () => {
 			<View style={styles.weeklyContainer}>
 				<Text style={styles.sectionTitle}>Weekly Activity Pattern</Text>
 				{renderWeeklyHeatmap()}
-				<Text style={styles.chartLabel}>
-					Most active day: {statsSummary.bestDay}
-				</Text>
 			</View>
 
 			{/* Personal Records Summary */}
 			<View style={styles.recordsContainer}>
-				<Text style={styles.sectionTitle}>This Month</Text>
+				<Text style={styles.sectionTitle}>Total Quick View</Text>
 				<View style={styles.recordsGrid}>
 					<View style={styles.recordItem}>
 						<Ionicons
@@ -191,7 +188,7 @@ const OverviewTab = () => {
 							color="#FFD700"
 						/>
 						<Text style={styles.recordValue}>
-							{Math.floor(statsSummary.totalWorkouts / 4)}
+							{workoutHistory.length}
 						</Text>
 						<Text style={styles.recordLabel}>Workouts</Text>
 					</View>
@@ -202,16 +199,9 @@ const OverviewTab = () => {
 							color="#32CD32"
 						/>
 						<Text style={styles.recordValue}>
-							{Math.floor(
-								parseInt(
-									statsSummary.totalVolume.replace(
-										/[^\d]/g,
-										""
-									)
-								) / 4
-							).toLocaleString()}
+							{statsSummary.totalExercises}
 						</Text>
-						<Text style={styles.recordLabel}>lbs Volume</Text>
+						<Text style={styles.recordLabel}>Exercises</Text>
 					</View>
 					<View style={styles.recordItem}>
 						<Ionicons
@@ -220,7 +210,7 @@ const OverviewTab = () => {
 							color="#FF69B4"
 						/>
 						<Text style={styles.recordValue}>
-							{Math.floor(statsSummary.totalSets / 4)}
+							{statsSummary.totalSets}
 						</Text>
 						<Text style={styles.recordLabel}>Sets</Text>
 					</View>

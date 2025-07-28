@@ -40,6 +40,7 @@ const useStatsCalculations = (workoutHistory) => {
 		let totalReps = 0;
 		let totalDuration = 0;
 		let totalDistance = 0;
+		let totalExercises = 0;
 		const exerciseFrequency = {};
 		const bodyPartFrequency = {};
 		const exerciseMaxes = {};
@@ -99,6 +100,7 @@ const useStatsCalculations = (workoutHistory) => {
 			}
 
 			workout.exercises?.forEach((exercise) => {
+				totalExercises++;
 				// Exercise frequency
 				exerciseFrequency[exercise.name] =
 					(exerciseFrequency[exercise.name] || 0) + 1;
@@ -345,6 +347,7 @@ const useStatsCalculations = (workoutHistory) => {
 		return {
 			statsSummary: {
 				totalWorkouts,
+				totalExercises,
 				totalVolume: `${Math.round(totalVolume).toLocaleString()} lbs`,
 				totalDuration: formatDuration(totalDuration),
 				workoutStreak: currentStreak,
