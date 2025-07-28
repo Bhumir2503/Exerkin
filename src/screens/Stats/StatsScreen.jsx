@@ -1,15 +1,4 @@
-// Suggested file structure:
-// - StatsScreen.jsx
-// - components/OverviewTab.jsx
-// - components/LiftsTab.jsx
-// - components/TrendsTab.jsx
-// - components/BodyFocusTab.jsx
-// - hooks/useStatsCalculations.js
-// - utils/statsUtils.js
 
-// Here's how to separate it (starting with the entry file):
-
-// StatsScreen.jsx (after splitting)
 import React, { useState } from "react";
 import {
 	View,
@@ -48,7 +37,7 @@ const StatsScreen = ({ navigation }) => {
 					<Text style={styles.title}>Stats & Analytics</Text>
 				</View>
 
-				<View style={styles.tabBar}>
+				{/* <View style={styles.tabBar}>
 					{[
 						{
 							name: "overview",
@@ -89,15 +78,29 @@ const StatsScreen = ({ navigation }) => {
 							{renderTabIndicator(tab.name)}
 						</TouchableOpacity>
 					))}
-				</View>
+				</View> */}
 
 				<ScrollView
 					style={styles.scrollContainer}
 					contentContainerStyle={{ paddingBottom: 75 }}
 					showsVerticalScrollIndicator={false}
 				>
-					{/* {activeTab === "overview" && <OverviewTab />}
-					{activeTab === "lifts" && <LiftsTab />}
+					{/* Info card */}
+					<View style={styles.infoCard}>
+						<View style={styles.infoIconContainer}>
+							<Ionicons
+								name="stats-chart-outline"
+								size={24}
+								color={themeStyle.primary}
+							/>
+						</View>
+						<Text style={styles.infoText}>
+							Track your workout progress, analyze trends, and
+							discover your fitness journey insights.
+						</Text>
+					</View>
+					{activeTab === "overview" && <OverviewTab />}
+					{/* {activeTab === "lifts" && <LiftsTab />}
 					{activeTab === "trends" && <TrendsTab />}
 					{activeTab === "body" && <BodyFocusTab />} */}
 				</ScrollView>
@@ -115,6 +118,25 @@ const createStyles = (themeStyle) =>
 		scrollContainer: {
 			flex: 1,
 			width: "100%",
+			paddingHorizontal: 24,
+		},
+		infoCard: {
+			flexDirection: "row",
+			alignItems: "center",
+			backgroundColor: `${themeStyle.primary || "#7f2af0"}15`,
+			borderRadius: 8,
+			padding: 16,
+			marginTop: 16,
+			marginBottom: 24,
+		},
+		infoIconContainer: {
+			marginRight: 12,
+		},
+		infoText: {
+			flex: 1,
+			fontSize: 14,
+			color: themeStyle.textColor || "#fffffe",
+			lineHeight: 20,
 		},
 		topBar: {
 			alignItems: "center",

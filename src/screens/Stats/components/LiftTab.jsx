@@ -6,6 +6,8 @@ import {
 	TouchableOpacity,
 	Dimensions,
 	StyleSheet,
+	ScrollView,
+	Alert,
 } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +21,7 @@ const LiftsTab = () => {
 	const styles = createStyles(themeStyle);
 	const [filterType, setFilterType] = useState("1RM");
 	const [viewMode, setViewMode] = useState("best");
+	const [selectedExercise, setSelectedExercise] = useState(null);
 	const {
 		popularExercises,
 		exerciseIcons,
@@ -33,450 +36,650 @@ const LiftsTab = () => {
 		setFilterType(options[(index + 1) % options.length]);
 	};
 
-	return (
-		<View style={styles.tabContent}>
-			<View style={styles.headerRow}>
-				<Text style={styles.sectionTitle}>
-					{viewMode === "best" ? "Best Lifts" : "Progress Tracking"}
-				</Text>
-				<TouchableOpacity
-					onPress={() =>
-						setViewMode(viewMode === "best" ? "progress" : "best")
-					}
-				>
-					<Ionicons
-						name="swap-horizontal"
-						size={20}
-						color={themeStyle.primary}
-					/>
-				</TouchableOpacity>
-			</View>
-			<View style={styles.filtersRow}>
-				<TouchableOpacity
-					style={styles.filterChip}
-					onPress={toggleFilterType}
-				>
-					<Text style={styles.filterChipText}>
-						Metric: {filterType}
-					</Text>
-				</TouchableOpacity>
+	const getMetricIcon = (metric) => {
+		switch (metric) {
+			case "1RM":
+				return "barbell-outline";
+			case "Reps":
+				return "repeat-outline";
+			case "Volume":
+				return "cube-outline";
+			default:
+				return "stats-chart-outline";
+		}
+	};
+
+	const getMetricColor = (metric) => {
+		switch (metric) {
+			case "1RM":
+				return "#FF6B6B";
+			case "Reps":
+				return "#4ECDC4";
+			case "Volume":
+				return "#45B7D1";
+			default:
+				return themeStyle.primary;
+		}
+	};
+
+	const renderBestLiftsView = () => (
+		<View style={styles.liftsContainer}>
+			<View style={styles.liftsHeader}>
+				<View style={styles.rankHeader}>
+					<Text style={styles.rankHeaderText}>Rank</Text>
+				</View>
+				<View style={styles.exerciseHeader}>
+					<Text style={styles.exerciseHeaderText}>Exercise</Text>
+				</View>
+				<View style={styles.valueHeader}>
+					<Text style={styles.valueHeaderText}>{filterType}</Text>
+				</View>
 			</View>
 
-			{viewMode === "best"
-				? popularExercises.map((exercise, index) => {
-						const { text } = getBestLift(
-							filterWorkoutData(exercise),
-							filterType
-						);
-						return (
-							<View key={index} style={styles.exerciseRow}>
-								<Text style={styles.liftName}>{exercise}</Text>
-								<Text style={styles.liftValue}>{text}</Text>
+			{popularExercises.slice(0, 10).map((exercise, index) => {
+				const { text, value } = getBestLift(
+					filterWorkoutData(exercise),
+					filterType
+				);
+				const isPersonalRecord = index < 3; // Top 3 are PRs
+
+				return (
+					<TouchableOpacity
+						key={index}
+						style={[
+							styles.exerciseRow,
+							isPersonalRecord && styles.prRow,
+						]}
+						onPress={() => setSelectedExercise(exercise)}
+					>
+						<View style={styles.rankContainer}>
+							<View
+								style={[
+									styles.rankBadge,
+									{
+										backgroundColor:
+											index === 0
+												? "#FFD700"
+												: index === 1
+												? "#C0C0C0"
+												: index === 2
+												? "#CD7F32"
+												: `${themeStyle.primary}20`,
+									},
+								]}
+							>
+								<Text
+									style={[
+										styles.rankText,
+										{
+											color:
+												index < 3
+													? "#FFFFFF"
+													: themeStyle.primary,
+										},
+									]}
+								>
+									{index + 1}
+								</Text>
 							</View>
-						);
-				  })
-				: popularExercises.map((exercise, index) => {
-						const chartData = getProgressData(exercise, filterType);
-						return (
-							<View key={index} style={styles.progressCard}>
+							{isPersonalRecord && (
+								<Ionicons
+									name="trophy"
+									size={16}
+									color="#FFD700"
+									style={styles.trophyIcon}
+								/>
+							)}
+						</View>
+
+						<View style={styles.exerciseInfo}>
+							<Text style={styles.liftName} numberOfLines={1}>
+								{exercise}
+							</Text>
+							<Text style={styles.exerciseSubtext}>
+								{filterWorkoutData(exercise).length} workouts
+							</Text>
+						</View>
+
+						<View style={styles.valueContainer}>
+							<Text style={styles.liftValue}>{text}</Text>
+							{filterType === "1RM" && (
+								<Text style={styles.estimatedLabel}>est.</Text>
+							)}
+						</View>
+
+						<Ionicons
+							name="chevron-forward"
+							size={20}
+							color={themeStyle.textColorSecondary}
+						/>
+					</TouchableOpacity>
+				);
+			})}
+
+			{popularExercises.length === 0 && (
+				<View style={styles.noDataContainer}>
+					<Ionicons
+						name="barbell-outline"
+						size={48}
+						color={themeStyle.textColorSecondary}
+					/>
+					<Text style={styles.noDataText}>
+						No lift data available yet
+					</Text>
+					<Text style={styles.noDataSubtext}>
+						Complete some workouts to see your best lifts
+					</Text>
+				</View>
+			)}
+		</View>
+	);
+
+	const renderProgressView = () => (
+		<ScrollView showsVerticalScrollIndicator={false}>
+			{popularExercises.slice(0, 6).map((exercise, index) => {
+				const chartData = getProgressData(exercise, filterType);
+				const { text: bestValue } = getBestLift(
+					filterWorkoutData(exercise),
+					filterType
+				);
+
+				return (
+					<View key={index} style={styles.progressCard}>
+						<View style={styles.progressHeader}>
+							<View style={styles.progressTitleContainer}>
 								<Text style={styles.progressTitle}>
 									{exercise}
 								</Text>
-								{chartData ? (
-									<LineChart
-										data={chartData}
-										width={
-											Dimensions.get("window").width - 60
-										}
-										height={180}
-										chartConfig={{
-											backgroundColor: themeStyle.card,
-											backgroundGradientFrom:
-												themeStyle.card,
-											backgroundGradientTo:
-												themeStyle.card,
-											color: () => themeStyle.primary,
-											labelColor: () =>
-												themeStyle.textColor,
-										}}
-										style={{
-											marginVertical: 8,
-											borderRadius: 16,
-										}}
-									/>
-								) : (
-									<Text style={styles.noDataText}>
-										Not enough data
+								<View style={styles.progressStats}>
+									<Text style={styles.progressBest}>
+										Best: {bestValue}
 									</Text>
-								)}
+									<Text style={styles.progressWorkouts}>
+										{filterWorkoutData(exercise).length}{" "}
+										workouts
+									</Text>
+								</View>
 							</View>
-						);
-				  })}
+							<TouchableOpacity
+								style={styles.expandButton}
+								onPress={() =>
+									Alert.alert(
+										"Exercise Details",
+										`View detailed analytics for ${exercise}`
+									)
+								}
+							>
+								<Ionicons
+									name="analytics-outline"
+									size={20}
+									color={themeStyle.primary}
+								/>
+							</TouchableOpacity>
+						</View>
+
+						{chartData ? (
+							<View style={styles.chartContainer}>
+								<LineChart
+									data={chartData}
+									width={Dimensions.get("window").width - 60}
+									height={180}
+									chartConfig={{
+										backgroundColor: themeStyle.card,
+										backgroundGradientFrom: themeStyle.card,
+										backgroundGradientTo: themeStyle.card,
+										color: (opacity = 1) =>
+											`rgba(${hexToRgb(
+												getMetricColor(filterType)
+											)}, ${opacity})`,
+										labelColor: (opacity = 1) =>
+											`rgba(${hexToRgb(
+												themeStyle.textColor
+											)}, ${opacity})`,
+										strokeWidth: 3,
+										propsForDots: {
+											r: "6",
+											strokeWidth: "2",
+											stroke: getMetricColor(filterType),
+											fill: themeStyle.card,
+										},
+										propsForBackgroundLines: {
+											strokeDasharray: "5,5",
+											stroke: `${themeStyle.borderColor}50`,
+										},
+									}}
+									style={{
+										marginVertical: 8,
+										borderRadius: 16,
+									}}
+									bezier
+									withDots={true}
+									withInnerLines={true}
+									withOuterLines={false}
+								/>
+								<View style={styles.chartLegend}>
+									<View style={styles.legendItem}>
+										<View
+											style={[
+												styles.legendDot,
+												{
+													backgroundColor:
+														getMetricColor(
+															filterType
+														),
+												},
+											]}
+										/>
+										<Text style={styles.legendText}>
+											{filterType} Progress
+										</Text>
+									</View>
+								</View>
+							</View>
+						) : (
+							<View style={styles.noChartData}>
+								<Ionicons
+									name="trending-up-outline"
+									size={32}
+									color={themeStyle.textColorSecondary}
+								/>
+								<Text style={styles.noDataText}>
+									Not enough data for trend analysis
+								</Text>
+								<Text style={styles.noDataSubtext}>
+									Need at least 2 workouts with this exercise
+								</Text>
+							</View>
+						)}
+					</View>
+				);
+			})}
+		</ScrollView>
+	);
+
+	return (
+		<View style={styles.tabContent}>
+			{/* Header Section */}
+			<View style={styles.headerSection}>
+				<View style={styles.headerRow}>
+					<View style={styles.titleContainer}>
+						<Ionicons
+							name={getMetricIcon(filterType)}
+							size={24}
+							color={getMetricColor(filterType)}
+							style={styles.titleIcon}
+						/>
+						<Text style={styles.sectionTitle}>
+							{viewMode === "best"
+								? "Personal Records"
+								: "Progress Tracking"}
+						</Text>
+					</View>
+					<TouchableOpacity
+						style={styles.viewToggle}
+						onPress={() =>
+							setViewMode(
+								viewMode === "best" ? "progress" : "best"
+							)
+						}
+					>
+						<Ionicons
+							name={
+								viewMode === "best" ? "trending-up" : "trophy"
+							}
+							size={20}
+							color={themeStyle.primary}
+						/>
+						<Text style={styles.toggleText}>
+							{viewMode === "best" ? "Progress" : "Records"}
+						</Text>
+					</TouchableOpacity>
+				</View>
+
+				{/* Filter Controls */}
+				<View style={styles.filtersContainer}>
+					<TouchableOpacity
+						style={[
+							styles.filterChip,
+							{ borderColor: getMetricColor(filterType) },
+						]}
+						onPress={toggleFilterType}
+					>
+						<Ionicons
+							name={getMetricIcon(filterType)}
+							size={16}
+							color={getMetricColor(filterType)}
+						/>
+						<Text
+							style={[
+								styles.filterChipText,
+								{ color: getMetricColor(filterType) },
+							]}
+						>
+							{filterType}
+						</Text>
+						<Ionicons
+							name="chevron-down"
+							size={16}
+							color={getMetricColor(filterType)}
+						/>
+					</TouchableOpacity>
+
+					<View style={styles.metricInfo}>
+						<Text style={styles.metricLabel}>
+							{filterType === "1RM"
+								? "Estimated Max"
+								: filterType === "Reps"
+								? "Max Reps"
+								: "Total Volume"}
+						</Text>
+					</View>
+				</View>
+			</View>
+
+			{/* Content */}
+			{viewMode === "best" ? renderBestLiftsView() : renderProgressView()}
 		</View>
 	);
 };
 
+// Helper function to convert hex to RGB
+const hexToRgb = (hex) => {
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result
+		? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+				result[3],
+				16
+		  )}`
+		: "74, 144, 226";
+};
+
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
-		container: {
-			flex: 1,
-			backgroundColor: themeStyle.backgroundColor,
-		},
-		scrollContainer: {
-			flex: 1,
-			width: "100%",
-		},
-		topBar: {
-			alignItems: "center",
-			paddingHorizontal: 16,
-			paddingVertical: 12,
-		},
-		title: {
-			fontSize: 22,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-
-			textAlign: "center",
-			marginLeft: 10,
-			textAlign: "center",
-		},
-		tabBar: {
-			flexDirection: "row",
-			justifyContent: "space-around",
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
-			paddingBottom: 0,
-		},
-		tab: {
-			alignItems: "center",
-			paddingVertical: 12,
-			paddingHorizontal: 16,
-			position: "relative",
-		},
-		tabText: {
-			fontSize: 12,
-			color: themeStyle.textColorSecondary,
-			marginTop: 4,
-		},
-		activeTabText: {
-			color: themeStyle.primary,
-			fontWeight: "600",
-		},
-		tabIndicator: {
-			position: "absolute",
-			bottom: 0,
-			left: 8,
-			right: 8,
-			height: 3,
-			borderTopLeftRadius: 3,
-			borderTopRightRadius: 3,
-			backgroundColor: "transparent",
-		},
-		activeTabIndicator: {
-			backgroundColor: themeStyle.primary,
-		},
 		tabContent: {
+			flex: 1,
 			paddingBottom: 30,
 		},
-		summaryContainer: {
+		headerSection: {
 			marginHorizontal: 20,
 			marginTop: 15,
-			padding: 20,
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-		},
-		summaryGrid: {
-			flexDirection: "row",
-			flexWrap: "wrap",
-			justifyContent: "space-between",
-			marginTop: 15,
-		},
-		summaryItem: {
-			width: "48%",
-			marginBottom: 15,
-			padding: 15,
-			backgroundColor: `${themeStyle.primary}15`, // Very light tint of primary color
-			borderRadius: 6,
-			alignItems: "center",
-		},
-		summaryIcon: {
-			marginBottom: 10,
-		},
-		summaryValue: {
-			fontSize: 24,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-			marginBottom: 8,
-			letterSpacing: 0.5,
-		},
-		summaryLabel: {
-			fontSize: 13,
-			color: themeStyle.textColorSecondary,
-			fontWeight: "500",
-			letterSpacing: 0.3,
-		},
-		sectionTitle: {
-			fontSize: 18,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-			marginBottom: 12,
-			letterSpacing: 0.3,
-		},
-		additionalStatsContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-		},
-		detailedStatsBox: {
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 15,
-		},
-		statRow: {
-			flexDirection: "row",
-			justifyContent: "space-between",
-			marginBottom: 16,
-		},
-		statItem: {
-			width: "48%",
-		},
-		statLabel: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginBottom: 4,
-		},
-		statValue: {
-			fontSize: 17,
-			fontWeight: "600",
-			color: themeStyle.textColor,
-		},
-		bestLiftsContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-			marginBottom: 30,
-		},
-		bestLiftsBox: {
-			padding: 20,
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			marginTop: 15,
+			marginBottom: 20,
 		},
 		headerRow: {
 			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			marginBottom: 15,
+		},
+		titleContainer: {
+			flexDirection: "row",
+			alignItems: "center",
+		},
+		titleIcon: {
+			marginRight: 10,
+		},
+		sectionTitle: {
+			fontSize: 20,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+			letterSpacing: 0.3,
+		},
+		viewToggle: {
+			flexDirection: "row",
+			alignItems: "center",
+			backgroundColor: `${themeStyle.primary}15`,
+			paddingHorizontal: 12,
+			paddingVertical: 8,
+			borderRadius: 20,
+			borderWidth: 1,
+			borderColor: `${themeStyle.primary}30`,
+		},
+		toggleText: {
+			marginLeft: 6,
+			fontSize: 14,
+			fontWeight: "600",
+			color: themeStyle.primary,
+		},
+		filtersContainer: {
+			flexDirection: "row",
 			alignItems: "center",
 			justifyContent: "space-between",
-		},
-		filtersRow: {
-			flexDirection: "row",
-			marginTop: 10,
-			marginBottom: 5,
 		},
 		filterChip: {
 			flexDirection: "row",
 			alignItems: "center",
 			backgroundColor: themeStyle.card,
-			paddingHorizontal: 14,
-			paddingVertical: 8,
-			borderRadius: 6,
-			marginRight: 10,
-			borderWidth: 1,
-			borderColor: themeStyle.borderColor,
+			paddingHorizontal: 16,
+			paddingVertical: 10,
+			borderRadius: 25,
+			borderWidth: 2,
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 2 },
+			shadowOpacity: 0.1,
+			shadowRadius: 4,
+			elevation: 3,
 		},
 		filterChipText: {
+			fontSize: 16,
+			fontWeight: "700",
+			marginHorizontal: 8,
+			letterSpacing: 0.5,
+		},
+		metricInfo: {
+			alignItems: "flex-end",
+		},
+		metricLabel: {
+			fontSize: 12,
 			color: themeStyle.textColorSecondary,
-			fontSize: 14,
-			marginRight: 5,
-			fontWeight: "600",
-			letterSpacing: 0.2,
+			fontStyle: "italic",
 		},
-		filterContainer: {
-			flexDirection: "row",
-			alignItems: "center",
-		},
-		filterButton: {
-			flexDirection: "row",
-			alignItems: "center",
+		liftsContainer: {
+			marginHorizontal: 20,
 			backgroundColor: themeStyle.card,
-			paddingHorizontal: 12,
-			paddingVertical: 7,
-			borderRadius: 6,
-			borderWidth: 1,
-			borderColor: themeStyle.borderColor,
+			borderRadius: 16,
+			padding: 16,
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.1,
+			shadowRadius: 8,
+			elevation: 5,
 		},
-		filterButtonText: {
+		liftsHeader: {
+			flexDirection: "row",
+			alignItems: "center",
+			paddingBottom: 12,
+			borderBottomWidth: 2,
+			borderBottomColor: themeStyle.borderColor,
+			marginBottom: 12,
+		},
+		rankHeader: {
+			width: 60,
+		},
+		exerciseHeader: {
+			flex: 1,
+			paddingHorizontal: 8,
+		},
+		valueHeader: {
+			width: 80,
+			alignItems: "center",
+		},
+		rankHeaderText: {
+			fontSize: 12,
+			fontWeight: "700",
 			color: themeStyle.textColorSecondary,
-			fontSize: 14,
-			marginRight: 5,
-			fontWeight: "600",
-			letterSpacing: 0.2,
+			textTransform: "uppercase",
+			letterSpacing: 1,
+		},
+		exerciseHeaderText: {
+			fontSize: 12,
+			fontWeight: "700",
+			color: themeStyle.textColorSecondary,
+			textTransform: "uppercase",
+			letterSpacing: 1,
+		},
+		valueHeaderText: {
+			fontSize: 12,
+			fontWeight: "700",
+			color: themeStyle.textColorSecondary,
+			textTransform: "uppercase",
+			letterSpacing: 1,
 		},
 		exerciseRow: {
 			flexDirection: "row",
-			justifyContent: "space-between",
 			alignItems: "center",
-			paddingVertical: 14,
-			marginHorizontal: 2,
+			paddingVertical: 16,
+			borderBottomWidth: 1,
+			borderBottomColor: `${themeStyle.borderColor}30`,
 		},
-		exerciseNameContainer: {
-			flexDirection: "row",
+		prRow: {
+			backgroundColor: `${themeStyle.primary}08`,
+			borderRadius: 12,
+			borderBottomWidth: 0,
+			marginVertical: 2,
+			paddingHorizontal: 12,
+		},
+		rankContainer: {
+			width: 60,
 			alignItems: "center",
+		},
+		rankBadge: {
+			width: 32,
+			height: 32,
+			borderRadius: 16,
+			justifyContent: "center",
+			alignItems: "center",
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 2 },
+			shadowOpacity: 0.2,
+			shadowRadius: 4,
+			elevation: 3,
+		},
+		rankText: {
+			fontSize: 14,
+			fontWeight: "bold",
+		},
+		trophyIcon: {
+			position: "absolute",
+			top: -4,
+			right: -4,
+		},
+		exerciseInfo: {
 			flex: 1,
-		},
-		exerciseIcon: {
-			marginRight: 8,
-		},
-		progressTitleRow: {
-			flexDirection: "row",
-			alignItems: "center",
-		},
-		progressTitleIcon: {
-			marginRight: 8,
+			paddingHorizontal: 12,
 		},
 		liftName: {
 			fontSize: 16,
+			fontWeight: "600",
 			color: themeStyle.textColor,
-			flex: 1,
-			fontWeight: "500",
-			letterSpacing: 0.2,
+			marginBottom: 2,
+		},
+		exerciseSubtext: {
+			fontSize: 12,
+			color: themeStyle.textColorSecondary,
+		},
+		valueContainer: {
+			width: 80,
+			alignItems: "center",
 		},
 		liftValue: {
-			fontSize: 17,
+			fontSize: 16,
 			fontWeight: "bold",
 			color: themeStyle.primary,
-			letterSpacing: 0.3,
+			textAlign: "center",
 		},
-		liftNameEstimated: {
-			fontSize: 17,
-			fontStyle: "italic",
+		estimatedLabel: {
+			fontSize: 10,
 			color: themeStyle.textColorSecondary,
-			letterSpacing: 0.3,
-		},
-		progressContainer: {
-			marginTop: 10,
+			fontStyle: "italic",
 		},
 		progressCard: {
-			marginBottom: 24,
-			padding: 20,
+			marginHorizontal: 20,
+			marginBottom: 20,
 			backgroundColor: themeStyle.card,
-			borderRadius: 8,
+			borderRadius: 16,
+			padding: 20,
+			shadowColor: "#000",
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.1,
+			shadowRadius: 8,
+			elevation: 5,
+		},
+		progressHeader: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "flex-start",
+			marginBottom: 16,
+		},
+		progressTitleContainer: {
+			flex: 1,
 		},
 		progressTitle: {
 			fontSize: 18,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
-			marginBottom: 15,
-			letterSpacing: 0.3,
-			paddingLeft: 4,
-		},
-		chartContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-		},
-		chartBox: {
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 15,
-			alignItems: "center",
-		},
-		chartLabel: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			textAlign: "center",
-			marginTop: 5,
-		},
-		weeklyContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-		},
-		weeklyHeatmap: {
-			flexDirection: "row",
-			justifyContent: "space-between",
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 15,
-			marginBottom: 5,
-		},
-		dayColumn: {
-			alignItems: "center",
-		},
-		activityIndicator: {
-			width: 36,
-			height: 36,
-			borderRadius: 6,
-			justifyContent: "center",
-			alignItems: "center",
 			marginBottom: 8,
 		},
-		activityCount: {
-			color: "#FFFFFF",
-			fontSize: 14,
-			fontWeight: "bold",
+		progressStats: {
+			flexDirection: "row",
+			alignItems: "center",
 		},
-		dayLabel: {
+		progressBest: {
+			fontSize: 14,
+			fontWeight: "600",
+			color: themeStyle.primary,
+			marginRight: 12,
+		},
+		progressWorkouts: {
 			fontSize: 12,
 			color: themeStyle.textColorSecondary,
 		},
-		trendRow: {
-			flexDirection: "row",
-			justifyContent: "space-around",
-			width: "100%",
-			padding: 10,
-		},
-		trendItem: {
-			alignItems: "center",
-		},
-		trendLabel: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginBottom: 6,
-		},
-		trendValue: {
-			fontSize: 20,
-			fontWeight: "bold",
-			color: themeStyle.primary,
-		},
-		muscleGroupsContainer: {
-			backgroundColor: themeStyle.card,
+		expandButton: {
+			padding: 8,
 			borderRadius: 8,
-			padding: 15,
+			backgroundColor: `${themeStyle.primary}15`,
 		},
-		muscleGroupItem: {
+		chartContainer: {
+			alignItems: "center",
+		},
+		chartLegend: {
+			flexDirection: "row",
+			justifyContent: "center",
+			marginTop: 12,
+		},
+		legendItem: {
 			flexDirection: "row",
 			alignItems: "center",
-			paddingVertical: 10,
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
 		},
-		muscleGroupIndicator: {
-			width: 16,
-			height: 16,
-			borderRadius: 6,
-			marginRight: 10,
+		legendDot: {
+			width: 8,
+			height: 8,
+			borderRadius: 4,
+			marginRight: 6,
 		},
-		muscleGroupName: {
-			fontSize: 16,
-			color: themeStyle.textColor,
-			flex: 1,
-		},
-		muscleGroupCount: {
-			fontSize: 15,
+		legendText: {
+			fontSize: 12,
 			color: themeStyle.textColorSecondary,
-			fontWeight: "500",
 		},
 		noDataContainer: {
-			height: 180,
-			justifyContent: "center",
 			alignItems: "center",
-			backgroundColor: `${themeStyle.primary}10`, // Very light tint of primary color
-			borderRadius: 6,
-			borderWidth: 1,
-			borderColor: `${themeStyle.primary}20`,
-			marginVertical: 8,
+			paddingVertical: 40,
+		},
+		noChartData: {
+			alignItems: "center",
+			paddingVertical: 30,
 		},
 		noDataText: {
+			fontSize: 16,
 			color: themeStyle.textColorSecondary,
+			marginTop: 12,
+			textAlign: "center",
+		},
+		noDataSubtext: {
+			fontSize: 14,
+			color: themeStyle.textColorSecondary,
+			marginTop: 4,
+			textAlign: "center",
 			fontStyle: "italic",
-			fontSize: 15,
-			letterSpacing: 0.3,
 		},
 	});
 

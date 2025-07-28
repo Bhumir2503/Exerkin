@@ -1,7 +1,8 @@
 // components/OverviewTab.jsx
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { BarChart } from "react-native-chart-kit";
+import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useWorkoutHistory } from "../../../contexts/workout/WorkoutHistoryContext";
 import useStatsCalculations from "../../../hooks/useStatsCalculations";
@@ -10,107 +11,239 @@ const OverviewTab = () => {
 	const { themeStyle } = useTheme();
 	const { workoutHistory } = useWorkoutHistory();
 	const styles = createStyles(themeStyle);
-	const { statsSummary, weeklyActivity, monthlyData } =
+	const { statsSummary, weeklyActivity, } =
 		useStatsCalculations(workoutHistory);
+
+	const renderSummaryItem = (icon, value, label, iconColor) => (
+		<View style={styles.summaryItem}>
+			<View style={styles.summaryIcon}>
+				<Ionicons
+					name={icon}
+					size={24}
+					color={iconColor || themeStyle.primary}
+				/>
+			</View>
+			<Text style={styles.summaryValue}>{value}</Text>
+			<Text style={styles.summaryLabel}>{label}</Text>
+		</View>
+	);
+
+	const renderWeeklyHeatmap = () => {
+		const days = ["S", "M", "T", "W", "T", "F", "S"];
+		const maxActivity = Math.max(...weeklyActivity, 1);
+
+		return (
+			<View style={styles.weeklyHeatmap}>
+				{weeklyActivity.map((count, index) => {
+					const intensity = count / maxActivity;
+					const backgroundColor =
+						intensity > 0
+							? `rgba(${hexToRgb(themeStyle.primary)}, ${
+									0.2 + intensity * 0.8
+							  })`
+							: `${themeStyle.primary}15`;
+
+					return (
+						<View key={index} style={styles.dayColumn}>
+							<View
+								style={[
+									styles.activityIndicator,
+									{ backgroundColor },
+								]}
+							>
+								<Text
+									style={[
+										styles.activityCount,
+										{
+											color:
+												intensity > 0.5
+													? "#FFFFFF"
+													: themeStyle.textColor,
+										},
+									]}
+								>
+									{}
+								</Text>
+							</View>
+							<Text style={styles.dayLabel}>{days[index]}</Text>
+						</View>
+					);
+				})}
+			</View>
+		);
+	};
 
 	return (
 		<View style={styles.tabContent}>
+			{/* Quick Stats Summary */}
 			<View style={styles.summaryContainer}>
-				<Text style={styles.sectionTitle}>Summary</Text>
-				{/* Total Workouts, Volume, Duration, Streak */}
+				<Text style={styles.sectionTitle}>Quick Stats</Text>
+				<View style={styles.summaryGrid}>
+					{renderSummaryItem(
+						"barbell-outline",
+						statsSummary.totalWorkouts,
+						"Total Workouts",
+						"#FF6B6B"
+					)}
+					{renderSummaryItem(
+						"fitness-outline",
+						statsSummary.totalVolume,
+						"Total Volume",
+						"#4ECDC4"
+					)}
+					{renderSummaryItem(
+						"time-outline",
+						statsSummary.totalDuration,
+						"Total Time",
+						"#45B7D1"
+					)}
+					{renderSummaryItem(
+						"flame-outline",
+						`${statsSummary.workoutStreak} days`,
+						"Current Streak",
+						"#FECA57"
+					)}
+				</View>
 			</View>
+
+			{/* Detailed Stats */}
 			<View style={styles.additionalStatsContainer}>
-				<Text style={styles.sectionTitle}>Detailed Stats</Text>
-				{/* Sets, Reps, Weight, Focus, etc */}
+				<Text style={styles.sectionTitle}>Detailed Overview</Text>
+				<View style={styles.detailedStatsBox}>
+					<View style={styles.statRow}>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Total Sets</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.totalSets}
+							</Text>
+						</View>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Total Reps</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.totalReps}
+							</Text>
+						</View>
+					</View>
+					<View style={styles.statRow}>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Avg Duration</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.avgDuration}
+							</Text>
+						</View>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Avg Volume</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.avgVolume}
+							</Text>
+						</View>
+					</View>
+					<View style={styles.statRow}>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>
+								Longest Workout
+							</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.longestWorkout}
+							</Text>
+						</View>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Best Day</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.bestDay}
+							</Text>
+						</View>
+					</View>
+					<View style={styles.statRow}>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Workouts/Week</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.workoutsPerWeek}
+							</Text>
+						</View>
+						<View style={styles.statItem}>
+							<Text style={styles.statLabel}>Total Distance</Text>
+							<Text style={styles.statValue}>
+								{statsSummary.totalDistance}
+							</Text>
+						</View>
+					</View>
+				</View>
 			</View>
-			<View style={styles.chartContainer}>
-				<Text style={styles.sectionTitle}>Monthly Activity</Text>
-				<BarChart
-					data={monthlyData}
-					width={340}
-					height={200}
-					yAxisSuffix=""
-					chartConfig={{
-						backgroundColor: themeStyle.card,
-						backgroundGradientFrom: themeStyle.card,
-						backgroundGradientTo: themeStyle.card,
-						color: () => themeStyle.primary,
-						labelColor: () => themeStyle.textColor,
-					}}
-				/>
-			</View>
+
+			{/* Weekly Activity Pattern */}
 			<View style={styles.weeklyContainer}>
-				<Text style={styles.sectionTitle}>Weekly Activity</Text>
-				{/* Weekly heatmap using weeklyActivity */}
+				<Text style={styles.sectionTitle}>Weekly Activity Pattern</Text>
+				{renderWeeklyHeatmap()}
+				<Text style={styles.chartLabel}>
+					Most active day: {statsSummary.bestDay}
+				</Text>
+			</View>
+
+			{/* Personal Records Summary */}
+			<View style={styles.recordsContainer}>
+				<Text style={styles.sectionTitle}>This Month</Text>
+				<View style={styles.recordsGrid}>
+					<View style={styles.recordItem}>
+						<Ionicons
+							name="trophy-outline"
+							size={20}
+							color="#FFD700"
+						/>
+						<Text style={styles.recordValue}>
+							{Math.floor(statsSummary.totalWorkouts / 4)}
+						</Text>
+						<Text style={styles.recordLabel}>Workouts</Text>
+					</View>
+					<View style={styles.recordItem}>
+						<Ionicons
+							name="trending-up-outline"
+							size={20}
+							color="#32CD32"
+						/>
+						<Text style={styles.recordValue}>
+							{Math.floor(
+								parseInt(
+									statsSummary.totalVolume.replace(
+										/[^\d]/g,
+										""
+									)
+								) / 4
+							).toLocaleString()}
+						</Text>
+						<Text style={styles.recordLabel}>lbs Volume</Text>
+					</View>
+					<View style={styles.recordItem}>
+						<Ionicons
+							name="time-outline"
+							size={20}
+							color="#FF69B4"
+						/>
+						<Text style={styles.recordValue}>
+							{Math.floor(statsSummary.totalSets / 4)}
+						</Text>
+						<Text style={styles.recordLabel}>Sets</Text>
+					</View>
+				</View>
 			</View>
 		</View>
 	);
 };
 
+// Helper function to convert hex to RGB
+const hexToRgb = (hex) => {
+	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+	return result
+		? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+				result[3],
+				16
+		  )}`
+		: "74, 144, 226"; // Default blue
+};
+
 const createStyles = (themeStyle) =>
 	StyleSheet.create({
-		container: {
-			flex: 1,
-			backgroundColor: themeStyle.backgroundColor,
-		},
-		scrollContainer: {
-			flex: 1,
-			width: "100%",
-		},
-		topBar: {
-			alignItems: "center",
-			paddingHorizontal: 16,
-			paddingVertical: 12,
-		},
-		title: {
-			fontSize: 22,
-			fontWeight: "bold",
-			color: themeStyle.textColor,
-
-			textAlign: "center",
-			marginLeft: 10,
-			textAlign: "center",
-		},
-		tabBar: {
-			flexDirection: "row",
-			justifyContent: "space-around",
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
-			paddingBottom: 0,
-		},
-		tab: {
-			alignItems: "center",
-			paddingVertical: 12,
-			paddingHorizontal: 16,
-			position: "relative",
-		},
-		tabText: {
-			fontSize: 12,
-			color: themeStyle.textColorSecondary,
-			marginTop: 4,
-		},
-		activeTabText: {
-			color: themeStyle.primary,
-			fontWeight: "600",
-		},
-		tabIndicator: {
-			position: "absolute",
-			bottom: 0,
-			left: 8,
-			right: 8,
-			height: 3,
-			borderTopLeftRadius: 3,
-			borderTopRightRadius: 3,
-			backgroundColor: "transparent",
-		},
-		activeTabIndicator: {
-			backgroundColor: themeStyle.primary,
-		},
-		tabContent: {
-			paddingBottom: 30,
-		},
 		summaryContainer: {
-			marginHorizontal: 20,
 			marginTop: 15,
 			padding: 20,
 			backgroundColor: themeStyle.card,
@@ -125,26 +258,29 @@ const createStyles = (themeStyle) =>
 		summaryItem: {
 			width: "48%",
 			marginBottom: 15,
-			padding: 15,
-			backgroundColor: `${themeStyle.primary}15`, // Very light tint of primary color
+			padding: 16,
+			backgroundColor: `${themeStyle.primary}8`,
 			borderRadius: 6,
 			alignItems: "center",
+			borderWidth: 1,
+			borderColor: `${themeStyle.primary}75`,
 		},
 		summaryIcon: {
-			marginBottom: 10,
+			marginBottom: 8,
 		},
 		summaryValue: {
-			fontSize: 24,
+			fontSize: 22,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
-			marginBottom: 8,
+			marginBottom: 4,
 			letterSpacing: 0.5,
 		},
 		summaryLabel: {
-			fontSize: 13,
+			fontSize: 12,
 			color: themeStyle.textColorSecondary,
-			fontWeight: "500",
+			fontWeight: "600",
 			letterSpacing: 0.3,
+			textAlign: "center",
 		},
 		sectionTitle: {
 			fontSize: 18,
@@ -154,13 +290,12 @@ const createStyles = (themeStyle) =>
 			letterSpacing: 0.3,
 		},
 		additionalStatsContainer: {
-			marginHorizontal: 20,
 			marginTop: 20,
 		},
 		detailedStatsBox: {
 			backgroundColor: themeStyle.card,
 			borderRadius: 8,
-			padding: 15,
+			padding: 20,
 		},
 		statRow: {
 			flexDirection: "row",
@@ -173,149 +308,15 @@ const createStyles = (themeStyle) =>
 		statLabel: {
 			fontSize: 14,
 			color: themeStyle.textColorSecondary,
-			marginBottom: 4,
+			marginBottom: 6,
+			fontWeight: "500",
 		},
 		statValue: {
-			fontSize: 17,
-			fontWeight: "600",
-			color: themeStyle.textColor,
-		},
-		bestLiftsContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-			marginBottom: 30,
-		},
-		bestLiftsBox: {
-			padding: 20,
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			marginTop: 15,
-		},
-		headerRow: {
-			flexDirection: "row",
-			alignItems: "center",
-			justifyContent: "space-between",
-		},
-		filtersRow: {
-			flexDirection: "row",
-			marginTop: 10,
-			marginBottom: 5,
-		},
-		filterChip: {
-			flexDirection: "row",
-			alignItems: "center",
-			backgroundColor: themeStyle.card,
-			paddingHorizontal: 14,
-			paddingVertical: 8,
-			borderRadius: 6,
-			marginRight: 10,
-			borderWidth: 1,
-			borderColor: themeStyle.borderColor,
-		},
-		filterChipText: {
-			color: themeStyle.textColorSecondary,
-			fontSize: 14,
-			marginRight: 5,
-			fontWeight: "600",
-			letterSpacing: 0.2,
-		},
-		filterContainer: {
-			flexDirection: "row",
-			alignItems: "center",
-		},
-		filterButton: {
-			flexDirection: "row",
-			alignItems: "center",
-			backgroundColor: themeStyle.card,
-			paddingHorizontal: 12,
-			paddingVertical: 7,
-			borderRadius: 6,
-			borderWidth: 1,
-			borderColor: themeStyle.borderColor,
-		},
-		filterButtonText: {
-			color: themeStyle.textColorSecondary,
-			fontSize: 14,
-			marginRight: 5,
-			fontWeight: "600",
-			letterSpacing: 0.2,
-		},
-		exerciseRow: {
-			flexDirection: "row",
-			justifyContent: "space-between",
-			alignItems: "center",
-			paddingVertical: 14,
-			marginHorizontal: 2,
-		},
-		exerciseNameContainer: {
-			flexDirection: "row",
-			alignItems: "center",
-			flex: 1,
-		},
-		exerciseIcon: {
-			marginRight: 8,
-		},
-		progressTitleRow: {
-			flexDirection: "row",
-			alignItems: "center",
-		},
-		progressTitleIcon: {
-			marginRight: 8,
-		},
-		liftName: {
-			fontSize: 16,
-			color: themeStyle.textColor,
-			flex: 1,
-			fontWeight: "500",
-			letterSpacing: 0.2,
-		},
-		liftValue: {
-			fontSize: 17,
-			fontWeight: "bold",
-			color: themeStyle.primary,
-			letterSpacing: 0.3,
-		},
-		liftNameEstimated: {
-			fontSize: 17,
-			fontStyle: "italic",
-			color: themeStyle.textColorSecondary,
-			letterSpacing: 0.3,
-		},
-		progressContainer: {
-			marginTop: 10,
-		},
-		progressCard: {
-			marginBottom: 24,
-			padding: 20,
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-		},
-		progressTitle: {
 			fontSize: 18,
 			fontWeight: "bold",
 			color: themeStyle.textColor,
-			marginBottom: 15,
-			letterSpacing: 0.3,
-			paddingLeft: 4,
-		},
-		chartContainer: {
-			marginHorizontal: 20,
-			marginTop: 20,
-		},
-		chartBox: {
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 15,
-			alignItems: "center",
-		},
-		chartLabel: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			textAlign: "center",
-			marginTop: 5,
 		},
 		weeklyContainer: {
-			marginHorizontal: 20,
 			marginTop: 20,
 		},
 		weeklyHeatmap: {
@@ -338,76 +339,38 @@ const createStyles = (themeStyle) =>
 			marginBottom: 8,
 		},
 		activityCount: {
-			color: "#FFFFFF",
 			fontSize: 14,
 			fontWeight: "bold",
 		},
 		dayLabel: {
 			fontSize: 12,
 			color: themeStyle.textColorSecondary,
-		},
-		trendRow: {
-			flexDirection: "row",
-			justifyContent: "space-around",
-			width: "100%",
-			padding: 10,
-		},
-		trendItem: {
-			alignItems: "center",
-		},
-		trendLabel: {
-			fontSize: 14,
-			color: themeStyle.textColorSecondary,
-			marginBottom: 6,
-		},
-		trendValue: {
-			fontSize: 20,
-			fontWeight: "bold",
-			color: themeStyle.primary,
-		},
-		muscleGroupsContainer: {
-			backgroundColor: themeStyle.card,
-			borderRadius: 8,
-			padding: 15,
-		},
-		muscleGroupItem: {
-			flexDirection: "row",
-			alignItems: "center",
-			paddingVertical: 10,
-			borderBottomWidth: 1,
-			borderBottomColor: themeStyle.borderColor,
-		},
-		muscleGroupIndicator: {
-			width: 16,
-			height: 16,
-			borderRadius: 6,
-			marginRight: 10,
-		},
-		muscleGroupName: {
-			fontSize: 16,
-			color: themeStyle.textColor,
-			flex: 1,
-		},
-		muscleGroupCount: {
-			fontSize: 15,
-			color: themeStyle.textColorSecondary,
 			fontWeight: "500",
 		},
-		noDataContainer: {
-			height: 180,
-			justifyContent: "center",
-			alignItems: "center",
-			backgroundColor: `${themeStyle.primary}10`, // Very light tint of primary color
-			borderRadius: 6,
-			borderWidth: 1,
-			borderColor: `${themeStyle.primary}20`,
-			marginVertical: 8,
+		recordsContainer: {
+			marginTop: 20,
 		},
-		noDataText: {
+		recordsGrid: {
+			flexDirection: "row",
+			justifyContent: "space-around",
+			backgroundColor: themeStyle.card,
+			borderRadius: 8,
+			padding: 20,
+		},
+		recordItem: {
+			alignItems: "center",
+		},
+		recordValue: {
+			fontSize: 20,
+			fontWeight: "bold",
+			color: themeStyle.textColor,
+			marginTop: 8,
+			marginBottom: 4,
+		},
+		recordLabel: {
+			fontSize: 12,
 			color: themeStyle.textColorSecondary,
-			fontStyle: "italic",
-			fontSize: 15,
-			letterSpacing: 0.3,
+			fontWeight: "500",
 		},
 	});
 
